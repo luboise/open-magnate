@@ -1,0 +1,21 @@
+.map-tile {
+	/* width: 50px; */
+	/* height: 50px; */
+}
+
+/* .map-tile-row { */
+/* display: flex;
+	flex-wrap: wrap;
+
+	width: 250px; */
+/* } */
+
+.map-tile-wrapper {
+	display: grid;
+	width: 500px;
+	/* height: 500px; */
+	aspect-ratio: 1;
+
+	grid-template-columns: repeat(5, 1fr);
+	/* grid-template-rows: repeat(5, 1fr); */
+}
