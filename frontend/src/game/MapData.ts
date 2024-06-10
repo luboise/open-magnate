@@ -1,4 +1,4 @@
-enum MapTileType {
+export enum MapTileType {
 	EMPTY = "EMPTY",
 	ROAD = "ROAD"
 }
