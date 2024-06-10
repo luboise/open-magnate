@@ -1,4 +1,5 @@
 .map-tile {
+	position: relative;
 	display: flex;
 
 	width: 100%;
@@ -7,6 +8,8 @@
 }
 
 .map-tile > * {
+	position: absolute;
+
 	width: 100%;
 	height: 100%;
 	max-width: 100%;
@@ -25,4 +28,8 @@
 
 	grid-template-columns: repeat(5, 1fr);
 	grid-template-rows: repeat(5, 1fr);
+}
+
+.mixin-image {
+	mix-blend-mode: hard-light;
 }

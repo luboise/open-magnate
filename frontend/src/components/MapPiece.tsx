@@ -9,7 +9,7 @@ function MapPiece(props: { piece: MapPieceData }) {
 	const rows = props.piece.map((row) => (
 		<>
 			{...row.map((tileData) => (
-				<MapTile tileData={tileData} />
+				<MapTile tile={tileData} />
 			))}
 		</>
 	));

@@ -1,4 +1,4 @@
-export enum MapTileType {
+export enum TileType {
 	EMPTY = "EMPTY",
 	ROAD = "ROAD",
 
@@ -10,9 +10,16 @@ export enum MapTileType {
 }
 
 export type MapTileData = {
-	type: MapTileType;
+	type: TileType;
 	data?: any;
 };
+
+export type RoadData = {
+	north: boolean;
+	south: boolean;
+	east: boolean;
+	west: boolean;
+}
 
 export type MapPieceData = Array<Array<MapTileData>>;
 
@@ -21,14 +28,14 @@ const MAP_PIECE_HEIGHT = 5;
 const MAP_PIECE_SIZE = MAP_PIECE_WIDTH * MAP_PIECE_HEIGHT;
 
 const CONVERSION_MAP: Record<string, MapTileData> = {
-	X: { type: MapTileType.EMPTY },
+	X: { type: TileType.EMPTY },
 
-	R: { type: MapTileType.ROAD },
-	H: { type: MapTileType.HOUSE },
+	R: { type: TileType.ROAD },
+	H: { type: TileType.HOUSE },
 
-	L: { type: MapTileType.LEMONADE },
-	C: { type: MapTileType.COLA },
-	B: { type: MapTileType.BEER }
+	L: { type: TileType.LEMONADE },
+	C: { type: TileType.COLA },
+	B: { type: TileType.BEER }
 };
 
 export function parseMapPiece(
@@ -40,12 +47,13 @@ export function parseMapPiece(
 
 	try {
 		// Remove spaces and check for valid length
-		const processed = mapString.replace(/\s/g, "");
-		if (processed.length !== MAP_PIECE_SIZE) {
+		if (mapString.replace(/\s/g, "").length !== MAP_PIECE_SIZE) {
 			throw new Error(
 				`Invalid map string length. Expected ${MAP_PIECE_SIZE}, got ${processed.length}.`
 			);
 		}
+
+		const rows = mapString.split(" ").map((row)=> Array.from(row));
 
 		Array.from(processed).forEach((char, i) => {
 			const index = Math.trunc(i / MAP_PIECE_WIDTH);
@@ -55,6 +63,10 @@ export function parseMapPiece(
 				throw new Error(
 					`Invalid char found: ${char}. Unable to construct map piece from string ${mapString}.`
 				);
+			}
+
+			if (char === "R") {
+
 			}
 
 			mapPiece[index].push(CONVERSION_MAP[char]);
