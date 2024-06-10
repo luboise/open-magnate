@@ -2,10 +2,11 @@ import { MapPieceData, parseMapPiece } from "./MapData";
 
 type TileList = Record<number, MapPieceData>;
 const GAME_TILES: TileList = [
-	parseMapPiece("RRRRRRXXRRXXXXXXXXXXXXXXX"),
-	parseMapPiece("XXXXXXXXXXXXXXXXXXXXXXXXX"),
-	parseMapPiece("XXXXXXXXXXXXXXXXXXXXXXXXX"),
-	parseMapPiece("XXXXXXXXXXXXXXXXXXXXXXXXX")
+	parseMapPiece("XXRXX XXRXX RRRRR HHRXX HHRXX"),
+	parseMapPiece("XXRXX XLRXX RRRRR XXRXX XXRXX"),
+	parseMapPiece("XXRRR XHHXR RHHXR RXXXX RRRXX"),
+	parseMapPiece("XXRXX LXRXX RRRRR XXRXX XXRBX"),
+	parseMapPiece("XXRXX XBRXX RRRRR XXXXX XXXXX")
 ]
 	.filter((piece) => piece !== null)
 	.reduce<TileList>((acc, cur, index) => {
