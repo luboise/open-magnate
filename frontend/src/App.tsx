@@ -1,14 +1,16 @@
-import { useState } from "react";
 import "./App.css";
 
-function App() {
-	const [count, setCount] = useState(0);
+import { RecoilRoot } from "recoil";
 
+import MapTile from "./components/MapTile";
+import GameStores from "./game/GameStores";
+
+function App() {
 	return (
-		<>
+		<RecoilRoot>
 			<h1>Vite + React</h1>
-			<Maptile number={1} />
-		</>
+			<MapTile piece={GameStores.GAME_TILES[1]} />
+		</RecoilRoot>
 	);
 }
 
