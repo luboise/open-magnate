@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { MapPiece } from "../game";
+import { MapPieceData } from "../game";
 import { Player } from "../game/Player";
 
 const players = atom<Array<Player>>({
@@ -7,7 +7,7 @@ const players = atom<Array<Player>>({
 	default: [] // default value (aka initial value)
 });
 
-const map = atom<Array<MapPiece>>({
+const map = atom<Array<MapPieceData>>({
 	key: "playersState", // unique ID (with respect to other atoms/selectors)
 	default: []
 });

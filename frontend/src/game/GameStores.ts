@@ -1,6 +1,6 @@
-import { MapPiece, parseMapPiece } from "./MapData";
+import { MapPieceData, parseMapPiece } from "./MapData";
 
-type TileList = Record<number, MapPiece>;
+type TileList = Record<number, MapPieceData>;
 const GAME_TILES: TileList = [
 	parseMapPiece("XXXXXXXXXXXXXXXXXXXXXXXXX"),
 	parseMapPiece("XXXXXXXXXXXXXXXXXXXXXXXXX"),
@@ -9,7 +9,7 @@ const GAME_TILES: TileList = [
 ]
 	.filter((piece) => piece !== null)
 	.reduce<TileList>((acc, cur, index) => {
-		return { ...acc, [index]: cur as MapPiece };
+		return { ...acc, [index]: cur as MapPieceData };
 	}, {});
 
 export default { GAME_TILES: GAME_TILES };

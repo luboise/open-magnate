@@ -8,7 +8,7 @@ export type MapTileData = {
 	data?: any;
 };
 
-export type MapPiece = Array<Array<MapTileData>>;
+export type MapPieceData = Array<Array<MapTileData>>;
 
 const MAP_PIECE_WIDTH = 5;
 const MAP_PIECE_HEIGHT = 5;
@@ -21,10 +21,10 @@ const PREMADE_MAP_TILES: Record<string, MapTileData> = {
 
 export function parseMapPiece(
 	mapString: string
-): MapPiece | null {
+): MapPieceData | null {
 	// const initial: MapPiece = [[]];
 
-	const mapPiece: MapPiece = [[], [], [], [], []];
+	const mapPiece: MapPieceData = [[], [], [], [], []];
 
 	try {
 		if (mapString.length !== MAP_PIECE_SIZE) {
