@@ -1,4 +1,8 @@
-import { MapTileData, RoadData, TileType } from "../game";
+import {
+	MapTileData,
+	RoadAdjacencyType,
+	TileType
+} from "../game";
 import "./MapTile.css";
 
 function MapTile(props: { tile: MapTileData }) {
@@ -16,9 +20,14 @@ function MapTile(props: { tile: MapTileData }) {
 	}
 
 	if (props.tile.type === TileType.ROAD) {
-		const roadData = props.tile.data as RoadData;
+		const roadData = props.tile
+			.data as RoadAdjacencyType;
 
-		if (!roadData) { console.debug(`invalid road data: ${roadData}`); }
+		if (!roadData) {
+			throw new Error(
+				`No road data specified for map of type "${TileType.ROAD}"`
+			);
+		}
 
 		if (roadData.north)
 			elements.push(

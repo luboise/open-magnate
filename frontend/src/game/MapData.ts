@@ -14,12 +14,12 @@ export type MapTileData = {
 	data?: any;
 };
 
-export type RoadData = {
+export type RoadAdjacencyType = {
 	north: boolean;
 	south: boolean;
 	east: boolean;
 	west: boolean;
-}
+};
 
 export type MapPieceData = Array<Array<MapTileData>>;
 
@@ -43,36 +43,49 @@ export function parseMapPiece(
 ): MapPieceData | null {
 	// const initial: MapPiece = [[]];
 
-	const mapPiece: MapPieceData = [[], [], [], [], []];
-
 	try {
 		// Remove spaces and check for valid length
-		if (mapString.replace(/\s/g, "").length !== MAP_PIECE_SIZE) {
+		if (
+			mapString.replace(/\s/g, "").length !==
+			MAP_PIECE_SIZE
+		) {
 			throw new Error(
-				`Invalid map string length. Expected ${MAP_PIECE_SIZE}, got ${processed.length}.`
+				`Invalid map string length. Expected ${MAP_PIECE_SIZE}, got ${mapString.length}.`
 			);
 		}
 
-		const rows = mapString.split(" ").map((row)=> Array.from(row));
+		const items = mapString.split(" ").map((row) =>
+			Array.from(row).map((char) => {
+				// Handle invalid character
+				if (!(char in CONVERSION_MAP)) {
+					throw new Error(
+						`Invalid char found: ${char}. Unable to construct map piece from string ${mapString}.`
+					);
+				}
 
-		Array.from(processed).forEach((char, i) => {
-			const index = Math.trunc(i / MAP_PIECE_WIDTH);
+				const parsedObject = CONVERSION_MAP[char];
 
-			// Handle invalid character
-			if (!(char in CONVERSION_MAP)) {
-				throw new Error(
-					`Invalid char found: ${char}. Unable to construct map piece from string ${mapString}.`
-				);
-			}
+				if (char === "R") {
+					parsedObject.data = {
+						north: true,
+						east: true,
+						south: true,
+						west: true
+					} as RoadAdjacencyType;
+				}
 
-			if (char === "R") {
+				// console.debug(
+				// 	"value: ",
+				// 	CONVERSION_MAP[char]
+				// );
 
-			}
+				return parsedObject;
+			})
+		);
 
-			mapPiece[index].push(CONVERSION_MAP[char]);
-		});
+		console.debug("items: ", items);
 
-		return mapPiece;
+		return items;
 	} catch (error) {
 		console.debug(error);
 	}
