@@ -54,8 +54,20 @@ export function parseMapPiece(
 			);
 		}
 
-		const items = mapString.split(" ").map((row) =>
-			Array.from(row).map((char) => {
+		const chars = mapString
+			.split(" ")
+			.map((row) => Array.from(row));
+
+		const items: MapPieceData = [[], [], [], [], []];
+
+		for (let col = 0; col < MAP_PIECE_WIDTH; col++) {
+			for (
+				let row = 0;
+				row < MAP_PIECE_HEIGHT;
+				row++
+			) {
+				const char: string = chars[row][col];
+
 				// Handle invalid character
 				if (!(char in CONVERSION_MAP)) {
 					throw new Error(
@@ -63,31 +75,154 @@ export function parseMapPiece(
 					);
 				}
 
-				const parsedObject = CONVERSION_MAP[char];
+				const parsedObject = {
+					...CONVERSION_MAP[char]
+				};
+
+				// function isTileExit(
+				// 	row: number,
+				// 	col: number
+				// ): RoadAdjacencyType {
+				// 	const x = {
+				// 		north:
+				// 			row === 0 &&
+				// 			col ===
+				// 				Math.floor(
+				// 					MAP_PIECE_WIDTH / 2
+				// 				),
+				// 		south:
+				// 			row === MAP_PIECE_HEIGHT - 1 &&
+				// 			col ===
+				// 				Math.floor(
+				// 					MAP_PIECE_WIDTH / 2
+				// 				),
+				// 		east:
+				// 			col === MAP_PIECE_WIDTH - 1 &&
+				// 			row ===
+				// 				Math.floor(
+				// 					MAP_PIECE_HEIGHT / 2
+				// 				),
+				// 		west:
+				// 			col === 0 &&
+				// 			row ===
+				// 				Math.floor(
+				// 					MAP_PIECE_HEIGHT / 2
+				// 				)
+				// 	};
+				// 	return x;
+				// }
+
+				// if (char === "R") {
+				// 	const dic = isTileExit(row, col);
+
+				// 	console.debug(
+				// 		`row: ${row}  col: ${col}  `,
+				// 		dic
+				// 	);
+
+				// 	parsedObject.data = {
+				// 		north:
+				// 			dic.north ||
+				// 			(col > 0 &&
+				// 				chars[row][col - 1] ===
+				// 					"R"),
+				// 		south:
+				// 			dic.south ||
+				// 			(col < MAP_PIECE_HEIGHT - 1 &&
+				// 				chars[row][col + 1] ===
+				// 					"R"),
+				// 		east:
+				// 			dic.east ||
+				// 			(row > 0 &&
+				// 				chars[row - 1][col] ===
+				// 					"R"),
+				// 		west:
+				// 			dic.west ||
+				// 			(row < MAP_PIECE_WIDTH - 1 &&
+				// 				chars[row + 1][col] === "R")
+				// 	} as RoadAdjacencyType;
+				// }
+
+				function isTopMiddle(
+					row: number,
+					col: number
+				): boolean {
+					return (
+						row === 0 &&
+						col ===
+							Math.floor(MAP_PIECE_WIDTH / 2)
+					);
+				}
+
+				function isBottomMiddle(
+					row: number,
+					col: number
+				): boolean {
+					return (
+						row === MAP_PIECE_HEIGHT - 1 &&
+						col ===
+							Math.floor(MAP_PIECE_WIDTH / 2)
+					);
+				}
+
+				function isRightMiddle(
+					row: number,
+					col: number
+				): boolean {
+					return (
+						col === MAP_PIECE_WIDTH - 1 &&
+						row ===
+							Math.floor(MAP_PIECE_HEIGHT / 2)
+					);
+				}
+
+				function isLeftMiddle(
+					row: number,
+					col: number
+				): boolean {
+					return (
+						col === 0 &&
+						row ===
+							Math.floor(MAP_PIECE_HEIGHT / 2)
+					);
+				}
 
 				if (char === "R") {
 					parsedObject.data = {
-						north: true,
-						east: true,
-						south: true,
-						west: true
+						north:
+							isTopMiddle(row, col) ||
+							(row > 0 &&
+								chars[row - 1][col] ===
+									"R"),
+						south:
+							isBottomMiddle(row, col) ||
+							(row < MAP_PIECE_HEIGHT - 1 &&
+								chars[row + 1][col] ===
+									"R"),
+						east:
+							isRightMiddle(row, col) ||
+							(col < MAP_PIECE_WIDTH - 1 &&
+								chars[row][col + 1] ===
+									"R"),
+						west:
+							isLeftMiddle(row, col) ||
+							(col > 0 &&
+								chars[row][col - 1] === "R")
 					} as RoadAdjacencyType;
 				}
+
+				items[row][col] = parsedObject;
 
 				// console.debug(
 				// 	"value: ",
 				// 	CONVERSION_MAP[char]
 				// );
-
-				return parsedObject;
-			})
-		);
-
-		console.debug("items: ", items);
+			}
+		}
 
 		return items;
 	} catch (error) {
-		console.debug(error);
+		console.error(error);
 	}
 
 	return null;

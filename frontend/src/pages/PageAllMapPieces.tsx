@@ -1,4 +1,4 @@
-import "./PageAllMapPieces.css"
+import "./PageAllMapPieces.css";
 
 import MapPiece from "../components/MapPiece";
 import GameStores from "../game/GameStores";
