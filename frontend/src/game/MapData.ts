@@ -10,6 +10,8 @@ export enum TileType {
 }
 
 export type MapTileData = {
+	x: number;
+	y: number;
 	type: TileType;
 	data?: any;
 };
@@ -27,7 +29,10 @@ const MAP_PIECE_WIDTH = 5;
 const MAP_PIECE_HEIGHT = 5;
 const MAP_PIECE_SIZE = MAP_PIECE_WIDTH * MAP_PIECE_HEIGHT;
 
-const CONVERSION_MAP: Record<string, MapTileData> = {
+const CONVERSION_MAP: Record<
+	string,
+	Partial<MapTileData>
+> = {
 	X: { type: TileType.EMPTY },
 
 	R: { type: TileType.ROAD },
@@ -37,6 +42,33 @@ const CONVERSION_MAP: Record<string, MapTileData> = {
 	C: { type: TileType.COLA },
 	B: { type: TileType.BEER }
 };
+
+function isTopMiddle(row: number, col: number): boolean {
+	return (
+		row === 0 && col === Math.floor(MAP_PIECE_WIDTH / 2)
+	);
+}
+
+function isBottomMiddle(row: number, col: number): boolean {
+	return (
+		row === MAP_PIECE_HEIGHT - 1 &&
+		col === Math.floor(MAP_PIECE_WIDTH / 2)
+	);
+}
+
+function isRightMiddle(row: number, col: number): boolean {
+	return (
+		col === MAP_PIECE_WIDTH - 1 &&
+		row === Math.floor(MAP_PIECE_HEIGHT / 2)
+	);
+}
+
+function isLeftMiddle(row: number, col: number): boolean {
+	return (
+		col === 0 &&
+		row === Math.floor(MAP_PIECE_HEIGHT / 2)
+	);
+}
 
 export function parseMapPiece(
 	mapString: string
@@ -78,50 +110,6 @@ export function parseMapPiece(
 				const parsedObject = {
 					...CONVERSION_MAP[char]
 				};
-
-				function isTopMiddle(
-					row: number,
-					col: number
-				): boolean {
-					return (
-						row === 0 &&
-						col ===
-							Math.floor(MAP_PIECE_WIDTH / 2)
-					);
-				}
-
-				function isBottomMiddle(
-					row: number,
-					col: number
-				): boolean {
-					return (
-						row === MAP_PIECE_HEIGHT - 1 &&
-						col ===
-							Math.floor(MAP_PIECE_WIDTH / 2)
-					);
-				}
-
-				function isRightMiddle(
-					row: number,
-					col: number
-				): boolean {
-					return (
-						col === MAP_PIECE_WIDTH - 1 &&
-						row ===
-							Math.floor(MAP_PIECE_HEIGHT / 2)
-					);
-				}
-
-				function isLeftMiddle(
-					row: number,
-					col: number
-				): boolean {
-					return (
-						col === 0 &&
-						row ===
-							Math.floor(MAP_PIECE_HEIGHT / 2)
-					);
-				}
 
 				if (char === "R") {
 					parsedObject.data = {

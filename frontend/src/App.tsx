@@ -8,6 +8,8 @@ import {
 	Routes
 } from "react-router-dom";
 import PageAllMapPieces from "./pages/PageAllMapPieces";
+import PageHomepage from "./pages/PageHomepage";
+import PagePlayGame from "./pages/PagePlayGame";
 
 function App() {
 	return (
@@ -17,11 +19,15 @@ function App() {
 				<Routes>
 					<Route
 						path="/"
-						element={<p>homepage</p>}
+						element={<PageHomepage />}
 					/>
 					<Route
 						path="/alltiles"
 						element={<PageAllMapPieces />}
+					/>
+					<Route
+						path="/play"
+						element={<PagePlayGame />}
 					/>
 				</Routes>
 			</BrowserRouter>
