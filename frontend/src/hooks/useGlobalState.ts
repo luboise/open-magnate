@@ -8,9 +8,8 @@ const PlayersAtom = atom<Array<Player>>({
 
 function useGlobalState(): {
 	players: typeof PlayersAtom;
-	map: typeof MapAtom;
 } {
-	return { players: PlayersAtom, map: MapAtom };
+	return { players: PlayersAtom };
 }
 
 export default useGlobalState;
