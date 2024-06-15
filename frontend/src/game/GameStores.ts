@@ -24,7 +24,7 @@ const GAME_TILES: TileList = [
 	parseMapPiece("XXRXX XXRXX RRRRR XXXLX XXXXX"),
 	parseMapPiece("XXRRR XXXLR RXXXR RCXXX RRRXX"),
 	parseMapPiece("XXRXX XXRXX RRRRR XCXXX XXXXX"),
-	parseMapPiece("RRRRR RXHHR RXHHR RXXXR RRRRR"),
+	parseMapPiece("RRRRR RXHHR RXHHR RXXXR RRRRR")
 ]
 	.filter((piece) => piece !== null)
 	.reduce<TileList>((acc, cur, index) => {
