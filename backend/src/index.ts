@@ -14,14 +14,10 @@ app.use(cors());
 
 (async () => {
 	InitialiseRoutes(express, app);
+
+	app.listen(port, () => {
+		console.log(
+			`Server is running on http://localhost:${port}`
+		);
+	});
 })();
-
-app.get("/", (req, res) => {
-	res.send("Hello, TypeScript with Express!");
-});
-
-app.listen(port, () => {
-	console.log(
-		`Server is running on http://localhost:${port}`
-	);
-});

@@ -26,11 +26,12 @@ export function useGameState(): {
 		setState(null);
 		const x: GameState | null = await get("/game/new");
 		if (!x) {
-			console.debug(
+			console.error(
 				"Failed to acquire new game from the API."
 			);
 			return;
 		}
+		console.debug(x);
 		setState(x);
 	}
 
