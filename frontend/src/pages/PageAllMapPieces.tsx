@@ -1,18 +1,17 @@
-import "./PageAllMapPieces.css";
+// import "./PageAllMapPieces.css";
 
-import MapPiece from "../components/MapPiece";
-import GameStores from "../game/GameStores";
+// import MapPiece from "../components/MapPiece";
 
-function PageAllMapPieces() {
-	const allTiles: Array<JSX.Element> = Object.values(
-		GameStores.GAME_TILES
-	).map((piece) => <MapPiece piece={piece} />);
+// function PageAllMapPieces() {
+// 	const allTiles: Array<JSX.Element> = Object.values(
+// 		GameStores.GAME_TILES
+// 	).map((piece) => <MapPiece piece={piece} />);
 
-	return (
-		<div className="all-tiles-container">
-			{...allTiles}
-		</div>
-	);
-}
+// 	return (
+// 		<div className="all-tiles-container">
+// 			{...allTiles}
+// 		</div>
+// 	);
+// }
 
-export default PageAllMapPieces;
+// export default PageAllMapPieces;

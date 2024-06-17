@@ -1,5 +1,5 @@
 import { House } from "./House";
-import { MapTileData } from "./MapTileData";
+import { MapPieceData } from "./MapData";
 import { Player } from "./Player";
 
 export enum TurnProgress {
@@ -17,7 +17,7 @@ export type GameState = {
 	currentTurn: number;
 	currentPlayer: number;
 	players: Array<Player>;
-	mapTiles: Array<MapTileData>;
+	mapPieces: Array<MapPieceData>;
 	houses: Array<House>;
 	turnOrder: Array<number> | null;
 };

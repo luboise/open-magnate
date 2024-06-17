@@ -7,9 +7,10 @@ import {
 	Route,
 	Routes
 } from "react-router-dom";
-import PageAllMapPieces from "./pages/PageAllMapPieces";
+// import PageAllMapPieces from "./pages/PageAllMapPieces";
+import PageGame from "./pages/PageGame";
 import PageHomepage from "./pages/PageHomepage";
-import PagePlayGame from "./pages/PagePlayGame";
+import PagePlay from "./pages/PagePlay";
 
 function App() {
 	return (
@@ -21,13 +22,17 @@ function App() {
 						path="/"
 						element={<PageHomepage />}
 					/>
-					<Route
+					{/* <Route
 						path="/alltiles"
 						element={<PageAllMapPieces />}
-					/>
+					/> */}
 					<Route
 						path="/play"
-						element={<PagePlayGame />}
+						element={<PagePlay />}
+					/>
+					<Route
+						path="/game"
+						element={<PageGame gameId={null} />}
 					/>
 				</Routes>
 			</BrowserRouter>

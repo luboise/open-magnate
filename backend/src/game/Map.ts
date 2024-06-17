@@ -23,6 +23,49 @@ const CONVERSION_MAP: Record<
 	B: { type: TileType.BEER }
 };
 
+export function translateMapTile(
+	tile: MapTileData,
+	xPieces: number,
+	yPieces: number
+) {
+	tile.x += xPieces * MAP_PIECE_WIDTH;
+	tile.y += yPieces * MAP_PIECE_HEIGHT;
+	return tile;
+}
+
+// export function RotateMapPiece(
+// 	piece: MapPieceData,
+// 	degrees: 0 | 90 | 180 | 270
+// ): MapPieceData {
+// 	if (degrees === 0) {
+// 		return piece;
+// 	}
+
+// 	if (degrees === 90) {
+// 		return piece.map((row) =>
+// 			row.map((tile, i) => {
+// 				return {
+// 					x: MAP_PIECE_HEIGHT - 1 - tile.y,
+// 					y: tile.x,
+// 					type: tile.type
+// 				};
+// 			})
+// 		);
+// 	}
+
+// 	if (degrees === 180) {
+// 		return piece.map((row) =>
+// 			row.map((tile, i) => {
+// 				return {
+// 					x: MAP_PIECE_WIDTH - 1 - tile.x,
+// 					y: MAP_PIECE_HEIGHT - 1 - tile.y,
+// 					type: tile.type
+// 				};
+// 			})
+// 		);
+// 	}
+// }
+
 export function parseMapPiece(
 	mapString: string
 ): MapPieceData | null {

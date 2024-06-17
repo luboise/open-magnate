@@ -40,3 +40,7 @@ export type House = {
 	demandLimit: number;
 	hasGarden: boolean;
 };
+
+export function CreateHouse(id: number) {
+	return { ...defaultHouse, id: id };
+}

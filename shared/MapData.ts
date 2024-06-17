@@ -23,4 +23,7 @@ export type RoadAdjacencyType = {
 	west: boolean;
 };
 
-export type MapPieceData = Array<Array<MapTileData>>;
+export type MapPieceData = {
+	id: number;
+	tiles: Array<Array<MapTileData>>;
+};

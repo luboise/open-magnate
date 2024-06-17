@@ -6,7 +6,7 @@ import "./MapTile.css";
 function MapPiece(props: { piece: MapPieceData }) {
 	if (!props.piece) return <p>invalid map tile</p>;
 
-	const rows = props.piece.map((row) => (
+	const rows = props.piece.tiles.map((row) => (
 		<>
 			{...row.map((tileData) => (
 				<MapTile tile={tileData} />

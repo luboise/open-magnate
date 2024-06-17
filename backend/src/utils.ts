@@ -14,6 +14,15 @@ export function new2DArray<T>(
 	return ret;
 }
 
+export function getRandomInt(
+	max: number,
+	min: number = 0
+): number {
+	const range = max - min;
+	const val = Math.random() * range;
+	return min + Math.floor(val);
+}
+
 export const Logger = {
 	Server: (toPrint: any) => {
 		Logger.Custom("Server", toPrint);

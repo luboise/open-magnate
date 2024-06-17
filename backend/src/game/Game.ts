@@ -3,9 +3,13 @@ import {
 	GameCreationParams,
 	GameState,
 	House,
-	MapTileData,
-	TurnProgress
+	MapPieceData,
+	TileType,
+	TurnProgress,
+	CreateHouse as createHouse
 } from "../utils";
+import { MAP_PIECES } from "./GameStores";
+import { translateMapTile as TranslateMapTile } from "./Map";
 
 export class Game {
 	private playerCount: number;
@@ -20,7 +24,7 @@ export class Game {
 		}
 		this.playerCount = playerCount;
 
-		const [mapTiles, houses] = createMap(playerCount);
+		const [mapPieces, houses] = createMap(playerCount);
 
 		this.state = {
 			currentPlayer: -1,
@@ -28,7 +32,7 @@ export class Game {
 			currentTurn: 1,
 			turnOrder: null,
 			houses,
-			mapTiles,
+			mapPieces,
 			players: params.players
 		};
 	}
@@ -47,19 +51,90 @@ export class Game {
 	}
 }
 
+interface MapSize {
+	x: number;
+	y: number;
+}
+const MAP_SIZES: Record<number, MapSize> = {
+	2: { x: 3, y: 3 },
+	3: { x: 4, y: 3 },
+	4: { x: 4, y: 4 },
+	5: { x: 4, y: 5 }
+};
+
 function createMap(
 	playerCount: number
-): [MapTileData[], House[]] {
-	// TODO: Fix function stub
-	const data: MapTileData[] = [];
+): [MapPieceData[], House[]] {
+	const mapPieces: MapPieceData[] = [];
+
+	if (!MAP_SIZES[playerCount]) {
+		throw new Error(
+			`Invalid player count: ${playerCount}`
+		);
+	}
+
+	const dimensions = MAP_SIZES[playerCount];
+
+	const tuplesToPlace = Array.from({
+		length: dimensions.x
+	})
+		.flatMap((_, i) =>
+			Array.from({ length: dimensions.y }, (_, j) => {
+				return {
+					x: i,
+					y: j
+				} as MapSize;
+			})
+		)
+		.sort(() => Math.random() - 0.5);
+
+	const unusedTileKeys: number[] = Array.from(
+		Object.keys(MAP_PIECES)
+	)
+		.map((val) => Number(val))
+		.sort((_a, _b) => Math.random() - 0.5);
+
 	const houses: House[] = [];
-	return [data, houses];
+
+	while (tuplesToPlace.length) {
+		const val = tuplesToPlace.pop();
+		if (!val) {
+			throw new Error(
+				"Invalid tuple mapped into a tile."
+			);
+		}
+
+		const newTileKey = unusedTileKeys.pop();
+		if (!newTileKey) {
+			throw new Error("No more unused map tiles.");
+		}
+
+		const piece = MAP_PIECES[newTileKey];
+		piece.tiles = piece.tiles.map((row) =>
+			row.map((tile) =>
+				TranslateMapTile(tile, val.x, val.y)
+			)
+		);
+
+		mapPieces.push(piece);
+		// If any of the pieces tiles has a house
+		if (
+			piece.tiles.some((row) =>
+				row.some(
+					(tile) => tile.type === TileType.HOUSE
+				)
+			)
+		) {
+			houses.push(createHouse(piece.id));
+		}
+	}
+
+	return [mapPieces, houses];
 }
 
 function NewGame(params: GameCreationParams): GameState {
 	const players = params.players;
-	const mapTiles: MapTileData[] = [];
-	const houses: House[] = [];
+	const [mapPieces, houses] = createMap(players.length);
 
 	return {
 		currentPlayer: -1,
@@ -67,7 +142,7 @@ function NewGame(params: GameCreationParams): GameState {
 		currentTurn: 1,
 		turnOrder: null,
 		houses,
-		mapTiles,
+		mapPieces,
 		players
 	};
 }
