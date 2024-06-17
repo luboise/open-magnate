@@ -1,7 +1,8 @@
 {
-   "editor.defaultFormatter": "esbenp.prettier-vscode",
-   "editor.formatOnSave": true,
-   "editor.formatOnPaste": false,
-   "prettier.useEditorConfig": false,
-   "prettier.useTabs": false
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.formatOnSave": true,
+	"editor.formatOnPaste": false,
+	"prettier.useEditorConfig": false,
+	"prettier.useTabs": false,
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

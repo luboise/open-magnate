@@ -1,5 +1,5 @@
 import { atom } from "recoil";
-import { Player } from "../../../shared/Player";
+import { Player } from "../utils";
 
 const PlayersAtom = atom<Array<Player>>({
 	key: "Players", // unique ID (with respect to other atoms/selectors)

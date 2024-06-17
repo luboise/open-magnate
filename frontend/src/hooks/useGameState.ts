@@ -25,13 +25,13 @@ export function useGameState(): {
 	async function newGame() {
 		setState(null);
 		const x: GameState | null = await get("/game/new");
-		if (!x) {
+		if (!x || typeof x !== "object") {
 			console.error(
 				"Failed to acquire new game from the API."
 			);
 			return;
 		}
-		console.debug(x);
+		console.debug("New game acquired: x");
 		setState(x);
 	}
 

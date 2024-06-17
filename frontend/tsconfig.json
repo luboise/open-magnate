@@ -22,12 +22,12 @@
 	},
 	"include": [
 		"src",
-		"../shared/GameState.ts",
-		"../shared/MapTileData.ts",
-		"../shared/House.ts",
-		"../shared/Food.ts",
-		"../shared/Player.ts",
-		"../shared/MapData.ts"
+		"../../shared/GameState.ts",
+		"../../shared/MapTileData.ts",
+		"../../shared/House.ts",
+		"../../shared/Food.ts",
+		"../../shared/Player.ts",
+		"../../shared/MapData.ts"
 	],
 	"references": [{ "path": "./tsconfig.node.json" }]
 }
