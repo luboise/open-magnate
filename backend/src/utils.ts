@@ -1,5 +1,19 @@
 import { Response } from "express";
 
+export * from "../../shared";
+
+export function new2DArray<T>(
+	rows: number,
+	cols: number
+): T[][] {
+	const ret = [];
+	for (let i = 0; i < rows; i++) {
+		ret.push(new Array(cols));
+	}
+
+	return ret;
+}
+
 export const Logger = {
 	Server: (toPrint: any) => {
 		Logger.Custom("Server", toPrint);

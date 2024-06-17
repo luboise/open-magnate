@@ -4,3 +4,5 @@ type RGBA =
 type HEX = `#${string}`;
 
 export type Color = RGB | RGBA | HEX;
+
+export * from "../../shared";

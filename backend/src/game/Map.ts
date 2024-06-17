@@ -1,33 +1,13 @@
-export enum TileType {
-	EMPTY = "EMPTY",
-	ROAD = "ROAD",
-
-	HOUSE = "HOUSE",
-
-	LEMONADE = "LEMONADE",
-	COLA = "COLA",
-	BEER = "BEER"
-}
-
-export type MapTileData = {
-	x: number;
-	y: number;
-	type: TileType;
-	data?: any;
-};
-
-export type RoadAdjacencyType = {
-	north: boolean;
-	south: boolean;
-	east: boolean;
-	west: boolean;
-};
-
-export type MapPieceData = Array<Array<MapTileData>>;
-
-const MAP_PIECE_WIDTH = 5;
-const MAP_PIECE_HEIGHT = 5;
-const MAP_PIECE_SIZE = MAP_PIECE_WIDTH * MAP_PIECE_HEIGHT;
+import {
+	MAP_PIECE_HEIGHT,
+	MAP_PIECE_SIZE,
+	MAP_PIECE_WIDTH,
+	MapPieceData,
+	MapTileData,
+	RoadAdjacencyType,
+	TileType,
+	new2DArray
+} from "../utils";
 
 const CONVERSION_MAP: Record<
 	string,
@@ -43,37 +23,48 @@ const CONVERSION_MAP: Record<
 	B: { type: TileType.BEER }
 };
 
-function isTopMiddle(row: number, col: number): boolean {
-	return (
-		row === 0 && col === Math.floor(MAP_PIECE_WIDTH / 2)
-	);
-}
-
-function isBottomMiddle(row: number, col: number): boolean {
-	return (
-		row === MAP_PIECE_HEIGHT - 1 &&
-		col === Math.floor(MAP_PIECE_WIDTH / 2)
-	);
-}
-
-function isRightMiddle(row: number, col: number): boolean {
-	return (
-		col === MAP_PIECE_WIDTH - 1 &&
-		row === Math.floor(MAP_PIECE_HEIGHT / 2)
-	);
-}
-
-function isLeftMiddle(row: number, col: number): boolean {
-	return (
-		col === 0 &&
-		row === Math.floor(MAP_PIECE_HEIGHT / 2)
-	);
-}
-
 export function parseMapPiece(
 	mapString: string
 ): MapPieceData | null {
-	// const initial: MapPiece = [[]];
+	function isTopMiddle(
+		row: number,
+		col: number
+	): boolean {
+		return (
+			row === 0 &&
+			col === Math.floor(MAP_PIECE_WIDTH / 2)
+		);
+	}
+
+	function isBottomMiddle(
+		row: number,
+		col: number
+	): boolean {
+		return (
+			row === MAP_PIECE_HEIGHT - 1 &&
+			col === Math.floor(MAP_PIECE_WIDTH / 2)
+		);
+	}
+
+	function isRightMiddle(
+		row: number,
+		col: number
+	): boolean {
+		return (
+			col === MAP_PIECE_WIDTH - 1 &&
+			row === Math.floor(MAP_PIECE_HEIGHT / 2)
+		);
+	}
+
+	function isLeftMiddle(
+		row: number,
+		col: number
+	): boolean {
+		return (
+			col === 0 &&
+			row === Math.floor(MAP_PIECE_HEIGHT / 2)
+		);
+	}
 
 	try {
 		// Remove spaces and check for valid length
@@ -90,7 +81,10 @@ export function parseMapPiece(
 			.split(" ")
 			.map((row) => Array.from(row));
 
-		const items: MapPieceData = [[], [], [], [], []];
+		const items: MapPieceData = new2DArray(
+			MAP_PIECE_HEIGHT,
+			MAP_PIECE_WIDTH
+		);
 
 		for (let col = 0; col < MAP_PIECE_WIDTH; col++) {
 			for (
@@ -108,7 +102,9 @@ export function parseMapPiece(
 				}
 
 				const parsedObject = {
-					...CONVERSION_MAP[char]
+					...CONVERSION_MAP[char],
+					x: col * MAP_PIECE_SIZE,
+					y: row * MAP_PIECE_SIZE
 				};
 
 				if (char === "R") {
@@ -135,12 +131,8 @@ export function parseMapPiece(
 					} as RoadAdjacencyType;
 				}
 
-				items[row][col] = parsedObject;
-
-				// console.debug(
-				// 	"value: ",
-				// 	CONVERSION_MAP[char]
-				// );
+				items[row][col] =
+					parsedObject as MapTileData;
 			}
 		}
 

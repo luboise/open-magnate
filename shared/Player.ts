@@ -1,5 +1,6 @@
-import { Employee } from "./Employee";
-import { Milestone } from "./Milestone";
+import { Employee } from "../frontend/src/game/Employee";
+import { Milestone } from "../frontend/src/game/Milestone";
+import { Food } from "../frontend/src/utils";
 
 export type Player = {
 	playerNum: number;
