@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
+import { FrontendRoutes } from "../utils";
 
 function PageHomepage() {
-	return <Link to="/play">Play</Link>;
+	return <Link to={FrontendRoutes.PLAY}>Play</Link>;
 }
 
 export default PageHomepage;

@@ -1,15 +1,14 @@
-import useAPI from "../hooks/useAPI";
-import { APIRoutes } from "../utils";
+type FormProps<T> = { onSubmit: (data: T) => void };
 
-function Form(props: React.PropsWithChildren) {
-	const { post } = useAPI();
-
-	async function onFormSubmit(
+function Form<T>(
+	props: React.PropsWithChildren<FormProps<T>>
+) {
+	function onFormSubmit(
 		event: React.FormEvent<HTMLFormElement>
 	): void {
 		event.preventDefault();
 		const data = new FormData(event.currentTarget);
-		const result = await post(APIRoutes.);
+		props.onSubmit(data as T);
 	}
 
 	return (

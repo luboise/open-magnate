@@ -4,26 +4,25 @@ import { RecoilRoot } from "recoil";
 
 import {
 	BrowserRouter,
+	Link,
 	Route,
 	Routes
 } from "react-router-dom";
 // import PageAllMapPieces from "./pages/PageAllMapPieces";
-import { createLocalSession } from "./createLocalSession";
-import AuthForm from "./pages/AuthForm";
 import PageGame from "./pages/PageGame";
 import PageHomepage from "./pages/PageHomepage";
-import PagePlay from "./pages/PagePlay";
+import { FrontendRoutes } from "./utils";
 
 function App() {
-	const { localSession } = createLocalSession();
+	// const { localSession } = createLocalSession();
 
-	if (!localSession) {
-		return (
-			<RecoilRoot>
-				<AuthForm />
-			</RecoilRoot>
-		);
-	}
+	// if (!localSession) {
+	// 	return (
+	// 		<RecoilRoot>
+	// 			<AuthForm />
+	// 		</RecoilRoot>
+	// 	);
+	// }
 
 	return (
 		<RecoilRoot>
@@ -31,20 +30,37 @@ function App() {
 			<BrowserRouter>
 				<Routes>
 					<Route
-						path="/"
+						path={FrontendRoutes.HOME}
 						element={<PageHomepage />}
 					/>
 					{/* <Route
 						path="/alltiles"
 						element={<PageAllMapPieces />}
 					/> */}
-					<Route
-						path="/play"
+					{/* <Route
+						path={FrontendRoutes.PLAY}
 						element={<PagePlay />}
+					/> */}
+					<Route
+						path={FrontendRoutes.PLAY}
+						element={<PageGame />}
 					/>
 					<Route
-						path="/game"
-						element={<PageGame gameId={null} />}
+						path="*"
+						element={
+							<>
+								<p>
+									This page could not be
+									found. Click below to
+									return to the homepage.
+								</p>
+								<Link
+									to={FrontendRoutes.HOME}
+								>
+									<button>Return</button>
+								</Link>
+							</>
+						}
 					/>
 				</Routes>
 			</BrowserRouter>
