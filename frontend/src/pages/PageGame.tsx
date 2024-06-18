@@ -1,6 +1,7 @@
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import useAPI from "../hooks/useAPI";
 import { useGameState } from "../hooks/useGameState";
+import { useLocalStorage } from "../hooks/useLocalStorage";
 import useTriggeredCallback from "../hooks/useTriggeredCallback";
 import {
 	APIRoutes,
@@ -15,7 +16,7 @@ interface GamePageAction {
 }
 
 type GamePageActionName =
-	| "createLobby"
+	| "setLobby"
 	| "leaveLobby"
 	| "startGame"
 	| "endGame";
@@ -26,6 +27,7 @@ type LobbyPlayerData = {
 };
 
 export type MagnateGameData = {
+	lobbyId: number;
 	lobbyName: string;
 	lobbyPlayers: LobbyPlayerData[];
 	gameState: GameState;
@@ -38,11 +40,15 @@ type GamePageState =
 			data: MagnateGameData | null;
 	  };
 
+const LOCAL_STORAGE_LOBBY_ID_KEY = "lobbyId";
+
 function PageGame() {
 	const { post } = useAPI();
 
 	const { newGame } = useGameState();
 	const [triggerNewGame] = useTriggeredCallback(newGame);
+
+	const { get, set } = useLocalStorage();
 
 	const [state, dispatch] = useReducer(
 		(
@@ -50,7 +56,7 @@ function PageGame() {
 			action: GamePageAction
 		): GamePageState => {
 			switch (action.type) {
-				case "createLobby": {
+				case "setLobby": {
 					if (state.lobbyId !== null) {
 						throw new Error(
 							"Attempted to create a lobby while already in one!"
@@ -58,8 +64,9 @@ function PageGame() {
 					}
 
 					return {
-						lobbyId: action.data,
-						data: null
+						...state,
+						lobbyId: action.data.lobbyId,
+						data: action.data.data
 					};
 				}
 				default:
@@ -67,23 +74,33 @@ function PageGame() {
 			}
 		},
 		// Initial state
-		{ lobbyId: null, data: null } as GamePageState
+		{
+			lobbyId: get(LOCAL_STORAGE_LOBBY_ID_KEY),
+			data: null
+		} as GamePageState
 	);
 
-	useEffect(() => {
-		if (state.lobbyId === null || state.data !== null)
+	async function getNewLobby(): Promise<void> {
+		const newLobby: MagnateGameData | null = await post(
+			APIRoutes.NEW_LOBBY,
+			{}
+		);
+
+		if (!newLobby) {
+			console.debug("Failed to create lobby.");
 			return;
+		}
 
-		(async function getNewLobby() {
-			const x = await post(APIRoutes.NEW_LOBBY, {});
-		})();
-	}, [state.lobbyId]);
-
-	console.debug("Current state: ", state);
+		set(LOCAL_STORAGE_LOBBY_ID_KEY, newLobby.lobbyId);
+		dispatch({
+			type: "setLobby",
+			data: newLobby
+		});
+	}
 
 	if (state.lobbyId === null) {
 		return (
-			<button onClick={triggerNewGame}>
+			<button onClick={getNewLobby}>
 				Create lobby
 			</button>
 		);
