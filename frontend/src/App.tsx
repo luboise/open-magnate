@@ -8,11 +8,23 @@ import {
 	Routes
 } from "react-router-dom";
 // import PageAllMapPieces from "./pages/PageAllMapPieces";
+import { createLocalSession } from "./createLocalSession";
+import AuthForm from "./pages/AuthForm";
 import PageGame from "./pages/PageGame";
 import PageHomepage from "./pages/PageHomepage";
 import PagePlay from "./pages/PagePlay";
 
 function App() {
+	const { localSession } = createLocalSession();
+
+	if (!localSession) {
+		return (
+			<RecoilRoot>
+				<AuthForm />
+			</RecoilRoot>
+		);
+	}
+
 	return (
 		<RecoilRoot>
 			<h1>Open Magnate</h1>

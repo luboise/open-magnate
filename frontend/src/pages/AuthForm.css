@@ -1,0 +1,27 @@
+#page-authform {
+}
+
+#page-authform form {
+	display: flex;
+
+	padding: 1em;
+
+	padding-top: 0;
+
+	flex-direction: column;
+	align-items: center;
+
+	/* nice border */
+	border: solid black 1px;
+	border-radius: 0.5em;
+}
+
+#page-authform h2 {
+	font-size: 1.5em;
+	margin-bottom: 0;
+}
+
+#page-authform h3 {
+	color: grey;
+	font-size: 80%;
+}
