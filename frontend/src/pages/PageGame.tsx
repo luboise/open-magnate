@@ -1,123 +1,88 @@
 import { useEffect, useReducer } from "react";
+import useWebSocket, {
+	ReadyState
+} from "react-use-websocket";
 import Form from "../components/Form";
 import FormInput from "../components/FormInput";
-import useAPI from "../hooks/useAPI";
-import { useLocalStorage } from "../hooks/useLocalStorage";
+import { WEB_SOCKET_BASE_URL } from "../hooks/useAPI";
 import {
 	APIRoutes,
+	BackendMessage,
+	FrontendMessage,
 	LobbySubmissionData,
 	MagnateLobbyData
 } from "../utils";
 import MagnateGame from "./MagnateGame/MagnateGame";
 
-interface GamePageAction {
-	type: GamePageActionName;
-	data?: any;
-}
-
-type GamePageActionName =
-	| "setLobby"
-	| "leaveLobby"
-	| "startGame"
-	| "endGame";
-
-type GamePageState =
-	| { lobbyId: null; data: null }
-	| {
-			lobbyId: number;
-			data: MagnateLobbyData | null;
-	  };
-
-const LOCAL_STORAGE_LOBBY_ID_KEY = "lobbyId";
+// const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
 
 function PageGame() {
-	const { post } = useAPI();
-
 	// const { newGame } = useGameState();
 	// const [triggerNewGame] = useTriggeredCallback(newGame);
 
-	const { get, set } = useLocalStorage();
+	// const { get, set } = useLocalStorage();
 
 	const [state, dispatch] = useReducer(
 		(
-			state: GamePageState,
-			action: GamePageAction
-		): GamePageState => {
-			switch (action.type) {
-				case "setLobby": {
-					if (state.lobbyId !== null) {
+			state: MagnateLobbyData | null,
+			message: FrontendMessage
+		): MagnateLobbyData | null => {
+			switch (message.type) {
+				case "NEW_LOBBY": {
+					return message.data as MagnateLobbyData;
+				}
+				case "LOBBY_UPDATED": {
+					if (!state) {
 						throw new Error(
-							"Attempted to create a lobby while already in one!"
+							"Attempted to update lobby with null state."
 						);
 					}
-
-					return {
-						...state,
-						lobbyId: action.data.lobbyId,
-						data: action.data.data
-					};
+					return { ...state, ...message.data };
 				}
 				default:
 					return state;
 			}
 		},
-		// Initial state
-		{
-			lobbyId: get(LOCAL_STORAGE_LOBBY_ID_KEY),
-			data: null
-		} as GamePageState
+		null
 	);
 
-	async function getNewLobby(
-		submissionData: LobbySubmissionData
-	): Promise<void> {
-		if (state.lobbyId) {
-			console.debug(
-				"You are already in a lobby. Unable to create a new lobby."
-			);
-		}
-
-		const newLobby: MagnateLobbyData | null =
-			await post(APIRoutes.NEW_LOBBY, submissionData);
-
-		if (!newLobby) {
-			console.debug("Failed to create lobby.");
-			return;
-		}
-
-		console.debug(newLobby);
-
-		dispatch({
-			type: "setLobby",
-			data: newLobby
-		});
-		set(LOCAL_STORAGE_LOBBY_ID_KEY, newLobby.lobbyId);
-	}
+	const { sendJsonMessage, lastJsonMessage, readyState } =
+		useWebSocket<FrontendMessage>(
+			WEB_SOCKET_BASE_URL + APIRoutes.PLAY
+		);
 
 	useEffect(() => {
-		if (!state.lobbyId || state.data) return;
+		if (!lastJsonMessage) return;
+		dispatch(lastJsonMessage);
+		// if (lastJsonMessage !== null) {
 
-		(async function () {
-			const lobby: MagnateLobbyData = await get(
-				APIRoutes.GET_LOBBY + state.lobbyId
-			);
+		// }
+	}, [lastJsonMessage]);
 
-			if (!lobby) {
-				console.error(
-					"Unable to fetch current lobby, as it is likely expired. Removing it from local storage."
-				);
-				set(LOCAL_STORAGE_LOBBY_ID_KEY, undefined);
-				return;
-			}
-
-			dispatch({ type: "setLobby", data: lobby });
-		})();
-	}, []);
-
-	// Returns
-	if (!state.lobbyId) {
+	if (readyState === ReadyState.CONNECTING) {
+		return <div>Connecting to server...</div>;
+	} else if (readyState === ReadyState.OPEN) {
+	} else if (readyState === ReadyState.CLOSING) {
+		return <div>Disconnecting from server...</div>;
+	} else if (readyState === ReadyState.CLOSED) {
 		return (
-			<Form onSubmit={getNewLobby}>
+			<div>
+				Your connection to the server has closed.
+				Please try refreshing the page.
+			</div>
+		);
+	}
+
+	if (!state) {
+		return (
+			<Form
+				onSubmit={(data) => {
+					sendJsonMessage({
+						type: "CREATE_LOBBY",
+						data: data as LobbySubmissionData
+					} as BackendMessage);
+				}}
+			>
 				<FormInput
 					name="name"
 					labelText="Lobby Name"
@@ -127,11 +92,7 @@ function PageGame() {
 		);
 	}
 
-	if (!state.data) {
-		return <p>Loading lobby...</p>;
-	}
-
-	return <MagnateGame data={state.data}></MagnateGame>;
+	return <MagnateGame data={state}></MagnateGame>;
 }
 
 export default PageGame;

@@ -1,3 +1,4 @@
+import { LobbyPlayer } from "../backend/src/database/entity/LobbyPlayer";
 import { GameState } from "./GameState";
 import { RESTAURANT_NAME } from "./RestaurantNames";
 
@@ -14,6 +15,6 @@ type LobbyPlayerData = {
 export type MagnateLobbyData = {
 	lobbyId: number;
 	lobbyName: string;
-	lobbyPlayers: LobbyPlayerData[];
-	gameState: GameState;
+	lobbyPlayers: LobbyPlayer[];
+	gameState: GameState | null;
 };

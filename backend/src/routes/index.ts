@@ -1,13 +1,10 @@
-import { Express, Request, Response } from "express";
+import { Request, Response } from "express";
 import { RouteHandler } from "../types";
 
 import * as fs from "fs";
 import { Logger } from "../utils";
 
-const InitialiseRoutes: RouteHandler = (
-	express: any,
-	app: Express
-) => {
+const InitialiseRoutes: RouteHandler = (express, app) => {
 	// import the routes and then run them
 
 	// Get every route file

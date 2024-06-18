@@ -6,6 +6,7 @@ import {
 	PrimaryGeneratedColumn
 } from "typeorm";
 
+import { MagnateLobbyData } from "../../utils";
 import { LobbyPlayer } from "./LobbyPlayer";
 
 @Entity()
@@ -25,4 +26,13 @@ export class Lobby extends BaseEntity {
 
 	@OneToMany(() => LobbyPlayer, (lp) => lp.lobby)
 	lobbyPlayers!: LobbyPlayer[];
+
+	public toLobbyData(): MagnateLobbyData {
+		return {
+			lobbyName: this.name,
+			gameState: null,
+			lobbyId: this.lobbyId,
+			lobbyPlayers: this.lobbyPlayers || []
+		};
+	}
 }

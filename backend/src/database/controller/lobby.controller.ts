@@ -1,4 +1,5 @@
 import { LobbySubmissionData } from "../../utils";
+import { Lobby } from "../entity/Lobby";
 import LobbyRepository from "../repository/lobby.repository";
 
 const LobbyController = {
@@ -8,11 +9,14 @@ const LobbyController = {
 		});
 	},
 
-	NewLobby: async (newLobbyData: LobbySubmissionData) => {
+	NewLobby: async (
+		newLobbyData: LobbySubmissionData
+	): Promise<Lobby | null> => {
 		const newLobby = await LobbyRepository.create({
 			name: newLobbyData.name,
 			password: newLobbyData.password
 		});
+
 		return newLobby;
 	}
 };

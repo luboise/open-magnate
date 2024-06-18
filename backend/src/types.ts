@@ -1,7 +1,8 @@
-import express, { Express } from "express";
+import express from "express";
+import expressWs from "express-ws";
 
 type ExpressModule = typeof express;
 export type RouteHandler = (
 	express: ExpressModule,
-	app: Express
+	app: expressWs.Application
 ) => void;
