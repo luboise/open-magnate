@@ -1,6 +1,6 @@
-import { MagnateGameData } from "../PageGame";
+import { MagnateLobbyData } from "../../utils";
 
-function MagnateGame(props: { data: MagnateGameData }) {
+function MagnateGame(props: { data: MagnateLobbyData }) {
 	return (
 		<div>
 			<h1>MagnateGame</h1>

@@ -1,18 +1,18 @@
-import { useReducer } from "react";
+import { useEffect, useReducer } from "react";
+import Form from "../components/Form";
+import FormInput from "../components/FormInput";
 import useAPI from "../hooks/useAPI";
-import { useGameState } from "../hooks/useGameState";
 import { useLocalStorage } from "../hooks/useLocalStorage";
-import useTriggeredCallback from "../hooks/useTriggeredCallback";
 import {
 	APIRoutes,
-	GameState,
-	RESTAURANT_NAME
+	LobbySubmissionData,
+	MagnateLobbyData
 } from "../utils";
 import MagnateGame from "./MagnateGame/MagnateGame";
 
 interface GamePageAction {
 	type: GamePageActionName;
-	data: any;
+	data?: any;
 }
 
 type GamePageActionName =
@@ -21,23 +21,11 @@ type GamePageActionName =
 	| "startGame"
 	| "endGame";
 
-type LobbyPlayerData = {
-	name: string;
-	restaurant: RESTAURANT_NAME;
-};
-
-export type MagnateGameData = {
-	lobbyId: number;
-	lobbyName: string;
-	lobbyPlayers: LobbyPlayerData[];
-	gameState: GameState;
-};
-
 type GamePageState =
 	| { lobbyId: null; data: null }
 	| {
 			lobbyId: number;
-			data: MagnateGameData | null;
+			data: MagnateLobbyData | null;
 	  };
 
 const LOCAL_STORAGE_LOBBY_ID_KEY = "lobbyId";
@@ -45,8 +33,8 @@ const LOCAL_STORAGE_LOBBY_ID_KEY = "lobbyId";
 function PageGame() {
 	const { post } = useAPI();
 
-	const { newGame } = useGameState();
-	const [triggerNewGame] = useTriggeredCallback(newGame);
+	// const { newGame } = useGameState();
+	// const [triggerNewGame] = useTriggeredCallback(newGame);
 
 	const { get, set } = useLocalStorage();
 
@@ -80,33 +68,66 @@ function PageGame() {
 		} as GamePageState
 	);
 
-	async function getNewLobby(): Promise<void> {
-		const newLobby: MagnateGameData | null = await post(
-			APIRoutes.NEW_LOBBY,
-			{}
-		);
+	async function getNewLobby(
+		submissionData: LobbySubmissionData
+	): Promise<void> {
+		if (state.lobbyId) {
+			console.debug(
+				"You are already in a lobby. Unable to create a new lobby."
+			);
+		}
+
+		const newLobby: MagnateLobbyData | null =
+			await post(APIRoutes.NEW_LOBBY, submissionData);
 
 		if (!newLobby) {
 			console.debug("Failed to create lobby.");
 			return;
 		}
 
-		set(LOCAL_STORAGE_LOBBY_ID_KEY, newLobby.lobbyId);
+		console.debug(newLobby);
+
 		dispatch({
 			type: "setLobby",
 			data: newLobby
 		});
+		set(LOCAL_STORAGE_LOBBY_ID_KEY, newLobby.lobbyId);
 	}
 
-	if (state.lobbyId === null) {
+	useEffect(() => {
+		if (!state.lobbyId || state.data) return;
+
+		(async function () {
+			const lobby: MagnateLobbyData = await get(
+				APIRoutes.GET_LOBBY + state.lobbyId
+			);
+
+			if (!lobby) {
+				console.error(
+					"Unable to fetch current lobby, as it is likely expired. Removing it from local storage."
+				);
+				set(LOCAL_STORAGE_LOBBY_ID_KEY, undefined);
+				return;
+			}
+
+			dispatch({ type: "setLobby", data: lobby });
+		})();
+	}, []);
+
+	// Returns
+	if (!state.lobbyId) {
 		return (
-			<button onClick={getNewLobby}>
-				Create lobby
-			</button>
+			<Form onSubmit={getNewLobby}>
+				<FormInput
+					name="name"
+					labelText="Lobby Name"
+				/>
+				<FormInput name="password" />
+			</Form>
 		);
 	}
 
-	if (state.data === null) {
+	if (!state.data) {
 		return <p>Loading lobby...</p>;
 	}
 

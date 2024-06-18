@@ -3,14 +3,14 @@ import {
 	Column,
 	Entity,
 	OneToMany,
-	PrimaryColumn
+	PrimaryGeneratedColumn
 } from "typeorm";
 
 import { LobbyPlayer } from "./LobbyPlayer";
 
 @Entity()
 export class Lobby extends BaseEntity {
-	@PrimaryColumn()
+	@PrimaryGeneratedColumn()
 	lobbyId!: number;
 
 	@Column()
