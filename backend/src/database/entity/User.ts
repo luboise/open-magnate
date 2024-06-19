@@ -5,14 +5,14 @@ import {
 	OneToOne,
 	PrimaryColumn
 } from "typeorm";
-import { AuthKey } from "./AuthKey";
+import { SessionKey } from "./SessionKey";
 
 @Entity()
 export class User extends BaseEntity {
 	@PrimaryColumn()
 	name!: string;
 
-	@OneToOne(() => AuthKey)
+	@OneToOne(() => SessionKey)
 	@JoinColumn()
-	authKey!: AuthKey;
+	authKey!: SessionKey;
 }

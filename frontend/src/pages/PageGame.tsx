@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import Form from "../components/Form";
 import FormInput from "../components/FormInput";
 import { WEB_SOCKET_BASE_URL } from "../hooks/useAPI";
+import useLocalVal from "../hooks/useLocalVal";
 import {
 	APIRoutes,
 	BackendMessage,
@@ -15,9 +16,10 @@ import {
 } from "../utils";
 import MagnateGame from "./MagnateGame/MagnateGame";
 
-// const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
+const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
 
 type PageState =
+	| "UNVERIFIED"
 	| "IDLE"
 	| "CREATING_LOBBY"
 	| "HOSTING_LOBBY"
@@ -32,11 +34,36 @@ type GamePageState = {
 type GamePageStateMessage = {
 	type: PageState;
 };
+
 function PageGame() {
 	// const { newGame } = useGameState();
 	// const [triggerNewGame] = useTriggeredCallback(newGame);
 
-	// const { get, set } = useLocalStorage();
+	const [sessionKey, setSessionKey] = useLocalVal<string>(
+		LOCAL_STORAGE_SESSION_KEY_NAME
+	);
+
+	const { sendJsonMessage, lastJsonMessage, readyState } =
+		useWebSocket<FrontendMessage>(
+			WEB_SOCKET_BASE_URL + APIRoutes.PLAY,
+			{
+				onOpen: () => {
+					if (sessionKey) {
+						sendJsonMessage({
+							type: "CHECK_SESSION_KEY",
+							data: sessionKey
+						});
+					}
+				}
+				// onClose: () => {
+				// 	dispatch({
+				// 		type: "UNVERIFIED"
+				// 	} as GamePageStateMessage);
+				// }
+			},
+			// Want autoreconnect on
+			true
+		);
 
 	const reducer = (
 		state: GamePageState,
@@ -72,6 +99,19 @@ function PageGame() {
 					pageState: "CREATING_LOBBY"
 				};
 			}
+			case "NEW_SESSION_KEY": {
+				try {
+					if (!message.data)
+						throw new Error(
+							"Invalid session key received."
+						);
+
+					setSessionKey(message.data);
+				} catch (error) {
+				} finally {
+					return state;
+				}
+			}
 			default:
 				return state;
 		}
@@ -84,11 +124,6 @@ function PageGame() {
 			lobbyData: null
 		} as GamePageState
 	);
-
-	const { sendJsonMessage, lastJsonMessage, readyState } =
-		useWebSocket<FrontendMessage>(
-			WEB_SOCKET_BASE_URL + APIRoutes.PLAY
-		);
 
 	useEffect(() => {
 		if (!lastJsonMessage) return;

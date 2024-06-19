@@ -1,5 +1,5 @@
 export function useLocalStorage(): {
-	get: (toRead: string) => any;
+	get: (toRead: string) => object | string;
 	set: (
 		toWrite: string,
 		data: Object | null | undefined
@@ -12,6 +12,7 @@ export function useLocalStorage(): {
 			if (!fetchedData) return null;
 
 			const parsedData = JSON.parse(fetchedData);
+
 			return parsedData;
 		} catch (error) {
 			localStorage.removeItem(toRead);

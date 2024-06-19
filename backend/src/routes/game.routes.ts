@@ -2,6 +2,7 @@ import { RouteHandler } from "../types";
 
 import { Request, Response } from "express";
 import LobbyController from "../database/controller/lobby.controller";
+import SessionKeyController from "../database/controller/sessionkey.controller";
 import {
 	BackendMessage,
 	FrontendMessage,
@@ -77,6 +78,43 @@ const routeHandler: RouteHandler = (express, app) => {
 						JSON.stringify({
 							type: "NEW_LOBBY",
 							data: newLobby.toLobbyData()
+						} as FrontendMessage)
+					);
+				}
+
+				case "CHECK_SESSION_KEY": {
+					const userBrowserId =
+						req.headers.origin;
+
+					console.log(userBrowserId);
+				}
+				case "NEW_SESSION_KEY": {
+					const userBrowserId =
+						req.headers.origin;
+
+					if (!userBrowserId) {
+						ws.send(
+							"Unsupported connection type. Please try another browser."
+						);
+						return;
+					}
+
+					const sessionKey =
+						await SessionKeyController.New(
+							userBrowserId
+						);
+
+					if (!sessionKey) {
+						ws.send(
+							"Error creating session key."
+						);
+						return;
+					}
+
+					ws.send(
+						JSON.stringify({
+							type: "NEW_SESSION_KEY",
+							data: sessionKey.sessionKey
 						} as FrontendMessage)
 					);
 				}

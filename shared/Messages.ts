@@ -17,9 +17,21 @@ export type FrontendMessage =
 	| {
 			type: "LOBBY_UPDATED";
 			data: Partial<MagnateLobbyData>;
+	  }
+	| {
+			type: "NEW_SESSION_KEY";
+			data: string;
 	  };
 
-export type BackendMessage = {
-	type: "CREATE_LOBBY";
-	data: LobbySubmissionData;
-};
+export type BackendMessage =
+	| {
+			type: "CREATE_LOBBY";
+			data: LobbySubmissionData;
+	  }
+	| {
+			type: "CHECK_SESSION_KEY";
+			data: string;
+	  }
+	| {
+			type: "NEW_SESSION_KEY";
+	  };
