@@ -4,6 +4,7 @@ export function useLocalStorage(): {
 		toWrite: string,
 		data: Object | null | undefined
 	) => void;
+	deleteFromLS: (toDelete: string) => void;
 } {
 	const readFunction = (toRead: string): any => {
 		try {
@@ -37,5 +38,21 @@ export function useLocalStorage(): {
 		);
 	};
 
-	return { get: readFunction, set: writeFunction };
+	const deleteFunction = (toDelete: string) => {
+		// Check if toDelete exists in localStorage
+		if (!localStorage.getItem(toDelete)) {
+			return;
+		}
+
+		localStorage.removeItem(toDelete);
+		console.debug(
+			`Removed ${toDelete} from localStorage.`
+		);
+	};
+
+	return {
+		get: readFunction,
+		set: writeFunction,
+		deleteFromLS: deleteFunction
+	};
 }

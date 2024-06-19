@@ -21,6 +21,12 @@ export type FrontendMessage =
 	| {
 			type: "NEW_SESSION_KEY";
 			data: string;
+	  }
+	| {
+			type: "CLEAR_LOCAL_DATA";
+	  }
+	| {
+			type: "SUCCESSFUL_SESSION_KEY_VERIFICATION";
 	  };
 
 export type BackendMessage =

@@ -3,12 +3,18 @@ import { useLocalStorage } from "./useLocalStorage";
 
 function useLocalVal<T extends Object>(
 	localStorageKey: string
-): [data: T | null, setter: (newVal: T) => void] {
-	const { get, set } = useLocalStorage();
+): [data: T | null, setter: (newVal: T | null) => void] {
+	const { get, set, deleteFromLS } = useLocalStorage();
 
 	const [val, setVal] = useState<T | null>(getter());
 
-	function setter(newVal: T) {
+	function setter(newVal: T | null) {
+		if (newVal === null) {
+			deleteFromLS(localStorageKey);
+			setVal(null);
+			return;
+		}
+
 		set(localStorageKey, newVal);
 		setVal({ ...newVal });
 	}

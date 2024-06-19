@@ -35,6 +35,23 @@ const routeHandler: RouteHandler = (express, app) => {
 	// 	});
 	// });
 
+	async function UserIsValid(
+		req: Request
+	): Promise<boolean> {
+		const user = GetUserIdentifier(req);
+		if (!user) return false;
+
+		return Boolean(
+			await SessionKeyController.FindByBrowserId(user)
+		);
+	}
+
+	function GetUserIdentifier(
+		req: Request
+	): string | null {
+		return req.headers["sec-websocket-key"] || null;
+	}
+
 	app.ws("/game", (ws, req) => {
 		ws.on("connection", (ws: WebSocket) => {
 			ws.send(
@@ -43,13 +60,73 @@ const routeHandler: RouteHandler = (express, app) => {
 		});
 
 		ws.on("message", async (msg: string) => {
+			const userBrowserId = GetUserIdentifier(req);
+
 			const message = JSON.parse(
 				msg
 			) as BackendMessage;
 
 			console.log(
-				`New message from ${req.headers.origin}, ${JSON.stringify(message)}`
+				`\"${message.type}\" message received from ${GetUserIdentifier(req)}`
 			);
+
+			if (message.type === "CHECK_SESSION_KEY") {
+				if (!userBrowserId) return;
+
+				const successfulRenew =
+					await SessionKeyController.Renew(
+						message.data,
+						userBrowserId
+					);
+
+				console.log(
+					`Renewal: ${successfulRenew ? "Success" : "Failure"}`
+				);
+				ws.send(
+					JSON.stringify(
+						(successfulRenew
+							? {
+									type: "VERIFIED_SESSION_KEY",
+									data: message.data
+								}
+							: {
+									type: "CLEAR_LOCAL_DATA"
+								}) as FrontendMessage
+					)
+				);
+			} else if (message.type === "NEW_SESSION_KEY") {
+				if (!userBrowserId) {
+					ws.send(
+						"Unsupported connection type. Please try another browser."
+					);
+					return;
+				}
+
+				const sessionKey =
+					await SessionKeyController.New(
+						userBrowserId
+					);
+
+				if (!sessionKey) {
+					ws.send("Error creating session key.");
+					return;
+				}
+
+				console.log(
+					`Sending new session key back to ${userBrowserId}`
+				);
+
+				ws.send(
+					JSON.stringify({
+						type: "NEW_SESSION_KEY",
+						data: sessionKey.sessionKey
+					} as FrontendMessage)
+				);
+
+				return;
+			}
+
+			if (!UserIsValid(req)) return;
 
 			switch (message.type) {
 				case "CREATE_LOBBY": {
@@ -78,43 +155,6 @@ const routeHandler: RouteHandler = (express, app) => {
 						JSON.stringify({
 							type: "NEW_LOBBY",
 							data: newLobby.toLobbyData()
-						} as FrontendMessage)
-					);
-				}
-
-				case "CHECK_SESSION_KEY": {
-					const userBrowserId =
-						req.headers.origin;
-
-					console.log(userBrowserId);
-				}
-				case "NEW_SESSION_KEY": {
-					const userBrowserId =
-						req.headers.origin;
-
-					if (!userBrowserId) {
-						ws.send(
-							"Unsupported connection type. Please try another browser."
-						);
-						return;
-					}
-
-					const sessionKey =
-						await SessionKeyController.New(
-							userBrowserId
-						);
-
-					if (!sessionKey) {
-						ws.send(
-							"Error creating session key."
-						);
-						return;
-					}
-
-					ws.send(
-						JSON.stringify({
-							type: "NEW_SESSION_KEY",
-							data: sessionKey.sessionKey
 						} as FrontendMessage)
 					);
 				}

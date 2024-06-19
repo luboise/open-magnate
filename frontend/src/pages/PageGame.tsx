@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import useWebSocket, {
 	ReadyState
 } from "react-use-websocket";
@@ -20,7 +20,7 @@ const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
 
 type PageState =
 	| "UNVERIFIED"
-	| "IDLE"
+	| "VERIFIED"
 	| "CREATING_LOBBY"
 	| "HOSTING_LOBBY"
 	| "JOINING_LOBBY"
@@ -43,17 +43,43 @@ function PageGame() {
 		LOCAL_STORAGE_SESSION_KEY_NAME
 	);
 
-	const { sendJsonMessage, lastJsonMessage, readyState } =
+	const { sendJsonMessage, readyState } =
 		useWebSocket<FrontendMessage>(
 			WEB_SOCKET_BASE_URL + APIRoutes.PLAY,
 			{
 				onOpen: () => {
-					if (sessionKey) {
+					if (
+						sessionKey &&
+						sessionKey.length > 0
+					) {
+						console.debug(
+							`Checking existing session key: ${sessionKey}`
+						);
 						sendJsonMessage({
 							type: "CHECK_SESSION_KEY",
 							data: sessionKey
 						});
+					} else {
+						console.debug(
+							"No existing session key found. Requesting new session key."
+						);
+						sendJsonMessage({
+							type: "NEW_SESSION_KEY"
+						});
 					}
+				},
+				onMessage: (
+					message: MessageEvent<FrontendMessage>
+				) => {
+					if (!message) return;
+					else if (typeof message === "string") {
+						console.error(message);
+						return;
+					}
+
+					dispatch(
+						message.data as FrontendMessage
+					);
 				}
 				// onClose: () => {
 				// 	dispatch({
@@ -106,13 +132,26 @@ function PageGame() {
 							"Invalid session key received."
 						);
 
+					console.debug(
+						"Received new session key: " +
+							message.data
+					);
 					setSessionKey(message.data);
 				} catch (error) {
-				} finally {
-					return state;
+					console.error(error);
 				}
+
+				return state;
+			}
+			case "CLEAR_LOCAL_DATA": {
+				setSessionKey(null);
+				return state;
 			}
 			default:
+				console.debug(
+					"No message handler could handler the following message. Please report this.",
+					message
+				);
 				return state;
 		}
 	};
@@ -120,23 +159,10 @@ function PageGame() {
 	const [state, dispatch] = useReducer<typeof reducer>(
 		reducer,
 		{
-			pageState: "IDLE",
+			pageState: "UNVERIFIED",
 			lobbyData: null
 		} as GamePageState
 	);
-
-	useEffect(() => {
-		if (!lastJsonMessage) return;
-		else if (typeof lastJsonMessage === "string") {
-			console.error(lastJsonMessage);
-			return;
-		}
-
-		dispatch(lastJsonMessage);
-		// if (lastJsonMessage !== null) {
-
-		// }
-	}, [lastJsonMessage]);
 
 	// Check for bad ready states
 	switch (readyState) {
@@ -158,7 +184,12 @@ function PageGame() {
 			return <div>Unknown error.</div>;
 	}
 
-	if (state.pageState === "IDLE") {
+	if (state.pageState === "UNVERIFIED") {
+		console.debug(
+			"Page is in an unverified state. Unable to access game."
+		);
+		return <div>Verifying. Please wait.</div>;
+	} else if (state.pageState === "VERIFIED") {
 		return (
 			<>
 				<Button
