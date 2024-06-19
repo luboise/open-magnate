@@ -6,6 +6,7 @@ import {
 	PrimaryGeneratedColumn
 } from "typeorm";
 
+import { MinLength } from "class-validator";
 import { MagnateLobbyData } from "../../utils";
 import { LobbyPlayer } from "./LobbyPlayer";
 
@@ -15,6 +16,7 @@ export class Lobby extends BaseEntity {
 	lobbyId!: number;
 
 	@Column()
+	@MinLength(1)
 	name!: string;
 
 	@Column()

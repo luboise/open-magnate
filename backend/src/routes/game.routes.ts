@@ -52,6 +52,15 @@ const routeHandler: RouteHandler = (express, app) => {
 
 			switch (message.type) {
 				case "CREATE_LOBBY": {
+					if (!message.data.name) {
+						ws.send(
+							JSON.stringify(
+								"Invalid lobby name."
+							)
+						);
+						return;
+					}
+
 					const newLobby =
 						await LobbyController.NewLobby(
 							message.data as LobbySubmissionData

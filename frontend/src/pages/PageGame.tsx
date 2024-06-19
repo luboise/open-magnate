@@ -2,6 +2,7 @@ import { useEffect, useReducer } from "react";
 import useWebSocket, {
 	ReadyState
 } from "react-use-websocket";
+import Button from "../components/Button";
 import Form from "../components/Form";
 import FormInput from "../components/FormInput";
 import { WEB_SOCKET_BASE_URL } from "../hooks/useAPI";
@@ -16,34 +17,72 @@ import MagnateGame from "./MagnateGame/MagnateGame";
 
 // const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
 
+type PageState =
+	| "IDLE"
+	| "CREATING_LOBBY"
+	| "HOSTING_LOBBY"
+	| "JOINING_LOBBY"
+	| "IN_GAME";
+
+type GamePageState = {
+	pageState: PageState;
+	lobbyData: MagnateLobbyData | null;
+};
+
+type GamePageStateMessage = {
+	type: PageState;
+};
 function PageGame() {
 	// const { newGame } = useGameState();
 	// const [triggerNewGame] = useTriggeredCallback(newGame);
 
 	// const { get, set } = useLocalStorage();
 
-	const [state, dispatch] = useReducer(
-		(
-			state: MagnateLobbyData | null,
-			message: FrontendMessage
-		): MagnateLobbyData | null => {
-			switch (message.type) {
-				case "NEW_LOBBY": {
-					return message.data as MagnateLobbyData;
-				}
-				case "LOBBY_UPDATED": {
-					if (!state) {
-						throw new Error(
-							"Attempted to update lobby with null state."
-						);
-					}
-					return { ...state, ...message.data };
-				}
-				default:
-					return state;
+	const reducer = (
+		state: GamePageState,
+		message: FrontendMessage | GamePageStateMessage
+	): GamePageState => {
+		switch (message.type) {
+			case "NEW_LOBBY": {
+				return {
+					...state,
+					pageState: "HOSTING_LOBBY",
+					lobbyData: message.data
+				} as GamePageState;
 			}
-		},
-		null
+			case "LOBBY_UPDATED": {
+				if (!state) {
+					throw new Error(
+						"Attempted to update lobby with null state."
+					);
+				}
+				return {
+					...state
+				} as GamePageState;
+			}
+			case "CREATING_LOBBY": {
+				if (state.lobbyData) {
+					throw new Error(
+						"Attempted to create lobby while already in lobby."
+					);
+				}
+
+				return {
+					...state,
+					pageState: "CREATING_LOBBY"
+				};
+			}
+			default:
+				return state;
+		}
+	};
+
+	const [state, dispatch] = useReducer<typeof reducer>(
+		reducer,
+		{
+			pageState: "IDLE",
+			lobbyData: null
+		} as GamePageState
 	);
 
 	const { sendJsonMessage, lastJsonMessage, readyState } =
@@ -53,27 +92,55 @@ function PageGame() {
 
 	useEffect(() => {
 		if (!lastJsonMessage) return;
+		else if (typeof lastJsonMessage === "string") {
+			console.error(lastJsonMessage);
+			return;
+		}
+
 		dispatch(lastJsonMessage);
 		// if (lastJsonMessage !== null) {
 
 		// }
 	}, [lastJsonMessage]);
 
-	if (readyState === ReadyState.CONNECTING) {
-		return <div>Connecting to server...</div>;
-	} else if (readyState === ReadyState.OPEN) {
-	} else if (readyState === ReadyState.CLOSING) {
-		return <div>Disconnecting from server...</div>;
-	} else if (readyState === ReadyState.CLOSED) {
-		return (
-			<div>
-				Your connection to the server has closed.
-				Please try refreshing the page.
-			</div>
-		);
+	// Check for bad ready states
+	switch (readyState) {
+		case ReadyState.OPEN:
+			break;
+		case ReadyState.CLOSED: {
+			return (
+				<div>
+					Your connection to the server has
+					closed. Please try refreshing the page.
+				</div>
+			);
+		}
+		case ReadyState.CLOSING:
+			return <div>Disconnecting from server...</div>;
+		case ReadyState.CONNECTING:
+			return <div>Connecting to server...</div>;
+		default:
+			return <div>Unknown error.</div>;
 	}
 
-	if (!state) {
+	if (state.pageState === "IDLE") {
+		return (
+			<>
+				<Button
+					text="Create Lobby"
+					onClick={() =>
+						dispatch({ type: "CREATING_LOBBY" })
+					}
+				></Button>
+				<Button
+					text="Join Lobby"
+					onClick={() =>
+						dispatch({ type: "JOINING_LOBBY" })
+					}
+				></Button>
+			</>
+		);
+	} else if (state.pageState === "CREATING_LOBBY") {
 		return (
 			<Form
 				onSubmit={(data) => {
@@ -90,9 +157,13 @@ function PageGame() {
 				<FormInput name="password" />
 			</Form>
 		);
-	}
-
-	return <MagnateGame data={state}></MagnateGame>;
+	} else if (state.lobbyData !== null) {
+		return (
+			<MagnateGame
+				data={state.lobbyData}
+			></MagnateGame>
+		);
+	} else return <div>Unknown error.</div>;
 }
 
 export default PageGame;

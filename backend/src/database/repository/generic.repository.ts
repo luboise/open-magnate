@@ -1,3 +1,4 @@
+import { validate } from "class-validator";
 import {
 	DeepPartial,
 	EntityManager,
@@ -70,10 +71,15 @@ class DBRepository<T extends ObjectLiteral> {
 		object: DeepPartial<T>
 	): Promise<T | null> {
 		try {
-			const parsedUser =
+			const parsedObject =
 				this._repository.create(object);
+
+			const errors = await validate(parsedObject);
+			if (errors.length)
+				throw new Error("Validation failed.");
+
 			const newUser =
-				await this._repository.save(parsedUser);
+				await this._repository.save(parsedObject);
 			return newUser;
 		} catch (error) {
 			Logger.Error(error);

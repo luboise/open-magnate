@@ -12,6 +12,10 @@ const LobbyController = {
 	NewLobby: async (
 		newLobbyData: LobbySubmissionData
 	): Promise<Lobby | null> => {
+		if (!newLobbyData) {
+			return null;
+		}
+
 		const newLobby = await LobbyRepository.create({
 			name: newLobbyData.name,
 			password: newLobbyData.password
