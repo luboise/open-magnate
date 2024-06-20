@@ -135,6 +135,10 @@ function PageGame() {
 							message.data
 					);
 					setSessionKey(message.data);
+					sendJsonMessage({
+						type: "CHECK_SESSION_KEY",
+						data: message.data
+					});
 				} catch (error) {
 					console.error(error);
 				}
