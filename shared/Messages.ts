@@ -9,35 +9,55 @@ import {
 // 	| "JOIN_LOBBY"
 // 	| "START_GAME";
 
+interface BaseMessage {
+	type: string;
+	data: unknown;
+}
+
 export type FrontendMessage =
-	| {
-			type: "NEW_LOBBY";
-			data: MagnateLobbyData;
-	  }
-	| {
-			type: "LOBBY_UPDATED";
-			data: Partial<MagnateLobbyData>;
-	  }
-	| {
-			type: "NEW_SESSION_KEY";
-			data: string;
-	  }
-	| {
-			type: "CLEAR_LOCAL_DATA";
-	  }
-	| {
-			type: "SUCCESSFUL_SESSION_KEY_VERIFICATION";
-	  };
+	| NewLobbyMessage
+	| LobbyUpdatedMessage
+	| NewSessionKeyMessage
+	| ClearLocalDataMessage
+	| SuccessfulSessionKeyVerificationMessage;
+
+export interface NewLobbyMessage extends BaseMessage {
+	type: "NEW_LOBBY";
+	data: MagnateLobbyData;
+}
+export interface LobbyUpdatedMessage extends BaseMessage {
+	type: "LOBBY_UPDATED";
+	data: Partial<MagnateLobbyData>;
+}
+export interface NewSessionKeyMessage extends BaseMessage {
+	type: "NEW_SESSION_KEY";
+	data: string;
+}
+export interface ClearLocalDataMessage extends BaseMessage {
+	type: "CLEAR_LOCAL_DATA";
+}
+export interface SuccessfulSessionKeyVerificationMessage
+	extends BaseMessage {
+	type: "SUCCESSFUL_SESSION_KEY_VERIFICATION";
+}
 
 export type BackendMessage =
-	| {
-			type: "CREATE_LOBBY";
-			data: LobbySubmissionData;
-	  }
-	| {
-			type: "CHECK_SESSION_KEY";
-			data: string;
-	  }
-	| {
-			type: "NEW_SESSION_KEY";
-	  };
+	| CheckSessionKeyMessage
+	| NewSessionKeyMessage
+	| CreateLobbyMessage;
+
+export interface CheckSessionKeyMessage
+	extends BaseMessage {
+	type: "CHECK_SESSION_KEY";
+	data: string;
+}
+
+export interface NewSessionKeyMessage extends BaseMessage {
+	type: "NEW_SESSION_KEY";
+	data: string;
+}
+
+export interface CreateLobbyMessage extends BaseMessage {
+	type: "CREATE_LOBBY";
+	data: LobbySubmissionData;
+}
