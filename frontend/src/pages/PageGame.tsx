@@ -68,18 +68,16 @@ function PageGame() {
 						});
 					}
 				},
-				onMessage: (
-					message: MessageEvent<FrontendMessage>
-				) => {
-					if (!message) return;
-					else if (typeof message === "string") {
-						console.error(message);
+				onMessage: (message: MessageEvent<any>) => {
+					const data = JSON.parse(message.data);
+
+					if (!data) return;
+					else if (typeof data === "string") {
+						console.error(data);
 						return;
 					}
 
-					dispatch(
-						message.data as FrontendMessage
-					);
+					dispatch(data as FrontendMessage);
 				}
 				// onClose: () => {
 				// 	dispatch({
@@ -147,6 +145,12 @@ function PageGame() {
 				setSessionKey(null);
 				return state;
 			}
+			case "SUCCESSFUL_SESSION_KEY_VERIFICATION": {
+				return {
+					...state,
+					pageState: "VERIFIED"
+				};
+			}
 			default:
 				console.debug(
 					"No message handler could handler the following message. Please report this.",
@@ -190,6 +194,9 @@ function PageGame() {
 		);
 		return <div>Verifying. Please wait.</div>;
 	} else if (state.pageState === "VERIFIED") {
+		console.debug(
+			"Page is in a verified state. Accessing game."
+		);
 		return (
 			<>
 				<Button

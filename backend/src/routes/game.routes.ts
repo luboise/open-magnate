@@ -85,10 +85,10 @@ const routeHandler: RouteHandler = (express, app) => {
 				ws.send(
 					JSON.stringify(
 						(successfulRenew
-							? {
-									type: "VERIFIED_SESSION_KEY",
+							? ({
+									type: "SUCCESSFUL_SESSION_KEY_VERIFICATION",
 									data: message.data
-								}
+								} as FrontendMessage)
 							: {
 									type: "CLEAR_LOCAL_DATA"
 								}) as FrontendMessage
