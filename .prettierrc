@@ -7,5 +7,7 @@
 	"tabWidth": 4,
 	"useTabs": true,
 
+	"endOfLine": "crlf",
+
 	"plugins": ["prettier-plugin-organize-imports"]
 }
