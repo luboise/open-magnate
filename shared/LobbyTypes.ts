@@ -5,6 +5,7 @@ import { RESTAURANT_NAME } from "./RestaurantNames";
 export interface LobbySubmissionData {
 	name: string;
 	password?: string;
+	playerCount: number;
 }
 
 type LobbyPlayerData = {
@@ -18,3 +19,4 @@ export type MagnateLobbyData = {
 	lobbyPlayers: LobbyPlayer[];
 	gameState: GameState | null;
 };
+

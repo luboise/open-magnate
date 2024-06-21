@@ -6,7 +6,7 @@ import {
 	PrimaryGeneratedColumn
 } from "typeorm";
 
-import { MinLength } from "class-validator";
+import { Max, Min, MinLength } from "class-validator";
 import { MagnateLobbyData } from "../../utils";
 import { LobbyPlayer } from "./LobbyPlayer";
 
@@ -22,10 +22,14 @@ export class Lobby extends BaseEntity {
 	@Column()
 	password!: string;
 
+	@Column({ nullable: false })
+	@Min(2)
+	@Max(6)
+	playerCount!: number;
+
 	// @ManyToMany(() => Restaurant)
 	// @JoinTable()
 	// restaurants!: Restaurant[];
-
 	@OneToMany(() => LobbyPlayer, (lp) => lp.lobby)
 	lobbyPlayers!: LobbyPlayer[];
 
@@ -38,3 +42,4 @@ export class Lobby extends BaseEntity {
 		};
 	}
 }
+

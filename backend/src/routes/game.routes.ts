@@ -90,11 +90,13 @@ const routeHandler: RouteHandler = (express, app) => {
 				handleCheckSessionKeyMessage(params);
 			else if (
 				params.message.type === "NEW_SESSION_KEY"
-			) {
+			)
 				handleNewSessionKey(params);
-			}
 
-			if (!UserIsValid(params.req)) return;
+			if (!UserIsValid(params.req)) {
+				ws.send("Unverified request.");
+				return;
+			}
 
 			switch (params.message.type) {
 				case "CREATE_LOBBY": {
@@ -175,10 +177,13 @@ const handleCreateLobby: BackendMessageHandler<
 	CreateLobbyMessage
 > = async (params) => {
 	if (!params.message.data.name) {
-		params.ws.send(
-			JSON.stringify("Invalid lobby name.")
-		);
+		params.ws.send("Invalid lobby name.");
 		return;
+	} else if (
+		!params.message.data.playerCount ||
+		params.message.data.playerCount < 2
+	) {
+		params.ws.send("Invalid player count.");
 	}
 
 	const newLobby = await LobbyController.NewLobby(
@@ -203,3 +208,4 @@ const handleCreateLobby: BackendMessageHandler<
 };
 
 module.exports = routeHandler;
+

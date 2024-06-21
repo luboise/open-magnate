@@ -1,4 +1,4 @@
-import FormInput from "../components/FormInput";
+import FormInput from "../components/Form/FormInput";
 import "./AuthForm.css";
 
 function AuthForm() {
@@ -17,3 +17,4 @@ function AuthForm() {
 }
 
 export default AuthForm;
+

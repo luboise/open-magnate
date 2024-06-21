@@ -21,9 +21,11 @@ function Form<T>(
 			<input
 				type="submit"
 				value={props.submitText || "Submit"}
+				readOnly={true}
 			/>
 		</form>
 	);
 }
 
 export default Form;
+

@@ -3,8 +3,9 @@ import useWebSocket, {
 	ReadyState
 } from "react-use-websocket";
 import Button from "../components/Button";
-import Form from "../components/Form";
-import FormInput from "../components/FormInput";
+import Form from "../components/Form/Form";
+import FormInput from "../components/Form/FormInput";
+import SelectionButtonList from "../components/Form/SelectionButtonList";
 import { WEB_SOCKET_BASE_URL } from "../hooks/useAPI";
 import useLocalVal from "../hooks/useLocalVal";
 import {
@@ -69,15 +70,23 @@ function PageGame() {
 					}
 				},
 				onMessage: (message: MessageEvent<any>) => {
-					const data = JSON.parse(message.data);
+					try {
+						const data = JSON.parse(
+							message.data
+						);
 
-					if (!data) return;
-					else if (typeof data === "string") {
-						console.error(data);
-						return;
+						if (typeof data === "string") {
+							console.debug(data);
+							return;
+						}
+
+						dispatch(data as FrontendMessage);
+					} catch (error) {
+						console.error(
+							"Unable to parse message: ",
+							message.data
+						);
 					}
-
-					dispatch(data as FrontendMessage);
 				}
 				// onClose: () => {
 				// 	dispatch({
@@ -221,6 +230,9 @@ function PageGame() {
 		return (
 			<Form
 				onSubmit={(data) => {
+					console.log(
+						data as LobbySubmissionData
+					);
 					sendJsonMessage({
 						type: "CREATE_LOBBY",
 						data: data as LobbySubmissionData
@@ -231,7 +243,16 @@ function PageGame() {
 					name="name"
 					labelText="Lobby Name"
 				/>
-				<FormInput name="password" />
+				<SelectionButtonList
+					name="playerCount"
+					// regex={/2|3|4|5|6/}
+					defaultValue={2}
+					valueList={[2, 3, 4, 5, 6]}
+				/>
+				<FormInput
+					name="password"
+					labelText="Password (optional)"
+				/>
 			</Form>
 		);
 	} else if (state.lobbyData !== null) {
@@ -244,3 +265,4 @@ function PageGame() {
 }
 
 export default PageGame;
+

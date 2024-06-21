@@ -18,7 +18,8 @@ const LobbyController = {
 
 		const newLobby = await LobbyRepository.create({
 			name: newLobbyData.name,
-			password: newLobbyData.password
+			password: newLobbyData.password,
+			playerCount: Number(newLobbyData.playerCount)
 		});
 
 		return newLobby;
@@ -26,3 +27,4 @@ const LobbyController = {
 };
 
 export default LobbyController;
+
