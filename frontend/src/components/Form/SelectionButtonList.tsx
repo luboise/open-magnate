@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "../Button";
-import "./FormInput.css";
+import "./SelectionButtonList.css";
 
 function SelectionButtonList<T>(props: {
 	name: string;
@@ -15,12 +15,22 @@ function SelectionButtonList<T>(props: {
 	return (
 		<>
 			<div className="selection-btn-list">
-				{...props.valueList.map((value) => (
+				{...props.valueList.map((currentValue) => (
 					<Button
-						text={String(value)}
+						text={String(currentValue)}
 						onClick={() => {
-							setValue(value);
+							setValue(currentValue);
 						}}
+						// className={
+						// 	currentValue === value
+						// 		? "button-selected"
+						// 		: ""
+						// }
+						style={
+							currentValue === value
+								? { borderColor: "red" }
+								: {}
+						}
 					/>
 				))}
 			</div>
@@ -34,4 +44,3 @@ function SelectionButtonList<T>(props: {
 }
 
 export default SelectionButtonList;
-

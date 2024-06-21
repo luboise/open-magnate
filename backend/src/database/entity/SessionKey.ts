@@ -31,4 +31,3 @@ export class SessionKey extends BaseEntity {
 	)
 	lobbyPlayer!: LobbyPlayer;
 }
-

@@ -1,12 +1,19 @@
-function Button(props: {
+interface ButtonProps
+	extends React.HTMLAttributes<HTMLButtonElement> {
 	text: string;
 	onClick: () => void | Promise<void>;
-}) {
+}
+
+const Button: React.FC<ButtonProps> = (
+	props: ButtonProps
+) => {
+	const { text, onClick, ...args } = props;
+
 	return (
-		<button onClick={props.onClick}>
-			{props.text}
+		<button onClick={onClick} {...args}>
+			{text}
 		</button>
 	);
-}
+};
 
 export default Button;

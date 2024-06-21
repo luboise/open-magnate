@@ -15,14 +15,14 @@ interface BaseMessage {
 }
 
 export type FrontendMessage =
-	| NewLobbyMessage
+	| SetLobbyMessage
 	| LobbyUpdatedMessage
 	| NewSessionKeyMessage
 	| ClearLocalDataMessage
 	| SuccessfulSessionKeyVerificationMessage;
 
-export interface NewLobbyMessage extends BaseMessage {
-	type: "NEW_LOBBY";
+export interface SetLobbyMessage extends BaseMessage {
+	type: "SET_LOBBY";
 	data: MagnateLobbyData;
 }
 export interface LobbyUpdatedMessage extends BaseMessage {
@@ -61,3 +61,4 @@ export interface CreateLobbyMessage extends BaseMessage {
 	type: "CREATE_LOBBY";
 	data: LobbySubmissionData;
 }
+

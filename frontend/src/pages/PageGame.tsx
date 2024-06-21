@@ -103,7 +103,7 @@ function PageGame() {
 		message: FrontendMessage | GamePageStateMessage
 	): GamePageState => {
 		switch (message.type) {
-			case "NEW_LOBBY": {
+			case "SET_LOBBY": {
 				return {
 					...state,
 					pageState: "HOSTING_LOBBY",
@@ -262,4 +262,3 @@ function PageGame() {
 }
 
 export default PageGame;
-

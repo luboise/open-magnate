@@ -12,7 +12,9 @@ function MagnateGame(props: { data: MagnateLobbyData }) {
 					{props.data.lobbyPlayers.length}
 					{props.data.lobbyPlayers.map(
 						(player) => (
-							<span>{player.sessionKey}</span>
+							<span>
+								{player.sessionKey.name}
+							</span>
 						)
 					)}
 				</p>
@@ -22,4 +24,3 @@ function MagnateGame(props: { data: MagnateLobbyData }) {
 }
 
 export default MagnateGame;
-

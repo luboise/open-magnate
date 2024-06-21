@@ -1,5 +1,6 @@
 import { LobbySubmissionData } from "../../utils";
 import { Lobby } from "../entity/Lobby";
+import { SessionKey } from "../entity/SessionKey";
 import LobbyRepository from "../repository/lobby.repository";
 
 const LobbyController = {
@@ -10,6 +11,7 @@ const LobbyController = {
 	},
 
 	NewLobby: async (
+		user: SessionKey,
 		newLobbyData: LobbySubmissionData
 	): Promise<Lobby | null> => {
 		if (!newLobbyData) {
@@ -19,12 +21,14 @@ const LobbyController = {
 		const newLobby = await LobbyRepository.create({
 			name: newLobbyData.name,
 			password: newLobbyData.password,
-			playerCount: Number(newLobbyData.playerCount)
+			playerCount: Number(newLobbyData.playerCount),
+			lobbyPlayers: []
 		});
+		if (newLobby)
+			LobbyRepository.addPlayer(newLobby, user);
 
 		return newLobby;
 	}
 };
 
 export default LobbyController;
-

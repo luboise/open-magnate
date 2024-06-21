@@ -1,7 +1,7 @@
 import {
 	BaseEntity,
-	Column,
 	Entity,
+	JoinColumn,
 	ManyToOne,
 	OneToOne,
 	PrimaryColumn,
@@ -26,8 +26,8 @@ export class LobbyPlayer extends BaseEntity {
 		() => SessionKey,
 		(sessionKey) => sessionKey.lobbyPlayer
 	)
-	@Column()
-	sessionKey!: string;
+	@JoinColumn({ name: "sessionKey" })
+	sessionKey!: SessionKey;
 
 	@ManyToOne(() => Lobby, (lobby) => lobby.lobbyPlayers)
 	lobby!: Lobby;
@@ -38,4 +38,3 @@ export class LobbyPlayer extends BaseEntity {
 	)
 	restaurant!: Restaurant;
 }
-

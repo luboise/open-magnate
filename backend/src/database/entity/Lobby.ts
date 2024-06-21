@@ -9,6 +9,7 @@ import {
 import { Max, Min, MinLength } from "class-validator";
 import { MagnateLobbyData } from "../../utils";
 import { LobbyPlayer } from "./LobbyPlayer";
+import { SessionKey } from "./SessionKey";
 
 @Entity()
 export class Lobby extends BaseEntity {
@@ -41,5 +42,8 @@ export class Lobby extends BaseEntity {
 			lobbyPlayers: this.lobbyPlayers || []
 		};
 	}
-}
 
+	public getHost(): SessionKey {
+		return this.lobbyPlayers[0].sessionKey;
+	}
+}

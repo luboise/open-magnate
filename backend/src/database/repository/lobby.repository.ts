@@ -15,14 +15,16 @@ class LobbyRepositoryClass extends DBRepository<Lobby> {
 		super(em, Lobby);
 	}
 
+	// TODO: Fix null restaurant
 	public addPlayer(
 		Lobby: Lobby,
 		player: SessionKey,
-		restaurant: Restaurant
+		restaurant?: Restaurant
 	) {
 		const x = LobbyPlayerRepository.create({
 			lobby: Lobby,
-			restaurant: Restaurant
+			sessionKey: player,
+			restaurant: restaurant || undefined
 		});
 		if (!x) {
 			return null;
@@ -35,4 +37,3 @@ const LobbyRepository = new LobbyRepositoryClass(
 );
 
 export default LobbyRepository;
-

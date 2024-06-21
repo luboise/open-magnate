@@ -14,6 +14,8 @@ import {
 
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
+import { SessionKey } from "../database/entity/SessionKey";
+import LobbyRepository from "../database/repository/lobby.repository";
 
 // Helpers
 
@@ -35,6 +37,7 @@ type ParamBundle<MessageType> = {
 	message: MessageType;
 	ws: WebSocket;
 	userBrowserId: string | null;
+	userSession: SessionKey | null;
 };
 
 type BackendMessageHandler<T> = (
@@ -75,11 +78,17 @@ const routeHandler: RouteHandler = (express, app) => {
 		});
 
 		ws.on("message", async (msg: string) => {
+			const userBrowserId = GetUserIdentifier(req);
 			const params: ParamBundle<any> = {
 				message: JSON.parse(msg) as BackendMessage,
 				req: req,
-				userBrowserId: GetUserIdentifier(req),
-				ws: ws
+				userBrowserId: userBrowserId,
+				ws: ws,
+				userSession: userBrowserId
+					? await SessionKeyController.FindByBrowserId(
+							userBrowserId
+						)
+					: null
 			};
 
 			console.log(
@@ -129,10 +138,10 @@ const handleCheckSessionKeyMessage: BackendMessageHandler<
 	params.ws.send(
 		JSON.stringify(
 			(successfulRenew
-				? ({
+				? {
 						type: "SUCCESSFUL_SESSION_KEY_VERIFICATION",
 						data: params.message.data
-					} as FrontendMessage)
+					}
 				: {
 						type: "CLEAR_LOCAL_DATA"
 					}) as FrontendMessage
@@ -150,6 +159,38 @@ const handleNewSessionKey: BackendMessageHandler<
 		return;
 	}
 
+	const existingSessionKey =
+		await SessionKeyController.FindByBrowserId(
+			params.userBrowserId
+		);
+
+	// Handle existing session keys
+	if (existingSessionKey) {
+		handleCheckSessionKeyMessage({
+			...params,
+			message: {
+				type: "CHECK_SESSION_KEY",
+				data: params.message.data
+			}
+		});
+		const keyMessage = {
+			type: "NEW_SESSION_KEY",
+			data: existingSessionKey.lobbyPlayer.sessionKey
+				.sessionKey
+		} as FrontendMessage;
+		params.ws.send(JSON.stringify(keyMessage));
+
+		if (existingSessionKey.lobbyPlayer.lobby) {
+			const lobbyMessage = {
+				type: "SET_LOBBY",
+				data: existingSessionKey.lobbyPlayer.lobby.toLobbyData()
+			} as FrontendMessage;
+			params.ws.send(JSON.stringify(lobbyMessage));
+		}
+		return;
+	}
+
+	// Handle new session keys
 	const sessionKey = await SessionKeyController.New(
 		params.userBrowserId
 	);
@@ -184,9 +225,16 @@ const handleCreateLobby: BackendMessageHandler<
 		params.message.data.playerCount < 2
 	) {
 		params.ws.send("Invalid player count.");
+		return;
+	} else if (!params.userSession) {
+		params.ws.send(
+			"Unable to create session without valid session."
+		);
+		return;
 	}
 
 	const newLobby = await LobbyController.NewLobby(
+		params.userSession,
 		params.message.data as LobbySubmissionData
 	);
 
@@ -195,17 +243,18 @@ const handleCreateLobby: BackendMessageHandler<
 		return;
 	}
 
+	LobbyRepository.addPlayer(newLobby, params.userSession);
+
 	console.log(
 		`Responding with ${JSON.stringify(newLobby)}`
 	);
 
 	params.ws.send(
 		JSON.stringify({
-			type: "NEW_LOBBY",
+			type: "SET_LOBBY",
 			data: newLobby.toLobbyData()
 		} as FrontendMessage)
 	);
 };
 
 module.exports = routeHandler;
-
