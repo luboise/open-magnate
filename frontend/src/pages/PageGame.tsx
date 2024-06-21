@@ -230,9 +230,6 @@ function PageGame() {
 		return (
 			<Form
 				onSubmit={(data) => {
-					console.log(
-						data as LobbySubmissionData
-					);
 					sendJsonMessage({
 						type: "CREATE_LOBBY",
 						data: data as LobbySubmissionData

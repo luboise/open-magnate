@@ -3,12 +3,14 @@ import {
 	Column,
 	Entity,
 	ManyToOne,
+	OneToOne,
 	PrimaryColumn,
 	Unique
 } from "typeorm";
 
 import { Lobby } from "./Lobby";
 import { Restaurant } from "./Restaurant";
+import { SessionKey } from "./SessionKey";
 
 @Entity()
 @Unique(["lobby", "restaurant"])
@@ -20,8 +22,12 @@ export class LobbyPlayer extends BaseEntity {
 	@PrimaryColumn()
 	lobbyPlayerId!: number;
 
+	@OneToOne(
+		() => SessionKey,
+		(sessionKey) => sessionKey.lobbyPlayer
+	)
 	@Column()
-	name!: string;
+	sessionKey!: string;
 
 	@ManyToOne(() => Lobby, (lobby) => lobby.lobbyPlayers)
 	lobby!: Lobby;
@@ -32,3 +38,4 @@ export class LobbyPlayer extends BaseEntity {
 	)
 	restaurant!: Restaurant;
 }
+

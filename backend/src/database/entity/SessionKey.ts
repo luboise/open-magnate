@@ -2,11 +2,13 @@ import {
 	BaseEntity,
 	Column,
 	Entity,
+	OneToOne,
 	PrimaryGeneratedColumn
 } from "typeorm";
 
 import { Length } from "class-validator";
 import crypto from "crypto";
+import { LobbyPlayer } from "./LobbyPlayer";
 
 @Entity()
 export class SessionKey extends BaseEntity {
@@ -22,4 +24,11 @@ export class SessionKey extends BaseEntity {
 	name: string = crypto
 		.randomBytes(10)
 		.toString("latin1");
+
+	@OneToOne(
+		() => LobbyPlayer,
+		(lobbyPlayer) => lobbyPlayer.sessionKey
+	)
+	lobbyPlayer!: LobbyPlayer;
 }
+

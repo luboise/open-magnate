@@ -8,7 +8,7 @@ export interface LobbySubmissionData {
 	playerCount: number;
 }
 
-type LobbyPlayerData = {
+export type LobbyPlayerData = {
 	name: string;
 	restaurant: RESTAURANT_NAME;
 };

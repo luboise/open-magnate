@@ -1,6 +1,7 @@
 import { MagnateLobbyData } from "../../utils";
 
 function MagnateGame(props: { data: MagnateLobbyData }) {
+	console.debug(props.data);
 	return (
 		<div>
 			<div>
@@ -11,7 +12,7 @@ function MagnateGame(props: { data: MagnateLobbyData }) {
 					{props.data.lobbyPlayers.length}
 					{props.data.lobbyPlayers.map(
 						(player) => (
-							<span>{player.name}</span>
+							<span>{player.sessionKey}</span>
 						)
 					)}
 				</p>
@@ -21,3 +22,4 @@ function MagnateGame(props: { data: MagnateLobbyData }) {
 }
 
 export default MagnateGame;
+
