@@ -3,11 +3,16 @@ import {
 	Column,
 	Entity,
 	OneToMany,
+	OneToOne,
 	PrimaryGeneratedColumn
 } from "typeorm";
 
 import { Max, Min, MinLength } from "class-validator";
-import { MagnateLobbyData } from "../../utils";
+import {
+	LobbyPlayerView,
+	MagnateLobbyView
+} from "../../utils";
+import { GameState } from "./GameState";
 import { LobbyPlayer } from "./LobbyPlayer";
 import { SessionKey } from "./SessionKey";
 
@@ -34,12 +39,23 @@ export class Lobby extends BaseEntity {
 	@OneToMany(() => LobbyPlayer, (lp) => lp.lobby)
 	lobbyPlayers!: LobbyPlayer[];
 
-	public toLobbyData(): MagnateLobbyData {
+	@OneToOne(() => GameState, (gs) => gs.lobby)
+	gameState: GameState | null = null;
+
+	public toLobbyData(): MagnateLobbyView {
 		return {
 			lobbyName: this.name,
-			gameState: null,
 			lobbyId: this.lobbyId,
-			lobbyPlayers: this.lobbyPlayers || []
+			lobbyPlayers:
+				this.lobbyPlayers.map((lobbyPlayer) => {
+					return {
+						name: lobbyPlayer.sessionKey.name,
+						restaurant:
+							lobbyPlayer.restaurant.name
+					} as LobbyPlayerView;
+				}) || [],
+			gameState:
+				this.gameState?.toGameStateView() || null
 		};
 	}
 
@@ -47,3 +63,4 @@ export class Lobby extends BaseEntity {
 		return this.lobbyPlayers[0].sessionKey;
 	}
 }
+

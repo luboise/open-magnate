@@ -16,7 +16,12 @@ function useLocalVal<T extends Object>(
 		}
 
 		set(localStorageKey, newVal);
-		setVal({ ...newVal });
+
+		setVal(
+			typeof newVal === "string"
+				? newVal
+				: { ...newVal }
+		);
 	}
 
 	function getter(): T | null {

@@ -22,10 +22,9 @@ const LobbyController = {
 			name: newLobbyData.name,
 			password: newLobbyData.password,
 			playerCount: Number(newLobbyData.playerCount),
-			lobbyPlayers: []
+			lobbyPlayers: [],
+			gameState: null
 		});
-		if (newLobby)
-			LobbyRepository.addPlayer(newLobby, user);
 
 		return newLobby;
 	}

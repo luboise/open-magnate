@@ -4,8 +4,6 @@
 // 	private demandLimit: number;
 // 	private hasGarden: boolean;
 
-import { Food } from "./Food";
-
 // 	constructor(num: number) {
 // 		this.houseNum = num;
 // 		this.demand = [];
@@ -27,20 +25,21 @@ import { Food } from "./Food";
 // 	}
 // }
 
-const defaultHouse: House = {
-	houseNum: -1,
-	demand: [],
-	demandLimit: 3,
-	hasGarden: false
-};
+// const defaultHouse: House = {
+// 	houseNum: -1,
+// 	demand: [],
+// 	demandLimit: 3,
+// 	hasGarden: false
+// };
 
-export type House = {
-	houseNum: number;
-	demand: Array<Food>;
-	demandLimit: number;
-	hasGarden: boolean;
-};
+// export type House = {
+// 	houseNum: number;
+// 	demand: Array<Food>;
+// 	demandLimit: number;
+// 	hasGarden: boolean;
+// };
 
-export function CreateHouse(id: number) {
-	return { ...defaultHouse, id: id };
-}
+// export function CreateHouse(id: number) {
+// 	return { ...defaultHouse, id: id };
+// }
+

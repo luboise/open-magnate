@@ -1,21 +1,20 @@
 import { RouteHandler } from "../types";
 
-import { Request, Response } from "express";
+import { Request } from "express";
 import LobbyController from "../database/controller/lobby.controller";
 import SessionKeyController from "../database/controller/sessionkey.controller";
 import {
 	BackendMessage,
-	CheckSessionKeyMessage,
 	CreateLobbyMessage,
 	FrontendMessage,
-	LobbySubmissionData,
-	NewSessionKeyMessage
+	LobbySubmissionData
 } from "../utils";
 
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
 import { SessionKey } from "../database/entity/SessionKey";
 import LobbyRepository from "../database/repository/lobby.repository";
+import LobbyPlayerRepository from "../database/repository/lobbyplayer.repository";
 
 // Helpers
 
@@ -44,38 +43,13 @@ type BackendMessageHandler<T> = (
 	params: ParamBundle<T>
 ) => void | Promise<void>;
 
+const connectionsToWebsocket: Set<string> = new Set();
+
 const routeHandler: RouteHandler = (express, app) => {
 	const router = express.Router();
 
-	router.get("/", async (req, res) => {
-		res.send("testing");
-	});
-
-	router.get(
-		"/new",
-		async (req: Request, res: Response) => {
-			// const game = NewGame();
-			res.send("New game!");
-			console.log("Created new game.");
-		}
-	);
-
-	// app.ws("/game/:gameid/socket", (ws, req) => {
-	// 	ws.on("connection", (ws: WebSocket) => {
-	// 		ws.send("Hello world!");
-	// 	});
-
-	// 	ws.on("message", (msg: string) => {
-	// 		console.log(msg);
-	// 	});
-	// });
-
-	app.ws("/game", (ws, req) => {
-		ws.on("connection", (ws: WebSocket) => {
-			ws.send(
-				"Websocket initialised. Welcome to Open Magnate."
-			);
-		});
+	app.ws("/game", async (ws, req) => {
+		handleNewConnection(ws, req);
 
 		ws.on("message", async (msg: string) => {
 			const userBrowserId = GetUserIdentifier(req);
@@ -84,23 +58,15 @@ const routeHandler: RouteHandler = (express, app) => {
 				req: req,
 				userBrowserId: userBrowserId,
 				ws: ws,
-				userSession: userBrowserId
-					? await SessionKeyController.FindByBrowserId(
-							userBrowserId
-						)
-					: null
+				userSession:
+					await SessionKeyController.GetBySessionKey(
+						req.query.sessionKey as string
+					)
 			};
 
 			console.log(
 				`\"${params.message.type}\" message received from ${GetUserIdentifier(req)}`
 			);
-
-			if (params.message.type === "CHECK_SESSION_KEY")
-				handleCheckSessionKeyMessage(params);
-			else if (
-				params.message.type === "NEW_SESSION_KEY"
-			)
-				handleNewSessionKey(params);
 
 			if (!UserIsValid(params.req)) {
 				ws.send("Unverified request.");
@@ -109,9 +75,30 @@ const routeHandler: RouteHandler = (express, app) => {
 
 			switch (params.message.type) {
 				case "CREATE_LOBBY": {
+					console.log(
+						params.message,
+						params.userBrowserId,
+						params.userSession
+					);
 					handleCreateLobby(params);
 				}
 			}
+		});
+
+		ws.on("close", (code, reason) => {
+			const sessionKey: string = String(
+				req.query.sessionKey
+			);
+			if (code === 1000) {
+				console.log(
+					`Connection closed peacefully with ${sessionKey}`
+				);
+				connectionsToWebsocket.delete(sessionKey);
+				return;
+			}
+			console.log(
+				`Connection closed with code ${code} and reason \"${reason}\"`
+			);
 		});
 	});
 
@@ -121,98 +108,93 @@ const routeHandler: RouteHandler = (express, app) => {
 
 // Handlers
 
-const handleCheckSessionKeyMessage: BackendMessageHandler<
-	CheckSessionKeyMessage
-> = async (params) => {
-	if (!params.userBrowserId) return;
+async function handleNewConnection(
+	ws: WebSocket,
+	req: Request
+) {
+	const sessionKey: string = String(req.query.sessionKey);
 
-	const successfulRenew =
-		await SessionKeyController.Renew(
-			params.message.data,
-			params.userBrowserId
-		);
-
+	// ws.on("connection", async (ws: WebSocket) => {
 	console.log(
-		`Renewal: ${successfulRenew ? "Success" : "Failure"}`
+		`Connection started with ${sessionKey ? 'session key "' + sessionKey + '"' : "new user"}.`
 	);
-	params.ws.send(
-		JSON.stringify(
-			(successfulRenew
-				? {
-						type: "SUCCESSFUL_SESSION_KEY_VERIFICATION",
-						data: params.message.data
-					}
-				: {
-						type: "CLEAR_LOCAL_DATA"
-					}) as FrontendMessage
-		)
-	);
-};
 
-const handleNewSessionKey: BackendMessageHandler<
-	NewSessionKeyMessage
-> = async (params) => {
-	if (!params.userBrowserId) {
-		params.ws.send(
-			"Unsupported connection type. Please try another browser."
-		);
-		return;
-	}
-
-	const existingSessionKey =
-		await SessionKeyController.FindByBrowserId(
-			params.userBrowserId
-		);
-
-	// Handle existing session keys
-	if (existingSessionKey) {
-		handleCheckSessionKeyMessage({
-			...params,
-			message: {
-				type: "CHECK_SESSION_KEY",
-				data: params.message.data
-			}
-		});
-		const keyMessage = {
-			type: "NEW_SESSION_KEY",
-			data: existingSessionKey.lobbyPlayer.sessionKey
-				.sessionKey
-		} as FrontendMessage;
-		params.ws.send(JSON.stringify(keyMessage));
-
-		if (existingSessionKey.lobbyPlayer.lobby) {
-			const lobbyMessage = {
-				type: "SET_LOBBY",
-				data: existingSessionKey.lobbyPlayer.lobby.toLobbyData()
-			} as FrontendMessage;
-			params.ws.send(JSON.stringify(lobbyMessage));
+	if (sessionKey) {
+		// Check if user is already connected
+		if (
+			connectionsToWebsocket.has(sessionKey as string)
+		) {
+			ws.send("This session key is already in use.");
+			ws.close(
+				1008,
+				"This session key is already in use."
+			);
 		}
-		return;
+		const userSession =
+			await SessionKeyController.GetBySessionKey(
+				sessionKey
+			);
+
+		if (!userSession) {
+			ws.send(
+				JSON.stringify({
+					type: "CLEAR_LOCAL_DATA"
+				} as FrontendMessage)
+			);
+			ws.close(4001, "No session key provided.");
+			return;
+		} else {
+			console.log(`Found session key ${sessionKey}`);
+			const lobbyPlayer =
+				await LobbyPlayerRepository.getFirst({
+					sessionKey: userSession
+				});
+
+			if (lobbyPlayer) {
+				console.log(
+					`Found an existing lobby for player ${userSession}`
+				);
+				const lobbyMessage = {
+					type: "SET_LOBBY",
+					data: lobbyPlayer.lobby.toLobbyData()
+				} as FrontendMessage;
+				ws.send(JSON.stringify(lobbyMessage));
+			} else {
+				console.log(
+					`Unable to find a lobby for session key ${sessionKey}. Sending them to lobby creation.`
+				);
+				ws.send(
+					JSON.stringify({
+						type: "SESSION_KEY_VERIFIED"
+					} as FrontendMessage)
+				);
+			}
+		}
+	} else {
+		const browserId = GetUserIdentifier(req);
+		const sessionKey =
+			await SessionKeyController.New(browserId);
+
+		if (sessionKey) {
+			console.log(
+				`Sending a new session key to ${browserId}`
+			);
+			ws.send(
+				JSON.stringify({
+					type: "NEW_SESSION_KEY",
+					data:
+						sessionKey?.sessionKey ??
+						"HELLOWORLD"
+				} as FrontendMessage)
+			);
+		} else
+			ws.send(
+				"Internal server error. Unable to generate new session key."
+			);
+
+		ws.close();
 	}
-
-	// Handle new session keys
-	const sessionKey = await SessionKeyController.New(
-		params.userBrowserId
-	);
-
-	if (!sessionKey) {
-		params.ws.send("Error creating session key.");
-		return;
-	}
-
-	console.log(
-		`Sending new session key back to ${params.userBrowserId}`
-	);
-
-	params.ws.send(
-		JSON.stringify({
-			type: "NEW_SESSION_KEY",
-			data: sessionKey.sessionKey
-		} as FrontendMessage)
-	);
-
-	return;
-};
+}
 
 const handleCreateLobby: BackendMessageHandler<
 	CreateLobbyMessage
@@ -227,8 +209,9 @@ const handleCreateLobby: BackendMessageHandler<
 		params.ws.send("Invalid player count.");
 		return;
 	} else if (!params.userSession) {
+		console.log(params);
 		params.ws.send(
-			"Unable to create session without valid session."
+			"Unable to create lobby without valid session."
 		);
 		return;
 	}
@@ -243,7 +226,17 @@ const handleCreateLobby: BackendMessageHandler<
 		return;
 	}
 
-	LobbyRepository.addPlayer(newLobby, params.userSession);
+	const newLobbyPlayer = LobbyRepository.addPlayer(
+		newLobby,
+		params.userSession
+	);
+
+	if (!newLobbyPlayer) {
+		params.ws.send(
+			"Unable to create new lobby player, and thus unable to create lobby."
+		);
+		return;
+	}
 
 	console.log(
 		`Responding with ${JSON.stringify(newLobby)}`
@@ -256,5 +249,121 @@ const handleCreateLobby: BackendMessageHandler<
 		} as FrontendMessage)
 	);
 };
+
+// const handleCheckSessionKeyMessage: BackendMessageHandler<
+// 	CheckSessionKeyMessage
+// > = async (params) => {
+// 	if (!params.userBrowserId) return;
+
+// 	const successfulRenew =
+// 		await SessionKeyController.Renew(
+// 			params.message.data,
+// 			params.userBrowserId
+// 		);
+
+// 	console.log(
+// 		`Renewal: ${successfulRenew ? "Success" : "Failure"}`
+// 	);
+// 	params.ws.send(
+// 		JSON.stringify(
+// 			(successfulRenew
+// 				? {
+// 						type: "SESSION_KEY_VERIFIED",
+// 						data: params.message.data
+// 					}
+// 				: {
+// 						type: "CLEAR_LOCAL_DATA"
+// 					}) as FrontendMessage
+// 		)
+// 	);
+// };
+
+// const handleNewSessionKey: BackendMessageHandler<
+// 	NewSessionKeyMessage
+// > = async (params) => {
+// 	if (!params.userBrowserId) {
+// 		params.ws.send(
+// 			"Unsupported connection type. Please try another browser."
+// 		);
+// 		return;
+// 	}
+
+// 	const existingSessionKey =
+// 		await SessionKeyController.FindByBrowserId(
+// 			params.userBrowserId
+// 		);
+
+// 	// Handle existing session keys
+// 	if (existingSessionKey) {
+// 		handleCheckSessionKeyMessage({
+// 			...params,
+// 			message: {
+// 				type: "CHECK_SESSION_KEY",
+// 				data: params.message.data
+// 			}
+// 		});
+// 		const keyMessage = {
+// 			type: "NEW_SESSION_KEY",
+// 			data: existingSessionKey.lobbyPlayer.sessionKey
+// 				.sessionKey
+// 		} as FrontendMessage;
+// 		params.ws.send(JSON.stringify(keyMessage));
+
+// 		if (existingSessionKey.lobbyPlayer.lobby) {
+// 			const lobbyMessage = {
+// 				type: "SET_LOBBY",
+// 				data: existingSessionKey.lobbyPlayer.lobby.toLobbyData()
+// 			} as FrontendMessage;
+// 			params.ws.send(JSON.stringify(lobbyMessage));
+// 		}
+// 		return;
+// 	}
+
+// 	// Handle new session keys
+// 	const sessionKey = await SessionKeyController.New(
+// 		params.userBrowserId
+// 	);
+
+// 	if (!sessionKey) {
+// 		params.ws.send("Error creating session key.");
+// 		return;
+// 	}
+
+// 	console.log(
+// 		`Sending new session key back to ${params.userBrowserId}`
+// 	);
+
+// 	params.ws.send(
+// 		JSON.stringify({
+// 			type: "NEW_SESSION_KEY",
+// 			data: sessionKey.sessionKey
+// 		} as FrontendMessage)
+// 	);
+
+// 	return;
+// };
+
+// router.get("/", async (req, res) => {
+// 	res.send("testing");
+// });
+
+// router.get(
+// 	"/new",
+// 	async (req: Request, res: Response) => {
+// 		// const game = NewGame();
+// 		res.send("New game!");
+// 		console.log("Created new game.");
+// 	}
+// );
+
+// app.ws("/game/:gameid/socket", (ws, req) => {
+// 	ws.on("connection", (ws: WebSocket) => {
+// 		ws.send("Hello world!");
+// 	});
+
+// 	ws.on("message", (msg: string) => {
+// 		console.log(msg);
+// 	});
+// });
 
 module.exports = routeHandler;

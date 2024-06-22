@@ -17,18 +17,28 @@ class LobbyRepositoryClass extends DBRepository<Lobby> {
 
 	// TODO: Fix null restaurant
 	public addPlayer(
-		Lobby: Lobby,
+		lobby: Lobby,
 		player: SessionKey,
 		restaurant?: Restaurant
 	) {
-		const x = LobbyPlayerRepository.create({
-			lobby: Lobby,
-			sessionKey: player,
-			restaurant: restaurant || undefined
-		});
-		if (!x) {
+		const newLobbyPlayer = LobbyPlayerRepository.create(
+			{
+				lobby: lobby,
+				sessionKey: player,
+				restaurant: restaurant || undefined
+			}
+		);
+		if (!newLobbyPlayer) {
+			console.log(
+				`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobby.lobbyId}`
+			);
 			return null;
 		}
+
+		console.log(
+			`Created LobbyPlayer for player ${player.name} in lobby ${lobby.lobbyId}`
+		);
+		return newLobbyPlayer;
 	}
 }
 

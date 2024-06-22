@@ -1,6 +1,6 @@
 import {
 	LobbySubmissionData,
-	MagnateLobbyData
+	MagnateLobbyView
 } from "./LobbyTypes";
 
 // export type FrontendMessageType =
@@ -23,11 +23,11 @@ export type FrontendMessage =
 
 export interface SetLobbyMessage extends BaseMessage {
 	type: "SET_LOBBY";
-	data: MagnateLobbyData;
+	data: MagnateLobbyView;
 }
 export interface LobbyUpdatedMessage extends BaseMessage {
 	type: "LOBBY_UPDATED";
-	data: Partial<MagnateLobbyData>;
+	data: Partial<MagnateLobbyView>;
 }
 export interface NewSessionKeyMessage extends BaseMessage {
 	type: "NEW_SESSION_KEY";
@@ -38,7 +38,7 @@ export interface ClearLocalDataMessage extends BaseMessage {
 }
 export interface SuccessfulSessionKeyVerificationMessage
 	extends BaseMessage {
-	type: "SUCCESSFUL_SESSION_KEY_VERIFICATION";
+	type: "SESSION_KEY_VERIFIED";
 }
 
 export type BackendMessage =

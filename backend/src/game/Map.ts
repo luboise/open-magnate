@@ -68,7 +68,7 @@ export function translateMapTile(
 
 export function parseMapPiece(
 	mapString: string
-): MapPieceData | null {
+): MapTileData[][] | null {
 	function isTopMiddle(
 		row: number,
 		col: number
@@ -124,7 +124,7 @@ export function parseMapPiece(
 			.split(" ")
 			.map((row) => Array.from(row));
 
-		const items: MapPieceData = new2DArray(
+		const items: MapTileData[][] = new2DArray(
 			MAP_PIECE_HEIGHT,
 			MAP_PIECE_WIDTH
 		);
@@ -185,4 +185,30 @@ export function parseMapPiece(
 	}
 
 	return null;
+}
+
+export function parseMap(
+	mapString: string
+): MapPieceData[] {
+	let pieces: MapPieceData[] = [];
+
+	const piecesRows = mapString.split("]");
+	let counter = 1;
+
+	piecesRows.forEach((row, rowIndex) => {
+		row.split(";").forEach((pieceString, colIndex) => {
+			pieces.push({
+				id: counter++,
+				xOffset: colIndex,
+				yOffset: rowIndex,
+				tiles: parseMapPiece(pieceString) ?? []
+			});
+		});
+	});
+
+	return pieces.some(
+		(piece) => piece === null || !piece.tiles.length
+	)
+		? []
+		: pieces;
 }

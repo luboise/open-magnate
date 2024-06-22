@@ -11,7 +11,7 @@ const InitialiseRoutes: RouteHandler = (express, app) => {
 	const ROUTE_FILES = fs.readdirSync(__dirname);
 
 	ROUTE_FILES.forEach((file: string) => {
-		if (file !== "index.ts") {
+		if (file.endsWith(".routes.ts")) {
 			require(`./${file}`)(express, app);
 			Logger.Server(`Loaded routes from ${file}`);
 		}

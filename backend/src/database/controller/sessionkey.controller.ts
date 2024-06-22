@@ -2,21 +2,27 @@ import { SessionKey } from "../entity/SessionKey";
 import SessionKeyRepository from "../repository/sessionkey.repository";
 
 const SessionKeyController = {
+	GetBySessionKey: async (sessionKey: string) => {
+		return await SessionKeyRepository.getFirst({
+			sessionKey: sessionKey
+		});
+	},
 	FindByBrowserId: async (
-		browserId: string
+		browserId: string | null
 	): Promise<SessionKey | null> => {
+		if (browserId === null) return null;
 		return await SessionKeyRepository.getFirst({
 			browserId: browserId
 		});
 	},
 	New: async (
-		browserId: string
+		browserId: string | null
 	): Promise<SessionKey | null> => {
+		if (browserId === null) return null;
+
 		const newKey = await SessionKeyRepository.create({
 			browserId: browserId
 		});
-
-		if (!newKey) return null;
 
 		return newKey;
 	},

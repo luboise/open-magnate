@@ -1,23 +1,26 @@
-import { MagnateLobbyData } from "../../utils";
+import { MagnateLobbyView } from "../../utils";
+import PlayerDisplay from "./PlayerDisplay";
 
-function MagnateGame(props: { data: MagnateLobbyData }) {
+function MagnateGame(props: { data: MagnateLobbyView }) {
 	console.debug(props.data);
 	return (
 		<div>
 			<div>
-				<h2>Lobby</h2>
+				<h1>Lobby</h1>
 				<p>Lobby: {props.data.lobbyName}</p>
-				<p>
-					Players:{" "}
-					{props.data.lobbyPlayers.length}
-					{props.data.lobbyPlayers.map(
-						(player) => (
-							<span>
-								{player.sessionKey.name}
-							</span>
-						)
-					)}
-				</p>
+				<div className="lobby-container">
+					<h2>
+						Players:{" "}
+						{props.data.lobbyPlayers.length}
+						{props.data.lobbyPlayers.map(
+							(player) => (
+								<PlayerDisplay
+									player={player}
+								/>
+							)
+						)}
+					</h2>
+				</div>
 			</div>
 		</div>
 	);

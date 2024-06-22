@@ -6,6 +6,7 @@ import {
 	PrimaryColumn
 } from "typeorm";
 
+import { RESTAURANT_NAME } from "../../utils";
 import { LobbyPlayer } from "./LobbyPlayer";
 
 @Entity()
@@ -14,7 +15,7 @@ export class Restaurant extends BaseEntity {
 	restaurantId!: number;
 
 	@Column()
-	name!: string;
+	name!: RESTAURANT_NAME;
 
 	@OneToMany(
 		() => LobbyPlayer,

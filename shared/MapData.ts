@@ -25,5 +25,8 @@ export type RoadAdjacencyType = {
 
 export type MapPieceData = {
 	id: number;
+	xOffset: number;
+	yOffset: number;
 	tiles: Array<Array<MapTileData>>;
 };
+

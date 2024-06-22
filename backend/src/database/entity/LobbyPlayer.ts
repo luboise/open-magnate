@@ -8,6 +8,7 @@ import {
 	Unique
 } from "typeorm";
 
+import { LobbyPlayerView } from "../../utils";
 import { Lobby } from "./Lobby";
 import { Restaurant } from "./Restaurant";
 import { SessionKey } from "./SessionKey";
@@ -37,4 +38,11 @@ export class LobbyPlayer extends BaseEntity {
 		(restaurant) => restaurant.lobbyPlayers
 	)
 	restaurant!: Restaurant;
+
+	public toLobbyPlayerView(): LobbyPlayerView {
+		return {
+			name: this.sessionKey.name,
+			restaurant: this.restaurant.name
+		};
+	}
 }

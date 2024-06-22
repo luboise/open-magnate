@@ -1,5 +1,6 @@
-import { LobbyPlayer } from "../backend/src/database/entity/LobbyPlayer";
-import { GameState } from "./GameState";
+import { House } from "../backend/src/database/entity/House";
+import { TurnProgress } from "./GameState";
+import { MapPieceData } from "./MapData";
 import { RESTAURANT_NAME } from "./RestaurantNames";
 
 export interface LobbySubmissionData {
@@ -8,15 +9,25 @@ export interface LobbySubmissionData {
 	playerCount: number;
 }
 
-export type LobbyPlayerData = {
+export type LobbyPlayerView = {
 	name: string;
 	restaurant: RESTAURANT_NAME;
 };
 
-export type MagnateLobbyData = {
+export type MagnateLobbyView = {
 	lobbyId: number;
 	lobbyName: string;
-	lobbyPlayers: LobbyPlayer[];
-	gameState: GameState | null;
+	lobbyPlayers: LobbyPlayerView[];
+	gameState: GameStateView | null;
+};
+
+export type GameStateView = {
+	players: LobbyPlayerView[];
+	turnProgress: TurnProgress;
+	currentTurn: number;
+	currentPlayer: number;
+	mapPieces: MapPieceData[];
+	houses: Array<House>;
+	turnOrder: Array<number> | null;
 };
 

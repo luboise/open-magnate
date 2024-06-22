@@ -1,8 +1,7 @@
-import { House } from "./House";
-import { MapPieceData } from "./MapData";
 import { Player } from "./Player";
 
 export enum TurnProgress {
+	SETTING_UP = "setting_up",
 	RESTAURANT_PLACEMENT = "restaurant_placement",
 	RESTRUCTURING = "restructuring",
 	TURN_ORDER_SELECTION = "turn_order_selection",
@@ -12,16 +11,17 @@ export enum TurnProgress {
 	CLEAN_UP = "clean_up"
 }
 
-export type GameState = {
-	turnProgress: TurnProgress;
-	currentTurn: number;
-	currentPlayer: number;
-	players: Array<Player>;
-	mapPieces: Array<MapPieceData>;
-	houses: Array<House>;
-	turnOrder: Array<number> | null;
-};
+// export type GameState = {
+// 	turnProgress: TurnProgress;
+// 	currentTurn: number;
+// 	currentPlayer: number;
+// 	players: Array<Player>;
+// 	mapPieces: Array<MapPieceData>;
+// 	houses: Array<House>;
+// 	turnOrder: Array<number> | null;
+// };
 
 export interface GameCreationParams {
 	players: Player[];
 }
+

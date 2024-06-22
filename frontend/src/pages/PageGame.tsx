@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useRef } from "react";
 import useWebSocket, {
 	ReadyState
 } from "react-use-websocket";
@@ -13,13 +13,14 @@ import {
 	BackendMessage,
 	FrontendMessage,
 	LobbySubmissionData,
-	MagnateLobbyData
+	MagnateLobbyView
 } from "../utils";
 import MagnateGame from "./MagnateGame/MagnateGame";
 
 const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
 
 type PageState =
+	| "AWAITING_VERIFICATION"
 	| "UNVERIFIED"
 	| "VERIFIED"
 	| "CREATING_LOBBY"
@@ -29,7 +30,7 @@ type PageState =
 
 type GamePageState = {
 	pageState: PageState;
-	lobbyData: MagnateLobbyData | null;
+	lobbyData: MagnateLobbyView | null;
 };
 
 type GamePageStateMessage = {
@@ -44,59 +45,61 @@ function PageGame() {
 		LOCAL_STORAGE_SESSION_KEY_NAME
 	);
 
+	const reconnectOnFail = useRef(false);
+	function reconnectLater() {
+		console.debug("Queued a reconnection.");
+		reconnectOnFail.current = true;
+	}
+
+	const websocketUrl = `${WEB_SOCKET_BASE_URL}${APIRoutes.PLAY}?sessionKey=${sessionKey ?? ""}`;
+
 	const { sendJsonMessage, readyState } =
-		useWebSocket<FrontendMessage>(
-			WEB_SOCKET_BASE_URL + APIRoutes.PLAY,
-			{
-				onOpen: () => {
-					if (
-						sessionKey &&
-						sessionKey.length > 0
-					) {
-						console.debug(
-							`Checking existing session key: ${sessionKey}`
-						);
-						sendJsonMessage({
-							type: "CHECK_SESSION_KEY",
-							data: sessionKey
-						});
-					} else {
-						console.debug(
-							"No existing session key found. Requesting new session key."
-						);
-						sendJsonMessage({
-							type: "NEW_SESSION_KEY"
-						});
-					}
-				},
-				onMessage: (message: MessageEvent<any>) => {
-					try {
-						const data = JSON.parse(
-							message.data
-						);
-
-						if (typeof data === "string") {
-							console.debug(data);
-							return;
-						}
-
-						dispatch(data as FrontendMessage);
-					} catch (error) {
-						console.error(
-							"Unable to parse message: ",
-							message.data
-						);
-					}
-				}
-				// onClose: () => {
-				// 	dispatch({
-				// 		type: "UNVERIFIED"
-				// 	} as GamePageStateMessage);
-				// }
+		useWebSocket<FrontendMessage>(websocketUrl, {
+			onOpen: () => {
+				console.debug(
+					`Connection to the server has been opened with${sessionKey ? " session key " + sessionKey : "out a session key."}`
+				);
+				dispatch({
+					type: "UNVERIFIED"
+				});
 			},
-			// Want autoreconnect on
-			true
-		);
+			onMessage: (message: MessageEvent<any>) => {
+				try {
+					const data = JSON.parse(message.data);
+
+					if (typeof data === "string") {
+						console.debug(data);
+						return;
+					}
+
+					dispatch(data as FrontendMessage);
+				} catch (error) {
+					console.error(
+						"Unable to parse message: ",
+						message.data
+					);
+				}
+			},
+			onClose: () => {
+				console.debug(
+					"Connection to the server has been closed."
+				);
+			},
+			shouldReconnect: (_closeEvent) => {
+				if (reconnectOnFail) {
+					console.debug(
+						"Attempting to reconnect..."
+					);
+					reconnectOnFail.current = false;
+					return true;
+				}
+
+				console.debug(
+					"No opportunity to reconnect to the server..."
+				);
+				return false;
+			}
+		});
 
 	const reducer = (
 		state: GamePageState,
@@ -134,7 +137,10 @@ function PageGame() {
 			}
 			case "NEW_SESSION_KEY": {
 				try {
-					if (!message.data)
+					if (
+						!message.data ||
+						typeof message.data !== "string"
+					)
 						throw new Error(
 							"Invalid session key received."
 						);
@@ -144,10 +150,7 @@ function PageGame() {
 							message.data
 					);
 					setSessionKey(message.data);
-					sendJsonMessage({
-						type: "CHECK_SESSION_KEY",
-						data: message.data
-					});
+					reconnectLater();
 				} catch (error) {
 					console.error(error);
 				}
@@ -155,10 +158,12 @@ function PageGame() {
 				return state;
 			}
 			case "CLEAR_LOCAL_DATA": {
+				reconnectLater();
 				setSessionKey(null);
+
 				return state;
 			}
-			case "SUCCESSFUL_SESSION_KEY_VERIFICATION": {
+			case "SESSION_KEY_VERIFIED": {
 				return {
 					...state,
 					pageState: "VERIFIED"
@@ -202,9 +207,6 @@ function PageGame() {
 	}
 
 	if (state.pageState === "UNVERIFIED") {
-		console.debug(
-			"Page is in an unverified state. Unable to access game."
-		);
 		return <div>Verifying. Please wait.</div>;
 	} else if (state.pageState === "VERIFIED") {
 		console.debug(
