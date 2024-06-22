@@ -14,7 +14,6 @@ import {
 import WebSocket from "ws";
 import { SessionKey } from "../database/entity/SessionKey";
 import LobbyRepository from "../database/repository/lobby.repository";
-import LobbyPlayerRepository from "../database/repository/lobbyplayer.repository";
 
 // Helpers
 
@@ -65,7 +64,7 @@ const routeHandler: RouteHandler = (express, app) => {
 			};
 
 			console.log(
-				`\"${params.message.type}\" message received from ${GetUserIdentifier(req)}`
+				`\"${params.message.type}\" message received from ${params.userSession?.sessionKey ?? "anonymous user."}`
 			);
 
 			if (!UserIsValid(params.req)) {
@@ -75,11 +74,6 @@ const routeHandler: RouteHandler = (express, app) => {
 
 			switch (params.message.type) {
 				case "CREATE_LOBBY": {
-					console.log(
-						params.message,
-						params.userBrowserId,
-						params.userSession
-					);
 					handleCreateLobby(params);
 				}
 			}
@@ -145,18 +139,13 @@ async function handleNewConnection(
 			return;
 		} else {
 			console.log(`Found session key ${sessionKey}`);
-			const lobbyPlayer =
-				await LobbyPlayerRepository.getFirst({
-					sessionKey: userSession
-				});
-
-			if (lobbyPlayer) {
+			if (userSession.lobbyPlayer) {
 				console.log(
-					`Found an existing lobby for player ${userSession}`
+					`Found an existing lobby for player ${userSession.sessionKey}`
 				);
 				const lobbyMessage = {
 					type: "SET_LOBBY",
-					data: lobbyPlayer.lobby.toLobbyData()
+					data: await userSession.lobbyPlayer.lobby.toLobbyData()
 				} as FrontendMessage;
 				ws.send(JSON.stringify(lobbyMessage));
 			} else {
@@ -209,7 +198,6 @@ const handleCreateLobby: BackendMessageHandler<
 		params.ws.send("Invalid player count.");
 		return;
 	} else if (!params.userSession) {
-		console.log(params);
 		params.ws.send(
 			"Unable to create lobby without valid session."
 		);
@@ -245,7 +233,7 @@ const handleCreateLobby: BackendMessageHandler<
 	params.ws.send(
 		JSON.stringify({
 			type: "SET_LOBBY",
-			data: newLobby.toLobbyData()
+			data: await newLobby.toLobbyData()
 		} as FrontendMessage)
 	);
 };

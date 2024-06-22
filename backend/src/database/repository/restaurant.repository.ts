@@ -1,10 +1,7 @@
-import { entityManager } from "../../datasource";
-import { LobbyPlayer } from "../entity/LobbyPlayer";
-import DBRepository from "./generic.repository";
+import { dataSource } from "../../datasource";
+import { Restaurant } from "../entity/Restaurant";
 
-const LobbyPlayerRepository = new DBRepository(
-	entityManager,
-	LobbyPlayer
-);
+const RestaurantRepository =
+	dataSource.getRepository(Restaurant);
 
-export default LobbyPlayerRepository;
+export default RestaurantRepository;

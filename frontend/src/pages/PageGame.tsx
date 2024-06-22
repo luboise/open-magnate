@@ -209,9 +209,6 @@ function PageGame() {
 	if (state.pageState === "UNVERIFIED") {
 		return <div>Verifying. Please wait.</div>;
 	} else if (state.pageState === "VERIFIED") {
-		console.debug(
-			"Page is in a verified state. Accessing game."
-		);
 		return (
 			<>
 				<Button

@@ -1,10 +1,7 @@
-import { entityManager } from "../../datasource";
+import { dataSource } from "../../datasource";
 import { GameState } from "../entity/GameState";
-import DBRepository from "./generic.repository";
 
-const GameStateRepository = new DBRepository(
-	entityManager,
-	GameState
-);
+const GameStateRepository =
+	dataSource.getRepository(GameState);
 
 export default GameStateRepository;

@@ -4,7 +4,7 @@ import {
 	JoinColumn,
 	ManyToOne,
 	OneToOne,
-	PrimaryColumn,
+	PrimaryGeneratedColumn,
 	Unique
 } from "typeorm";
 
@@ -20,17 +20,18 @@ export class LobbyPlayer extends BaseEntity {
 	// @JoinColumn({ name: "lobbyId" })
 	// lobby!: Lobby;
 
-	@PrimaryColumn()
-	lobbyPlayerId!: number;
+	@PrimaryGeneratedColumn()
+	id!: number;
 
 	@OneToOne(
 		() => SessionKey,
 		(sessionKey) => sessionKey.lobbyPlayer
 	)
-	@JoinColumn({ name: "sessionKey" })
+	@JoinColumn()
 	sessionKey!: SessionKey;
 
 	@ManyToOne(() => Lobby, (lobby) => lobby.lobbyPlayers)
+	@JoinColumn({ name: "lobbyId" })
 	lobby!: Lobby;
 
 	@ManyToOne(

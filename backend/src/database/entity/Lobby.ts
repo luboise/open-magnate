@@ -2,6 +2,7 @@ import {
 	BaseEntity,
 	Column,
 	Entity,
+	JoinColumn,
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn
@@ -12,6 +13,7 @@ import {
 	LobbyPlayerView,
 	MagnateLobbyView
 } from "../../utils";
+import LobbyRepository from "../repository/lobby.repository";
 import { GameState } from "./GameState";
 import { LobbyPlayer } from "./LobbyPlayer";
 import { SessionKey } from "./SessionKey";
@@ -40,22 +42,65 @@ export class Lobby extends BaseEntity {
 	lobbyPlayers!: LobbyPlayer[];
 
 	@OneToOne(() => GameState, (gs) => gs.lobby)
+	@JoinColumn()
 	gameState: GameState | null = null;
 
-	public toLobbyData(): MagnateLobbyView {
+	public async toLobbyData(): Promise<MagnateLobbyView> {
+		// const lobby = await dataSource
+		// 	.getRepository(Lobby)
+		// 	.createQueryBuilder("lobby")
+		// 	.leftJoinAndSelect(
+		// 		"lobby.gameState",
+		// 		"gameState"
+		// 	)
+		// 	.leftJoinAndSelect(
+		// 		"lobby.lobbyPlayers",
+		// 		"lobbyPlayers"
+		// 	)
+		// 	.leftJoinAndSelect(
+		// 		"lobbyPlayers.sessionKey",
+		// 		"sk"
+		// 	)
+		// 	.where("lobby.lobbyId = :id", {
+		// 		id: this.lobbyId
+		// 	})
+		// 	.getOne();
+
+		const lobby = await LobbyRepository.findOne({
+			relations: [
+				"gameState",
+				"lobbyPlayers",
+				"lobbyPlayers.sessionKey",
+				// "lobbyPlayers.sessionKey.name",
+				"lobbyPlayers.restaurant"
+			],
+			where: {
+				lobbyId: this.lobbyId
+			}
+		});
+
+		if (!lobby) {
+			throw new Error("Could not find lobby");
+		}
+
+		console.log(lobby);
+
 		return {
-			lobbyName: this.name,
-			lobbyId: this.lobbyId,
-			lobbyPlayers:
-				this.lobbyPlayers.map((lobbyPlayer) => {
-					return {
-						name: lobbyPlayer.sessionKey.name,
-						restaurant:
-							lobbyPlayer.restaurant.name
-					} as LobbyPlayerView;
-				}) || [],
+			lobbyName: lobby.name,
+			lobbyId: lobby.lobbyId,
+			lobbyPlayers: lobby.lobbyPlayers
+				? lobby.lobbyPlayers.map((lobbyPlayer) => {
+						return {
+							name: lobbyPlayer.sessionKey
+								.name,
+							restaurant:
+								lobbyPlayer.restaurant
+									?.name ?? null
+						} as LobbyPlayerView;
+					})
+				: [],
 			gameState:
-				this.gameState?.toGameStateView() || null
+				lobby.gameState?.toGameStateView() || null
 		};
 	}
 
