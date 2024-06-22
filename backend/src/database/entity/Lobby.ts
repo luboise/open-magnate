@@ -50,20 +50,25 @@ export class Lobby extends BaseEntity {
 	public async toLobbyData(): Promise<MagnateLobbyView> {
 		const lobby = await dataSource
 			.getRepository(Lobby)
-			.createQueryBuilder("lobby")
-			.leftJoinAndSelect(
-				"lobby.gameState",
-				"gameState"
+			.createQueryBuilder("l")
+			.leftJoinAndMapMany(
+				"l.lobbyPlayers",
+				LobbyPlayer,
+				"lp",
+				"lp.lobbyId = l.lobbyId"
 			)
-			.leftJoinAndSelect(
-				"lobby.lobbyPlayers",
-				"lobbyPlayers"
+			.leftJoinAndMapOne(
+				"lp.userSession",
+				UserSession,
+				"us"
 			)
-			.leftJoinAndSelect(
-				"lobbyPlayers.sessionKey",
-				"sk"
+			.leftJoinAndMapOne(
+				"l.gameState",
+				GameState,
+				"gs",
+				"gs.lobbyId = l.lobbyId"
 			)
-			.where("lobby.lobbyId = :id", {
+			.where("l.lobbyId = :id", {
 				id: this.lobbyId
 			})
 			.getOne();
@@ -83,7 +88,7 @@ export class Lobby extends BaseEntity {
 			lobbyPlayers: lobby.lobbyPlayers
 				? lobby.lobbyPlayers.map((lobbyPlayer) => {
 						return {
-							name: lobbyPlayer.sessionKey
+							name: lobbyPlayer.userSession
 								.name,
 							restaurant:
 								lobbyPlayer.restaurant
@@ -97,7 +102,7 @@ export class Lobby extends BaseEntity {
 	}
 
 	public getHost(): UserSession {
-		return this.lobbyPlayers[0].sessionKey;
+		return this.lobbyPlayers[0].userSession;
 	}
 }
 

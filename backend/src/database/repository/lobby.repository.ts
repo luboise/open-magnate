@@ -20,7 +20,7 @@ const LobbyRepository = dataSource
 				const newLobbyPlayer =
 					LobbyPlayerRepository.create({
 						lobby: lobby,
-						sessionKey: player,
+						userSession: player,
 						restaurant: restaurant || undefined
 					});
 				entityManager.save(newLobbyPlayer);

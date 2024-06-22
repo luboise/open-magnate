@@ -25,10 +25,10 @@ export class LobbyPlayer extends BaseEntity {
 
 	@OneToOne(
 		() => UserSession,
-		(sessionKey) => sessionKey.lobbyPlayer
+		(userSession) => userSession.lobbyPlayer
 	)
 	@JoinColumn({ name: "sessionKey" })
-	sessionKey!: UserSession;
+	userSession!: UserSession;
 
 	@ManyToOne(() => Lobby, (lobby) => lobby.lobbyPlayers)
 	@JoinColumn({ name: "lobbyId" })
@@ -42,7 +42,7 @@ export class LobbyPlayer extends BaseEntity {
 
 	public toLobbyPlayerView(): LobbyPlayerView {
 		return {
-			name: this.sessionKey.name,
+			name: this.userSession.name,
 			restaurant: this.restaurant.name
 		};
 	}

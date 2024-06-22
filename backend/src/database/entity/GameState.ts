@@ -2,7 +2,6 @@ import {
 	BaseEntity,
 	Column,
 	Entity,
-	JoinColumn,
 	OneToMany,
 	OneToOne,
 	PrimaryColumn
@@ -20,7 +19,6 @@ export class GameState extends BaseEntity {
 	lobbyId!: number;
 
 	@OneToOne(() => Lobby, (lobby) => lobby.gameState)
-	@JoinColumn({ name: "lobbyId" })
 	lobby!: Lobby;
 
 	@Column()
