@@ -66,24 +66,11 @@ export class Lobby extends BaseEntity {
 		// 	})
 		// 	.getOne();
 
-		const lobby = await LobbyRepository.findOne({
-			relations: [
-				"gameState",
-				"lobbyPlayers",
-				"lobbyPlayers.sessionKey",
-				// "lobbyPlayers.sessionKey.name",
-				"lobbyPlayers.restaurant"
-			],
-			where: {
-				lobbyId: this.lobbyId
-			}
-		});
+		const lobby = await LobbyRepository.preload(this);
 
 		if (!lobby) {
 			throw new Error("Could not find lobby");
 		}
-
-		console.log(lobby);
 
 		return {
 			lobbyName: lobby.name,
