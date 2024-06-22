@@ -11,7 +11,7 @@ import crypto from "crypto";
 import { LobbyPlayer } from "./LobbyPlayer";
 
 @Entity()
-export class SessionKey extends BaseEntity {
+export class UserSession extends BaseEntity {
 	@PrimaryGeneratedColumn("uuid")
 	sessionKey!: string;
 
@@ -25,9 +25,6 @@ export class SessionKey extends BaseEntity {
 		.randomBytes(10)
 		.toString("latin1");
 
-	@OneToOne(
-		() => LobbyPlayer,
-		(lobbyPlayer) => lobbyPlayer.sessionKey
-	)
+	@OneToOne(() => LobbyPlayer)
 	lobbyPlayer!: LobbyPlayer;
 }

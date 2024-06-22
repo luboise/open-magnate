@@ -1,64 +1,40 @@
 import { LobbySubmissionData } from "../../utils";
 import { Lobby } from "../entity/Lobby";
-import { SessionKey } from "../entity/SessionKey";
+import { LobbyPlayer } from "../entity/LobbyPlayer";
+import { UserSession } from "../entity/UserSession";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
-import SessionKeyController from "./sessionkey.controller";
+import UserSessionController from "./usersession.controller";
 
 const LobbyController = {
 	GetFromPlayer: async (
-		player: string | null | SessionKey
+		player: string | null | UserSession
 	): Promise<Lobby | null> => {
 		if (typeof player === "string")
 			player =
-				await SessionKeyController.GetBySessionKey(
+				await UserSessionController.GetBySessionKey(
 					player
 				);
 		if (player === null) return null;
 
 		const queryBuilder =
-			LobbyPlayerRepository.createQueryBuilder(
-				"lobbyPlayer"
-			)
-				.leftJoinAndSelect(
-					"lobbyPlayer.sessionKey",
-					"sessionKey"
+			LobbyPlayerRepository.createQueryBuilder("l")
+				.leftJoinAndMapMany(
+					"l.lobbyPlayers",
+					LobbyPlayer,
+					"lp",
+					"lp.lobbyId = l.lobbyId"
 				)
 				.leftJoinAndSelect(
-					"lobbyPlayer.lobby",
-					"lobby"
+					UserSession,
+					"us",
+					"us.sessionKey = lp.sessionKey"
 				)
-				.leftJoinAndSelect(
-					"lobbyPlayer.restaurant",
-					"restaurant"
-				)
-				.where(
-					"sessionkey.sessionKey = :sessionKey",
-					{
-						sessionKey: player
-					}
-				);
+				.where("us.sessionKey = :sessionKey", {
+					sessionKey: player.sessionKey
+				});
 
-		console.log(
-			queryBuilder.getQueryAndParameters()[1]
-		);
-
-		const testPlayer = await queryBuilder.getOne();
-		console.log(testPlayer);
-
-		const lobbyPlayer =
-			await LobbyPlayerRepository.findOne({
-				relations: [
-					"lobby",
-					"restaurant",
-					"sessionKey"
-				],
-				where: {
-					sessionKey: player
-				}
-			});
-
-		console.log(lobbyPlayer);
+		const lobbyPlayer = await queryBuilder.getOne();
 
 		return lobbyPlayer?.lobby ?? null;
 	},
@@ -70,7 +46,7 @@ const LobbyController = {
 	},
 
 	NewLobby: async (
-		user: SessionKey,
+		user: UserSession,
 		newLobbyData: LobbySubmissionData
 	): Promise<Lobby | null> => {
 		try {

@@ -9,14 +9,14 @@ import {
 } from "typeorm";
 
 import { Max, Min, MinLength } from "class-validator";
+import { dataSource } from "../../datasource";
 import {
 	LobbyPlayerView,
 	MagnateLobbyView
 } from "../../utils";
-import LobbyRepository from "../repository/lobby.repository";
 import { GameState } from "./GameState";
 import { LobbyPlayer } from "./LobbyPlayer";
-import { SessionKey } from "./SessionKey";
+import { UserSession } from "./UserSession";
 
 @Entity()
 export class Lobby extends BaseEntity {
@@ -38,7 +38,9 @@ export class Lobby extends BaseEntity {
 	// @ManyToMany(() => Restaurant)
 	// @JoinTable()
 	// restaurants!: Restaurant[];
-	@OneToMany(() => LobbyPlayer, (lp) => lp.lobby)
+	@OneToMany(() => LobbyPlayer, (lp) => lp.lobby, {
+		eager: true
+	})
 	lobbyPlayers!: LobbyPlayer[];
 
 	@OneToOne(() => GameState, (gs) => gs.lobby)
@@ -46,27 +48,30 @@ export class Lobby extends BaseEntity {
 	gameState: GameState | null = null;
 
 	public async toLobbyData(): Promise<MagnateLobbyView> {
-		// const lobby = await dataSource
-		// 	.getRepository(Lobby)
-		// 	.createQueryBuilder("lobby")
-		// 	.leftJoinAndSelect(
-		// 		"lobby.gameState",
-		// 		"gameState"
-		// 	)
-		// 	.leftJoinAndSelect(
-		// 		"lobby.lobbyPlayers",
-		// 		"lobbyPlayers"
-		// 	)
-		// 	.leftJoinAndSelect(
-		// 		"lobbyPlayers.sessionKey",
-		// 		"sk"
-		// 	)
-		// 	.where("lobby.lobbyId = :id", {
-		// 		id: this.lobbyId
-		// 	})
-		// 	.getOne();
+		const lobby = await dataSource
+			.getRepository(Lobby)
+			.createQueryBuilder("lobby")
+			.leftJoinAndSelect(
+				"lobby.gameState",
+				"gameState"
+			)
+			.leftJoinAndSelect(
+				"lobby.lobbyPlayers",
+				"lobbyPlayers"
+			)
+			.leftJoinAndSelect(
+				"lobbyPlayers.sessionKey",
+				"sk"
+			)
+			.where("lobby.lobbyId = :id", {
+				id: this.lobbyId
+			})
+			.getOne();
 
-		const lobby = await LobbyRepository.preload(this);
+		// const lobby = await LobbyRepository.preload({
+		// 	lobbyId: this.lobbyId
+		// });
+		console.log(lobby);
 
 		if (!lobby) {
 			throw new Error("Could not find lobby");
@@ -91,7 +96,7 @@ export class Lobby extends BaseEntity {
 		};
 	}
 
-	public getHost(): SessionKey {
+	public getHost(): UserSession {
 		return this.lobbyPlayers[0].sessionKey;
 	}
 }

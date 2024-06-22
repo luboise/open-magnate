@@ -2,7 +2,7 @@ import { RouteHandler } from "../types";
 
 import { Request } from "express";
 import LobbyController from "../database/controller/lobby.controller";
-import SessionKeyController from "../database/controller/sessionkey.controller";
+import UserSessionController from "../database/controller/usersession.controller";
 import {
 	BackendMessage,
 	CreateLobbyMessage,
@@ -12,8 +12,7 @@ import {
 
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
-import { SessionKey } from "../database/entity/SessionKey";
-import LobbyRepository from "../database/repository/lobby.repository";
+import { UserSession } from "../database/entity/UserSession";
 
 // Helpers
 
@@ -26,7 +25,7 @@ async function UserIsValid(req: Request): Promise<boolean> {
 	if (!user) return false;
 
 	return Boolean(
-		await SessionKeyController.FindByBrowserId(user)
+		await UserSessionController.FindByBrowserId(user)
 	);
 }
 
@@ -35,7 +34,7 @@ type ParamBundle<MessageType> = {
 	message: MessageType;
 	ws: WebSocket;
 	userBrowserId: string | null;
-	userSession: SessionKey | null;
+	userSession: UserSession | null;
 };
 
 type BackendMessageHandler<T> = (
@@ -58,7 +57,7 @@ const routeHandler: RouteHandler = (express, app) => {
 				userBrowserId: userBrowserId,
 				ws: ws,
 				userSession:
-					await SessionKeyController.GetBySessionKey(
+					await UserSessionController.GetBySessionKey(
 						req.query.sessionKey as string
 					)
 			};
@@ -125,9 +124,7 @@ async function handleNewConnection(
 			);
 		}
 		const userSession =
-			await SessionKeyController.GetBySessionKey(
-				sessionKey
-			);
+			await UserSessionController.GetDeep(sessionKey);
 
 		if (!userSession) {
 			ws.send(
@@ -162,7 +159,7 @@ async function handleNewConnection(
 	} else {
 		const browserId = GetUserIdentifier(req);
 		const sessionKey =
-			await SessionKeyController.New(browserId);
+			await UserSessionController.New(browserId);
 
 		if (sessionKey) {
 			console.log(
@@ -188,54 +185,46 @@ async function handleNewConnection(
 const handleCreateLobby: BackendMessageHandler<
 	CreateLobbyMessage
 > = async (params) => {
-	if (!params.message.data.name) {
-		params.ws.send("Invalid lobby name.");
-		return;
-	} else if (
-		!params.message.data.playerCount ||
-		params.message.data.playerCount < 2
-	) {
-		params.ws.send("Invalid player count.");
-		return;
-	} else if (!params.userSession) {
-		params.ws.send(
-			"Unable to create lobby without valid session."
+	try {
+		if (!params.message.data.name) {
+			params.ws.send("Invalid lobby name.");
+			return;
+		} else if (
+			!params.message.data.playerCount ||
+			params.message.data.playerCount < 2
+		) {
+			params.ws.send("Invalid player count.");
+			return;
+		} else if (!params.userSession) {
+			params.ws.send(
+				"Unable to create lobby without valid session."
+			);
+			return;
+		}
+
+		const newLobby = await LobbyController.NewLobby(
+			params.userSession,
+			params.message.data as LobbySubmissionData
 		);
-		return;
-	}
 
-	const newLobby = await LobbyController.NewLobby(
-		params.userSession,
-		params.message.data as LobbySubmissionData
-	);
+		if (!newLobby) {
+			params.ws.send("Unable to create new lobby.");
+			return;
+		}
 
-	if (!newLobby) {
-		params.ws.send("Unable to create new lobby.");
-		return;
-	}
-
-	const newLobbyPlayer = LobbyRepository.addPlayer(
-		newLobby,
-		params.userSession
-	);
-
-	if (!newLobbyPlayer) {
-		params.ws.send(
-			"Unable to create new lobby player, and thus unable to create lobby."
+		console.log(
+			`Responding with ${JSON.stringify(newLobby)}`
 		);
-		return;
+
+		params.ws.send(
+			JSON.stringify({
+				type: "SET_LOBBY",
+				data: await newLobby.toLobbyData()
+			} as FrontendMessage)
+		);
+	} catch (error) {
+		console.error(error);
 	}
-
-	console.log(
-		`Responding with ${JSON.stringify(newLobby)}`
-	);
-
-	params.ws.send(
-		JSON.stringify({
-			type: "SET_LOBBY",
-			data: await newLobby.toLobbyData()
-		} as FrontendMessage)
-	);
 };
 
 // const handleCheckSessionKeyMessage: BackendMessageHandler<

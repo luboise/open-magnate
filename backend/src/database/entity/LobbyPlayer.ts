@@ -11,7 +11,7 @@ import {
 import { LobbyPlayerView } from "../../utils";
 import { Lobby } from "./Lobby";
 import { Restaurant } from "./Restaurant";
-import { SessionKey } from "./SessionKey";
+import { UserSession } from "./UserSession";
 
 @Entity()
 @Unique(["lobby", "restaurant"])
@@ -24,11 +24,11 @@ export class LobbyPlayer extends BaseEntity {
 	id!: number;
 
 	@OneToOne(
-		() => SessionKey,
+		() => UserSession,
 		(sessionKey) => sessionKey.lobbyPlayer
 	)
-	@JoinColumn()
-	sessionKey!: SessionKey;
+	@JoinColumn({ name: "sessionKey" })
+	sessionKey!: UserSession;
 
 	@ManyToOne(() => Lobby, (lobby) => lobby.lobbyPlayers)
 	@JoinColumn({ name: "lobbyId" })

@@ -1,7 +1,10 @@
-import { dataSource } from "../../datasource";
+import {
+	dataSource,
+	entityManager
+} from "../../datasource";
 import { Lobby } from "../entity/Lobby";
 import { Restaurant } from "../entity/Restaurant";
-import { SessionKey } from "../entity/SessionKey";
+import { UserSession } from "../entity/UserSession";
 import LobbyPlayerRepository from "./lobbyplayer.repository";
 
 const LobbyRepository = dataSource
@@ -10,7 +13,7 @@ const LobbyRepository = dataSource
 		// TODO: Fix null restaurant
 		addPlayer(
 			lobby: Lobby,
-			player: SessionKey,
+			player: UserSession,
 			restaurant?: Restaurant
 		) {
 			try {
@@ -20,7 +23,7 @@ const LobbyRepository = dataSource
 						sessionKey: player,
 						restaurant: restaurant || undefined
 					});
-				LobbyPlayerRepository.save(newLobbyPlayer);
+				entityManager.save(newLobbyPlayer);
 
 				if (!newLobbyPlayer) {
 					console.log(
