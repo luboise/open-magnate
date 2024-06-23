@@ -16,6 +16,7 @@ import { UserSession } from "../entity/UserSession";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import { GetRelationsFrom } from "../repository/repositoryUtils";
+import UserSessionRepository from "../repository/usersession.repository";
 import UserSessionController from "./usersession.controller";
 
 const LobbyController = {
@@ -152,7 +153,6 @@ const LobbyController = {
 		// const lobby = await LobbyRepository.preload({
 		// 	lobbyId: this.lobbyId
 		// });
-		console.log(lobby);
 
 		if (!lobby) {
 			throw new Error("Could not find lobby");
@@ -224,7 +224,7 @@ const LobbyController = {
 			await entityManager.save(newLobbyPlayer);
 
 			if (!newLobbyPlayer) {
-				console.log(
+				console.error(
 					`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobby.lobbyId}`
 				);
 				return null;
@@ -263,6 +263,21 @@ const LobbyController = {
 			console.log(error);
 		}
 		return false;
+	},
+
+	async getPlayersFrom(
+		lobby: Lobby
+	): Promise<UserSession[]> {
+		// TODO: Fix no lobbyPlayers coming out
+		const users = await UserSessionRepository.find({
+			relations: ["lobbyPlayer", "lobbyPlayer.lobby"],
+			where: {
+				lobbyPlayer: {
+					lobby: { lobbyId: lobby.lobbyId }
+				}
+			}
+		});
+		return users ?? [];
 	}
 };
 

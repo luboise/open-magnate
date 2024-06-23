@@ -117,6 +117,8 @@ function PageGame() {
 		state: GamePageState,
 		message: FrontendMessage | GamePageStateMessage
 	): GamePageState => {
+		console.debug(message);
+
 		switch (message.type) {
 			case "SET_LOBBY": {
 				return {
@@ -132,7 +134,11 @@ function PageGame() {
 					);
 				}
 				return {
-					...state
+					...state,
+					lobbyData: {
+						...state.lobbyData,
+						...message.data
+					}
 				} as GamePageState;
 			}
 			case "CREATING_LOBBY": {

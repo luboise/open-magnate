@@ -17,6 +17,7 @@ import {
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
 import { UserSession } from "../database/entity/UserSession";
+import { connectionsToWebsocket } from "./connections";
 
 // Helpers
 
@@ -44,8 +45,6 @@ type ParamBundle<MessageType extends BaseMessage> = {
 type BackendMessageHandler<T extends BaseMessage> = (
 	params: ParamBundle<T>
 ) => void | Promise<void>;
-
-const connectionsToWebsocket: Set<string> = new Set();
 
 const routeHandler: RouteHandler = (express, app) => {
 	const router = express.Router();
@@ -98,7 +97,7 @@ const routeHandler: RouteHandler = (express, app) => {
 				console.log(
 					`Connection closed peacefully with ${sessionKey}`
 				);
-				connectionsToWebsocket.delete(sessionKey);
+				delete connectionsToWebsocket[sessionKey];
 				return;
 			}
 			console.log(
@@ -126,9 +125,7 @@ async function handleNewConnection(
 
 	if (sessionKey) {
 		// Check if user is already connected
-		if (
-			connectionsToWebsocket.has(sessionKey as string)
-		) {
+		if (sessionKey in connectionsToWebsocket) {
 			ws.send("This session key is already in use.");
 			ws.close(
 				1008,
@@ -334,6 +331,34 @@ const handleLeaveLobby: BackendMessageHandler<
 		);
 		return;
 	}
+
+	const otherPlayers =
+		await LobbyController.getPlayersFrom(lobby);
+
+	const lobbyData = await LobbyController.GetLobbyData(
+		lobby.lobbyId
+	);
+
+	console.log(otherPlayers.length, otherPlayers);
+
+	otherPlayers.forEach(async (userSession) => {
+		const ws =
+			connectionsToWebsocket[userSession.sessionKey];
+
+		if (!ws) {
+			console.log(
+				`Unable to send lobby data to ${userSession.sessionKey}.`
+			);
+			return;
+		}
+
+		connectionsToWebsocket[userSession.sessionKey].send(
+			JSON.stringify({
+				type: "SET_LOBBY",
+				data: lobbyData
+			} as SetLobbyMessage)
+		);
+	});
 
 	params.ws.send(
 		JSON.stringify({

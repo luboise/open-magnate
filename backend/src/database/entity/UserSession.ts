@@ -2,6 +2,7 @@ import {
 	BaseEntity,
 	Column,
 	Entity,
+	JoinColumn,
 	OneToOne,
 	PrimaryGeneratedColumn
 } from "typeorm";
@@ -24,6 +25,7 @@ export class UserSession extends BaseEntity {
 	name: string = (() =>
 		crypto.randomBytes(10).toString("ascii"))();
 
-	@OneToOne(() => LobbyPlayer)
+	@OneToOne(() => LobbyPlayer, { eager: true })
+	@JoinColumn()
 	lobbyPlayer!: LobbyPlayer;
 }
