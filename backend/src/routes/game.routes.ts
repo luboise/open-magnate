@@ -9,7 +9,6 @@ import {
 	CreateLobbyMessage,
 	FrontendMessage,
 	JoinLobbyMessage,
-	JoinLobbySubmissionData,
 	LobbySubmissionData,
 	SetLobbyMessage
 } from "../utils";
@@ -17,6 +16,7 @@ import {
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
 import { UserSession } from "../database/entity/UserSession";
+import LobbyRepository from "../database/repository/lobby.repository";
 
 // Helpers
 
@@ -149,7 +149,10 @@ async function handleNewConnection(
 				);
 				const lobbyMessage = {
 					type: "SET_LOBBY",
-					data: await userSession.lobbyPlayer.lobby.toLobbyData()
+					data: await LobbyController.GetLobbyData(
+						userSession.lobbyPlayer.lobby
+							.lobbyId
+					)
 				} as FrontendMessage;
 				ws.send(JSON.stringify(lobbyMessage));
 			} else {
@@ -226,7 +229,9 @@ const handleCreateLobby: BackendMessageHandler<
 		params.ws.send(
 			JSON.stringify({
 				type: "SET_LOBBY",
-				data: await newLobby.toLobbyData()
+				data: await LobbyController.GetLobbyData(
+					newLobby.lobbyId
+				)
 			} as FrontendMessage)
 		);
 	} catch (error) {
@@ -238,6 +243,12 @@ const handleJoinLobby: BackendMessageHandler<
 	JoinLobbyMessage
 > = async (params) => {
 	try {
+		if (!params.userSession) {
+			throw new Error(
+				"Unable to join lobby without valid session."
+			);
+		}
+
 		const inviteCode = params.message.data.inviteCode;
 		console.log("message: ", params.message);
 		console.log("inviteCode: ", inviteCode);
@@ -246,28 +257,37 @@ const handleJoinLobby: BackendMessageHandler<
 				"Invalid invite code provided."
 			);
 
-		const x = await LobbyController.GetWithRelations({
-			inviteCode: inviteCode
-		});
+		const lobby =
+			await LobbyController.GetWithRelations({
+				inviteCode: inviteCode
+			});
 
-		if (!x)
+		if (!lobby)
 			throw new Error(
 				"No lobby found for that invite code."
 			);
 		else if (
-			x.password &&
-			x.password !== params.message.data.password
+			lobby.password &&
+			lobby.password !== params.message.data.password
 		)
 			throw new Error("Incorrect password provided.");
 
+		const lobbyPlayer = await LobbyRepository.addPlayer(
+			lobby,
+			params.userSession
+		);
+		if (!lobbyPlayer) {
+			throw new Error(
+				"Unable to add player to lobby."
+			);
+		}
+
 		const response = {
 			type: "SET_LOBBY",
-			data: await x.toLobbyData()
+			data: await LobbyController.GetLobbyData(
+				lobby.lobbyId
+			)
 		} as SetLobbyMessage;
-
-		console.log(
-			`Responding with ${JSON.stringify(response)}`
-		);
 
 		params.ws.send(JSON.stringify(response));
 	} catch (error) {

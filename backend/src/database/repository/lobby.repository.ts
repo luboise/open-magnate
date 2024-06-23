@@ -11,7 +11,7 @@ const LobbyRepository = dataSource
 	.getRepository(Lobby)
 	.extend({
 		// TODO: Fix null restaurant
-		addPlayer(
+		async addPlayer(
 			lobby: Lobby,
 			player: UserSession,
 			restaurant?: Restaurant
@@ -23,7 +23,7 @@ const LobbyRepository = dataSource
 						userSession: player,
 						restaurant: restaurant || undefined
 					});
-				entityManager.save(newLobbyPlayer);
+				await entityManager.save(newLobbyPlayer);
 
 				if (!newLobbyPlayer) {
 					console.log(

@@ -1,8 +1,11 @@
 import { FindOptionsWhere } from "typeorm";
+import { dataSource } from "../../datasource";
 import {
-	JoinLobbySubmissionData,
-	LobbySubmissionData
+	LobbyPlayerView,
+	LobbySubmissionData,
+	MagnateLobbyView
 } from "../../utils";
+import { GameState } from "../entity/GameState";
 import { Lobby } from "../entity/Lobby";
 import { LobbyPlayer } from "../entity/LobbyPlayer";
 import { UserSession } from "../entity/UserSession";
@@ -50,7 +53,9 @@ const LobbyController = {
 		});
 	},
 
-	GetWithRelations: async (options: FindOptionsWhere<Lobby>) => {
+	GetWithRelations: async (
+		options: FindOptionsWhere<Lobby>
+	) => {
 		return await LobbyRepository.findOne({
 			relations: GetRelationsFrom(LobbyRepository),
 			where: options
@@ -101,6 +106,100 @@ const LobbyController = {
 			console.error(error);
 			return null;
 		}
+	},
+
+	async GetLobbyData(lobbyId: number) {
+		// console.log(GetRelationsFrom(LobbyRepository));
+
+		// const lobby = await LobbyRepository.findOne({
+		// 	relations: GetRelationsFrom(LobbyRepository),
+		// 	where: {
+		// 		lobbyId: lobbyId
+		// 	}
+		// });
+
+		const lobby = await dataSource
+			.getRepository(Lobby)
+			.createQueryBuilder("l")
+			.leftJoinAndMapMany(
+				"l.lobbyPlayers",
+				LobbyPlayer,
+				"lp",
+				"lp.lobbyId = l.lobbyId"
+			)
+			.leftJoinAndMapMany(
+				"lp.userSession",
+				UserSession,
+				"us"
+			)
+			.leftJoinAndMapOne(
+				"l.gameState",
+				GameState,
+				"gs",
+				"gs.lobbyId = l.lobbyId"
+			)
+			.where("l.lobbyId = :id", {
+				id: lobbyId
+			})
+			.getOne();
+
+		// const lobby = await LobbyRepository.preload({
+		// 	lobbyId: this.lobbyId
+		// });
+		console.log(lobby);
+
+		if (!lobby) {
+			throw new Error("Could not find lobby");
+		}
+
+		return {
+			lobbyName: lobby.name,
+			lobbyId: lobby.lobbyId,
+			lobbyPlayers: await Promise.all(
+				lobby.lobbyPlayers.map(
+					async (lobbyPlayer) => {
+						return await this.GetLobbyPlayerView(
+							lobbyPlayer
+						);
+					}
+				)
+			),
+
+			// ? lobby.lobbyPlayers.map((lobbyPlayer) => {
+			// 		return {
+			// 			name: lobbyPlayer.userSession
+			// 				.name,
+			// 			restaurant:
+			// 				lobbyPlayer.restaurant
+			// 					?.name ?? null
+			// 		} as LobbyPlayerView;
+			// 	})
+			// : [],
+			inviteCode: lobby.inviteCode,
+			gameState:
+				lobby.gameState?.toGameStateView() || null
+		} as MagnateLobbyView;
+	},
+
+	async GetLobbyPlayerView(lobbyPlayer: LobbyPlayer) {
+		const lp = await LobbyPlayerRepository.findOne({
+			relations: GetRelationsFrom(
+				LobbyPlayerRepository
+			),
+			where: {
+				id: lobbyPlayer.id,
+				userSession: lobbyPlayer.userSession
+			}
+		});
+
+		if (!lp)
+			throw new Error("Could not find lobby player");
+
+		const lobbyPlayerView: LobbyPlayerView = {
+			name: lp.userSession.name,
+			restaurant: lp.restaurant?.name ?? null
+		};
+		return lobbyPlayerView;
 	}
 };
 
