@@ -12,6 +12,8 @@ import {
 	APIRoutes,
 	BackendMessage,
 	FrontendMessage,
+	JoinLobbyMessage,
+	JoinLobbySubmissionData,
 	LobbySubmissionData,
 	MagnateLobbyView
 } from "../utils";
@@ -219,10 +221,11 @@ function PageGame() {
 				></Button>
 				<Form
 					submitText="Join Lobby"
-					onSubmit={() => {
-						sendJsonMessage(
-							{} as BackendMessage
-						);
+					onSubmit={(data) => {
+						sendJsonMessage({
+							type: "JOIN_LOBBY",
+							data: data as JoinLobbySubmissionData
+						} as JoinLobbyMessage);
 					}}
 				>
 					<FormInput
@@ -230,6 +233,11 @@ function PageGame() {
 						defaultValue=""
 						regex={/^[a-zA-Z\d]{8}$/}
 						labelText="Invite Code"
+					/>
+					<FormInput
+						name="password"
+						defaultValue=""
+						labelText="Lobby Password (optional)"
 					/>
 				</Form>
 			</>

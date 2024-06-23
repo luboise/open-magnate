@@ -5,8 +5,10 @@ import LobbyController from "../database/controller/lobby.controller";
 import UserSessionController from "../database/controller/usersession.controller";
 import {
 	BackendMessage,
+	BaseMessage,
 	CreateLobbyMessage,
 	FrontendMessage,
+	JoinLobbyMessage,
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
 	SetLobbyMessage
@@ -15,7 +17,6 @@ import {
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
 import { UserSession } from "../database/entity/UserSession";
-import LobbyRepository from "../database/repository/lobby.repository";
 
 // Helpers
 
@@ -32,7 +33,7 @@ async function UserIsValid(req: Request): Promise<boolean> {
 	);
 }
 
-type ParamBundle<MessageType> = {
+type ParamBundle<MessageType extends BaseMessage> = {
 	req: Request;
 	message: MessageType;
 	ws: WebSocket;
@@ -40,7 +41,7 @@ type ParamBundle<MessageType> = {
 	userSession: UserSession | null;
 };
 
-type BackendMessageHandler<T> = (
+type BackendMessageHandler<T extends BaseMessage> = (
 	params: ParamBundle<T>
 ) => void | Promise<void>;
 
@@ -234,20 +235,29 @@ const handleCreateLobby: BackendMessageHandler<
 };
 
 const handleJoinLobby: BackendMessageHandler<
-	JoinLobbySubmissionData
+	JoinLobbyMessage
 > = async (params) => {
 	try {
-		const inviteCode = params.message.inviteCode;
-		if (!inviteCode) throw new Error("Invalid invite code provided.");
+		const inviteCode = params.message.data.inviteCode;
+		console.log("message: ", params.message);
+		console.log("inviteCode: ", inviteCode);
+		if (!inviteCode)
+			throw new Error(
+				"Invalid invite code provided."
+			);
 
-		const x = await LobbyController.GetWithRelations(
-			{
-				inviteCode
+		const x = await LobbyController.GetWithRelations({
+			inviteCode: inviteCode
 		});
 
-		if (!x) 
-			throw new Error("No lobby found for that invite code.");
-		else if (x.password && x.password!== params.message.password)
+		if (!x)
+			throw new Error(
+				"No lobby found for that invite code."
+			);
+		else if (
+			x.password &&
+			x.password !== params.message.data.password
+		)
 			throw new Error("Incorrect password provided.");
 
 		const response = {
@@ -259,10 +269,7 @@ const handleJoinLobby: BackendMessageHandler<
 			`Responding with ${JSON.stringify(response)}`
 		);
 
-		params.ws.send(
-			JSON.stringify(response)
-		);
-
+		params.ws.send(JSON.stringify(response));
 	} catch (error) {
 		console.error(error);
 		params.ws.send(String(error));

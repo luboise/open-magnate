@@ -11,15 +11,16 @@ function useNotification() {
 				return;
 			}
 
-			if (Notification.permission === "granted" || await Notification.requestPermission() === "granted" ) {
-				const notification = new Notification(
-                    heading,
-                    {
-                        body: text
-                    }
-                );
+			if (
+				Notification.permission === "granted" ||
+				(await Notification.requestPermission()) ===
+					"granted"
+			) {
+				new Notification(heading, {
+					body: text
+				});
 
-                return;
+				return;
 			}
 		} catch (error) {
 			console.error(error);

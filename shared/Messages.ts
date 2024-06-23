@@ -10,7 +10,7 @@ import {
 // 	| "JOIN_LOBBY"
 // 	| "START_GAME";
 
-interface BaseMessage {
+export interface BaseMessage {
 	type: string;
 	data: unknown;
 }
