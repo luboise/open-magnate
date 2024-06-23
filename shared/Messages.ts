@@ -20,7 +20,8 @@ export type FrontendMessage =
 	| LobbyUpdatedMessage
 	| NewSessionKeyMessage
 	| ClearLocalDataMessage
-	| SuccessfulSessionKeyVerificationMessage;
+	| SuccessfulSessionKeyVerificationMessage
+	| LeaveLobbyMessage;
 
 export interface SetLobbyMessage extends BaseMessage {
 	type: "SET_LOBBY";
@@ -46,7 +47,8 @@ export type BackendMessage =
 	| CheckSessionKeyMessage
 	| NewSessionKeyMessage
 	| CreateLobbyMessage
-	| JoinLobbyMessage;
+	| JoinLobbyMessage
+	| LeaveLobbyMessage;
 
 export interface CheckSessionKeyMessage
 	extends BaseMessage {
@@ -67,4 +69,8 @@ export interface CreateLobbyMessage extends BaseMessage {
 export interface JoinLobbyMessage extends BaseMessage {
 	type: "JOIN_LOBBY";
 	data: JoinLobbySubmissionData;
+}
+
+export interface LeaveLobbyMessage extends BaseMessage {
+	type: "LEAVE_LOBBY";
 }

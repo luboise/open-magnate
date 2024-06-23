@@ -22,7 +22,7 @@ export class UserSession extends BaseEntity {
 	@Column({ nullable: false })
 	@Length(1, 10)
 	name: string = (() =>
-		crypto.randomBytes(10).toString("latin1"))();
+		crypto.randomBytes(10).toString("ascii"))();
 
 	@OneToOne(() => LobbyPlayer)
 	lobbyPlayer!: LobbyPlayer;

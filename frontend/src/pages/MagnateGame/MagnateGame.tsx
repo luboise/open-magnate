@@ -3,6 +3,7 @@ import "./MagnateGame.css";
 import Button from "../../components/Button";
 import useClipboard from "../../hooks/useClipboard";
 import useNotification from "../../hooks/useNotification";
+import usePageGame from "../../hooks/usePageGame";
 import {
 	APIRoutes,
 	FRONTEND_BASE_URL,
@@ -13,6 +14,8 @@ import PlayerDisplay from "./PlayerDisplay";
 function MagnateGame(props: { data: MagnateLobbyView }) {
 	const { writeClipboard } = useClipboard();
 	const { sendNotification } = useNotification();
+
+	const { leaveLobby } = usePageGame();
 
 	function onCopyInviteLink() {
 		const url =
@@ -57,6 +60,10 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 						/>
 					</h2>
 				</div>
+				<Button
+					text="Leave Lobby"
+					onClick={leaveLobby}
+				/>
 			</div>
 		</div>
 	);

@@ -9,6 +9,7 @@ import {
 	CreateLobbyMessage,
 	FrontendMessage,
 	JoinLobbyMessage,
+	LeaveLobbyMessage,
 	LobbySubmissionData,
 	SetLobbyMessage
 } from "../utils";
@@ -16,7 +17,6 @@ import {
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
 import { UserSession } from "../database/entity/UserSession";
-import LobbyRepository from "../database/repository/lobby.repository";
 
 // Helpers
 
@@ -75,12 +75,17 @@ const routeHandler: RouteHandler = (express, app) => {
 				return;
 			}
 
-			switch (params.message.type) {
+			switch (
+				(params.message as BackendMessage).type
+			) {
 				case "CREATE_LOBBY": {
 					handleCreateLobby(params);
 				}
 				case "JOIN_LOBBY": {
 					handleJoinLobby(params);
+				}
+				case "LEAVE_LOBBY": {
+					handleLeaveLobby(params);
 				}
 			}
 		});
@@ -272,7 +277,7 @@ const handleJoinLobby: BackendMessageHandler<
 		)
 			throw new Error("Incorrect password provided.");
 
-		const lobbyPlayer = await LobbyRepository.addPlayer(
+		const lobbyPlayer = await LobbyController.addPlayer(
 			lobby,
 			params.userSession
 		);
@@ -294,6 +299,44 @@ const handleJoinLobby: BackendMessageHandler<
 		console.error(error);
 		params.ws.send(String(error));
 	}
+};
+
+const handleLeaveLobby: BackendMessageHandler<
+	LeaveLobbyMessage
+> = async (params) => {
+	if (!params.userSession) {
+		console.log(
+			"Attempted to remove unverified user from session."
+		);
+		return;
+	}
+
+	const lobby = await LobbyController.GetLobbyPlayerFromUserSession(
+		params.userSession
+	);
+	if (!lobby) {
+		params.ws.send("You are not currently in a lobby.");
+		return;
+	}
+
+	// Remove the player from the lobby
+	const removed = await LobbyController.removePlayer(
+		lobby,
+		params.userSession
+	);
+
+	if (!removed) {
+		console.log(
+			`Failed to remove player ${params.userSession.sessionKey} from lobby #${lobby.lobbyId}.`
+		);
+		return;
+	}
+
+	params.ws.send(
+		JSON.stringify({
+			type: "LEAVE_LOBBY"
+		} as LeaveLobbyMessage)
+	);
 };
 
 // const handleCheckSessionKeyMessage: BackendMessageHandler<

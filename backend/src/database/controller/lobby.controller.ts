@@ -1,5 +1,8 @@
 import { FindOptionsWhere } from "typeorm";
-import { dataSource } from "../../datasource";
+import {
+	dataSource,
+	entityManager
+} from "../../datasource";
 import {
 	LobbyPlayerView,
 	LobbySubmissionData,
@@ -8,6 +11,7 @@ import {
 import { GameState } from "../entity/GameState";
 import { Lobby } from "../entity/Lobby";
 import { LobbyPlayer } from "../entity/LobbyPlayer";
+import { Restaurant } from "../entity/Restaurant";
 import { UserSession } from "../entity/UserSession";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
@@ -15,7 +19,7 @@ import { GetRelationsFrom } from "../repository/repositoryUtils";
 import UserSessionController from "./usersession.controller";
 
 const LobbyController = {
-	GetFromPlayer: async (
+	GetLobbyPlayerFromUserSession: async (
 		player: string | null | UserSession
 	): Promise<Lobby | null> => {
 		if (typeof player === "string")
@@ -26,18 +30,24 @@ const LobbyController = {
 		if (player === null) return null;
 
 		const queryBuilder =
-			LobbyPlayerRepository.createQueryBuilder("l")
-				.leftJoinAndMapMany(
-					"l.lobbyPlayers",
-					LobbyPlayer,
-					"lp",
-					"lp.lobbyId = l.lobbyId"
-				)
-				.leftJoinAndSelect(
+			LobbyPlayerRepository.createQueryBuilder("lp")
+				.leftJoinAndMapOne(
+					"lp.sessionKey",
 					UserSession,
-					"us",
-					"us.sessionKey = lp.sessionKey"
+					"us"
 				)
+				.leftJoinAndMapOne(
+					"lp.lobby",
+					Lobby,
+					"l"
+				)
+				// .leftJoinAndMapMany(
+				// 	"lp.lobbyPlayers",
+				// 	LobbyPlayer,
+				// 	"lp",
+				// 	"lp.lobbyId = l.lobbyId"
+				// )
+
 				.where("us.sessionKey = :sessionKey", {
 					sessionKey: player.sessionKey
 				});
@@ -96,7 +106,7 @@ const LobbyController = {
 			});
 			await LobbyRepository.save(newLobby);
 
-			const lobbyPlayer = LobbyRepository.addPlayer(
+			const lobbyPlayer = LobbyController.addPlayer(
 				newLobby,
 				user
 			);
@@ -200,6 +210,63 @@ const LobbyController = {
 			restaurant: lp.restaurant?.name ?? null
 		};
 		return lobbyPlayerView;
+	},
+
+	// TODO: Fix null restaurant
+	async addPlayer(
+		lobby: Lobby,
+		player: UserSession,
+		restaurant?: Restaurant
+	) {
+		try {
+			const newLobbyPlayer =
+				LobbyPlayerRepository.create({
+					lobby: lobby,
+					userSession: player,
+					restaurant: restaurant || undefined
+				});
+			await entityManager.save(newLobbyPlayer);
+
+			if (!newLobbyPlayer) {
+				console.log(
+					`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobby.lobbyId}`
+				);
+				return null;
+			}
+
+			console.log(
+				`Created LobbyPlayer for player ${player.name} in lobby ${lobby.lobbyId}`
+			);
+			return newLobbyPlayer;
+		} catch (error) {
+			console.log(error);
+		}
+	},
+
+	async removePlayer(
+		lobby: Lobby,
+		player: UserSession
+	): Promise<boolean> {
+		try {
+			const lp = await LobbyPlayerRepository.findOne({
+				where: {
+					userSession: player,
+					lobby: lobby
+				}
+			});
+
+			if (!lp) {
+				throw new Error(
+					"Unable to remove player from lobby, as they are not in it."
+				);
+			}
+
+			await LobbyPlayerRepository.remove(lp);
+			return true;
+		} catch (error) {
+			console.log(error);
+		}
+		return false;
 	}
 };
 

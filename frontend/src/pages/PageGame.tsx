@@ -18,6 +18,8 @@ import {
 	MagnateLobbyView
 } from "../utils";
 import MagnateGame from "./MagnateGame/MagnateGame";
+import { useRecoilState } from "recoil";
+import { PageGameAtom } from "./PageGameContext";
 
 const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
 
@@ -55,6 +57,8 @@ function PageGame() {
 
 	const websocketUrl = `${WEB_SOCKET_BASE_URL}${APIRoutes.PLAY}?sessionKey=${sessionKey ?? ""}`;
 
+	const [pageGameObject, setPageGameObject] = useRecoilState(PageGameAtom);
+
 	const { sendJsonMessage, readyState } =
 		useWebSocket<FrontendMessage>(websocketUrl, {
 			onOpen: () => {
@@ -64,6 +68,8 @@ function PageGame() {
 				dispatch({
 					type: "UNVERIFIED"
 				});
+
+				setPageGameObject({ ...pageGameObject, sendMessage: sendJsonMessage });
 			},
 			onMessage: (message: MessageEvent<any>) => {
 				try {
@@ -166,6 +172,12 @@ function PageGame() {
 				return state;
 			}
 			case "SESSION_KEY_VERIFIED": {
+				return {
+					...state,
+					pageState: "VERIFIED"
+				};
+			}
+			case "LEAVE_LOBBY": {
 				return {
 					...state,
 					pageState: "VERIFIED"
