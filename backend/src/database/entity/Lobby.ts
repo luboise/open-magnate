@@ -5,7 +5,8 @@ import {
 	JoinColumn,
 	OneToMany,
 	OneToOne,
-	PrimaryGeneratedColumn
+	PrimaryGeneratedColumn,
+	Unique
 } from "typeorm";
 
 import { Max, Min, MinLength } from "class-validator";
@@ -19,6 +20,7 @@ import { LobbyPlayer } from "./LobbyPlayer";
 import { UserSession } from "./UserSession";
 
 @Entity()
+@Unique(["inviteCode"])
 export class Lobby extends BaseEntity {
 	@PrimaryGeneratedColumn()
 	lobbyId!: number;
@@ -31,7 +33,8 @@ export class Lobby extends BaseEntity {
 	password!: string;
 
 	@Column()
-	inviteCode: string = Lobby.generateInviteCode();
+	inviteCode: string = (() =>
+		Lobby.generateInviteCode())();
 
 	@Column({ nullable: false })
 	@Min(2)
