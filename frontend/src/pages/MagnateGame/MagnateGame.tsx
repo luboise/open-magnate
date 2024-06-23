@@ -1,3 +1,5 @@
+import "./MagnateGame.css";
+
 import { MagnateLobbyView } from "../../utils";
 import PlayerDisplay from "./PlayerDisplay";
 
@@ -12,13 +14,15 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 					<h2>
 						Players:{" "}
 						{props.data.lobbyPlayers.length}
-						{props.data.lobbyPlayers.map(
-							(player) => (
-								<PlayerDisplay
-									player={player}
-								/>
-							)
-						)}
+						<div className="player-display-container">
+							{props.data.lobbyPlayers.map(
+								(player) => (
+									<PlayerDisplay
+										player={player}
+									/>
+								)
+							)}
+						</div>
 					</h2>
 				</div>
 			</div>
