@@ -7,12 +7,15 @@ import {
 	BackendMessage,
 	CreateLobbyMessage,
 	FrontendMessage,
-	LobbySubmissionData
+	JoinLobbySubmissionData,
+	LobbySubmissionData,
+	SetLobbyMessage
 } from "../utils";
 
 // Fixes issues from using base WebSocket without extended methods
 import WebSocket from "ws";
 import { UserSession } from "../database/entity/UserSession";
+import LobbyRepository from "../database/repository/lobby.repository";
 
 // Helpers
 
@@ -74,6 +77,9 @@ const routeHandler: RouteHandler = (express, app) => {
 			switch (params.message.type) {
 				case "CREATE_LOBBY": {
 					handleCreateLobby(params);
+				}
+				case "JOIN_LOBBY": {
+					handleJoinLobby(params);
 				}
 			}
 		});
@@ -224,6 +230,42 @@ const handleCreateLobby: BackendMessageHandler<
 		);
 	} catch (error) {
 		console.error(error);
+	}
+};
+
+const handleJoinLobby: BackendMessageHandler<
+	JoinLobbySubmissionData
+> = async (params) => {
+	try {
+		const inviteCode = params.message.inviteCode;
+		if (!inviteCode) throw new Error("Invalid invite code provided.");
+
+		const x = await LobbyController.GetWithRelations(
+			{
+				inviteCode
+		});
+
+		if (!x) 
+			throw new Error("No lobby found for that invite code.");
+		else if (x.password && x.password!== params.message.password)
+			throw new Error("Incorrect password provided.");
+
+		const response = {
+			type: "SET_LOBBY",
+			data: await x.toLobbyData()
+		} as SetLobbyMessage;
+
+		console.log(
+			`Responding with ${JSON.stringify(response)}`
+		);
+
+		params.ws.send(
+			JSON.stringify(response)
+		);
+
+	} catch (error) {
+		console.error(error);
+		params.ws.send(String(error));
 	}
 };
 

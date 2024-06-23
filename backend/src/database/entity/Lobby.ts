@@ -30,6 +30,9 @@ export class Lobby extends BaseEntity {
 	@Column()
 	password!: string;
 
+	@Column()
+	inviteCode: string = Lobby.generateInviteCode();
+
 	@Column({ nullable: false })
 	@Min(2)
 	@Max(6)
@@ -96,6 +99,7 @@ export class Lobby extends BaseEntity {
 						} as LobbyPlayerView;
 					})
 				: [],
+			inviteCode: lobby.inviteCode,
 			gameState:
 				lobby.gameState?.toGameStateView() || null
 		};
@@ -104,5 +108,23 @@ export class Lobby extends BaseEntity {
 	public getHost(): UserSession {
 		return this.lobbyPlayers[0].userSession;
 	}
-}
 
+	public static generateInviteCode(): string {
+		const characters =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		const array = new Uint8Array(8);
+		crypto.getRandomValues(array);
+
+		let inviteCode = "";
+		for (let i = 0; i < array.length; i++) {
+			inviteCode +=
+				characters[array[i] % characters.length];
+		}
+
+		return array.reduce((acc, char) => {
+			return (
+				acc + characters[char % characters.length]
+			);
+		}, "");
+	}
+}

@@ -1,9 +1,14 @@
-import { LobbySubmissionData } from "../../utils";
+import { FindOptionsWhere } from "typeorm";
+import {
+	JoinLobbySubmissionData,
+	LobbySubmissionData
+} from "../../utils";
 import { Lobby } from "../entity/Lobby";
 import { LobbyPlayer } from "../entity/LobbyPlayer";
 import { UserSession } from "../entity/UserSession";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
+import { GetRelationsFrom } from "../repository/repositoryUtils";
 import UserSessionController from "./usersession.controller";
 
 const LobbyController = {
@@ -44,6 +49,28 @@ const LobbyController = {
 			where: { lobbyId: id }
 		});
 	},
+
+	GetWithRelations: async (options: FindOptionsWhere<Lobby>) => {
+		return await LobbyRepository.findOne({
+			relations: GetRelationsFrom(LobbyRepository),
+			where: options
+		});
+	},
+
+	// GetFromJoinMessage: async (
+	// 	data: JoinLobbySubmissionData
+	// ) => {
+	// 	const lobby = await LobbyRepository.findOne({
+	// 		where: {
+	// 			inviteCode: data.inviteCode,
+	// 			password: data.password
+	// 		}
+	// 	});
+
+	// 	return lobby
+	// 		? LobbyController.GetDeep(lobby.lobbyId)
+	// 		: null;
+	// },
 
 	NewLobby: async (
 		user: UserSession,

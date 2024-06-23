@@ -147,7 +147,7 @@ function PageGame() {
 
 					console.debug(
 						"Received new session key: " +
-							message.data
+						message.data
 					);
 					setSessionKey(message.data);
 					reconnectLater();
@@ -217,12 +217,21 @@ function PageGame() {
 						dispatch({ type: "CREATING_LOBBY" })
 					}
 				></Button>
-				<Button
-					text="Join Lobby"
-					onClick={() =>
-						dispatch({ type: "JOINING_LOBBY" })
-					}
-				></Button>
+				<Form
+					submitText="Join Lobby"
+					onSubmit={() => {
+						sendJsonMessage(
+							{} as BackendMessage
+						);
+					}}
+				>
+					<FormInput
+						name="inviteCode"
+						defaultValue=""
+						regex={/^[a-zA-Z\d]{8}$/}
+						labelText="Invite Code"
+					/>
+				</Form>
 			</>
 		);
 	} else if (state.pageState === "CREATING_LOBBY") {

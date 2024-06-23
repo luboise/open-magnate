@@ -1,10 +1,34 @@
 import "./MagnateGame.css";
 
-import { MagnateLobbyView } from "../../utils";
+import Button from "../../components/Button";
+import useClipboard from "../../hooks/useClipboard";
+import useNotification from "../../hooks/useNotification";
+import {
+	APIRoutes,
+	FRONTEND_BASE_URL,
+	MagnateLobbyView
+} from "../../utils";
 import PlayerDisplay from "./PlayerDisplay";
 
 function MagnateGame(props: { data: MagnateLobbyView }) {
-	console.debug(props.data);
+	const { writeClipboard } = useClipboard();
+	const { sendNotification } = useNotification();
+
+	function onCopyInviteLink() {
+		const url =
+			FRONTEND_BASE_URL +
+			APIRoutes.PLAY +
+			"?inviteCode=" +
+			props.data.inviteCode;
+
+		writeClipboard(url);
+		sendNotification(
+			"Copied invite link to clipboard.",
+			"Notification stuff."
+		);
+	}
+
+	// console.debug(props.data);
 	return (
 		<div>
 			<div>
@@ -23,6 +47,14 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 								)
 							)}
 						</div>
+						<span>
+							Invite code:{" "}
+							{props.data.inviteCode}
+						</span>
+						<Button
+							onClick={onCopyInviteLink}
+							text="Copy invite"
+						/>
 					</h2>
 				</div>
 			</div>

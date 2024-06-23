@@ -1,4 +1,5 @@
 import {
+	JoinLobbySubmissionData,
 	LobbySubmissionData,
 	MagnateLobbyView
 } from "./LobbyTypes";
@@ -44,7 +45,8 @@ export interface SuccessfulSessionKeyVerificationMessage
 export type BackendMessage =
 	| CheckSessionKeyMessage
 	| NewSessionKeyMessage
-	| CreateLobbyMessage;
+	| CreateLobbyMessage
+	| JoinLobbyMessage;
 
 export interface CheckSessionKeyMessage
 	extends BaseMessage {
@@ -62,3 +64,7 @@ export interface CreateLobbyMessage extends BaseMessage {
 	data: LobbySubmissionData;
 }
 
+export interface JoinLobbyMessage extends BaseMessage {
+	type: "JOIN_LOBBY";
+	data: JoinLobbySubmissionData;
+}

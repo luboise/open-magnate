@@ -9,6 +9,11 @@ export interface LobbySubmissionData {
 	playerCount: number;
 }
 
+export interface JoinLobbySubmissionData {
+	inviteCode: string;
+	password?: string;
+}
+
 export type LobbyPlayerView = {
 	name: string;
 	restaurant: RESTAURANT_NAME;
@@ -19,6 +24,7 @@ export type MagnateLobbyView = {
 	lobbyName: string;
 	lobbyPlayers: LobbyPlayerView[];
 	gameState: GameStateView | null;
+	inviteCode: string;
 };
 
 export type GameStateView = {
