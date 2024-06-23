@@ -2,6 +2,7 @@ import { useReducer, useRef } from "react";
 import useWebSocket, {
 	ReadyState
 } from "react-use-websocket";
+import { useRecoilState } from "recoil";
 import Button from "../components/Button";
 import Form from "../components/Form/Form";
 import FormInput from "../components/Form/FormInput";
@@ -18,7 +19,6 @@ import {
 	MagnateLobbyView
 } from "../utils";
 import MagnateGame from "./MagnateGame/MagnateGame";
-import { useRecoilState } from "recoil";
 import { PageGameAtom } from "./PageGameContext";
 
 const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
@@ -57,7 +57,8 @@ function PageGame() {
 
 	const websocketUrl = `${WEB_SOCKET_BASE_URL}${APIRoutes.PLAY}?sessionKey=${sessionKey ?? ""}`;
 
-	const [pageGameObject, setPageGameObject] = useRecoilState(PageGameAtom);
+	const [pageGameObject, setPageGameObject] =
+		useRecoilState(PageGameAtom);
 
 	const { sendJsonMessage, readyState } =
 		useWebSocket<FrontendMessage>(websocketUrl, {
@@ -69,7 +70,10 @@ function PageGame() {
 					type: "UNVERIFIED"
 				});
 
-				setPageGameObject({ ...pageGameObject, sendMessage: sendJsonMessage });
+				setPageGameObject({
+					...pageGameObject,
+					sendMessage: sendJsonMessage
+				});
 			},
 			onMessage: (message: MessageEvent<any>) => {
 				try {
@@ -155,7 +159,7 @@ function PageGame() {
 
 					console.debug(
 						"Received new session key: " +
-						message.data
+							message.data
 					);
 					setSessionKey(message.data);
 					reconnectLater();

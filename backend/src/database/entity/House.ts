@@ -30,4 +30,3 @@ export class House extends BaseEntity {
 	@Column()
 	hasGarden: boolean = false;
 }
-

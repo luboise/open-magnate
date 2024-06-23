@@ -21,4 +21,3 @@ const GameStateController = {
 };
 
 export default GameStateController;
-

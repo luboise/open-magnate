@@ -69,5 +69,6 @@ export class Lobby extends BaseEntity {
 				acc + characters[char % characters.length]
 			);
 		}, "");
+		``;
 	}
 }

@@ -36,11 +36,7 @@ const LobbyController = {
 					UserSession,
 					"us"
 				)
-				.leftJoinAndMapOne(
-					"lp.lobby",
-					Lobby,
-					"l"
-				)
+				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
 				// .leftJoinAndMapMany(
 				// 	"lp.lobbyPlayers",
 				// 	LobbyPlayer,
