@@ -304,6 +304,7 @@ const handleJoinLobby: BackendMessageHandler<
 const handleLeaveLobby: BackendMessageHandler<
 	LeaveLobbyMessage
 > = async (params) => {
+	// TODO: Notify the other players that the lobby state has changed
 	if (!params.userSession) {
 		console.log(
 			"Attempted to remove unverified user from session."
