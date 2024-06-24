@@ -5,7 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import expressWs from "express-ws";
 
-import { dataSource } from "./datasource";
+import { setupDatabase } from "./datasource";
 import InitialiseRoutes from "./routes";
 
 // Express app with websockets
@@ -18,11 +18,8 @@ app.use(express.json());
 app.use(cors());
 
 (async () => {
+	await setupDatabase();
 	InitialiseRoutes(express, app);
-
-	await dataSource.initialize();
-	await dataSource.runMigrations();
-	await dataSource.synchronize();
 
 	app.listen(port, () => {
 		console.log(

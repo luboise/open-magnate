@@ -30,7 +30,7 @@ const LobbyController = {
 				);
 		if (player === null) return null;
 
-		const queryBuilder =
+		const query =
 			LobbyPlayerRepository.createQueryBuilder("lp")
 				.leftJoinAndMapOne(
 					"lp.sessionKey",
@@ -49,7 +49,7 @@ const LobbyController = {
 					sessionKey: player.sessionKey
 				});
 
-		const lobbyPlayer = await queryBuilder.getOne();
+		const lobbyPlayer = await query.getOne();
 
 		return lobbyPlayer?.lobby ?? null;
 	},
@@ -131,10 +131,9 @@ const LobbyController = {
 			.leftJoinAndMapMany(
 				"l.lobbyPlayers",
 				LobbyPlayer,
-				"lp",
-				"lp.lobbyId = l.lobbyId"
+				"lp"
 			)
-			.leftJoinAndMapMany(
+			.leftJoinAndMapOne(
 				"lp.userSession",
 				UserSession,
 				"us"
@@ -193,8 +192,8 @@ const LobbyController = {
 				LobbyPlayerRepository
 			),
 			where: {
-				id: lobbyPlayer.id,
-				userSession: lobbyPlayer.userSession
+				lobbyId: lobbyPlayer.lobbyId,
+				sessionKey: lobbyPlayer.sessionKey
 			}
 		});
 
@@ -269,15 +268,31 @@ const LobbyController = {
 		lobby: Lobby
 	): Promise<UserSession[]> {
 		// TODO: Fix no lobbyPlayers coming out
-		const users = await UserSessionRepository.find({
-			relations: ["lobbyPlayer", "lobbyPlayer.lobby"],
-			where: {
-				lobbyPlayer: {
-					lobby: { lobbyId: lobby.lobbyId }
-				}
-			}
-		});
-		return users ?? [];
+		// const users = await LobbyPlayerRepository.find({
+		// 	relations: ["userSession", "lobby"],
+		// 	where: {
+		// 		lobby: lobby
+		// 	}
+		// 	// relationLoadStrategy: "query"
+		// });
+
+		const query =
+			UserSessionRepository.createQueryBuilder("us")
+				.leftJoinAndMapOne(
+					"us.lobbyPlayer",
+					LobbyPlayer,
+					"lp"
+				)
+				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
+				.where("l.lobbyId = :lobbyId", {
+					lobbyId: lobby.lobbyId
+				})
+				.orderBy("lp.timeJoined", "ASC");
+		const users = query.getMany();
+
+		// console.log("users: ", users);
+		return users;
+		// return users ?? null;
 	}
 };
 

@@ -5,8 +5,10 @@ import LobbyRepository from "../repository/lobby.repository";
 
 const GameStateController = {
 	Get: async (id: number) => {
-		return await LobbyRepository.getFirst({
-			lobbyId: id
+		return await LobbyRepository.findOne({
+			where: {
+				lobbyId: id
+			}
 		});
 	},
 

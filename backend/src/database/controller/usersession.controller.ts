@@ -1,5 +1,3 @@
-import { Lobby } from "../entity/Lobby";
-import { LobbyPlayer } from "../entity/LobbyPlayer";
 import { UserSession } from "../entity/UserSession";
 import UserSessionRepository from "../repository/usersession.repository";
 
@@ -71,33 +69,43 @@ const UserSessionController = {
 			!(await UserSessionRepository.exists({
 				where: { sessionKey: sessionKey }
 			}))
-		)
+		) {
+			console.log(
+				`No user exists with sessionKey "${sessionKey}"`
+			);
 			return null;
+		}
 
-		const queryBuilder =
-			UserSessionRepository.createQueryBuilder("us")
-				.leftJoinAndMapOne(
-					"us.lobbyPlayer",
-					LobbyPlayer,
-					"lp",
-					"lp.sessionKey = us.sessionKey"
-				)
-				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
-				.leftJoinAndMapMany(
-					"l.lobbyPlayers",
-					LobbyPlayer,
-					"lp2"
-				)
-				// .leftJoinAndSelect(
-				// 	Lobby,
-				// 	"l",
-				// 	"lp2.lobbyId = l.lobbyId"
-				// )
-				.where("us.sessionKey = :key", {
-					key: sessionKey
-				});
+		const query =
+			UserSessionRepository.createQueryBuilder(
+				"us"
+			).where("us.sessionKey = :key", {
+				key: sessionKey
+			});
+		// .leftJoinAndSelect(LobbyPlayer, "lp")
+		// .leftJoinAndMapOne("lp.lobby", Lobby, "l")
+		// .leftJoinAndMapMany(
+		// 	"l.lobbyPlayers",
+		// 	LobbyPlayer,
+		// 	"lp2"
+		// )
+		// .leftJoinAndMapOne(
+		// 	"lp2.userSession",
+		// 	UserSession,
+		// 	"us2"
+		// )
+		// // .leftJoinAndSelect(
+		// // 	Lobby,
+		// // 	"l",
+		// // 	"lp2.lobbyId = l.lobbyId"
+		// // )
+		// .where("us2.sessionKey = :key", {
+		// 	key: sessionKey
+		// });
 
-		return queryBuilder.getOne();
+		const user = query.getOne();
+
+		return user ?? null;
 	}
 };
 

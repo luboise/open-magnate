@@ -352,7 +352,10 @@ const handleLeaveLobby: BackendMessageHandler<
 			return;
 		}
 
-		connectionsToWebsocket[userSession.sessionKey].send(
+		console.log(
+			`Sending updated lobby data to ${userSession.sessionKey}.`
+		);
+		ws.send(
 			JSON.stringify({
 				type: "SET_LOBBY",
 				data: lobbyData
