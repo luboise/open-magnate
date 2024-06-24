@@ -1,18 +1,19 @@
 name: Push Open Magnate
-run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: Deploy to ${{ github.ref_name }} by @${{ github.actor }}
 on: [push]
 jobs:
-  Test-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    Test-backend:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
 
-      - name: Change to backend directory
-        run: cd backend
+            - name: Change to backend directory
+              run: cd backend
 
-      - name: Download Dependencies
-        run: npm install
+            - name: Download Dependencies
+              run: npm install
 
-      - name: Run Tests
-        run: npm test
+            - name: Run Tests
+              run: npm test
+
