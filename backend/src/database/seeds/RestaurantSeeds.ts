@@ -1,5 +1,5 @@
+import { Restaurant } from "@prisma/client";
 import { RESTAURANT_NAMES } from "../../utils";
-import { Restaurant } from "../entity/Restaurant";
 
 export const seedRestaurant1 = {
 	name: RESTAURANT_NAMES[0]

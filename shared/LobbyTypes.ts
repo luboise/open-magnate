@@ -1,6 +1,4 @@
-import { House } from "../backend/src/database/entity/House";
-import { TurnProgress } from "./GameState";
-import { MapPieceData } from "./MapData";
+// import { House } from "@prisma/client";
 import { RESTAURANT_NAME } from "./RestaurantNames";
 
 export interface LobbySubmissionData {
@@ -23,17 +21,18 @@ export type MagnateLobbyView = {
 	lobbyId: number;
 	lobbyName: string;
 	lobbyPlayers: LobbyPlayerView[];
-	gameState: GameStateView | null;
+	// TODO: Fix GameState in view
+	gameState: null; // | GameStateView;
 	inviteCode: string;
 };
 
-export type GameStateView = {
-	players: LobbyPlayerView[];
-	turnProgress: TurnProgress;
-	currentTurn: number;
-	currentPlayer: number;
-	mapPieces: MapPieceData[];
-	houses: Array<House>;
-	turnOrder: Array<number> | null;
-};
+// export type GameStateView = {
+// 	players: LobbyPlayerView[];
+// 	turnProgress: TurnProgress;
+// 	currentTurn: number;
+// 	currentPlayer: number;
+// 	mapPieces: MapPieceData[];
+// 	houses: Array<House>;
+// 	turnOrder: Array<number> | null;
+// };
 

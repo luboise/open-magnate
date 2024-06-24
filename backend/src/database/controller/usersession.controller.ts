@@ -1,12 +1,10 @@
-import { Lobby } from "../entity/Lobby";
-import { LobbyPlayer } from "../entity/LobbyPlayer";
-import { UserSession } from "../entity/UserSession";
+import { UserSession } from "@prisma/client";
+import prisma from "../../datasource";
 import UserSessionRepository from "../repository/usersession.repository";
 
 const UserSessionController = {
 	GetBySessionKey: async (sessionKey: string) => {
-		const sk = UserSessionRepository.findOne({
-			relations: ["lobbyPlayer", "lobbyPlayer.lobby"],
+		const sk = await UserSessionRepository.findFirst({
 			where: { sessionKey: sessionKey }
 		});
 
@@ -16,7 +14,7 @@ const UserSessionController = {
 		browserId: string | null
 	): Promise<UserSession | null> => {
 		if (browserId === null) return null;
-		return await UserSessionRepository.findOne({
+		return await UserSessionRepository.findFirst({
 			where: { browserId: browserId }
 		});
 	},
@@ -25,37 +23,45 @@ const UserSessionController = {
 	): Promise<UserSession | null> => {
 		if (browserId === null) return null;
 
-		const newKey = UserSessionRepository.create({
-			browserId: browserId
+		const newKey = await UserSessionRepository.create({
+			data: {
+				browserId: browserId
+			}
 		});
 
-		const sk = await UserSessionRepository.save(newKey);
-
-		return sk;
+		return newKey;
 	},
 	Renew: async (
 		sessionKey: string,
 		browserId: string
 	): Promise<boolean> => {
-		const key = await UserSessionRepository.findOne({
-			where: { sessionKey: sessionKey }
-		});
+		const userSession =
+			await UserSessionRepository.findFirst({
+				where: { sessionKey: sessionKey }
+			});
 
 		// If the user submitted a bad key
-		if (!key) {
+		if (!userSession) {
 			return false;
 		}
 		// If the user submitted a good key from the same browser
-		else if (browserId === key.browserId) {
+		else if (browserId === userSession.browserId) {
 			return true;
 		}
 
 		// If the user is from a new browser/session, update their session data
-		if (browserId !== key.browserId) {
-			key.browserId = browserId;
+		if (browserId !== userSession.browserId) {
+			userSession.browserId = browserId;
 
-			const updatedKey = await key.save();
-			if (!updatedKey) {
+			const updatedUserSession =
+				await prisma.userSession.update({
+					where: { sessionKey: sessionKey },
+					data: {
+						browserId: browserId
+					}
+				});
+
+			if (!updatedUserSession) {
 				return false;
 			}
 			return true;
@@ -65,51 +71,14 @@ const UserSessionController = {
 	},
 
 	async GetDeep(sessionKey: string) {
-		// return await UserSessionRepository.preload({
-		// 	sessionKey: sessionKey
-		// });
-
-		if (
-			!(await UserSessionRepository.exists({
-				where: { sessionKey: sessionKey }
-			}))
-		) {
-			console.log(
-				`No user exists with sessionKey "${sessionKey}"`
-			);
-			return null;
-		}
-
-		// const user = await UserSessionRepository.findOne({
-		// 	relations: ["lobbyPlayer"],
-		// 	where: { sessionKey: sessionKey }
-		// });
-
-		// const lp = await LobbyPlayer.findOne({
-		// 	relations: ["userSession.lobbyPlayer", "lobby"],
-		// 	where: {
-		// 		userSession: { sessionKey },
-		// 		sessionKey: sessionKey
-		// 	}
-		// });
-
-		// const user = lp?.userSession ?? null;
-
-		const user =
-			await UserSessionRepository.createQueryBuilder(
-				"us"
-			)
-				.leftJoinAndMapOne(
-					"us.lobbyPlayer",
-					LobbyPlayer,
-					"lp"
-				)
-				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
-				.where("us.sessionKey = :key", {
-					key: sessionKey
-				})
-				.getOne();
-
+		const user = prisma.userSession.findFirst({
+			where: { sessionKey: sessionKey },
+			include: {
+				lobbyPlayer: {
+					include: { lobby: true }
+				}
+			}
+		});
 		// console.log("GetDeep result: ", user);
 
 		return user ?? null;

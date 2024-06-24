@@ -1,6 +1,5 @@
 import { SEED_DATA } from "../database/SeedData";
 import UserSessionController from "../database/controller/usersession.controller";
-import { UserSession } from "../database/entity/UserSession";
 import { SEED_USERS } from "../database/seeds/UserSessionSeeds";
 import { basicAfterEach, basicBeforeEach } from "./utils";
 
@@ -20,7 +19,6 @@ describe("Testing User", () => {
 				browserId
 			);
 
-		expect(user).toBeInstanceOf(UserSession);
 		expect(user).toBeTruthy();
 		expect(user?.browserId).toBe(browserId);
 	});
@@ -31,7 +29,6 @@ describe("Testing User", () => {
 			await UserSessionController.New(
 				TEST_BROWSER_ID
 			);
-		expect(newUser).toBeInstanceOf(UserSession);
 		expect(newUser).toBeTruthy();
 		expect(newUser?.browserId).toBe(TEST_BROWSER_ID);
 	});

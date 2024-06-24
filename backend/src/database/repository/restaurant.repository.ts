@@ -1,7 +1,5 @@
-import { dataSource } from "../../datasource";
-import { Restaurant } from "../entity/Restaurant";
+import prisma from "../../datasource";
 
-const RestaurantRepository =
-	dataSource.getRepository(Restaurant);
+const RestaurantRepository = prisma.restaurant;
 
 export default RestaurantRepository;

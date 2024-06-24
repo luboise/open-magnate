@@ -5,7 +5,6 @@ import cors from "cors";
 import "dotenv/config";
 import expressWs from "express-ws";
 
-import { setupDatabase } from "./datasource";
 import InitialiseRoutes from "./routes";
 
 // Express app with websockets
@@ -18,7 +17,6 @@ app.use(express.json());
 app.use(cors());
 
 (async () => {
-	await setupDatabase();
 	InitialiseRoutes(express, app);
 
 	app.listen(port, () => {

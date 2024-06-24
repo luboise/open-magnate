@@ -27,7 +27,7 @@ const routeHandler: RouteHandler = (express, app) => {
 	// 		res.json(newLobby);
 
 	// 		console.log(
-	// 			`Created new lobby #${newLobby.lobbyId}`
+	// 			`Created new lobby #${newlobby.id}`
 	// 		);
 	// 	}
 	// );

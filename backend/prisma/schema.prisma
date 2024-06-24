@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+// {
+// 	"type": "sqlite",
+// 	"database": "./database/database.sqlite",
+// 	"synchronize": true,
+// 	"logging": false,
+// 	"entities": ["src/database/entity/**/*.ts"],
+// 	"migrations": ["src/database/migration/**/*.ts"],
+// 	"subscribers": ["src/database/subscriber/**/*.ts"]
+// }
+
+model UserSession {
+  sessionKey  String  @id @default(uuid())
+  browserId   String  @unique
+  name        String  @default("")
+  lobbyPlayer LobbyPlayer?
+}
+
+model LobbyPlayer {
+  lobby       Lobby @relation(fields: [lobbyId], references: [id])
+  lobbyId     Int
+
+  userSession UserSession @relation(fields: [userId], references: [sessionKey])
+  userId     String @unique 
+
+  timeJoined  DateTime  @default(now())
+  
+
+  restaurant  Restaurant  @relation(fields: [restaurantId], references: [id])
+  restaurantId  Int
+}
+
+model Lobby {
+  id  Int @id @default(autoincrement())
+  name	String
+  password	String?
+  playerCount	Int
+  players LobbyPlayer[]
+
+  inviteCode	String
+
+  gameState	GameState?
+  gameStateId	Int?
+}
+
+model Restaurant {
+  id  Int @id @default(autoincrement())
+  name  String
+
+  lobbyPlayers  LobbyPlayer[]
+}
+
+model GameState {	
+	lobbyId	Int		@id
+	lobby	Lobby	@relation(fields: [lobbyId], references: [id])	
+}

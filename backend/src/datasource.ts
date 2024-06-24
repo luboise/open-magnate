@@ -1,26 +1,15 @@
-import { DataSource, DataSourceOptions } from "typeorm";
+import { PrismaClient } from "@prisma/client";
 
-const ormConfig =
-	require("../../config/ormconfig.json") as DataSourceOptions;
+// export async function setupDatabase(dropAll?: boolean) {
+// 	await dataSource.initialize();
+// 	await dataSource.synchronize(Boolean(dropAll));
+// 	await dataSource.runMigrations();
+// 	// await dataSource.synchronize(Boolean(dropAll));
+// }
 
-if (!ormConfig) {
-	throw new Error(
-		"Missing or invalid ormconfig.json file."
-	);
-}
+// export async function teardownDatabase() {
+// 	await dataSource.destroy();
+// }
 
-export async function setupDatabase(dropAll?: boolean) {
-	await dataSource.initialize();
-	await dataSource.synchronize(Boolean(dropAll));
-	await dataSource.runMigrations();
-	// await dataSource.synchronize(Boolean(dropAll));
-}
-
-export async function teardownDatabase() {
-	await dataSource.destroy();
-}
-
-const dataSource = new DataSource(ormConfig);
-const entityManager = dataSource.manager;
-
-export { dataSource, entityManager };
+const prisma = new PrismaClient();
+export default prisma;
