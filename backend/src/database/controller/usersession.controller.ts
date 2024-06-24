@@ -82,11 +82,19 @@ const UserSessionController = {
 
 		// const user = await UserSessionRepository.findOne({
 		// 	relations: ["lobbyPlayer", "lobbyPlayer.lobby"],
-		// 	where: { sessionKey: sessionKey }
+		// 	where: { sessionKey: sessionKey },
+		// 	select: {
+		// 		sessionKey: true,
+		// 		lobbyPlayer: {
+		// 			lobbyId: true
+		// 		}
+		// 	}
 		// });
 
-		const query =
-			UserSessionRepository.createQueryBuilder("us")
+		const user =
+			await UserSessionRepository.createQueryBuilder(
+				"us"
+			)
 				.leftJoinAndMapOne(
 					"us.lobbyPlayer",
 					LobbyPlayer,
@@ -95,9 +103,8 @@ const UserSessionController = {
 				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
 				.where("us.sessionKey = :key", {
 					key: sessionKey
-				});
-
-		const user = query.getOne();
+				})
+				.getOne();
 
 		return user ?? null;
 	}

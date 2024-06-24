@@ -15,7 +15,7 @@ import { Restaurant } from "./Restaurant";
 import { UserSession } from "./UserSession";
 
 @Entity()
-@Unique(["lobbyId", "restaurantId"])
+@Unique(["userSession"])
 export class LobbyPlayer extends BaseEntity {
 	// @ManyToOne(() => Lobby, (lobby) => lobby.players)
 	// @JoinColumn({ name: "lobbyId" })
