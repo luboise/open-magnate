@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"main": "index.ts",
 	"scripts": {
-		"test": "jest --runInBand --watch",
+		"test": "jest --runInBand",
 		"dev": "nodemon --config ../config/nodemon.json"
 	},
 	"keywords": [],
