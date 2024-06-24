@@ -81,15 +81,19 @@ const UserSessionController = {
 		}
 
 		// const user = await UserSessionRepository.findOne({
-		// 	relations: ["lobbyPlayer", "lobbyPlayer.lobby"],
-		// 	where: { sessionKey: sessionKey },
-		// 	select: {
-		// 		sessionKey: true,
-		// 		lobbyPlayer: {
-		// 			lobbyId: true
-		// 		}
+		// 	relations: ["lobbyPlayer"],
+		// 	where: { sessionKey: sessionKey }
+		// });
+
+		// const lp = await LobbyPlayer.findOne({
+		// 	relations: ["userSession.lobbyPlayer", "lobby"],
+		// 	where: {
+		// 		userSession: { sessionKey },
+		// 		sessionKey: sessionKey
 		// 	}
 		// });
+
+		// const user = lp?.userSession ?? null;
 
 		const user =
 			await UserSessionRepository.createQueryBuilder(
@@ -105,6 +109,8 @@ const UserSessionController = {
 					key: sessionKey
 				})
 				.getOne();
+
+		console.log(user);
 
 		return user ?? null;
 	}

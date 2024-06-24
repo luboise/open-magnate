@@ -303,6 +303,7 @@ const handleLeaveLobby: BackendMessageHandler<
 > = async (params) => {
 	// TODO: Notify the other players that the lobby state has changed
 	// TODO: Add SQL trigger to delete the lobby if the last player leaves
+	// TODO: Fix leaving lobby as it is currently not working
 	if (!params.userSession) {
 		console.log(
 			"Attempted to remove unverified user from session."
