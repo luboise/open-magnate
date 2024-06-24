@@ -16,7 +16,7 @@ describe("Testing User", () => {
 		const browserId = SEED_USERS[0].browserId;
 		const user =
 			await UserSessionController.FindByBrowserId(
-				browserId
+				browserId ?? null
 			);
 
 		expect(user).toBeTruthy();
