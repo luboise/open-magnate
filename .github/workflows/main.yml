@@ -12,9 +12,6 @@ jobs:
               with:
                   node-version: "22"
 
-            - name: Change to backend directory
-              run: cd ./backend
-
             - name: Download Dependencies
               run: |
                   npm ci
