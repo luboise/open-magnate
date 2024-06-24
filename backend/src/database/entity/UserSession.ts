@@ -24,6 +24,6 @@ export class UserSession extends BaseEntity {
 	name: string = (() =>
 		crypto.randomBytes(10).toString("ascii"))();
 
-	@OneToOne(() => LobbyPlayer, { eager: true })
+	@OneToOne(() => LobbyPlayer)
 	lobbyPlayer!: LobbyPlayer;
 }

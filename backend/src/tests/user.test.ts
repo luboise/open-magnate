@@ -13,7 +13,7 @@ afterEach(async () => {
 });
 
 describe("Testing User", () => {
-	test("Expect seed user to be found", async () => {
+	test("Expect seed user to be found by browser ID", async () => {
 		const browserId = SEED_USERS[0].browserId;
 		const user =
 			await UserSessionController.FindByBrowserId(
@@ -26,11 +26,14 @@ describe("Testing User", () => {
 	});
 
 	test("Expect user to be created from browserId", async () => {
+		const TEST_BROWSER_ID = "thetestuser";
 		const newUser =
-			await UserSessionController.New("thetestuser");
+			await UserSessionController.New(
+				TEST_BROWSER_ID
+			);
 		expect(newUser).toBeInstanceOf(UserSession);
 		expect(newUser).toBeTruthy();
-		expect(newUser?.browserId).toBe("testUser1");
+		expect(newUser?.browserId).toBe(TEST_BROWSER_ID);
 	});
 
 	test("Expect users to be found by session key", async () => {

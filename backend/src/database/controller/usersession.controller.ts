@@ -22,8 +22,9 @@ const UserSessionController = {
 	): Promise<UserSession | null> => {
 		if (browserId === null) return null;
 
-		const newKey = new UserSession();
-		newKey.browserId = browserId;
+		const newKey = UserSessionRepository.create({
+			browserId: browserId
+		});
 
 		const sk = await UserSessionRepository.save(newKey);
 
@@ -79,7 +80,7 @@ const UserSessionController = {
 		const query =
 			UserSessionRepository.createQueryBuilder(
 				"us"
-			).where("us.sessionKey = :key", {
+			).where("sessionKey = :key", {
 				key: sessionKey
 			});
 		// .leftJoinAndSelect(LobbyPlayer, "lp")
