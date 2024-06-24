@@ -50,7 +50,7 @@ export class LobbyPlayer extends BaseEntity {
 	@JoinColumn({ name: "restaurantId" })
 	restaurant!: Restaurant;
 
-	@Column()
+	@Column({ nullable: true })
 	restaurantId!: number;
 
 	public toLobbyPlayerView(): LobbyPlayerView {

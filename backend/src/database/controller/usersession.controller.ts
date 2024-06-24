@@ -1,9 +1,12 @@
+import { Lobby } from "../entity/Lobby";
+import { LobbyPlayer } from "../entity/LobbyPlayer";
 import { UserSession } from "../entity/UserSession";
 import UserSessionRepository from "../repository/usersession.repository";
 
 const UserSessionController = {
 	GetBySessionKey: async (sessionKey: string) => {
 		const sk = UserSessionRepository.findOne({
+			relations: ["lobbyPlayer", "lobbyPlayer.lobby"],
 			where: { sessionKey: sessionKey }
 		});
 
@@ -77,32 +80,22 @@ const UserSessionController = {
 			return null;
 		}
 
-		const query =
-			UserSessionRepository.createQueryBuilder(
-				"us"
-			).where("sessionKey = :key", {
-				key: sessionKey
-			});
-		// .leftJoinAndSelect(LobbyPlayer, "lp")
-		// .leftJoinAndMapOne("lp.lobby", Lobby, "l")
-		// .leftJoinAndMapMany(
-		// 	"l.lobbyPlayers",
-		// 	LobbyPlayer,
-		// 	"lp2"
-		// )
-		// .leftJoinAndMapOne(
-		// 	"lp2.userSession",
-		// 	UserSession,
-		// 	"us2"
-		// )
-		// // .leftJoinAndSelect(
-		// // 	Lobby,
-		// // 	"l",
-		// // 	"lp2.lobbyId = l.lobbyId"
-		// // )
-		// .where("us2.sessionKey = :key", {
-		// 	key: sessionKey
+		// const user = await UserSessionRepository.findOne({
+		// 	relations: ["lobbyPlayer", "lobbyPlayer.lobby"],
+		// 	where: { sessionKey: sessionKey }
 		// });
+
+		const query =
+			UserSessionRepository.createQueryBuilder("us")
+				.leftJoinAndMapOne(
+					"us.lobbyPlayer",
+					LobbyPlayer,
+					"lp"
+				)
+				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
+				.where("us.sessionKey = :key", {
+					key: sessionKey
+				});
 
 		const user = query.getOne();
 

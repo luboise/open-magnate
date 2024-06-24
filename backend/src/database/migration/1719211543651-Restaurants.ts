@@ -5,13 +5,12 @@ import { SEED_RESAURANTS } from "../seeds/RestaurantSeeds";
 export class Restaurants1719211543651
 	implements MigrationInterface
 {
-	public async up(
-		queryRunner: QueryRunner
-	): Promise<void> {
-		RestaurantRepository.save(SEED_RESAURANTS);
+	public async up(_: QueryRunner): Promise<void> {
+		const restaurants =
+			await RestaurantRepository.save(
+				SEED_RESAURANTS
+			);
 	}
 
-	public async down(
-		queryRunner: QueryRunner
-	): Promise<void> {}
+	public async down(_: QueryRunner): Promise<void> {}
 }
