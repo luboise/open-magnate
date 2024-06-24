@@ -44,4 +44,3 @@ describe("Testing User", () => {
 		expect(user).toBeTruthy();
 	});
 });
-

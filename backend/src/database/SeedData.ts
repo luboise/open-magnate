@@ -24,4 +24,3 @@ export const SEED_DATA = {
 	seedUser2,
 	seedLobby1
 };
-

@@ -20,4 +20,3 @@ describe("Testing lobby", () => {
 		expect(userSessions).toHaveLength(2);
 	});
 });
-

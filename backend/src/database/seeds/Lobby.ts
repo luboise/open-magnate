@@ -10,4 +10,3 @@ const seedLobby1 = {
 };
 
 export const SEED_LOBBIES = [seedLobby1];
-

@@ -10,4 +10,3 @@ export async function basicBeforeEach() {
 export async function basicAfterEach() {
 	await teardownDatabase();
 }
-

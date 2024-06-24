@@ -15,4 +15,3 @@ export class Restaurants1719211543651
 		queryRunner: QueryRunner
 	): Promise<void> {}
 }
-

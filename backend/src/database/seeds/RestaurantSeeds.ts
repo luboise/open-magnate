@@ -19,4 +19,3 @@ export const SEED_RESAURANTS = RESTAURANT_NAMES.map(
 		} as Partial<Restaurant>;
 	}
 );
-

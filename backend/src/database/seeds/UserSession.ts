@@ -11,4 +11,3 @@ export const seedUser2 = {
 };
 
 export const SEED_USERS = [seedUser1, seedUser2];
-

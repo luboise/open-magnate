@@ -14,4 +14,3 @@ export class Users1719210184090
 
 	public async down(_: QueryRunner): Promise<void> {}
 }
-
