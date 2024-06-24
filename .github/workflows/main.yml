@@ -13,9 +13,9 @@ jobs:
 
             - name: Download Dependencies
               run: |
-                  npm i
+                  npm ci
                   cd ./backend
-                  npm i
+                  npm ci
 
             - name: Run Tests
               run: |
