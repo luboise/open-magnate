@@ -1,7 +1,7 @@
 import { SEED_DATA } from "../database/SeedData";
 import UserSessionController from "../database/controller/usersession.controller";
 import { UserSession } from "../database/entity/UserSession";
-import { SEED_USERS } from "../database/seeds/UserSession";
+import { SEED_USERS } from "../database/seeds/UserSessionSeeds";
 import { basicAfterEach, basicBeforeEach } from "./utils";
 
 beforeEach(async () => {
@@ -37,10 +37,21 @@ describe("Testing User", () => {
 	});
 
 	test("Expect users to be found by session key", async () => {
+		const user =
+			await UserSessionController.GetBySessionKey(
+				SEED_DATA.seedUser1.sessionKey
+			);
+
+		expect(user).toBeTruthy();
+	});
+
+	test("Expect getDeep() to return the matched player with its underlying LobbyPlayer and Lobby attributes included", async () => {
 		const user = await UserSessionController.GetDeep(
 			SEED_DATA.seedUser1.sessionKey
 		);
 
 		expect(user).toBeTruthy();
+		expect(user?.lobbyPlayer).toBeTruthy();
+		expect(user?.lobbyPlayer?.lobby).toBeTruthy();
 	});
 });

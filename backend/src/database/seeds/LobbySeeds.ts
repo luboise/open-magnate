@@ -1,4 +1,4 @@
-import { SEED_USERS } from "./UserSession";
+import { SEED_USERS } from "./UserSessionSeeds";
 
 const seedLobby1 = {
 	lobbyId: -1,
@@ -10,3 +10,4 @@ const seedLobby1 = {
 };
 
 export const SEED_LOBBIES = [seedLobby1];
+export const SEED_LOBBY_PLAYERS = [];

@@ -11,7 +11,7 @@ if (!ormConfig) {
 
 export async function setupDatabase(dropAll?: boolean) {
 	await dataSource.initialize();
-	await dataSource.synchronize();
+	await dataSource.synchronize(Boolean(dropAll));
 	await dataSource.runMigrations();
 	// await dataSource.synchronize(Boolean(dropAll));
 }

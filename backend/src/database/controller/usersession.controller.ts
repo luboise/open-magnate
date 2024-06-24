@@ -110,7 +110,7 @@ const UserSessionController = {
 				})
 				.getOne();
 
-		console.log(user);
+		// console.log("GetDeep result: ", user);
 
 		return user ?? null;
 	}
