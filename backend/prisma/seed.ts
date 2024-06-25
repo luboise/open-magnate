@@ -96,6 +96,7 @@ export const seedLobby1 = {
 	playerCount: 2
 };
 
+// TODO: Fix main throwing an error when running without debug mode on GitHub actions
 async function main() {
 	try {
 		// Delete lobby dependees
