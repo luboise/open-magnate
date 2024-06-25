@@ -7,6 +7,7 @@ jobs:
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
+
             - name: Setup Node.js
               uses: actions/setup-node@v2
               with:
@@ -18,8 +19,12 @@ jobs:
                   cd ./backend
                   npm ci
 
+            - name: Migrate the database
+              run: |
+                  cd ./backend
+                  npm run migrate
+
             - name: Run Tests
               run: |
                   cd ./backend
                   npm test
-
