@@ -14,6 +14,7 @@ import {
 import prisma from "../../datasource";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
+import RestaurantRepository from "../repository/restaurant.repository";
 import UserSessionRepository from "../repository/usersession.repository";
 
 const LobbyController = {
@@ -210,9 +211,36 @@ const LobbyController = {
 			const newLobbyPlayer =
 				await LobbyPlayerRepository.create({
 					data: {
-						lobby: { connect: lobby },
-						userSession: { connect: player },
-						restaurant: { connect: restaurant }
+						lobby: {
+							connect: { id: lobby.id }
+						},
+						userSession: {
+							connect: {
+								sessionKey:
+									player.sessionKey
+							}
+						},
+						restaurant: {
+							connect: {
+								id:
+									restaurant?.id ??
+									(
+										await RestaurantRepository.findFirst(
+											{
+												where: {
+													lobbyPlayers:
+														{
+															none: {
+																lobbyId:
+																	lobby.id
+															}
+														}
+												}
+											}
+										)
+									)?.id
+							}
+						}
 					}
 				});
 
