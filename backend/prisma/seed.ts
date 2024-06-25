@@ -173,7 +173,7 @@ async function main() {
 		console.error("Unable to seed the database.");
 		console.error(error);
 		await prisma.$disconnect();
-		process.exit(1);
+		throw error;
 	}
 }
 

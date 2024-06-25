@@ -17,6 +17,7 @@ import {
 // Fixes issues from using base WebSocket without extended methods
 import { UserSession } from "@prisma/client";
 import WebSocket from "ws";
+import LobbyRepository from "../database/repository/lobby.repository";
 import prisma from "../datasource";
 import { connectionsToWebsocket } from "./connections";
 
@@ -316,7 +317,7 @@ const handleLeaveLobby: BackendMessageHandler<
 		return;
 	}
 
-	const lobby = await prisma.lobby.findFirst({
+	const lobby = await LobbyRepository.findFirst({
 		where: {
 			players: {
 				some: {
@@ -330,11 +331,6 @@ const handleLeaveLobby: BackendMessageHandler<
 		params.ws.send("You are not currently in a lobby.");
 		return;
 	}
-
-	const lobbyPlayers =
-		await LobbyController.GetLobbyPlayerFromUserSession(
-			params.userSession.sessionKey
-		);
 
 	// Remove the player from the lobby
 	const removed = await LobbyController.removePlayer(

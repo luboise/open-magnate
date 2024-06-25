@@ -1,7 +1,6 @@
 import {
 	// GameState,
 	Lobby,
-	LobbyPlayer,
 	Restaurant,
 	UserSession
 } from "@prisma/client";
@@ -18,25 +17,30 @@ import RestaurantRepository from "../repository/restaurant.repository";
 import UserSessionRepository from "../repository/usersession.repository";
 
 const LobbyController = {
-	GetLobbyPlayerFromUserSession: async (
-		sessionKey: string
-	): Promise<Lobby | null> => {
-		const lobbyPlayer =
-			await LobbyPlayerRepository.findFirst({
-				where: {
-					userSession: {
-						sessionKey: sessionKey
-					}
-				},
-				include: { lobby: true }
-			});
-
-		return lobbyPlayer?.lobby ?? null;
+	defaultInclude: {
+		players: {
+			include: {
+				restaurant: true
+			}
+		}
 	},
 
-	Get: async (id: number) => {
+	fullInclude: {
+		players: {
+			include: {
+				restaurant: true,
+				userSession: true
+			}
+		},
+		gameState: true
+	},
+
+	Get: async (lobbyId: number, fullGet?: boolean) => {
 		return await LobbyRepository.findFirst({
-			where: { id: id }
+			where: { id: lobbyId },
+			include: fullGet
+				? LobbyController.fullInclude
+				: LobbyController.defaultInclude
 		});
 	},
 
@@ -179,21 +183,13 @@ const LobbyController = {
 		} as MagnateLobbyView;
 	},
 
-	async GetLobbyPlayerView(lobbyPlayer: LobbyPlayer) {
-		const lp = await LobbyPlayerRepository.findFirst({
-			include: {
-				lobby: true,
-				userSession: true,
-				restaurant: true
-			},
-			where: {
-				userId: lobbyPlayer.userId
-			}
-		});
+	async GetLobbyPlayerView(lobbyPlayer) {
+		if (!lobbyPlayer)
+			throw new Error("Invalid lobbyPlayer");
+		else if (!lobbyPlayer.userSession)
+			console.log("todo: remove this");
 
-		if (!lp)
-			throw new Error("Could not find lobby player");
-
+		const x = await this.Get(lobbyPlayer.id, true);
 		const lobbyPlayerView: LobbyPlayerView = {
 			name: lp.userSession.name,
 			restaurant: lp.restaurant?.name ?? null
