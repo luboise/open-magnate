@@ -15,8 +15,9 @@ import {
 } from "../utils";
 
 // Fixes issues from using base WebSocket without extended methods
+import { UserSession } from "@prisma/client";
 import WebSocket from "ws";
-import { UserSession } from "../database/entity/UserSession";
+import prisma from "../datasource";
 import { connectionsToWebsocket } from "./connections";
 
 // Helpers
@@ -152,8 +153,7 @@ async function handleNewConnection(
 				const lobbyMessage = {
 					type: "SET_LOBBY",
 					data: await LobbyController.GetLobbyData(
-						userSession.lobbyPlayer.lobby
-							.lobbyId
+						userSession.lobbyPlayer.lobby.id
 					)
 				} as FrontendMessage;
 				ws.send(JSON.stringify(lobbyMessage));
@@ -232,7 +232,7 @@ const handleCreateLobby: BackendMessageHandler<
 			JSON.stringify({
 				type: "SET_LOBBY",
 				data: await LobbyController.GetLobbyData(
-					newLobby.lobbyId
+					newLobby.id
 				)
 			} as FrontendMessage)
 		);
@@ -259,10 +259,15 @@ const handleJoinLobby: BackendMessageHandler<
 				"Invalid invite code provided."
 			);
 
-		const lobby =
-			await LobbyController.GetWithRelations({
+		const lobby = await prisma.lobby.findFirst({
+			include: {
+				players: true,
+				gameState: true
+			},
+			where: {
 				inviteCode: inviteCode
-			});
+			}
+		});
 
 		if (!lobby)
 			throw new Error(
@@ -287,7 +292,7 @@ const handleJoinLobby: BackendMessageHandler<
 		const response = {
 			type: "SET_LOBBY",
 			data: await LobbyController.GetLobbyData(
-				lobby.lobbyId
+				lobby.id
 			)
 		} as SetLobbyMessage;
 
@@ -303,6 +308,7 @@ const handleLeaveLobby: BackendMessageHandler<
 > = async (params) => {
 	// TODO: Notify the other players that the lobby state has changed
 	// TODO: Add SQL trigger to delete the lobby if the last player leaves
+	// TODO: Fix leaving lobby as it is currently not working
 	if (!params.userSession) {
 		console.log(
 			"Attempted to remove unverified user from session."
@@ -310,14 +316,25 @@ const handleLeaveLobby: BackendMessageHandler<
 		return;
 	}
 
-	const lobby =
-		await LobbyController.GetLobbyPlayerFromUserSession(
-			params.userSession
-		);
+	const lobby = await prisma.lobby.findFirst({
+		where: {
+			players: {
+				some: {
+					userId: params.userSession.sessionKey
+				}
+			}
+		}
+	});
+
 	if (!lobby) {
 		params.ws.send("You are not currently in a lobby.");
 		return;
 	}
+
+	const lobbyPlayers =
+		await LobbyController.GetLobbyPlayerFromUserSession(
+			params.userSession.sessionKey
+		);
 
 	// Remove the player from the lobby
 	const removed = await LobbyController.removePlayer(
@@ -327,7 +344,7 @@ const handleLeaveLobby: BackendMessageHandler<
 
 	if (!removed) {
 		console.log(
-			`Failed to remove player ${params.userSession.sessionKey} from lobby #${lobby.lobbyId}.`
+			`Failed to remove player ${params.userSession.sessionKey} from lobby #${lobby.id}.`
 		);
 		return;
 	}
@@ -336,7 +353,7 @@ const handleLeaveLobby: BackendMessageHandler<
 		await LobbyController.getPlayersFrom(lobby);
 
 	const lobbyData = await LobbyController.GetLobbyData(
-		lobby.lobbyId
+		lobby.id
 	);
 
 	console.log(otherPlayers.length, otherPlayers);

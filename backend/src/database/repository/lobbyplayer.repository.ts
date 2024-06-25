@@ -1,7 +1,5 @@
-import { dataSource } from "../../datasource";
-import { LobbyPlayer } from "../entity/LobbyPlayer";
+import prisma from "../../datasource";
 
-const LobbyPlayerRepository =
-	dataSource.getRepository(LobbyPlayer);
+const LobbyPlayerRepository = prisma.lobbyPlayer;
 
 export default LobbyPlayerRepository;

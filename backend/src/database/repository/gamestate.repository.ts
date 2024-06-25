@@ -1,7 +1,5 @@
-import { dataSource } from "../../datasource";
-import { GameState } from "../entity/GameState";
+import prisma from "../../datasource";
 
-const GameStateRepository =
-	dataSource.getRepository(GameState);
+const GameStateRepository = prisma.gameState;
 
 export default GameStateRepository;

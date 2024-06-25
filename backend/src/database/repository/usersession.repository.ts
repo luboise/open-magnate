@@ -1,11 +1,5 @@
-import { dataSource } from "../../datasource";
-import { UserSession } from "../entity/UserSession";
+import prisma from "../../datasource";
 
-// const userRepo = dataSource.getRepository(User);
-
-// const UserController = new Controller(User);
-
-const UserSessionRepository =
-	dataSource.getRepository(UserSession);
+const UserSessionRepository = prisma.userSession;
 
 export default UserSessionRepository;

@@ -1,78 +1,49 @@
-import { FindOptionsWhere } from "typeorm";
 import {
-	dataSource,
-	entityManager
-} from "../../datasource";
+	// GameState,
+	Lobby,
+	LobbyPlayer,
+	Restaurant,
+	UserSession
+} from "@prisma/client";
 import {
 	LobbyPlayerView,
 	LobbySubmissionData,
 	MagnateLobbyView
 } from "../../utils";
-import { GameState } from "../entity/GameState";
-import { Lobby } from "../entity/Lobby";
-import { LobbyPlayer } from "../entity/LobbyPlayer";
-import { Restaurant } from "../entity/Restaurant";
-import { UserSession } from "../entity/UserSession";
+
+import prisma from "../../datasource";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
-import { GetRelationsFrom } from "../repository/repositoryUtils";
+import RestaurantRepository from "../repository/restaurant.repository";
 import UserSessionRepository from "../repository/usersession.repository";
-import UserSessionController from "./usersession.controller";
 
 const LobbyController = {
 	GetLobbyPlayerFromUserSession: async (
-		player: string | null | UserSession
+		sessionKey: string
 	): Promise<Lobby | null> => {
-		if (typeof player === "string")
-			player =
-				await UserSessionController.GetBySessionKey(
-					player
-				);
-		if (player === null) return null;
-
-		const query =
-			LobbyPlayerRepository.createQueryBuilder("lp")
-				.leftJoinAndMapOne(
-					"lp.sessionKey",
-					UserSession,
-					"us"
-				)
-				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
-				// .leftJoinAndMapMany(
-				// 	"lp.lobbyPlayers",
-				// 	LobbyPlayer,
-				// 	"lp",
-				// 	"lp.lobbyId = l.lobbyId"
-				// )
-
-				.where("us.sessionKey = :sessionKey", {
-					sessionKey: player.sessionKey
-				});
-
-		const lobbyPlayer = await query.getOne();
+		const lobbyPlayer =
+			await LobbyPlayerRepository.findFirst({
+				where: {
+					userSession: {
+						sessionKey: sessionKey
+					}
+				},
+				include: { lobby: true }
+			});
 
 		return lobbyPlayer?.lobby ?? null;
 	},
 
 	Get: async (id: number) => {
-		return await LobbyRepository.findOne({
-			where: { lobbyId: id }
-		});
-	},
-
-	GetWithRelations: async (
-		options: FindOptionsWhere<Lobby>
-	) => {
-		return await LobbyRepository.findOne({
-			relations: GetRelationsFrom(LobbyRepository),
-			where: options
+		return await LobbyRepository.findFirst({
+			where: { id: id }
 		});
 	},
 
 	// GetFromJoinMessage: async (
 	// 	data: JoinLobbySubmissionData
 	// ) => {
-	// 	const lobby = await LobbyRepository.findOne({
+	// 	const lobby = await LobbyRepository.findFirst({
 	// 		where: {
 	// 			inviteCode: data.inviteCode,
 	// 			password: data.password
@@ -80,12 +51,12 @@ const LobbyController = {
 	// 	});
 
 	// 	return lobby
-	// 		? LobbyController.GetDeep(lobby.lobbyId)
+	// 		? LobbyController.GetDeep(lobby.id)
 	// 		: null;
 	// },
 
 	NewLobby: async (
-		user: UserSession,
+		users: UserSession | UserSession[],
 		newLobbyData: LobbySubmissionData
 	): Promise<Lobby | null> => {
 		try {
@@ -93,21 +64,88 @@ const LobbyController = {
 				return null;
 			}
 
-			const newLobby = LobbyRepository.create({
-				name: newLobbyData.name,
-				password: newLobbyData.password,
-				playerCount: Number(
-					newLobbyData.playerCount
-				),
-				gameState: null
-			});
-			await LobbyRepository.save(newLobby);
+			let restaurantCounter = 1;
 
-			const lobbyPlayer = LobbyController.addPlayer(
-				newLobby,
-				user
-			);
-			if (!lobbyPlayer) return null;
+			const receivedArray = Array.isArray(users);
+
+			const hostUser = receivedArray
+				? users[0]
+				: users;
+
+			const newLobby: Lobby =
+				await prisma.$transaction(async (ctx) => {
+					const lobby = await ctx.lobby.create({
+						data: {
+							name: newLobbyData.name,
+							password: newLobbyData.password,
+							playerCount: Number(
+								newLobbyData.playerCount
+							),
+							inviteCode:
+								LobbyController.generateInviteCode(),
+							players: {
+								create: {
+									userSession: {
+										connect: hostUser
+									},
+									restaurant: {
+										connect: {
+											id: restaurantCounter++
+										}
+									}
+								}
+							},
+							gameState: {
+								create: {
+									// currentPlayer: null,
+									// turnProgress: TurnProgress.SETTING_UP
+								}
+							}
+						}
+					});
+
+					if (!lobby) {
+						throw new Error(
+							"Unable to create new lobby"
+						);
+					}
+
+					if (receivedArray) {
+						for (const userSession of users.slice(
+							1
+						)) {
+							const newPlayer =
+								await ctx.lobbyPlayer.create(
+									{
+										data: {
+											userSession: {
+												connect:
+													userSession
+											},
+											restaurant: {
+												connect: {
+													id: restaurantCounter++
+												}
+											},
+											lobby: {
+												connect:
+													lobby as Lobby
+											}
+										}
+									}
+								);
+
+							if (!newPlayer) {
+								throw new Error(
+									"Unable to create new player"
+								);
+							}
+						}
+					}
+
+					return lobby;
+				});
+
 			return newLobby;
 		} catch (error) {
 			console.error(error);
@@ -115,43 +153,15 @@ const LobbyController = {
 		}
 	},
 
-	async GetLobbyData(lobbyId: number) {
+	async GetLobbyData(id: number) {
 		// console.log(GetRelationsFrom(LobbyRepository));
 
-		// const lobby = await LobbyRepository.findOne({
-		// 	relations: GetRelationsFrom(LobbyRepository),
-		// 	where: {
-		// 		lobbyId: lobbyId
-		// 	}
-		// });
-
-		const lobby = await dataSource
-			.getRepository(Lobby)
-			.createQueryBuilder("l")
-			.leftJoinAndMapMany(
-				"l.lobbyPlayers",
-				LobbyPlayer,
-				"lp"
-			)
-			.leftJoinAndMapOne(
-				"lp.userSession",
-				UserSession,
-				"us"
-			)
-			.leftJoinAndMapOne(
-				"l.gameState",
-				GameState,
-				"gs",
-				"gs.lobbyId = l.lobbyId"
-			)
-			.where("l.lobbyId = :id", {
-				id: lobbyId
-			})
-			.getOne();
-
-		// const lobby = await LobbyRepository.preload({
-		// 	lobbyId: this.lobbyId
-		// });
+		const lobby = await LobbyRepository.findFirst({
+			include: { players: true },
+			where: {
+				id: id
+			}
+		});
 
 		if (!lobby) {
 			throw new Error("Could not find lobby");
@@ -159,41 +169,25 @@ const LobbyController = {
 
 		return {
 			lobbyName: lobby.name,
-			lobbyId: lobby.lobbyId,
+			lobbyId: lobby.id,
 			lobbyPlayers: await Promise.all(
-				lobby.lobbyPlayers.map(
-					async (lobbyPlayer) => {
-						return await this.GetLobbyPlayerView(
-							lobbyPlayer
-						);
-					}
-				)
+				lobby.players.map(this.GetLobbyPlayerView)
 			),
-
-			// ? lobby.lobbyPlayers.map((lobbyPlayer) => {
-			// 		return {
-			// 			name: lobbyPlayer.userSession
-			// 				.name,
-			// 			restaurant:
-			// 				lobbyPlayer.restaurant
-			// 					?.name ?? null
-			// 		} as LobbyPlayerView;
-			// 	})
-			// : [],
 			inviteCode: lobby.inviteCode,
-			gameState:
-				lobby.gameState?.toGameStateView() || null
+			// TODO: Fix this to be the actual GameState
+			gameState: null
 		} as MagnateLobbyView;
 	},
 
 	async GetLobbyPlayerView(lobbyPlayer: LobbyPlayer) {
-		const lp = await LobbyPlayerRepository.findOne({
-			relations: GetRelationsFrom(
-				LobbyPlayerRepository
-			),
+		const lp = await LobbyPlayerRepository.findFirst({
+			include: {
+				lobby: true,
+				userSession: true,
+				restaurant: true
+			},
 			where: {
-				lobbyId: lobbyPlayer.lobbyId,
-				sessionKey: lobbyPlayer.sessionKey
+				userId: lobbyPlayer.userId
 			}
 		});
 
@@ -207,7 +201,6 @@ const LobbyController = {
 		return lobbyPlayerView;
 	},
 
-	// TODO: Fix null restaurant
 	async addPlayer(
 		lobby: Lobby,
 		player: UserSession,
@@ -215,22 +208,50 @@ const LobbyController = {
 	) {
 		try {
 			const newLobbyPlayer =
-				LobbyPlayerRepository.create({
-					lobby: lobby,
-					userSession: player,
-					restaurant: restaurant || undefined
+				await LobbyPlayerRepository.create({
+					data: {
+						lobby: {
+							connect: { id: lobby.id }
+						},
+						userSession: {
+							connect: {
+								sessionKey:
+									player.sessionKey
+							}
+						},
+						restaurant: {
+							connect: {
+								id:
+									restaurant?.id ??
+									(
+										await RestaurantRepository.findFirst(
+											{
+												where: {
+													lobbyPlayers:
+														{
+															none: {
+																lobbyId:
+																	lobby.id
+															}
+														}
+												}
+											}
+										)
+									)?.id
+							}
+						}
+					}
 				});
-			await entityManager.save(newLobbyPlayer);
 
 			if (!newLobbyPlayer) {
 				console.error(
-					`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobby.lobbyId}`
+					`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobby.id}`
 				);
 				return null;
 			}
 
 			console.log(
-				`Created LobbyPlayer for player ${player.name} in lobby ${lobby.lobbyId}`
+				`Created LobbyPlayer for player ${player.name} in lobby ${lobby.id}`
 			);
 			return newLobbyPlayer;
 		} catch (error) {
@@ -243,25 +264,17 @@ const LobbyController = {
 		player: UserSession
 	): Promise<boolean> {
 		try {
-			const lp = await LobbyPlayerRepository.findOne({
+			await LobbyPlayerRepository.delete({
 				where: {
-					userSession: player,
+					userId: player.sessionKey,
 					lobby: lobby
 				}
 			});
-
-			if (!lp) {
-				throw new Error(
-					"Unable to remove player from lobby, as they are not in it."
-				);
-			}
-
-			await LobbyPlayerRepository.remove(lp);
 			return true;
 		} catch (error) {
 			console.log(error);
+			return false;
 		}
-		return false;
 	},
 
 	async getPlayersFrom(
@@ -276,23 +289,38 @@ const LobbyController = {
 		// 	// relationLoadStrategy: "query"
 		// });
 
-		const query =
-			UserSessionRepository.createQueryBuilder("us")
-				.leftJoinAndMapOne(
-					"us.lobbyPlayer",
-					LobbyPlayer,
-					"lp"
-				)
-				.leftJoinAndMapOne("lp.lobby", Lobby, "l")
-				.where("l.lobbyId = :lobbyId", {
-					lobbyId: lobby.lobbyId
-				})
-				.orderBy("lp.timeJoined", "ASC");
-		const users = query.getMany();
+		const users = await UserSessionRepository.findMany({
+			where: {
+				lobbyPlayer: {
+					lobby: { id: lobby.id }
+				}
+			},
+			distinct: "sessionKey"
+		});
 
 		// console.log("users: ", users);
 		return users;
 		// return users ?? null;
+	},
+
+	generateInviteCode(): string {
+		const characters =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		const array = new Uint8Array(8);
+		crypto.getRandomValues(array);
+
+		let inviteCode = "";
+		for (let i = 0; i < array.length; i++) {
+			inviteCode +=
+				characters[array[i] % characters.length];
+		}
+
+		return array.reduce((acc, char) => {
+			return (
+				acc + characters[char % characters.length]
+			);
+		}, "");
+		``;
 	}
 };
 
