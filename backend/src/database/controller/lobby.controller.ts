@@ -201,7 +201,6 @@ const LobbyController = {
 		return lobbyPlayerView;
 	},
 
-	// TODO: Fix null restaurant
 	async addPlayer(
 		lobby: Lobby,
 		player: UserSession,
