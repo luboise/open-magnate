@@ -1,5 +1,7 @@
+import { reseedDatabase } from "../../prisma/seed";
+
 export async function basicBeforeEach() {
-	// await setupDatabase(true);
+	await reseedDatabase();
 }
 
 export async function basicAfterEach() {

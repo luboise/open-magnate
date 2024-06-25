@@ -36,7 +36,6 @@ model LobbyPlayer {
 
   timeJoined  DateTime  @default(now())
   
-
   restaurant  Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId  Int
 }
@@ -46,12 +45,12 @@ model Lobby {
   name	String
   password	String?
   playerCount	Int
+
   players LobbyPlayer[]
 
   inviteCode	String
 
   gameState	GameState?
-  gameStateId	Int?
 }
 
 model Restaurant {

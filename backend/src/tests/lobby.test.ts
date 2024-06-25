@@ -10,7 +10,7 @@ afterEach(async () => {
 });
 
 describe("Testing lobby", () => {
-	test("Expect getPlayersFrom to correct return the playercount of a lobby", async () => {
+	test("Expect getPlayersFrom to correctly return the playercount of a lobby", async () => {
 		const lobby = await LobbyController.Get(-1);
 		expect(lobby).toBeTruthy();
 
