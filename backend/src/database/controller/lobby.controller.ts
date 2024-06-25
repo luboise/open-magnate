@@ -11,6 +11,7 @@ import {
 	MagnateLobbyView
 } from "../../utils";
 
+import prisma from "../../datasource";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import UserSessionRepository from "../repository/usersession.repository";
@@ -54,7 +55,7 @@ const LobbyController = {
 	// },
 
 	NewLobby: async (
-		user: UserSession,
+		users: UserSession | UserSession[],
 		newLobbyData: LobbySubmissionData
 	): Promise<Lobby | null> => {
 		try {
@@ -62,37 +63,88 @@ const LobbyController = {
 				return null;
 			}
 
-			const newLobby = await LobbyRepository.create({
-				data: {
-					name: newLobbyData.name,
-					password: newLobbyData.password,
-					playerCount: Number(
-						newLobbyData.playerCount
-					),
-					inviteCode:
-						LobbyController.generateInviteCode(),
-					players: {
-						create: {
-							userSession: { connect: user },
-							restaurant: {
-								connect: { id: 1 }
+			let restaurantCounter = 1;
+
+			const receivedArray = Array.isArray(users);
+
+			const hostUser = receivedArray
+				? users[0]
+				: users;
+
+			const newLobby: Lobby =
+				await prisma.$transaction(async (ctx) => {
+					const lobby = await ctx.lobby.create({
+						data: {
+							name: newLobbyData.name,
+							password: newLobbyData.password,
+							playerCount: Number(
+								newLobbyData.playerCount
+							),
+							inviteCode:
+								LobbyController.generateInviteCode(),
+							players: {
+								create: {
+									userSession: {
+										connect: hostUser
+									},
+									restaurant: {
+										connect: {
+											id: restaurantCounter++
+										}
+									}
+								}
+							},
+							gameState: {
+								create: {
+									// currentPlayer: null,
+									// turnProgress: TurnProgress.SETTING_UP
+								}
 							}
 						}
-					},
-					gameState: {
-						create: {
-							// currentPlayer: null,
-							// turnProgress: TurnProgress.SETTING_UP
+					});
+
+					if (!lobby) {
+						throw new Error(
+							"Unable to create new lobby"
+						);
+					}
+
+					if (receivedArray) {
+						for (const userSession of users.slice(
+							1
+						)) {
+							const newPlayer =
+								await ctx.lobbyPlayer.create(
+									{
+										data: {
+											userSession: {
+												connect:
+													userSession
+											},
+											restaurant: {
+												connect: {
+													id: restaurantCounter++
+												}
+											},
+											lobby: {
+												connect:
+													lobby as Lobby
+											}
+										}
+									}
+								);
+
+							if (!newPlayer) {
+								throw new Error(
+									"Unable to create new player"
+								);
+							}
 						}
 					}
-				}
-			});
 
-			const lobbyPlayer = LobbyController.addPlayer(
-				newLobby,
-				user
-			);
-			if (!lobbyPlayer) return null;
+					return lobby;
+				});
+
 			return newLobby;
 		} catch (error) {
 			console.error(error);
@@ -213,9 +265,10 @@ const LobbyController = {
 		const users = await UserSessionRepository.findMany({
 			where: {
 				lobbyPlayer: {
-					lobby: lobby
+					lobby: { id: lobby.id }
 				}
-			}
+			},
+			distinct: "sessionKey"
 		});
 
 		// console.log("users: ", users);

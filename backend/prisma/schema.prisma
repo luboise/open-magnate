@@ -38,6 +38,8 @@ model LobbyPlayer {
   
   restaurant  Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId  Int
+
+  @@unique([restaurantId, lobbyId])
 }
 
 model Lobby {
