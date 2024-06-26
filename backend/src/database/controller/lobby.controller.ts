@@ -3,6 +3,7 @@ import {
 	// GameState,
 	Lobby,
 	LobbyPlayer,
+	Prisma,
 	Restaurant,
 	UserSession
 } from "@prisma/client";
@@ -23,7 +24,7 @@ interface FullLobbyPlayer extends LobbyPlayer {
 	restaurant: Restaurant;
 }
 
-interface FullLobby extends Lobby {
+export interface FullLobby extends Lobby {
 	players: FullLobbyPlayer[];
 	gameState: GameState;
 }
@@ -47,14 +48,14 @@ const LobbyController = {
 		gameState: true
 	},
 
-	Get: async <T extends boolean = false>(
-		lobbyId: number,
+	_get: async <T extends boolean = false>(
+		where: Prisma.LobbyWhereInput,
 		fullGet?: T
 	): Promise<
 		(T extends true ? FullLobby : Lobby) | null
 	> => {
 		const lobby = await LobbyRepository.findFirst({
-			where: { id: lobbyId },
+			where: where,
 
 			include: fullGet
 				? LobbyController.fullInclude
@@ -64,20 +65,21 @@ const LobbyController = {
 		return lobby as T extends true ? FullLobby : Lobby;
 	},
 
-	// GetFromJoinMessage: async (
-	// 	data: JoinLobbySubmissionData
-	// ) => {
-	// 	const lobby = await LobbyRepository.findFirst({
-	// 		where: {
-	// 			inviteCode: data.inviteCode,
-	// 			password: data.password
-	// 		}
-	// 	});
+	GetByLobbyId: async (
+		lobbyId: number
+	): Promise<FullLobby | null> => {
+		return await LobbyController._get(
+			{ id: lobbyId },
+			true
+		);
+	},
 
-	// 	return lobby
-	// 		? LobbyController.GetDeep(lobby.id)
-	// 		: null;
-	// },
+	GetByInviteCode: async (inviteCode: string) => {
+		return await LobbyController._get(
+			{ inviteCode: inviteCode },
+			true
+		);
+	},
 
 	NewLobby: async (
 		users: UserSession | UserSession[],
@@ -180,7 +182,7 @@ const LobbyController = {
 	async GetLobbyData(id: number) {
 		// console.log(GetRelationsFrom(LobbyRepository));
 
-		const lobby = await this.Get(id, true);
+		const lobby = await this.GetByLobbyId(id);
 
 		// const lobby = await LobbyRepository.findFirst({
 		// 	include: { players: true },
@@ -223,7 +225,7 @@ const LobbyController = {
 	},
 
 	async addPlayer(
-		lobby: Lobby,
+		lobbyId: number,
 		player: UserSession,
 		restaurant?: Restaurant
 	) {
@@ -232,7 +234,7 @@ const LobbyController = {
 				await LobbyPlayerRepository.create({
 					data: {
 						lobby: {
-							connect: { id: lobby.id }
+							connect: { id: lobbyId }
 						},
 						userSession: {
 							connect: {
@@ -252,7 +254,7 @@ const LobbyController = {
 														{
 															none: {
 																lobbyId:
-																	lobby.id
+																	lobbyId
 															}
 														}
 												}
@@ -266,13 +268,13 @@ const LobbyController = {
 
 			if (!newLobbyPlayer) {
 				console.error(
-					`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobby.id}`
+					`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobbyId}`
 				);
 				return null;
 			}
 
 			console.log(
-				`Created LobbyPlayer for player ${player.name} in lobby ${lobby.id}`
+				`Created LobbyPlayer for player ${player.name} in lobby ${lobbyId}`
 			);
 			return newLobbyPlayer;
 		} catch (error) {
@@ -281,14 +283,14 @@ const LobbyController = {
 	},
 
 	async removePlayer(
-		lobby: Lobby,
+		lobbyId: number,
 		player: UserSession
 	): Promise<boolean> {
 		try {
 			await LobbyPlayerRepository.delete({
 				where: {
 					userId: player.sessionKey,
-					lobby: lobby
+					lobby: { id: lobbyId }
 				}
 			});
 			return true;
@@ -298,22 +300,13 @@ const LobbyController = {
 		}
 	},
 
-	async getPlayersFrom(
-		lobby: Lobby
+	async getUserSessions(
+		lobbyId: number
 	): Promise<UserSession[]> {
-		// TODO: Fix no lobbyPlayers coming out
-		// const users = await LobbyPlayerRepository.find({
-		// 	relations: ["userSession", "lobby"],
-		// 	where: {
-		// 		lobby: lobby
-		// 	}
-		// 	// relationLoadStrategy: "query"
-		// });
-
 		const users = await UserSessionRepository.findMany({
 			where: {
 				lobbyPlayer: {
-					lobby: { id: lobby.id }
+					lobby: { id: lobbyId }
 				}
 			},
 			distinct: "sessionKey"

@@ -13,11 +13,12 @@ afterEach(async () => {
 describe("Testing lobby", () => {
 	describe("Reading from existing lobbies", () => {
 		test("Expect getPlayersFrom() to correctly return the playercount of seed lobby", async () => {
-			const lobby = await LobbyController.Get(-1);
+			const lobby =
+				await LobbyController.GetByLobbyId(-1);
 			expect(lobby).toBeTruthy();
 
 			const userSessions =
-				await LobbyController.getPlayersFrom(
+				await LobbyController.getUserSessions(
 					lobby!
 				);
 
@@ -25,7 +26,8 @@ describe("Testing lobby", () => {
 		});
 
 		test("Expect existing lobbies to be returned with the players included", async () => {
-			const lobby = await LobbyController.Get(-1);
+			const lobby =
+				await LobbyController.GetByLobbyId(-1);
 			expect(lobby).toBeTruthy();
 			expect(lobby!.players).toHaveLength(2);
 		});
@@ -60,7 +62,7 @@ describe("Testing lobby", () => {
 			expect(lobby).toHaveProperty("inviteCode");
 
 			const lobbyPlayers =
-				await LobbyController.getPlayersFrom(
+				await LobbyController.getUserSessions(
 					lobby!
 				);
 			expect(lobbyPlayers).toHaveLength(6);

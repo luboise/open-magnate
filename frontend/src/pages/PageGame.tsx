@@ -22,6 +22,7 @@ import MagnateGame from "./MagnateGame/MagnateGame";
 import { PageGameAtom } from "./PageGameContext";
 
 const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
+const LOCAL_STORAGE_INVITE_CODE_NAME = "inviteCode";
 
 type PageState =
 	| "AWAITING_VERIFICATION"
@@ -48,6 +49,10 @@ function PageGame() {
 	const [sessionKey, setSessionKey] = useLocalVal<string>(
 		LOCAL_STORAGE_SESSION_KEY_NAME
 	);
+
+	const [inviteCode, setInviteCode] = useLocalVal<string>(
+		LOCAL_STORAGE_INVITE_CODE_NAME
+	)
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -165,7 +170,7 @@ function PageGame() {
 
 					console.debug(
 						"Received new session key: " +
-							message.data
+						message.data
 					);
 					setSessionKey(message.data);
 					reconnectLater();
@@ -244,15 +249,19 @@ function PageGame() {
 				<Form
 					submitText="Join Lobby"
 					onSubmit={(data) => {
+						const formData = data as JoinLobbySubmissionData
+
 						sendJsonMessage({
 							type: "JOIN_LOBBY",
-							data: data as JoinLobbySubmissionData
+							data: formData
 						} as JoinLobbyMessage);
+						setInviteCode(formData.inviteCode)
+
 					}}
 				>
 					<FormInput
 						name="inviteCode"
-						defaultValue=""
+						defaultValue={inviteCode ?? ""}
 						regex={/^[a-zA-Z\d]{8}$/}
 						labelText="Invite Code"
 					/>

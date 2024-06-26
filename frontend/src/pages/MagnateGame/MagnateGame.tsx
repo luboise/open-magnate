@@ -5,8 +5,6 @@ import useClipboard from "../../hooks/useClipboard";
 import useNotification from "../../hooks/useNotification";
 import usePageGame from "../../hooks/usePageGame";
 import {
-	APIRoutes,
-	FRONTEND_BASE_URL,
 	MagnateLobbyView
 } from "../../utils";
 import PlayerDisplay from "./PlayerDisplay";
@@ -18,13 +16,7 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 	const { leaveLobby } = usePageGame();
 
 	function onCopyInviteLink() {
-		const url =
-			FRONTEND_BASE_URL +
-			APIRoutes.PLAY +
-			"?inviteCode=" +
-			props.data.inviteCode;
-
-		writeClipboard(url);
+		writeClipboard(props.data.inviteCode);
 		sendNotification(
 			"Copied invite link to clipboard.",
 			"Notification stuff."
@@ -42,7 +34,7 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 						Players:{" "}
 						{props.data.lobbyPlayers.length}
 						<div className="player-display-container">
-							{props.data.lobbyPlayers.map(
+							{...props.data.lobbyPlayers.map(
 								(player) => (
 									<PlayerDisplay
 										player={player}
