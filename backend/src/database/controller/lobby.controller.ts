@@ -1,6 +1,8 @@
 import {
+	GameState,
 	// GameState,
 	Lobby,
+	LobbyPlayer,
 	Restaurant,
 	UserSession
 } from "@prisma/client";
@@ -15,6 +17,16 @@ import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import RestaurantRepository from "../repository/restaurant.repository";
 import UserSessionRepository from "../repository/usersession.repository";
+
+interface FullLobbyPlayer extends LobbyPlayer {
+	userSession: UserSession;
+	restaurant: Restaurant;
+}
+
+interface FullLobby extends Lobby {
+	players: FullLobbyPlayer[];
+	gameState: GameState;
+}
 
 const LobbyController = {
 	defaultInclude: {
@@ -35,13 +47,21 @@ const LobbyController = {
 		gameState: true
 	},
 
-	Get: async (lobbyId: number, fullGet?: boolean) => {
-		return await LobbyRepository.findFirst({
+	Get: async <T extends boolean = false>(
+		lobbyId: number,
+		fullGet?: T
+	): Promise<
+		(T extends true ? FullLobby : Lobby) | null
+	> => {
+		const lobby = await LobbyRepository.findFirst({
 			where: { id: lobbyId },
+
 			include: fullGet
 				? LobbyController.fullInclude
 				: LobbyController.defaultInclude
 		});
+
+		return lobby as T extends true ? FullLobby : Lobby;
 	},
 
 	// GetFromJoinMessage: async (
@@ -160,12 +180,14 @@ const LobbyController = {
 	async GetLobbyData(id: number) {
 		// console.log(GetRelationsFrom(LobbyRepository));
 
-		const lobby = await LobbyRepository.findFirst({
-			include: { players: true },
-			where: {
-				id: id
-			}
-		});
+		const lobby = await this.Get(id, true);
+
+		// const lobby = await LobbyRepository.findFirst({
+		// 	include: { players: true },
+		// 	where: {
+		// 		id: id
+		// 	}
+		// });
 
 		if (!lobby) {
 			throw new Error("Could not find lobby");
@@ -183,16 +205,19 @@ const LobbyController = {
 		} as MagnateLobbyView;
 	},
 
-	async GetLobbyPlayerView(lobbyPlayer) {
-		if (!lobbyPlayer)
+	async GetLobbyPlayerView(
+		lobbyPlayer: FullLobbyPlayer
+	): Promise<LobbyPlayerView> {
+		if (
+			!lobbyPlayer ||
+			!lobbyPlayer.userSession ||
+			!lobbyPlayer.restaurant
+		)
 			throw new Error("Invalid lobbyPlayer");
-		else if (!lobbyPlayer.userSession)
-			console.log("todo: remove this");
 
-		const x = await this.Get(lobbyPlayer.id, true);
 		const lobbyPlayerView: LobbyPlayerView = {
-			name: lp.userSession.name,
-			restaurant: lp.restaurant?.name ?? null
+			name: lobbyPlayer.userSession.name,
+			restaurant: lobbyPlayer.restaurant?.name ?? null
 		};
 		return lobbyPlayerView;
 	},
