@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+    backend:
+        build:
+            context: ./backend
+        ports:
+            - "3000:3000"
+        environment:
+            NODE_ENV: development
+            # DATABASE_HOST: db
+            DATABASE_USER: backend
+            DATABASE_PASSWORD: password
+            DATABASE_NAME: open_magnate_db
+            DATABASE_URL: file:./dev.db
+
+    db:
+        image: mysql:latest
+        environment:
+            MYSQL_USER: backend
+            MYSQL_PASSWORD: password
+            MYSQL_DATABASE: open_magnate_db
+            MYSQL_ROOT_PASSWORD: rootpassword
+        ports:
+            - "3306:3306"
+        volumes:
+            - db_data:/var/lib/mysql
+
+volumes:
+    db_data:
