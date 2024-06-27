@@ -81,6 +81,24 @@ const LobbyController = {
 		);
 	},
 
+	// _getNewGamestatePlayers: async (
+	// 	playerCount: number
+	// ) => {
+	// 	const data = [];
+
+	// 	const ret: Prisma.GamePlayerCreateManyInput[] = [
+	// 		1, 2, 3, 4, 5, 6
+	// 	].map(
+	// 		(i) =>
+	// 			({
+	// 				employees: [],
+	// 				milestones: [],
+	// 				number: i
+	// 			}) as Prisma.GamePlayerCreateManyInput
+	// 	);
+	// 	return ret;
+	// },
+
 	NewLobby: async (
 		users: UserSession | UserSession[],
 		newLobbyData: LobbySubmissionData
@@ -119,12 +137,6 @@ const LobbyController = {
 											id: restaurantCounter++
 										}
 									}
-								}
-							},
-							gameState: {
-								create: {
-									// currentPlayer: null,
-									// turnProgress: TurnProgress.SETTING_UP
 								}
 							}
 						}
