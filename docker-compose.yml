@@ -4,15 +4,22 @@ services:
     backend:
         build:
             context: ./backend
+            args:
+                DATABASE_URL: mysql://backend:password@db:3306/open_magnate_db
         ports:
             - "3000:3000"
         environment:
             NODE_ENV: development
             # DATABASE_HOST: db
-            DATABASE_USER: backend
-            DATABASE_PASSWORD: password
-            DATABASE_NAME: open_magnate_db
-            DATABASE_URL: file:./dev.db
+            # DATABASE_USER: backend
+            # DATABASE_PASSWORD: password
+            # DATABASE_NAME: open_magnate_db
+            DATABASE_URL: mysql://backend:password@db:3306/open_magnate_db
+        depends_on:
+            - db
+        command: >
+            sh -c "npx prisma migrate dev --name init &&
+               npm run start"
 
     db:
         image: mysql:latest
