@@ -16,6 +16,7 @@ const GameStateController = {
 		return await GameStateRepository.create({
 			data: {
 				lobby: { connect: lobby }
+
 				// currentTurn: 0,
 				// currentPlayer: null,
 				// turnProgress: TurnProgress.SETTING_UP
