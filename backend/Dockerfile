@@ -1,20 +1,18 @@
-# Use an official Node.js runtime as a parent image
 FROM node:16
 
-# Set the working directory
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
-# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+RUN npm ci
 
-# Copy the rest of the application code
 COPY . .
 
-# Expose the port your app runs on
+WORKDIR /usr/app/backend
+
+RUN npm ci
+
+# Export port 3000 to outside services
 EXPOSE 3000
 
-# Define the command to run your app
 CMD ["npm", "start"]

@@ -18,9 +18,7 @@ describe("Testing lobby", () => {
 			expect(lobby).toBeTruthy();
 
 			const userSessions =
-				await LobbyController.getUserSessions(
-					lobby!
-				);
+				await LobbyController.getUserSessions(-1);
 
 			expect(userSessions).toHaveLength(2);
 		});
@@ -63,7 +61,7 @@ describe("Testing lobby", () => {
 
 			const lobbyPlayers =
 				await LobbyController.getUserSessions(
-					lobby!
+					lobby!.id
 				);
 			expect(lobbyPlayers).toHaveLength(6);
 			expect(lobbyPlayers.length).toBeLessThanOrEqual(
