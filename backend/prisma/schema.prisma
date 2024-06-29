@@ -28,7 +28,7 @@ model UserSession {
 }
 
 model LobbyPlayer {
-  lobby   Lobby @relation(fields: [lobbyId], references: [id])
+  lobby   Lobby @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
   lobbyId Int
 
   userSession UserSession @relation(fields: [userId], references: [sessionKey])
@@ -65,16 +65,18 @@ model Restaurant {
 model GameState {
   // ID fields
   id    Int   @id @map("gamestate_id")
-  lobby Lobby @relation(fields: [id], references: [id])
+  lobby Lobby @relation(fields: [id], references: [id], onDelete: Cascade)
 
   // Scalar fields
-  rawMap String	@db.VarChar(2048)
+  rawMap        String @db.VarChar(2048)
+  currentTurn   Int	@default(1)
+  currentPlayer Int	@default(1)
 
   // Relations
   houses             House[]
   marketingCampaigns MarketingCampaign[]
 
-  GamePlayer GamePlayer[]
+  players GamePlayer[]
 }
 
 model House {
@@ -82,7 +84,7 @@ model House {
   id Int @id @default(autoincrement()) @map("house_id")
 
   gameId Int
-  game   GameState @relation(fields: [gameId], references: [id])
+  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   number Int @map("house_number")
 
@@ -99,7 +101,7 @@ model House {
 
 model Garden {
   houseId Int   @id @default(autoincrement())
-  house   House @relation(fields: [houseId], references: [id])
+  house   House @relation(fields: [houseId], references: [id], onDelete: Cascade)
 
   x Int
   y Int
@@ -109,14 +111,14 @@ model Garden {
 
 model Demand {
   houseId Int   @id @default(autoincrement())
-  house   House @relation(fields: [houseId], references: [id])
+  house   House @relation(fields: [houseId], references: [id], onDelete: Cascade)
 
   type DEMAND_TYPE
 }
 
 model MarketingCampaign {
   gameId Int
-  game   GameState @relation(fields: [gameId], references: [id])
+  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   number Int
 
@@ -134,7 +136,7 @@ model MarketingCampaign {
 
 model GamePlayer {
   gameId Int
-  game   GameState @relation(fields: [gameId], references: [id])
+  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   number Int @map("player_number")
 

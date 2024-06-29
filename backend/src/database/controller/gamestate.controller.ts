@@ -1,10 +1,16 @@
-import { Lobby, Prisma } from "@prisma/client";
+import {
+	GameState,
+	House,
+	Lobby,
+	Prisma
+} from "@prisma/client";
 import {
 	MAP_PIECES,
 	MapStringChar,
 	createMapString
 } from "../../game/MapPieces";
 import {
+	LobbyPlayerView,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
@@ -30,6 +36,16 @@ function copyArray<T>(
 
 	return outArray;
 }
+
+export type GameStateView = {
+	players: LobbyPlayerView[];
+	// turnProgress: TurnProgress;
+	currentTurn: number;
+	currentPlayer: number;
+	map: string;
+	houses: House[];
+	turnOrder: Array<number> | null;
+};
 
 const GameStateController = {
 	Get: async (id: number) => {
@@ -170,7 +186,8 @@ const GameStateController = {
 		);
 
 		const encodedMap =
-			Buffer.from(map).toString("base64");
+			// Buffer.from(map).toString("base64");
+			map;
 
 		const updated = await LobbyRepository.update({
 			where: {
@@ -191,6 +208,51 @@ const GameStateController = {
 		});
 
 		return Boolean(updated);
+	},
+
+	GetGameStateView: async (
+		gs: GameState
+	): Promise<GameStateView | null> => {
+		if (!gs) return null;
+
+		const gameStateView =
+			await GameStateRepository.findFirstOrThrow({
+				where: {
+					id: gs.id
+				},
+				include: {
+					lobby: {
+						include: {
+							players: {
+								include: {
+									restaurant: true,
+									userSession: true
+								}
+							}
+						}
+					},
+					houses: true,
+					marketingCampaigns: true,
+					players: true
+				}
+			});
+
+		return {
+			players: gameStateView.lobby.players.map(
+				(player) => ({
+					name: player.userSession.name,
+					restaurant: player.restaurant.name
+				})
+			),
+
+			currentTurn: gameStateView.currentTurn,
+			currentPlayer: gameStateView.currentPlayer,
+			map: gameStateView.rawMap,
+			houses: gameStateView.houses,
+			// TODO: Fix turn order to be included in the view
+			// turnOrder: gs.turnOrder
+			turnOrder: null
+		} as GameStateView;
 	}
 };
 

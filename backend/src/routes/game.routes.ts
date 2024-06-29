@@ -313,10 +313,10 @@ const handleJoinLobby: BackendMessageHandler<
 const handleLeaveLobby: BackendMessageHandler<
 	LeaveLobbyMessage
 > = async (params) => {
-	// TODO: Notify the other players that the lobby state has changed
-	// TODO: Add SQL trigger to delete the lobby if the last player leaves
-	// TODO: Fix leaving lobby as it is currently not working
-	if (!params.userSession) {
+	if (
+		!params.userSession ||
+		!params.userSession.sessionKey
+	) {
 		console.log(
 			"Attempted to remove unverified user from session."
 		);
@@ -365,6 +365,10 @@ const handleLeaveLobby: BackendMessageHandler<
 
 	resendLobby(lobby.id);
 
+	console.log(
+		`Telling player ${params.userSession.sessionKey} to leave the lobby.`
+	);
+
 	params.ws.send(
 		JSON.stringify({
 			type: "LEAVE_LOBBY"
@@ -372,7 +376,7 @@ const handleLeaveLobby: BackendMessageHandler<
 	);
 };
 
-async function resendLobby(lobbyId: number) {
+export async function resendLobby(lobbyId: number) {
 	const lobbyData =
 		await LobbyController.GetLobbyData(lobbyId);
 

@@ -1,4 +1,5 @@
 // import { House } from "@prisma/client";
+import { GameStateView } from "../backend/src/database/controller/gamestate.controller";
 import { RESTAURANT_NAME } from "./RestaurantNames";
 
 export interface LobbySubmissionData {
@@ -21,18 +22,6 @@ export type MagnateLobbyView = {
 	lobbyId: number;
 	lobbyName: string;
 	lobbyPlayers: LobbyPlayerView[];
-	// TODO: Fix GameState in view
-	gameState: null; // | GameStateView;
+	gameState: GameStateView;
 	inviteCode: string;
 };
-
-// export type GameStateView = {
-// 	players: LobbyPlayerView[];
-// 	turnProgress: TurnProgress;
-// 	currentTurn: number;
-// 	currentPlayer: number;
-// 	mapPieces: MapPieceData[];
-// 	houses: Array<House>;
-// 	turnOrder: Array<number> | null;
-// };
-

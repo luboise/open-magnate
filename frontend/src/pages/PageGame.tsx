@@ -52,7 +52,7 @@ function PageGame() {
 
 	const [inviteCode, setInviteCode] = useLocalVal<string>(
 		LOCAL_STORAGE_INVITE_CODE_NAME
-	)
+	);
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -170,7 +170,7 @@ function PageGame() {
 
 					console.debug(
 						"Received new session key: " +
-						message.data
+							message.data
 					);
 					setSessionKey(message.data);
 					reconnectLater();
@@ -193,9 +193,11 @@ function PageGame() {
 				};
 			}
 			case "LEAVE_LOBBY": {
+				console.debug("Leaving lobby.");
 				return {
 					...state,
-					pageState: "VERIFIED"
+					pageState: "VERIFIED",
+					lobbyData: null
 				};
 			}
 			default:
@@ -249,14 +251,14 @@ function PageGame() {
 				<Form
 					submitText="Join Lobby"
 					onSubmit={(data) => {
-						const formData = data as JoinLobbySubmissionData
+						const formData =
+							data as JoinLobbySubmissionData;
 
 						sendJsonMessage({
 							type: "JOIN_LOBBY",
 							data: formData
 						} as JoinLobbyMessage);
-						setInviteCode(formData.inviteCode)
-
+						setInviteCode(formData.inviteCode);
 					}}
 				>
 					<FormInput

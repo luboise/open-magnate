@@ -192,7 +192,11 @@ const LobbyController = {
 
 			if (!addedState) return null;
 
-			return newLobby;
+			const lob = await LobbyController.GetByLobbyId(
+				newLobby.id
+			);
+
+			return lob;
 		} catch (error) {
 			console.error(error);
 			return null;
@@ -222,8 +226,10 @@ const LobbyController = {
 				lobby.players.map(this.GetLobbyPlayerView)
 			),
 			inviteCode: lobby.inviteCode,
-			// TODO: Fix this to be the actual GameState
-			gameState: null
+			gameState:
+				await GameStateController.GetGameStateView(
+					lobby.gameState
+				)
 		} as MagnateLobbyView;
 	},
 
@@ -310,9 +316,24 @@ const LobbyController = {
 			await LobbyPlayerRepository.delete({
 				where: {
 					userId: player.sessionKey,
-					lobby: { id: lobbyId }
+					lobbyId: lobbyId
 				}
 			});
+
+			const players = await prisma.lobbyPlayer.count({
+				where: {
+					lobbyId: lobbyId
+				}
+			});
+
+			// Delete the lobby if there are no more players
+			// if (players === 0) {
+			// 	await prisma.lobby.delete({
+			// 		where: {
+			// 			id: lobbyId
+			// 		}
+			// 	});
+			// }
 			return true;
 		} catch (error) {
 			console.log(error);
