@@ -185,7 +185,7 @@ const LobbyController = {
 					return lobby;
 				});
 
-			GameStateController.addStateToLobby(newLobby);
+			GameStateController.AddStateToLobby(newLobby);
 
 			return newLobby;
 		} catch (error) {

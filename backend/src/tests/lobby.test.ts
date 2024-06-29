@@ -33,6 +33,8 @@ describe("Testing lobby", () => {
 
 	describe("Creating new lobbies", () => {
 		test("Expect NewLobby() to pass with existing users", async () => {
+			const EXPECTED_LENGTH = 5;
+
 			const users =
 				await UserSessionRepository.findMany({
 					where: {
@@ -40,9 +42,9 @@ describe("Testing lobby", () => {
 					}
 				});
 
-			if (users.length !== 6) {
+			if (users.length !== EXPECTED_LENGTH) {
 				throw new Error(
-					"Seed data error - expected 6 users"
+					`Seed data error - expected ${EXPECTED_LENGTH} users`
 				);
 			}
 
@@ -51,7 +53,7 @@ describe("Testing lobby", () => {
 				{
 					name: "testlobby-existing-users",
 					password: "",
-					playerCount: 6
+					playerCount: EXPECTED_LENGTH
 				}
 			);
 
@@ -63,7 +65,9 @@ describe("Testing lobby", () => {
 				await LobbyController.getUserSessions(
 					lobby!.id
 				);
-			expect(lobbyPlayers).toHaveLength(6);
+			expect(lobbyPlayers).toHaveLength(
+				EXPECTED_LENGTH
+			);
 			expect(lobbyPlayers.length).toBeLessThanOrEqual(
 				lobby!.playerCount
 			);

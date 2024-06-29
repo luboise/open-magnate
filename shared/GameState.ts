@@ -1,5 +1,3 @@
-import { Player } from "./Player";
-
 export enum TurnProgress {
 	SETTING_UP = "setting_up",
 	RESTAURANT_PLACEMENT = "restaurant_placement",
@@ -21,7 +19,6 @@ export enum TurnProgress {
 // 	turnOrder: Array<number> | null;
 // };
 
-export interface GameCreationParams {
-	players: Player[];
-}
-
+// export interface GameCreationParams {
+// 	players: Player[];
+// }

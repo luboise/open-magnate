@@ -21,7 +21,7 @@ datasource db {
 // }
 
 model UserSession {
-  sessionKey  String       @id @default(uuid())
+  sessionKey  String       @id @unique @default(uuid())
   browserId   String       @unique
   name        String       @default("")
   lobbyPlayer LobbyPlayer?

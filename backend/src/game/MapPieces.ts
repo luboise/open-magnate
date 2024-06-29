@@ -1,50 +1,109 @@
-import { MapPieceData } from "../utils";
-import { parseMapPiece } from "./Map";
+export type MapStringChar =
+	| "X"
+	| "R"
+	| "L"
+	| "C"
+	| "B"
+	| "H"
+	| "X";
 
-type MapPieceList = Record<number, MapPieceData>;
+type MapPieceColArray = [
+	MapStringChar,
+	MapStringChar,
+	MapStringChar,
+	MapStringChar,
+	MapStringChar
+];
 
-export type MapStringChar = "X" | "R" | "L" | "C";
-export type MapStringSegment = `${MapStringChar}`;
+const MAP_PIECE_ROW_SEP = " ";
+const MAP_PIECE_COL_SEP = ";";
 
-export type MapString =
-	`${MapStringSegment} ${MapStringSegment} ${MapStringSegment} ${MapStringSegment} ${MapStringSegment}`;
+export type MapTileArray = [
+	MapPieceColArray,
+	MapPieceColArray,
+	MapPieceColArray,
+	MapPieceColArray,
+	MapPieceColArray
+];
 
-export const MAP_PIECE_STRINGS: MapString[] = [];
+const MAP_PIECE_STRINGS: string[] = [
+	"XXRXX XXRXX RRRRR HHRXX HHRXX",
+	"XXRXX XLRXX RRRRR XXRXX XXRXX",
+	"XXRRR XHHXR RHHXR RXXXX RRRXX",
+	"XXRXX LXRXX RRRRR XXRXX XXRBX",
+	"XXRXX XBRXX RRRRR XXXXX XXXXX",
 
-export const MAP_PIECES: MapPieceList = [
-	parseMapPiece("XXRXX XXRXX RRRRR HHRXX HHRXX"),
-	parseMapPiece("XXRXX XLRXX RRRRR XXRXX XXRXX"),
-	parseMapPiece("XXRRR XHHXR RHHXR RXXXX RRRXX"),
-	parseMapPiece("XXRXX LXRXX RRRRR XXRXX XXRBX"),
-	parseMapPiece("XXRXX XBRXX RRRRR XXXXX XXXXX"),
+	"HHRXX HHRXX RRRRR XXRXX XXRXX",
+	"HHRXX HHRXX RRRRR XXXXX XXXXX",
+	"RRRRR RXHHR RXHHR XXXXX XXXXX",
+	"XXRXX XXRXX RRRRR XHHXX XHHXX",
+	"RRRXX RBXXX RXHHR XXHHR XXRRR",
 
-	parseMapPiece("HHRXX HHRXX RRRRR XXRXX XXRXX"),
-	parseMapPiece("HHRXX HHRXX RRRRR XXXXX XXXXX"),
-	parseMapPiece("RRRRR RXHHR RXHHR XXXXX XXXXX"),
-	parseMapPiece("XXRXX XXRXX RRRRR XHHXX XHHXX"),
-	parseMapPiece("RRRXX RBXXX RXHHR XXHHR XXRRR"),
+	"XXRXX XCRXX RRRRR XXRXX XXRXX",
+	"XBRXX XXRXX RRRRR XXRXX XXRXX",
+	"RRRRR RHHXR RHHXR XXXXX XXXXX",
+	"XXRCX XXRXX RRRRR BXRXX XXRXX",
+	"XXRXX XXRXX RRRRR XXXHH XXXHH",
 
-	parseMapPiece("XXRXX XCRXX RRRRR XXRXX XXRXX"),
-	parseMapPiece("XBRXX XXRXX RRRRR XXRXX XXRXX"),
-	parseMapPiece("RRRRR RHHXR RHHXR XXXXX XXXXX"),
-	parseMapPiece("XXRCX XXRXX RRRRR BXRXX XXRXX"),
-	parseMapPiece("XXRXX XXRXX RRRRR XXXHH XXXHH"),
+	"XXRHH XXRHH RRRRR XXRXX XXRXX",
+	"XXRXX XXRXX RRRRR XXXLX XXXXX",
+	"XXRRR XXXLR RXXXR RCXXX RRRXX",
+	"XXRXX XXRXX RRRRR XCXXX XXXXX",
+	"RRRRR RXHHR RXHHR RXXXR RRRRR"
+];
 
-	parseMapPiece("XXRHH XXRHH RRRRR XXRXX XXRXX"),
-	parseMapPiece("XXRXX XXRXX RRRRR XXXLX XXXXX"),
-	parseMapPiece("XXRRR XXXLR RXXXR RCXXX RRRXX"),
-	parseMapPiece("XXRXX XXRXX RRRRR XCXXX XXXXX"),
-	parseMapPiece("RRRRR RXHHR RXHHR RXXXR RRRRR")
-]
-	.filter((piece) => piece !== null)
-	.reduce<MapPieceList>((acc, cur, index) => {
-		return {
-			...acc,
-			[index + 1]: {
-				...cur,
-				id: index + 1
-			} as MapPieceData
-		};
-	}, {});
+export const MAP_PIECES: Record<number, MapTileArray> =
+	Object.fromEntries(
+		MAP_PIECE_STRINGS.map((pieceString, index) => [
+			index + 1,
+			parseMapString(pieceString)
+		])
+	);
+
+export function parseMapString(
+	mapString: string
+): MapTileArray {
+	const array = mapString
+		.split(MAP_PIECE_ROW_SEP)
+		.map((row) => Array.from(row) as MapPieceColArray);
+
+	return array as MapTileArray;
+}
+
+export function createMapPieceString(data: MapTileArray) {
+	let outValue = "";
+
+	for (let row = 0; row < data.length; row++) {
+		for (let col = 0; col < data[row].length; col++) {
+			outValue += data[row][col];
+		}
+
+		outValue +=
+			row !== data.length - 1
+				? MAP_PIECE_ROW_SEP
+				: "";
+	}
+
+	return outValue;
+}
+
+export function createMapString(
+	data: MapStringChar[][]
+): string {
+	let outValue = "";
+
+	for (let row = 0; row < data.length; row++) {
+		for (let col = 0; col < data[row].length; col++) {
+			outValue += data[row][col];
+		}
+
+		outValue +=
+			row !== data.length - 1
+				? MAP_PIECE_COL_SEP
+				: "";
+	}
+
+	return outValue;
+}
 
 export const RESTAURANTS = {};
