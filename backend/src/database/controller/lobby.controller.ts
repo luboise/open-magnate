@@ -185,7 +185,10 @@ const LobbyController = {
 					return lobby;
 				});
 
-			GameStateController.AddStateToLobby(newLobby);
+			const addedState =
+				await GameStateController.AddStateToLobby(
+					newLobby
+				);
 
 			return newLobby;
 		} catch (error) {

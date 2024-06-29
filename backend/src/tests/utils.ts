@@ -1,12 +1,6 @@
-import {
-	dropEverything,
-	reseedDatabase
-} from "../../prisma/seed";
-
 export async function basicBeforeEach() {
-	await dropEverything();
-
-	await reseedDatabase();
+	// await dropEverything();
+	// await reseedDatabase();
 	// await reseedDatabase();
 }
 

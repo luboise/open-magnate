@@ -91,7 +91,7 @@ const GameStateController = {
 
 				const piece = MAP_PIECES[tileKey];
 
-				console.log("piece: ", piece);
+				// console.log("piece: ", piece);
 
 				if (!piece) continue;
 
@@ -102,7 +102,7 @@ const GameStateController = {
 					pieceY * MAP_PIECE_HEIGHT
 				);
 
-				console.log(mapArray);
+				// console.log(mapArray);
 
 				// If there is a house in this tile
 				if (
@@ -117,10 +117,10 @@ const GameStateController = {
 			}
 		}
 
-		console.log(mapArray);
+		// console.log(mapArray);
 
 		const outString = createMapString(mapArray);
-		console.log(outString);
+		// console.log(outString);
 
 		return [outString, houses];
 	},
@@ -155,7 +155,7 @@ const GameStateController = {
 			lobby.playerCount
 		);
 
-		return await LobbyRepository.update({
+		const updated = await LobbyRepository.update({
 			where: {
 				id: lobby.id
 			},
@@ -172,6 +172,8 @@ const GameStateController = {
 				}
 			}
 		});
+
+		return Boolean(updated);
 	}
 };
 
