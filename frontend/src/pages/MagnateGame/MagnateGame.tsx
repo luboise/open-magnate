@@ -4,9 +4,8 @@ import Button from "../../components/Button";
 import useClipboard from "../../hooks/useClipboard";
 import useNotification from "../../hooks/useNotification";
 import usePageGame from "../../hooks/usePageGame";
-import {
-	MagnateLobbyView
-} from "../../utils";
+import { MagnateLobbyView } from "../../utils";
+import MapPreview from "./MapPreview";
 import PlayerDisplay from "./PlayerDisplay";
 
 function MagnateGame(props: { data: MagnateLobbyView }) {
@@ -33,28 +32,30 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 					<h2>
 						Players:{" "}
 						{props.data.lobbyPlayers.length}
-						<div className="player-display-container">
-							{...props.data.lobbyPlayers.map(
-								(player) => (
-									<PlayerDisplay
-										player={player}
-									/>
-								)
-							)}
-						</div>
-						<span>
-							Invite code:{" "}
-							{props.data.inviteCode}
-						</span>
-						<Button
-							onClick={onCopyInviteLink}
-							text="Copy invite"
-						/>
 					</h2>
+					<div className="player-display-container">
+						{...props.data.lobbyPlayers.map(
+							(player) => (
+								<PlayerDisplay
+									player={player}
+								/>
+							)
+						)}
+					</div>
+					<span>
+						Invite code: {props.data.inviteCode}
+					</span>
+					<Button
+						onClick={onCopyInviteLink}
+						text="Copy invite"
+					/>
 				</div>
 				<Button
 					text="Leave Lobby"
 					onClick={leaveLobby}
+				/>
+				<MapPreview
+					map={props.data.gameState.map}
 				/>
 			</div>
 		</div>

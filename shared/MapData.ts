@@ -29,4 +29,16 @@ export type MapPieceData = {
 	yOffset: number;
 	tiles: Array<Array<MapTileData>>;
 };
+export const CHAR_TO_MAP_TILE_CONVERTER: Record<
+	string,
+	Partial<MapTileData>
+> = {
+	X: { type: TileType.EMPTY },
 
+	R: { type: TileType.ROAD },
+	H: { type: TileType.HOUSE },
+
+	L: { type: TileType.LEMONADE },
+	C: { type: TileType.COLA },
+	B: { type: TileType.BEER }
+};

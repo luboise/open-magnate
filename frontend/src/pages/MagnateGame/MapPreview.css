@@ -1,0 +1,13 @@
+.map-tile-row {
+	display: flex;
+	width: 100%;
+
+	flex: 1;
+}
+
+.map-preview-container {
+	display: flex;
+	flex-direction: column;
+	height: 1000px;
+	aspect-ratio: 1;
+}

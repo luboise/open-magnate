@@ -1,5 +1,8 @@
-import { RoadAdjacencyType, TileType } from "../game";
-import { MapTileData } from "../utils";
+import {
+	MapTileData,
+	RoadAdjacencyType,
+	TileType
+} from "../utils";
 import "./MapTile.css";
 
 function MapTile(props: { tile: MapTileData }) {
