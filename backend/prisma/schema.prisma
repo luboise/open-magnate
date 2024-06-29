@@ -68,7 +68,7 @@ model GameState {
   lobby Lobby @relation(fields: [id], references: [id])
 
   // Scalar fields
-  rawMap String
+  rawMap String	@db.VarChar(2048)
 
   // Relations
   houses             House[]

@@ -169,6 +169,9 @@ const GameStateController = {
 			lobby.playerCount
 		);
 
+		const encodedMap =
+			Buffer.from(map).toString("base64");
+
 		const updated = await LobbyRepository.update({
 			where: {
 				id: lobby.id
@@ -176,7 +179,7 @@ const GameStateController = {
 			data: {
 				gameState: {
 					create: {
-						rawMap: map,
+						rawMap: encodedMap,
 						houses: {
 							createMany: {
 								data: houses
