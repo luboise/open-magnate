@@ -190,6 +190,8 @@ const LobbyController = {
 					newLobby
 				);
 
+			if (!addedState) return null;
+
 			return newLobby;
 		} catch (error) {
 			console.error(error);

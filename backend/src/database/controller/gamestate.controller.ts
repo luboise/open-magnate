@@ -54,15 +54,17 @@ const GameStateController = {
 		const houses: Prisma.HouseCreateManyGameInput[] =
 			[];
 
-		const unusedMapPieces = new Set<number>(
-			new Array(20).fill(1, 20)
-		);
+		// Unused map pieces in a random order
+		const unusedMapPieces = new Array(20)
+			.fill(null)
+			.map((_val, index) => index + 1)
+			.sort((_a, _b) => Math.random() - 0.5);
 
 		// Create an empty array to put the tiles into
 		// mapArray[x][y]
 		// Column major order
 		const mapArray: MapStringChar[][] = new Array(
-			defaults.mapWidth * MAP_PIECE_HEIGHT
+			defaults.mapHeight * MAP_PIECE_HEIGHT
 		)
 			.fill(null)
 			.map((_) =>
@@ -74,26 +76,38 @@ const GameStateController = {
 		// While the map hasn't been filled
 		for (
 			let pieceX = 0;
-			pieceX < defaults.mapHeight * defaults.mapWidth;
+			pieceX < defaults.mapWidth;
 			pieceX++
 		) {
 			for (
 				let pieceY = 0;
-				pieceY <
-				defaults.mapHeight * defaults.mapWidth;
+				pieceY < defaults.mapHeight;
 				pieceY++
 			) {
-				// Select a random unused tile
-				const tileKey = unusedMapPieces
-					.values()
-					.next().value;
-				unusedMapPieces.delete(tileKey);
+				if (unusedMapPieces.length === 0)
+					throw new Error(
+						"Ran out of map pieces. This shouldn't happen."
+					);
+
+				const tileKey = unusedMapPieces.pop();
+
+				if (!tileKey) {
+					console.error(
+						"Invalid index received from unusedMapPieces. Skipping."
+					);
+					continue;
+				}
 
 				const piece = MAP_PIECES[tileKey];
 
 				// console.log("piece: ", piece);
 
-				if (!piece) continue;
+				if (!piece) {
+					console.log(
+						`Piece ${tileKey} is invalid. Skipping this piece.`
+					);
+					continue;
+				}
 
 				copyArray(
 					piece,
