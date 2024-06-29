@@ -18,9 +18,9 @@ function SelectionButtonList<T>(props: {
 				{...props.valueList.map((currentValue) => (
 					<Button
 						text={String(currentValue)}
-						onClick={() => {
-							setValue(currentValue);
-						}}
+						onClick={() =>
+							setValue(currentValue)
+						}
 						// className={
 						// 	currentValue === value
 						// 		? "button-selected"

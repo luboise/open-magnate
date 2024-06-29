@@ -10,7 +10,7 @@ const Button: React.FC<ButtonProps> = (
 	const { text, onClick, ...args } = props;
 
 	return (
-		<button onClick={onClick} {...args}>
+		<button onClick={onClick} {...args} type="button">
 			{text}
 		</button>
 	);

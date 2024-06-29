@@ -80,12 +80,15 @@ const routeHandler: RouteHandler = (express, app) => {
 			) {
 				case "CREATE_LOBBY": {
 					handleCreateLobby(params);
+					return;
 				}
 				case "JOIN_LOBBY": {
 					handleJoinLobby(params);
+					return;
 				}
 				case "LEAVE_LOBBY": {
 					handleLeaveLobby(params);
+					return;
 				}
 			}
 		});

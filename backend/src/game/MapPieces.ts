@@ -92,15 +92,13 @@ export function createMapString(
 ): string {
 	let outValue = "";
 
-	for (let row = 0; row < data.length; row++) {
-		for (let col = 0; col < data[row].length; col++) {
-			outValue += data[row][col];
+	for (let y = 0; y < data.length; y++) {
+		for (let x = 0; x < data[y].length; x++) {
+			outValue += data[y][x];
 		}
 
 		outValue +=
-			row !== data.length - 1
-				? MAP_PIECE_COL_SEP
-				: "";
+			y !== data.length - 1 ? MAP_PIECE_COL_SEP : "";
 	}
 
 	return outValue;

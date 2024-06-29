@@ -7,8 +7,17 @@ describe("Gamestate Unit Tests", () => {
 				GameStateController.NewMap(2);
 			expect(map).toBeTruthy();
 
+			console.log(map);
+
 			const rows = map.split(";");
 			expect(rows).toHaveLength(15);
+			expect(
+				Array.from(map).reduce<number>(
+					(acc, cur) =>
+						acc + (cur === "X" ? 1 : 0),
+					0
+				)
+			).toBeLessThan(225);
 			rows.forEach((row) => {
 				expect(row).toBeTruthy();
 				expect(row).toHaveLength(15);

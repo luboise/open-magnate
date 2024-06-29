@@ -278,7 +278,12 @@ function PageGame() {
 	} else if (state.pageState === "CREATING_LOBBY") {
 		return (
 			<Form
-				onSubmit={(data) => {
+				onSubmit={(data: any) => {
+					console.debug(
+						`Attempting to create a lobby using the following data: `,
+						data
+					);
+
 					sendJsonMessage({
 						type: "CREATE_LOBBY",
 						data: data as LobbySubmissionData

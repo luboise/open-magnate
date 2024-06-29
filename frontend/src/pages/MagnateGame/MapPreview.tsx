@@ -3,6 +3,7 @@ import MapTile from "../../components/MapTile";
 import "./MapPreview.css";
 
 function MapPreview(props: { map: string }) {
+	if (!props.map) return <></>;
 	return (
 		<div className="map-preview-container">
 			{...props.map.split(";").map((line, x) => (

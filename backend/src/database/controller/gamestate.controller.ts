@@ -23,18 +23,16 @@ function copyArray<T>(
 	mainArray: T[][],
 	xStart: number = 0,
 	yStart: number = 0
-): T[][] {
-	const outArray = [...mainArray];
-
+) {
 	for (let x = 0; x < data.length; x++) {
 		for (let y = 0; y < data[x].length; y++) {
 			const outVal = data[x][y] as T;
 
-			outArray[x + xStart][y + yStart] = outVal;
+			mainArray[x + xStart][y + yStart] = outVal;
 		}
 	}
 
-	return outArray;
+	// return outArray;
 }
 
 export type GameStateView = {
@@ -80,13 +78,13 @@ const GameStateController = {
 		// mapArray[x][y]
 		// Column major order
 		const mapArray: MapStringChar[][] = new Array(
-			defaults.mapHeight * MAP_PIECE_HEIGHT
+			defaults.mapWidth * MAP_PIECE_WIDTH
 		)
-			.fill(null)
+			.fill("X")
 			.map((_) =>
 				new Array(
-					defaults.mapWidth * MAP_PIECE_WIDTH
-				).fill(null)
+					defaults.mapHeight * MAP_PIECE_HEIGHT
+				).fill("X")
 			);
 
 		// While the map hasn't been filled
