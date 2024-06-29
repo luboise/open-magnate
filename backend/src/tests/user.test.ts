@@ -1,9 +1,14 @@
-import { seedUser1 } from "../../prisma/seed";
+import {
+	dropEverything,
+	reseedDatabase,
+	seedUser1
+} from "../../prisma/seed";
 import UserSessionController from "../database/controller/usersession.controller";
-import { basicAfterEach, basicBeforeEach } from "./utils";
+import { basicAfterEach } from "./utils";
 
 beforeEach(async () => {
-	await basicBeforeEach();
+	await dropEverything();
+	await reseedDatabase();
 });
 
 afterEach(async () => {

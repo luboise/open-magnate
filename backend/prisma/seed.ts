@@ -1,8 +1,12 @@
 // import prisma from "../src/datasource";
 
-import { Restaurant } from "@prisma/client";
+import {
+	PrismaClient,
+	PrismaPromise,
+	Restaurant
+} from "@prisma/client";
 import { RESTAURANT_NAMES } from "../../shared";
-import prisma from "../src/datasource";
+// import prisma from "../src/datasource";
 
 // const [
 // 	seedRestaurant1,
@@ -101,6 +105,7 @@ export const seedLobby1 = {
 
 // TODO: Fix main throwing an error when running without debug mode on GitHub actions
 async function main() {
+	const prisma = new PrismaClient();
 	try {
 		const transactions = [];
 		// // Delete lobby dependees
@@ -218,6 +223,43 @@ export async function reseedDatabase() {
 	await main();
 }
 
+export async function dropEverything() {
+	const prisma = new PrismaClient();
+
+	const transactions: PrismaPromise<any>[] = [];
+	transactions.push(
+		prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`
+	);
+
+	const tablenames = await prisma.$queryRaw<
+		Array<{ TABLE_NAME: string }>
+	>`SELECT TABLE_NAME from information_schema.TABLES WHERE TABLE_SCHEMA = 'tests';`;
+
+	for (const { TABLE_NAME } of tablenames) {
+		if (TABLE_NAME !== "_prisma_migrations") {
+			try {
+				transactions.push(
+					prisma.$executeRawUnsafe(
+						`TRUNCATE ${TABLE_NAME};`
+					)
+				);
+			} catch (error) {
+				console.log({ error });
+				throw error;
+			}
+		}
+	}
+
+	transactions.push(
+		prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`
+	);
+
+	try {
+		await prisma.$transaction(transactions);
+	} catch (error) {
+		console.log({ error });
+	}
+}
 // async function deleteAllRowsFromAllTables() {
 // 	try {
 // 		// Start a transaction
