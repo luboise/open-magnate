@@ -6,9 +6,8 @@
 		"build": "tsc",
 		"start": "node dist/backend/src/index.js",
 		"migrate": "npx prisma migrate db --name init",
-		"migrate-dev": "npx prisma migrate dev --name init",
-		"test-watch": "jest --runInBand --watch",
-		"dev": "nodemon --config ../config/nodemon.json",
+		"migrate-dev": "npx dotenv -e .env.dev -- npx prisma migrate dev --name init",
+		"dev": "npm run migrate-dev && npx dotenv -e .env.dev -- nodemon --config ../config/nodemon.json",
 		"test:setup": "docker compose up -d",
 		"test:teardown": "docker compose down",
 		"test": "npm run test:setup && npx dotenv -e .env.test -- npx prisma migrate deploy && npx dotenv -e .env.test -- jest -i --runInBand"
