@@ -3,6 +3,14 @@ import { parseMapPiece } from "./Map";
 
 type MapPieceList = Record<number, MapPieceData>;
 
+export type MapStringChar = "X" | "R" | "L" | "C";
+export type MapStringSegment = `${MapStringChar}`;
+
+export type MapString =
+	`${MapStringSegment} ${MapStringSegment} ${MapStringSegment} ${MapStringSegment} ${MapStringSegment}`;
+
+export const MAP_PIECE_STRINGS: MapString[] = [];
+
 export const MAP_PIECES: MapPieceList = [
 	parseMapPiece("XXRXX XXRXX RRRRR HHRXX HHRXX"),
 	parseMapPiece("XXRXX XLRXX RRRRR XXRXX XXRXX"),

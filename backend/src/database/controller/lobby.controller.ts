@@ -18,6 +18,7 @@ import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import RestaurantRepository from "../repository/restaurant.repository";
 import UserSessionRepository from "../repository/usersession.repository";
+import GameStateController from "./gamestate.controller";
 
 interface FullLobbyPlayer extends LobbyPlayer {
 	userSession: UserSession;
@@ -183,6 +184,8 @@ const LobbyController = {
 
 					return lobby;
 				});
+
+			GameStateController.addStateToLobby(newLobby);
 
 			return newLobby;
 		} catch (error) {
