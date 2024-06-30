@@ -16,7 +16,7 @@ type MapPreviewProps =
 	  };
 
 function MapPreview(props: MapPreviewProps) {
-	const { map } = useGameState();
+	const { mapRowOrder: map } = useGameState();
 
 	if (!map) return <></>;
 
@@ -51,3 +51,4 @@ function MapPreview(props: MapPreviewProps) {
 }
 
 export default MapPreview;
+

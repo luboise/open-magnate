@@ -5,9 +5,10 @@ import {
 	useRecoilValue
 } from "recoil";
 import {
+	CloneArray,
+	GetTransposed,
 	RoadAdjacencyType,
-	TileType,
-	cloneArray
+	TileType
 } from "../../../backend/src/utils";
 import {
 	GameStateView,
@@ -23,16 +24,22 @@ const GameStateAtom = atom<GameStateAtomType>({
 	default: null
 });
 
-const RECOIL_MAP_KEY = "PARSED_MAP";
+const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
+const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
 
 type MapSelectorType = MapTileData[][] | null;
-const mapSelector = selector<MapSelectorType>({
-	key: RECOIL_MAP_KEY,
+const mapColumnOrderSelector = selector<MapSelectorType>({
+	key: RECOIL_MAP_COL_ORDER_KEY,
 	get: ({ get }) => {
+		const mapString = get(GameStateAtom)?.map;
+
+		if (!mapString) return null;
+
 		console.log("map: ", get(GameStateAtom)?.map);
-		const baseMap =
-			get(GameStateAtom)
-				?.map.split(";")
+
+		const rowOrderMap =
+			mapString
+				.split(";")
 				.map((line, y) =>
 					line
 						.split("")
@@ -40,40 +47,59 @@ const mapSelector = selector<MapSelectorType>({
 							parseMapChar(char, x, y)
 						)
 				) ?? null;
-		if (!baseMap) return null;
+		if (!rowOrderMap) return null;
 
-		const modifiedMap = addMapDetails(baseMap);
-
-		return modifiedMap;
+		return addMapDetails(GetTransposed(rowOrderMap));
 	}
 });
 
+const mapRowOrderSelector = selector<MapSelectorType>({
+	key: RECOIL_MAP_ROW_ORDER_KEY,
+	get: ({ get }) => {
+		const colOrder = get(mapColumnOrderSelector);
+		if (!colOrder) return null;
+
+		return GetTransposed(colOrder);
+	}
+});
 export function useGameState(): {
 	state: GameStateAtomType;
-	map: MapSelectorType;
+	mapColOrder: MapSelectorType;
+	mapRowOrder: MapSelectorType;
 	setState: (newState: GameStateAtomType) => void;
 } {
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
-	const map = useRecoilValue(mapSelector);
+	const mapColOrder = useRecoilValue(
+		mapColumnOrderSelector
+	);
+	const mapRowOrder = useRecoilValue(mapRowOrderSelector);
 
-	return { state, map, setState: _setState };
+	return {
+		state,
+		mapColOrder,
+		mapRowOrder,
+		setState: _setState
+	};
 }
 function addMapDetails(baseMap: Map2D): Map2D {
-	const newMap = cloneArray(baseMap);
+	const newMap = CloneArray(baseMap);
 
 	const maxX = baseMap.length - 1;
 
-	for (let x = 0; x <= maxX; x++) {
-		const maxY = baseMap[x].length - 1;
+	// function test(y, maxy, )
 
-		for (let y = 0; y < maxY; y++) {
+	// Since the data is in column major order, iterate Y first
+	for (let x = 0; x <= maxX; x++) {
+		const maxY = newMap[x].length - 1;
+
+		for (let y = 0; y <= maxY; y++) {
 			const val = newMap[x][y];
 			if (val.type === TileType.ROAD) {
 				val.data = {
 					north:
-						y < maxY &&
-						newMap[x][y + 1].type ===
+						y > 0 &&
+						newMap[x][y - 1].type ===
 							TileType.ROAD,
 					south: false,
 					east: false,
