@@ -41,5 +41,6 @@ jobs:
                   cd ./backend
                   npx wait-on tcp:localhost:3307
                   npx dotenv -e .env.test -- npx prisma migrate deploy
+                  npx prisma db seed
                   npx dotenv -e .env.test -- jest -i --runInBand
 
