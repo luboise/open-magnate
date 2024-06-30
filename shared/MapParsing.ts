@@ -1,10 +1,10 @@
 import {
+	DirectionBools,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_SIZE,
 	MAP_PIECE_WIDTH,
 	MapPieceData,
 	MapTileData,
-	RoadAdjacencyType,
 	new2DArray
 } from "../backend/src/utils";
 import { CHAR_TO_MAP_TILE_CONVERTER } from "./MapData";
@@ -117,7 +117,7 @@ export function parseMapChar(
 			south: true,
 			east: true,
 			west: true
-		} as RoadAdjacencyType;
+		} as DirectionBools;
 	}
 
 	return parsedObject as MapTileData;
@@ -197,3 +197,4 @@ export function parseMap(
 		? []
 		: pieces;
 }
+

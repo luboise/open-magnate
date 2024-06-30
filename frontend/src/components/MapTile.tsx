@@ -1,6 +1,6 @@
 import {
+	DirectionBools,
 	MapTileData,
-	RoadAdjacencyType,
 	TileType
 } from "../utils";
 import "./MapTile.css";
@@ -20,8 +20,7 @@ function MapTile(props: { tile: MapTileData }) {
 	}
 
 	if (props.tile.type === TileType.ROAD) {
-		const roadData = props.tile
-			.data as RoadAdjacencyType;
+		const roadData = props.tile.data as DirectionBools;
 
 		if (!roadData) {
 			throw new Error(
@@ -65,7 +64,27 @@ function MapTile(props: { tile: MapTileData }) {
 			);
 	}
 
-	return <div className="map-tile">{...elements}</div>;
+	const classes = ["map-tile"];
+	for (const direction of [
+		"north",
+		"south",
+		"east",
+		"west"
+	]) {
+		if (
+			props.tile.pieceEdges[
+				direction as keyof DirectionBools
+			]
+		)
+			classes.push(`tile-boundary-${direction}`);
+	}
+	return (
+		<div className={classes.join(" ")}>
+			{/* <div className="map-tile-content"> */}
+			{...elements}
+			{/* </div> */}
+		</div>
+	);
 }
 
 export default MapTile;

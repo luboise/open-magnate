@@ -10,10 +10,11 @@ import {
 	TileType
 } from "../../../backend/src/utils";
 import {
+	DirectionBools,
 	IsConnecting,
+	IsEdge,
 	IsMaxBound,
-	IsMinBound,
-	RoadAdjacencyType
+	IsMinBound
 } from "../../../shared/MapData";
 import {
 	GameStateView,
@@ -102,7 +103,12 @@ function addMapDetails(baseMap: Map2D): Map2D {
 		for (let y = 0; y <= maxY; y++) {
 			const val = newMap[x][y];
 
-			val.connecting = IsConnecting(val.x, val.y);
+			val.pieceEdges = {
+				north: IsEdge(val.y - 1) && IsEdge(val.y),
+				south: IsEdge(val.y + 1) && IsEdge(val.y),
+				east: IsEdge(val.x + 1) && IsEdge(val.x),
+				west: IsEdge(val.x - 1) && IsEdge(val.x)
+			};
 
 			if (val.type === TileType.ROAD) {
 				val.data = {
@@ -130,7 +136,7 @@ function addMapDetails(baseMap: Map2D): Map2D {
 							newMap[x - 1][y].type ===
 								TileType.ROAD) ||
 						IsConnecting(val.x - 1, val.y)
-				} as RoadAdjacencyType;
+				} as DirectionBools;
 			}
 		}
 	}

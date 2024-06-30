@@ -20,8 +20,8 @@ export const PLAYER_DEFAULTS: Record<
 	},
 
 	3: {
-		mapWidth: 3,
-		mapHeight: 4,
+		mapWidth: 4,
+		mapHeight: 3,
 		limitedEmployeeCards: 1,
 		marketingUnused: new Set([15, 16])
 	},

@@ -21,7 +21,7 @@
 	max-height: 100%;
 }
 
-#lobby-inner-container {
+#lobby-outer-container {
 	display: flex;
 	position: relative;
 	width: 100%;
@@ -29,10 +29,10 @@
 	gap: 2em;
 }
 
-#lobby-inner-container > div {
-	flex: 1;
+#lobby-outer-container > div {
+	/* flex: 1; */
 
-	border: 1em solid black;
+	border: 0.5vw solid black;
 
 	padding: 1em;
 }
@@ -44,3 +44,22 @@
 	justify-content: space-between;
 	width: 100%;
 }
+
+#lobby-map-preview {
+	/* width: auto; */
+	position: absolute;
+	top: 0;
+	right: 0;
+	/* width: 1000px; */
+	height: 100vh;
+}
+
+/* #lobby-map-preview > * {
+	width: 100%;
+} */
+
+#lobby-player-container {
+	width: 20%;
+	/* flex: 1; */
+}
+

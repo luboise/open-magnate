@@ -24,9 +24,10 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 
 	// console.debug(props.data);
 	return (
-		<div id="lobby-outer-container">
-			{/* <h2>Lobby</h2> */}
-			<div id="lobby-inner-container">
+		<>
+			<div id="lobby-outer-container">
+				{/* <h2>Lobby</h2> */}
+				{/* <div id="lobby-inner-container"> */}
 				<div id="lobby-player-container">
 					<p>Lobby: {props.data.lobbyName}</p>
 					<div className="lobby-container">
@@ -64,11 +65,12 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 					</div>
 				</div>
 
-				<div id="lobby-map-preview">
-					<MapPreview type="full" />
-				</div>
+				{/* </div> */}
 			</div>
-		</div>
+			<div id="lobby-map-preview">
+				<MapPreview type="full" />
+			</div>
+		</>
 	);
 }
 

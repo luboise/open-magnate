@@ -36,16 +36,17 @@ function MapPreview(props: MapPreviewProps) {
 	}
 
 	return (
-		<div className="map-preview-container">
-			{map.map((line) => (
-				<div className="map-tile-row">
-					{line
-						.filter(FilterPreviewFiles)
-						.map((tile) => (
-							<MapTile tile={tile} />
-						))}
-				</div>
-			))}
+		<div
+			className="map-preview-container"
+			style={{
+				gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
+				aspectRatio: `${map[0].length} / ${map.length}`
+			}}
+		>
+			{...map
+				.flat(2)
+				.filter(FilterPreviewFiles)
+				.map((tile) => <MapTile tile={tile} />)}
 		</div>
 	);
 }

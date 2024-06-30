@@ -1,31 +1,66 @@
 import GameStateController from "../../database/controller/gamestate.controller";
-import { GetTransposed } from "../../utils";
+import {
+	GetTransposed,
+	MAP_PIECE_HEIGHT,
+	MAP_PIECE_WIDTH,
+	PLAYER_DEFAULTS
+} from "../../utils";
+
+function testNewMap(playerCount: number) {
+	const [map, houses] =
+		GameStateController.NewMap(playerCount);
+	expect(map).toBeTruthy();
+
+	console.log(map);
+
+	const defaults = PLAYER_DEFAULTS[playerCount];
+
+	const numColumns = map.split(";");
+	expect(numColumns).toHaveLength(
+		defaults.mapHeight * MAP_PIECE_HEIGHT
+	);
+
+	const numRows = numColumns[0].split("");
+	expect(numRows).toHaveLength(
+		defaults.mapWidth * MAP_PIECE_WIDTH
+	);
+
+	expect(
+		Array.from(map).reduce<number>(
+			(acc, cur) => acc + (cur === "X" ? 1 : 0),
+			0
+		)
+	).toBeLessThan(
+		MAP_PIECE_WIDTH *
+			MAP_PIECE_HEIGHT *
+			defaults.mapWidth *
+			defaults.mapHeight
+	);
+
+	numColumns.forEach((row) => {
+		expect(row).toBeTruthy();
+		expect(row).toHaveLength(
+			defaults.mapWidth * MAP_PIECE_WIDTH
+		);
+	});
+
+	expect(houses).toBeTruthy();
+	expect(houses.length).toBeGreaterThanOrEqual(1);
+}
 
 describe("Gamestate Unit Tests", () => {
 	describe("Creating New Gamestates", () => {
-		test("Expect NewMap() to return a valid map and set of houses", async () => {
-			const [map, houses] =
-				GameStateController.NewMap(2);
-			expect(map).toBeTruthy();
-
-			console.log(map);
-
-			const rows = map.split(";");
-			expect(rows).toHaveLength(15);
-			expect(
-				Array.from(map).reduce<number>(
-					(acc, cur) =>
-						acc + (cur === "X" ? 1 : 0),
-					0
-				)
-			).toBeLessThan(225);
-			rows.forEach((row) => {
-				expect(row).toBeTruthy();
-				expect(row).toHaveLength(15);
-			});
-
-			expect(houses).toBeTruthy();
-			expect(houses.length).toBeGreaterThanOrEqual(3);
+		test("Expect NewMap() to return a valid map and set of houses (2 players)", async () => {
+			testNewMap(2);
+		});
+		test("Expect NewMap() to return a valid map and set of houses (3 players)", async () => {
+			testNewMap(3);
+		});
+		test("Expect NewMap() to return a valid map and set of houses (4 players)", async () => {
+			testNewMap(4);
+		});
+		test("Expect NewMap() to return a valid map and set of houses (5 players)", async () => {
+			testNewMap(5);
 		});
 	});
 });

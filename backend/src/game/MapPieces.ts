@@ -90,15 +90,18 @@ export function createMapPieceString(data: MapTileArray) {
 export function createMapString(
 	data: MapStringChar[][]
 ): string {
+	// console.log(data);
 	let outValue = "";
 
-	for (let y = 0; y < data.length; y++) {
-		for (let x = 0; x < data[y].length; x++) {
-			outValue += data[y][x];
+	const maxY = data[0].length;
+	const maxX = data.length;
+
+	for (let y = 0; y < maxY; y++) {
+		for (let x = 0; x < maxX; x++) {
+			outValue += data[x][y];
 		}
 
-		outValue +=
-			y !== data.length - 1 ? MAP_PIECE_COL_SEP : "";
+		outValue += y !== maxY - 1 ? MAP_PIECE_COL_SEP : "";
 	}
 
 	return outValue;
