@@ -39,8 +39,6 @@ jobs:
             - name: Run Tests
               run: |
                   cd ./backend
-                  npx wait-on tcp:localhost:3307
-                  npx dotenv -e .env.test -- npx prisma migrate deploy
-                  npx prisma db seed
-                  npx dotenv -e .env.test -- jest -i --runInBand
+                  npm run test:integration:setup:db
+                  npm run test:integration:run
 
