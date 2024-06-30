@@ -384,9 +384,6 @@ const handleLeaveLobby: BackendMessageHandler<
 export async function resendLobby(lobbyId: number) {
 	const lobbyData =
 		await LobbyController.GetLobbyData(lobbyId);
-	const lobbyHost = lobbyData.lobbyPlayers.find(
-		(player) => player.host
-	);
 
 	const lobbyPlayers =
 		await LobbyController.getUserSessions(lobbyId);
