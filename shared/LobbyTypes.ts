@@ -21,6 +21,7 @@ export type LobbyPlayerView = {
 export type MagnateLobbyView = {
 	lobbyId: number;
 	lobbyName: string;
+	playerCount: number;
 	lobbyPlayers: LobbyPlayerView[];
 	gameState: GameStateView;
 	inviteCode: string;

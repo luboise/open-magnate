@@ -6,7 +6,7 @@ import useNotification from "../../hooks/useNotification";
 import usePageGame from "../../hooks/usePageGame";
 import { MagnateLobbyView } from "../../utils";
 import MapPreview from "./MapPreview";
-import PlayerDisplay from "./PlayerDisplay";
+import PlayerList from "./PlayerList";
 
 function MagnateGame(props: { data: MagnateLobbyView }) {
 	const { writeClipboard } = useClipboard();
@@ -24,23 +24,24 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 
 	// console.debug(props.data);
 	return (
-		<div>
-			<div>
-				<h1>Lobby</h1>
-				<p>Lobby: {props.data.lobbyName}</p>
-				<div className="lobby-container">
-					<h2>
-						Players:{" "}
-						{props.data.lobbyPlayers.length}
-					</h2>
-					<div className="player-display-container">
-						{...props.data.lobbyPlayers.map(
-							(player) => (
-								<PlayerDisplay
-									player={player}
-								/>
-							)
-						)}
+		<div id="lobby-outer-container">
+			{/* <h2>Lobby</h2> */}
+			<div id="lobby-inner-container">
+				<div id="lobby-player-container">
+					<p>Lobby: {props.data.lobbyName}</p>
+					<div className="lobby-container">
+						<h2>
+							Players:{" "}
+							{props.data.lobbyPlayers.length}
+						</h2>
+						<PlayerList
+							lobbySize={
+								props.data.playerCount
+							}
+							players={
+								props.data.lobbyPlayers
+							}
+						/>
 					</div>
 					<span>
 						Invite code: {props.data.inviteCode}
@@ -49,12 +50,23 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 						onClick={onCopyInviteLink}
 						text="Copy invite"
 					/>
+					<div id="lobby-btn-start-leave">
+						<Button
+							id="btn-leave-lobby"
+							text="Leave Lobby"
+							onClick={leaveLobby}
+						/>
+						<Button
+							id="btn-start-game"
+							text="Start Game"
+							onClick={alert}
+						/>
+					</div>
 				</div>
-				<Button
-					text="Leave Lobby"
-					onClick={leaveLobby}
-				/>
-				<MapPreview type="full" />
+
+				<div id="lobby-map-preview">
+					<MapPreview type="full" />
+				</div>
 			</div>
 		</div>
 	);

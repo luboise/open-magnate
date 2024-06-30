@@ -225,6 +225,7 @@ const LobbyController = {
 			lobbyPlayers: await Promise.all(
 				lobby.players.map(this.GetLobbyPlayerView)
 			),
+			playerCount: lobby.playerCount,
 			inviteCode: lobby.inviteCode,
 			gameState:
 				await GameStateController.GetGameStateView(

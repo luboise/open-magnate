@@ -22,3 +22,5 @@ export enum TurnProgress {
 // export interface GameCreationParams {
 // 	players: Player[];
 // }
+
+export const MAX_PLAYER_COUNT = 5;
