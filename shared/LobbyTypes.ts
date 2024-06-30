@@ -16,6 +16,7 @@ export interface JoinLobbySubmissionData {
 export type LobbyPlayerView = {
 	name: string;
 	restaurant: RESTAURANT_NAME;
+	host: boolean;
 };
 
 export type MagnateLobbyView = {

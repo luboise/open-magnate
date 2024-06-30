@@ -27,4 +27,5 @@ jobs:
             - name: Run Tests
               run: |
                   cd ./backend
-                  npm test
+                  npm run test:integration
+

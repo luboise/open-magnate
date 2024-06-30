@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = (
 
 	return (
 		<>
-			{props.inactiveHoverText ? (
+			{props.inactive && props.inactiveHoverText ? (
 				<label
 					className={
 						"btn-tooltip" +
@@ -38,7 +38,7 @@ const Button: React.FC<ButtonProps> = (
 				id={String(buttonId)}
 				onClick={() => {
 					if (props.inactive) return;
-					onClick;
+					onClick();
 				}}
 				onMouseEnter={() => setHovering(true)}
 				onMouseLeave={() => setHovering(false)}

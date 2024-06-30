@@ -204,7 +204,10 @@ const LobbyController = {
 		}
 	},
 
-	async GetLobbyData(id: number) {
+	async GetLobbyData(
+		id: number,
+		requesteeSessionKey?: string
+	) {
 		// console.log(GetRelationsFrom(LobbyRepository));
 
 		const lobby = await this.GetByLobbyId(id);
@@ -220,6 +223,10 @@ const LobbyController = {
 			throw new Error("Could not find lobby");
 		}
 
+		const lobbyHost = lobby.players.find(
+			(player) => player.host
+		);
+
 		return {
 			lobbyName: lobby.name,
 			lobbyId: lobby.id,
@@ -231,7 +238,11 @@ const LobbyController = {
 			gameState:
 				await GameStateController.GetGameStateView(
 					lobby.gameState
-				)
+				),
+			hosting:
+				lobbyHost &&
+				requesteeSessionKey &&
+				lobbyHost.userId === requesteeSessionKey
 		} as MagnateLobbyView;
 	},
 
@@ -247,7 +258,9 @@ const LobbyController = {
 
 		const lobbyPlayerView: LobbyPlayerView = {
 			name: lobbyPlayer.userSession.name,
-			restaurant: lobbyPlayer.restaurant?.name ?? null
+			restaurant:
+				lobbyPlayer.restaurant?.name ?? null,
+			host: lobbyPlayer.host
 		};
 		return lobbyPlayerView;
 	},

@@ -190,7 +190,8 @@ async function handleNewConnection(
 		const lobbyMessage = {
 			type: "SET_LOBBY",
 			data: await LobbyController.GetLobbyData(
-				userSession.lobbyPlayer.lobby.id
+				userSession.lobbyPlayer.lobby.id,
+				userSession.sessionKey
 			)
 		} as FrontendMessage;
 		ws.send(JSON.stringify(lobbyMessage));
@@ -244,7 +245,8 @@ const handleCreateLobby: BackendMessageHandler<
 			JSON.stringify({
 				type: "SET_LOBBY",
 				data: await LobbyController.GetLobbyData(
-					newLobby.id
+					newLobby.id,
+					params.userSession.sessionKey
 				)
 			} as FrontendMessage)
 		);
@@ -382,6 +384,9 @@ const handleLeaveLobby: BackendMessageHandler<
 export async function resendLobby(lobbyId: number) {
 	const lobbyData =
 		await LobbyController.GetLobbyData(lobbyId);
+	const lobbyHost = lobbyData.lobbyPlayers.find(
+		(player) => player.host
+	);
 
 	const lobbyPlayers =
 		await LobbyController.getUserSessions(lobbyId);
@@ -401,10 +406,13 @@ export async function resendLobby(lobbyId: number) {
 		console.log(
 			`Sending updated lobby data to ${sessionKey}.`
 		);
+
+		const { hosting, ...restOfLobbyData } = lobbyData;
+
 		ws.send(
 			JSON.stringify({
 				type: "SET_LOBBY",
-				data: lobbyData
+				data: restOfLobbyData
 			} as SetLobbyMessage)
 		);
 	});

@@ -11,8 +11,6 @@ function testNewMap(playerCount: number) {
 		GameStateController.NewMap(playerCount);
 	expect(map).toBeTruthy();
 
-	console.log(map);
-
 	const defaults = PLAYER_DEFAULTS[playerCount];
 
 	const rows = map.split(";");
@@ -50,8 +48,6 @@ function testNewMap(playerCount: number) {
 		map.split(";").map((row) => row.split(""))
 	);
 
-	console.log(houses);
-	console.log(vals);
 	houses.forEach((house) => {
 		expect(vals[house.x][house.y]).toEqual("H");
 		expect(vals[house.x + 1][house.y]).toEqual("H");
