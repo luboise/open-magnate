@@ -12,8 +12,23 @@ services:
             MYSQL_ROOT_PASSWORD: password
         expose:
             - 3307
+
+        # Wait for db to be ready
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "mysqladmin",
+                    "ping",
+                    "-h",
+                    "localhost"
+                ]
+            interval: 10s
+            timeout: 20s
+            retries: 5
         volumes:
             - open-magnate-db:/var/lib/mysql
 
 volumes:
     open-magnate-db:
+
