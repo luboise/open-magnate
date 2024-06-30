@@ -19,11 +19,6 @@ jobs:
                   cd ./backend
                   npm ci
 
-            - name: Migrate the database
-              run: |
-                  cd ./backend
-                  npm run migrate
-
             - name: Run Tests
               run: |
                   cd ./backend
