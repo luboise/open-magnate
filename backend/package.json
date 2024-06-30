@@ -10,7 +10,7 @@
 		"dev": "npm run migrate-dev && npx dotenv -e .env.dev -- nodemon --config ../config/nodemon.json",
 		"test:integration:setup": "docker compose up -d",
 		"test:integration:teardown": "docker compose down",
-		"test:integration": "npm run test:setup && npx dotenv -e .env.test -- npx prisma migrate deploy && npx dotenv -e .env.test -- jest -i --runInBand ",
+		"test:integration": "npm run test:integration:setup && npx dotenv -e .env.test -- npx prisma migrate deploy && npx dotenv -e .env.test -- jest -i --runInBand",
 		"test:unit": "jest -c jest.config.unit.ts --watch"
 	},
 	"keywords": [],

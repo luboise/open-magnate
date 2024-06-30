@@ -41,6 +41,8 @@ model LobbyPlayer {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId Int
 
+  host	Boolean	@default(false)
+
   @@unique([restaurantId, lobbyId])
 
   @@map("lobby_player")
@@ -79,6 +81,7 @@ model GameState {
   rawMap        String @db.VarChar(2048)
   currentTurn   Int	@default(1)
   currentPlayer Int	@default(1)
+  turnOrder		String	@default("1234")
 
   // Relations
   houses             House[]

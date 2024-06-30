@@ -137,7 +137,8 @@ const LobbyController = {
 										connect: {
 											id: restaurantCounter++
 										}
-									}
+									},
+									host: true
 								}
 							}
 						}

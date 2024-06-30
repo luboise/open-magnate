@@ -63,7 +63,7 @@ function MapPreview(props: MapPreviewProps) {
 						zIndex: 2
 					}}
 				>
-					TODO: House
+					#{house.number}
 				</div>
 			))}
 		</div>

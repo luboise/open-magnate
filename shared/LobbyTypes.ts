@@ -22,7 +22,9 @@ export type MagnateLobbyView = {
 	lobbyId: number;
 	lobbyName: string;
 	playerCount: number;
+	hosting: boolean;
 	lobbyPlayers: LobbyPlayerView[];
 	gameState: GameStateView;
 	inviteCode: string;
 };
+

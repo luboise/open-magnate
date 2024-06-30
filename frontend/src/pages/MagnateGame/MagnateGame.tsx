@@ -61,6 +61,8 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 							id="btn-start-game"
 							text="Start Game"
 							onClick={alert}
+							inactive={!props.data.hosting}
+							inactiveHoverText="You must be the host to start the game."
 						/>
 					</div>
 				</div>

@@ -61,16 +61,24 @@ describe("Testing lobby", () => {
 			expect(lobby).toHaveProperty("id");
 			expect(lobby).toHaveProperty("inviteCode");
 
-			const lobbyPlayers =
-				await LobbyController.getUserSessions(
+			const lobbyPlayers = (
+				await LobbyController.GetByLobbyId(
 					lobby!.id
-				);
+				)
+			)?.players;
+			expect(lobbyPlayers).toBeTruthy();
 			expect(lobbyPlayers).toHaveLength(
 				EXPECTED_LENGTH
 			);
-			expect(lobbyPlayers.length).toBeLessThanOrEqual(
-				lobby!.playerCount
-			);
+			expect(
+				lobbyPlayers!.length
+			).toBeLessThanOrEqual(lobby!.playerCount);
+
+			// Make sure the lobby has a host
+			expect(
+				lobbyPlayers!.some((player) => player.host)
+			).toBeTruthy();
 		});
 	});
 });
+
