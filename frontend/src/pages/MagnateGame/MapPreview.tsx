@@ -1,18 +1,49 @@
-import { parseMapChar } from "../../../../backend/src/game/Map";
 import MapTile from "../../components/MapTile";
+import { useGameState } from "../../hooks/useGameState";
+import { MapTileData } from "../../utils";
 import "./MapPreview.css";
 
-function MapPreview(props: { map: string }) {
-	if (!props.map) return <></>;
+type MapPreviewProps =
+	| {
+			type: "full";
+	  }
+	| {
+			type: "cropped";
+			xMin: number;
+			xMax: number;
+			yMin: number;
+			yMax: number;
+	  };
+
+function MapPreview(props: MapPreviewProps) {
+	const { map } = useGameState();
+
+	if (!map) return <></>;
+
+	function FilterPreviewFiles(
+		tile: MapTileData
+	): boolean {
+		if (props.type === "cropped") {
+			return (
+				tile.x >= props.xMin &&
+				tile.x <= props.xMax &&
+				tile.y >= props.yMin &&
+				tile.y <= props.yMax
+			);
+		}
+		// Default is to allow through filter
+		return true;
+	}
+
 	return (
 		<div className="map-preview-container">
-			{...props.map.split(";").map((line, x) => (
+			{map.map((line) => (
 				<div className="map-tile-row">
-					{line.split("").map((char, y) => (
-						<MapTile
-							tile={parseMapChar(char, x, y)}
-						/>
-					))}
+					{line
+						.filter(FilterPreviewFiles)
+						.map((tile) => (
+							<MapTile tile={tile} />
+						))}
 				</div>
 			))}
 		</div>

@@ -8,6 +8,7 @@ import Form from "../components/Form/Form";
 import FormInput from "../components/Form/FormInput";
 import SelectionButtonList from "../components/Form/SelectionButtonList";
 import { WEB_SOCKET_BASE_URL } from "../hooks/useAPI";
+import { useGameState } from "../hooks/useGameState";
 import useLocalVal from "../hooks/useLocalVal";
 import {
 	APIRoutes,
@@ -53,6 +54,11 @@ function PageGame() {
 	const [inviteCode, setInviteCode] = useLocalVal<string>(
 		LOCAL_STORAGE_INVITE_CODE_NAME
 	);
+
+	const { setState } = useGameState();
+	function setGameState(state: GamePageState) {
+		setState(state.lobbyData?.gameState ?? null);
+	}
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -126,11 +132,13 @@ function PageGame() {
 
 		switch (message.type) {
 			case "SET_LOBBY": {
-				return {
+				const newState = {
 					...state,
 					pageState: "HOSTING_LOBBY",
 					lobbyData: message.data
 				} as GamePageState;
+				setGameState(newState);
+				return newState;
 			}
 			case "LOBBY_UPDATED": {
 				if (!state) {
@@ -138,13 +146,15 @@ function PageGame() {
 						"Attempted to update lobby with null state."
 					);
 				}
-				return {
+				const newState = {
 					...state,
 					lobbyData: {
 						...state.lobbyData,
 						...message.data
 					}
 				} as GamePageState;
+				setGameState(newState);
+				return newState;
 			}
 			case "CREATING_LOBBY": {
 				if (state.lobbyData) {
@@ -194,11 +204,14 @@ function PageGame() {
 			}
 			case "LEAVE_LOBBY": {
 				console.debug("Leaving lobby.");
-				return {
+
+				const newState = {
 					...state,
 					pageState: "VERIFIED",
 					lobbyData: null
-				};
+				} as GamePageState;
+				setGameState(newState);
+				return newState;
 			}
 			default:
 				console.debug(

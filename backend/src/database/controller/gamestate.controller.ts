@@ -1,16 +1,11 @@
-import {
-	GameState,
-	House,
-	Lobby,
-	Prisma
-} from "@prisma/client";
+import { GameState, Lobby, Prisma } from "@prisma/client";
 import {
 	MAP_PIECES,
 	MapStringChar,
 	createMapString
 } from "../../game/MapPieces";
 import {
-	LobbyPlayerView,
+	GameStateView,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
@@ -34,16 +29,6 @@ function copyArray<T>(
 
 	// return outArray;
 }
-
-export type GameStateView = {
-	players: LobbyPlayerView[];
-	// turnProgress: TurnProgress;
-	currentTurn: number;
-	currentPlayer: number;
-	map: string;
-	houses: House[];
-	turnOrder: Array<number> | null;
-};
 
 const GameStateController = {
 	Get: async (id: number) => {

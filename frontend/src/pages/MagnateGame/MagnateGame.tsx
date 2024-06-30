@@ -54,9 +54,7 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 					text="Leave Lobby"
 					onClick={leaveLobby}
 				/>
-				<MapPreview
-					map={props.data.gameState?.map}
-				/>
+				<MapPreview type="full" />
 			</div>
 		</div>
 	);

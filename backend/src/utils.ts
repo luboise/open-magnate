@@ -1,6 +1,16 @@
+import { House } from "@prisma/client";
 import { Response } from "express";
+import { LobbyPlayerView } from "./utils";
 
-export * from "../../shared";
+export type GameStateView = {
+	players: LobbyPlayerView[];
+	// turnProgress: TurnProgress;
+	currentTurn: number;
+	currentPlayer: number;
+	map: string;
+	houses: House[];
+	turnOrder: Array<number> | null;
+};
 
 export function new2DArray<T>(
 	rows: number,
@@ -88,3 +98,5 @@ export const HandleRequest = {
 		}
 	}
 };
+
+export * from "../../shared";

@@ -1,39 +1,47 @@
-// import { atom, selector, useRecoilState } from "recoil";
-// import { GameState } from "../utils";
-// import useAPI from "./useAPI";
+import {
+	atom,
+	selector,
+	useRecoilState,
+	useRecoilValue
+} from "recoil";
+import {
+	GameStateView,
+	MapTileData,
+	parseMapChar
+} from "../utils";
 
-// const RECOIL_GAMESTATE_KEY = "GameState";
-// const GameStateAtom = atom<GameState | null>({
-// 	key: RECOIL_GAMESTATE_KEY, // unique ID (with respect to other atoms/selectors)
-// 	default: null
-// });
+const RECOIL_GAMESTATE_KEY = "GameState";
+type GameStateAtomType = GameStateView | null;
+const GameStateAtom = atom<GameStateAtomType>({
+	key: RECOIL_GAMESTATE_KEY, // unique ID (with respect to other atoms/selectors)
+	default: null
+});
 
-// const mapSelector = selector({
-// 	key: "TEST",
-// 	get: ({ get }) => get(GameStateAtom)?.mapPieces
-// });
+const RECOIL_MAP_KEY = "PARSED_MAP";
 
-// export function useGameState(): {
-// 	newGame: () => void;
-// 	state: GameState | null;
-// 	map: typeof mapSelector;
-// } {
-// 	const { get } = useAPI();
+type MapSelectorType = MapTileData[][] | null;
+const mapSelector = selector<MapSelectorType>({
+	key: RECOIL_MAP_KEY,
+	get: ({ get }) =>
+		get(GameStateAtom)
+			?.map.split(";")
+			.map((line, x) =>
+				line
+					.split("")
+					.map((char, y) =>
+						parseMapChar(char, x, y)
+					)
+			) ?? null
+});
 
-// 	const [state, setState] = useRecoilState(GameStateAtom);
+export function useGameState(): {
+	state: GameStateAtomType;
+	map: MapSelectorType;
+	setState: (newState: GameStateAtomType) => void;
+} {
+	const [state, _setState] =
+		useRecoilState(GameStateAtom);
+	const map = useRecoilValue(mapSelector);
 
-// 	async function newGame() {
-// 		setState(null);
-// 		const x: GameState | null = await get("/game/new");
-// 		if (!x || typeof x !== "object") {
-// 			console.error(
-// 				"Failed to acquire new game from the API."
-// 			);
-// 			return;
-// 		}
-// 		console.debug("New game acquired: x");
-// 		setState(x);
-// 	}
-
-// 	return { newGame, state: state, map: mapSelector };
-// }
+	return { state, map, setState: _setState };
+}

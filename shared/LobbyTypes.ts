@@ -1,5 +1,5 @@
 // import { House } from "@prisma/client";
-import { GameStateView } from "../backend/src/database/controller/gamestate.controller";
+import { GameStateView } from "../backend/src/utils";
 import { RESTAURANT_NAME } from "./RestaurantNames";
 
 export interface LobbySubmissionData {
