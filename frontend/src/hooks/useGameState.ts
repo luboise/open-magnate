@@ -68,12 +68,23 @@ const mapRowOrderSelector = selector<MapSelectorType>({
 		return GetTransposed(colOrder);
 	}
 });
-export function useGameState(): {
-	state: GameStateAtomType;
-	mapColOrder: MapSelectorType;
-	mapRowOrder: MapSelectorType;
-	setState: (newState: GameStateAtomType) => void;
-} {
+
+const RECOIL_MAP_HOUSE_KEY = "PARSED_MAP_HOUSES";
+const mapHouseSelector = selector({
+	key: RECOIL_MAP_HOUSE_KEY,
+	get: ({ get }) => {
+		return get(GameStateAtom)?.houses ?? null;
+	}
+});
+
+export function useGameState() {
+	// : {
+	// 	state: GameStateAtomType;
+	// 	mapColOrder: MapSelectorType;
+	// 	mapRowOrder: MapSelectorType;
+	// 	houses: ;
+	// 	setState: (newState: GameStateAtomType) => void;
+	// }
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
 	const mapColOrder = useRecoilValue(
@@ -81,10 +92,13 @@ export function useGameState(): {
 	);
 	const mapRowOrder = useRecoilValue(mapRowOrderSelector);
 
+	const houses = useRecoilValue(mapHouseSelector);
+
 	return {
 		state,
 		mapColOrder,
 		mapRowOrder,
+		houses,
 		setState: _setState
 	};
 }

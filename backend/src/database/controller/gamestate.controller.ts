@@ -6,13 +6,13 @@ import {
 } from "../../game/MapPieces";
 import {
 	GameStateView,
+	GetTransposed,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
 } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
 import LobbyRepository from "../repository/lobby.repository";
-
 function copyArray<T>(
 	data: T[][],
 	mainArray: T[][],
@@ -109,7 +109,7 @@ const GameStateController = {
 				}
 
 				copyArray(
-					piece,
+					GetTransposed(piece),
 					mapArray,
 					pieceX * MAP_PIECE_WIDTH,
 					pieceY * MAP_PIECE_HEIGHT
@@ -118,13 +118,20 @@ const GameStateController = {
 				// console.log(mapArray);
 
 				// If there is a house in this tile
-				if (
-					piece.some((row) => row.includes("H"))
-				) {
+				const houseIndex = piece
+					.flat()
+					.findIndex((char) => char === "H");
+				if (houseIndex !== -1) {
 					houses.push({
 						number: tileKey,
-						x: pieceX * MAP_PIECE_WIDTH,
-						y: pieceY * MAP_PIECE_HEIGHT
+						x:
+							pieceX * MAP_PIECE_WIDTH +
+							(houseIndex % MAP_PIECE_WIDTH),
+						y:
+							pieceY * MAP_PIECE_HEIGHT +
+							Math.floor(
+								houseIndex / MAP_PIECE_WIDTH
+							)
 					});
 				}
 			}
@@ -214,7 +221,12 @@ const GameStateController = {
 							}
 						}
 					},
-					houses: true,
+					houses: {
+						include: {
+							demand: true,
+							garden: true
+						}
+					},
 					marketingCampaigns: true,
 					players: true
 				}

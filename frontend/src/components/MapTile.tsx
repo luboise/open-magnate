@@ -79,7 +79,13 @@ function MapTile(props: { tile: MapTileData }) {
 			classes.push(`tile-boundary-${direction}`);
 	}
 	return (
-		<div className={classes.join(" ")}>
+		<div
+			className={classes.join(" ")}
+			style={{
+				gridColumn: `${props.tile.x + 1}`,
+				gridRow: `${props.tile.y + 1}`
+			}}
+		>
 			{/* <div className="map-tile-content"> */}
 			{...elements}
 			{/* </div> */}

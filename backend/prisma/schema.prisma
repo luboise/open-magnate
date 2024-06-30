@@ -103,7 +103,7 @@ model House {
   demandLimit Int @default(3)
 
   garden Garden?
-  Demand Demand[]
+  demand Demand[]
 
   // Game 1 can only have a single of house x
   @@unique([gameId, number])

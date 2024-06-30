@@ -16,7 +16,7 @@ type MapPreviewProps =
 	  };
 
 function MapPreview(props: MapPreviewProps) {
-	const { mapRowOrder: map } = useGameState();
+	const { mapRowOrder: map, houses } = useGameState();
 
 	if (!map) return <></>;
 
@@ -47,6 +47,25 @@ function MapPreview(props: MapPreviewProps) {
 				.flat(2)
 				.filter(FilterPreviewFiles)
 				.map((tile) => <MapTile tile={tile} />)}
+			{...(houses ?? []).map((house) => (
+				<div
+					style={{
+						gridColumn: `${house.x + 1} / span 2`,
+						gridRow: `${house.y + 1} / span 2`,
+						backgroundColor: "pink",
+						color: "white",
+						border: "1px solid black",
+						width: "100%",
+						height: "100%",
+						textAlign: "center",
+						lineHeight: "10px",
+						fontSize: "10px",
+						zIndex: 2
+					}}
+				>
+					TODO: House
+				</div>
+			))}
 		</div>
 	);
 }

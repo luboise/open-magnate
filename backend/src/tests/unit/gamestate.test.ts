@@ -15,13 +15,13 @@ function testNewMap(playerCount: number) {
 
 	const defaults = PLAYER_DEFAULTS[playerCount];
 
-	const numColumns = map.split(";");
-	expect(numColumns).toHaveLength(
+	const rows = map.split(";");
+	expect(rows).toHaveLength(
 		defaults.mapHeight * MAP_PIECE_HEIGHT
 	);
 
-	const numRows = numColumns[0].split("");
-	expect(numRows).toHaveLength(
+	const firstColumn = rows[0].split("");
+	expect(firstColumn).toHaveLength(
 		defaults.mapWidth * MAP_PIECE_WIDTH
 	);
 
@@ -37,7 +37,7 @@ function testNewMap(playerCount: number) {
 			defaults.mapHeight
 	);
 
-	numColumns.forEach((row) => {
+	rows.forEach((row) => {
 		expect(row).toBeTruthy();
 		expect(row).toHaveLength(
 			defaults.mapWidth * MAP_PIECE_WIDTH
@@ -45,6 +45,19 @@ function testNewMap(playerCount: number) {
 	});
 
 	expect(houses).toBeTruthy();
+
+	const vals = GetTransposed(
+		map.split(";").map((row) => row.split(""))
+	);
+
+	console.log(houses);
+	console.log(vals);
+	houses.forEach((house) => {
+		expect(vals[house.x][house.y]).toEqual("H");
+		expect(vals[house.x + 1][house.y]).toEqual("H");
+		expect(vals[house.x][house.y + 1]).toEqual("H");
+		expect(vals[house.x + 1][house.y + 1]).toEqual("H");
+	});
 	expect(houses.length).toBeGreaterThanOrEqual(1);
 }
 

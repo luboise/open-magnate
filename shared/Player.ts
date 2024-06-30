@@ -5,8 +5,8 @@ export interface PlayerNumDefault {
 	limitedEmployeeCards: number;
 }
 
-const MAX_PLAYER_COUNT = 5;
-const VALID_PLAYER_COUNTS = [2, 3, 4, 5];
+// const MAX_PLAYER_COUNT = 5;
+// const VALID_PLAYER_COUNTS = [2, 3, 4, 5];
 
 export const PLAYER_DEFAULTS: Record<
 	number,
