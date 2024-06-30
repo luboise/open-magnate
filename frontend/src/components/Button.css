@@ -1,0 +1,43 @@
+button {
+	position: relative;
+}
+
+.btn-tooltip {
+	transition: opacity 0.3s ease;
+
+	/* Positioning */
+	position: fixed;
+	bottom: 0;
+	left: 50%;
+	translate: -50%;
+
+	margin-bottom: 1em;
+
+	/* Styling */
+	padding: 1em;
+	border: solid black 0.3em;
+	border-radius: 1em;
+
+	background-color: red;
+	opacity: 0;
+
+	text-wrap: nowrap;
+
+	z-index: 99;
+
+	pointer-events: none;
+}
+
+.btn-show-label {
+	opacity: 100;
+}
+
+.btn-inactive {
+	opacity: 30%;
+}
+
+.btn-inactive:hover {
+	cursor: not-allowed;
+	border-color: red;
+}
+

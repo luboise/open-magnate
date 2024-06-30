@@ -5,6 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import expressWs from "express-ws";
 
+import prisma from "./datasource";
 import InitialiseRoutes from "./routes";
 
 // Express app with websockets
@@ -18,6 +19,9 @@ app.use(cors());
 
 (async () => {
 	InitialiseRoutes(express, app);
+
+	// Need this here so that the connection is established before the app starts
+	prisma;
 
 	app.listen(port, () => {
 		console.log(

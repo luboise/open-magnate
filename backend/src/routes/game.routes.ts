@@ -17,7 +17,7 @@ import {
 // Fixes issues from using base WebSocket without extended methods
 import { UserSession } from "@prisma/client";
 import WebSocket from "ws";
-import prisma from "../datasource";
+import LobbyRepository from "../database/repository/lobby.repository";
 import { connectionsToWebsocket } from "./connections";
 
 // Helpers
@@ -80,12 +80,15 @@ const routeHandler: RouteHandler = (express, app) => {
 			) {
 				case "CREATE_LOBBY": {
 					handleCreateLobby(params);
+					return;
 				}
 				case "JOIN_LOBBY": {
 					handleJoinLobby(params);
+					return;
 				}
 				case "LEAVE_LOBBY": {
 					handleLeaveLobby(params);
+					return;
 				}
 			}
 		});
@@ -94,7 +97,7 @@ const routeHandler: RouteHandler = (express, app) => {
 			const sessionKey: string = String(
 				req.query.sessionKey
 			);
-			if (code === 1000) {
+			if (code !== 1008) {
 				console.log(
 					`Connection closed peacefully with ${sessionKey}`
 				);
@@ -124,51 +127,7 @@ async function handleNewConnection(
 		`Connection started with ${sessionKey ? 'session key "' + sessionKey + '"' : "new user"}.`
 	);
 
-	if (sessionKey) {
-		// Check if user is already connected
-		if (sessionKey in connectionsToWebsocket) {
-			ws.send("This session key is already in use.");
-			ws.close(
-				1008,
-				"This session key is already in use."
-			);
-		}
-		const userSession =
-			await UserSessionController.GetDeep(sessionKey);
-
-		if (!userSession) {
-			ws.send(
-				JSON.stringify({
-					type: "CLEAR_LOCAL_DATA"
-				} as FrontendMessage)
-			);
-			ws.close(4001, "No session key provided.");
-			return;
-		} else {
-			console.log(`Found session key ${sessionKey}`);
-			if (userSession.lobbyPlayer) {
-				console.log(
-					`Found an existing lobby for player ${userSession.sessionKey}`
-				);
-				const lobbyMessage = {
-					type: "SET_LOBBY",
-					data: await LobbyController.GetLobbyData(
-						userSession.lobbyPlayer.lobby.id
-					)
-				} as FrontendMessage;
-				ws.send(JSON.stringify(lobbyMessage));
-			} else {
-				console.log(
-					`Unable to find a lobby for session key ${sessionKey}. Sending them to lobby creation.`
-				);
-				ws.send(
-					JSON.stringify({
-						type: "SESSION_KEY_VERIFIED"
-					} as FrontendMessage)
-				);
-			}
-		}
-	} else {
+	if (!sessionKey) {
 		const browserId = GetUserIdentifier(req);
 		const sessionKey =
 			await UserSessionController.New(browserId);
@@ -191,6 +150,60 @@ async function handleNewConnection(
 			);
 
 		ws.close();
+
+		return;
+	}
+
+	// Check if user is already connected
+	if (sessionKey in connectionsToWebsocket) {
+		ws.send("This session key is already in use.");
+		ws.close(
+			1008,
+			"This session key is already in use."
+		);
+		return;
+	}
+
+	const userSession =
+		await UserSessionController.GetDeep(sessionKey);
+
+	if (!userSession) {
+		ws.send(
+			JSON.stringify({
+				type: "CLEAR_LOCAL_DATA"
+			} as FrontendMessage)
+		);
+		ws.close(4001, "No session key provided.");
+		return;
+	}
+
+	console.log(
+		`Found session key ${sessionKey}. Adding them to the list of connections.`
+	);
+
+	connectionsToWebsocket[sessionKey] = ws;
+
+	if (userSession.lobbyPlayer) {
+		console.log(
+			`Found an existing lobby for player ${userSession.sessionKey}`
+		);
+		const lobbyMessage = {
+			type: "SET_LOBBY",
+			data: await LobbyController.GetLobbyData(
+				userSession.lobbyPlayer.lobby.id,
+				userSession.sessionKey
+			)
+		} as FrontendMessage;
+		ws.send(JSON.stringify(lobbyMessage));
+	} else {
+		console.log(
+			`Unable to find a lobby for session key ${sessionKey}. Sending them to lobby creation.`
+		);
+		ws.send(
+			JSON.stringify({
+				type: "SESSION_KEY_VERIFIED"
+			} as FrontendMessage)
+		);
 	}
 }
 
@@ -232,7 +245,8 @@ const handleCreateLobby: BackendMessageHandler<
 			JSON.stringify({
 				type: "SET_LOBBY",
 				data: await LobbyController.GetLobbyData(
-					newLobby.id
+					newLobby.id,
+					params.userSession.sessionKey
 				)
 			} as FrontendMessage)
 		);
@@ -259,15 +273,10 @@ const handleJoinLobby: BackendMessageHandler<
 				"Invalid invite code provided."
 			);
 
-		const lobby = await prisma.lobby.findFirst({
-			include: {
-				players: true,
-				gameState: true
-			},
-			where: {
-				inviteCode: inviteCode
-			}
-		});
+		const lobby =
+			await LobbyController.GetByInviteCode(
+				inviteCode
+			);
 
 		if (!lobby)
 			throw new Error(
@@ -279,24 +288,27 @@ const handleJoinLobby: BackendMessageHandler<
 		)
 			throw new Error("Incorrect password provided.");
 
-		const lobbyPlayer = await LobbyController.addPlayer(
-			lobby,
-			params.userSession
-		);
-		if (!lobbyPlayer) {
+		const newLobbyPlayers =
+			await LobbyController.addPlayer(
+				lobby.id,
+				params.userSession
+			);
+		if (!newLobbyPlayers) {
 			throw new Error(
 				"Unable to add player to lobby."
 			);
 		}
 
-		const response = {
-			type: "SET_LOBBY",
-			data: await LobbyController.GetLobbyData(
-				lobby.id
-			)
-		} as SetLobbyMessage;
+		await resendLobby(lobby.id);
 
-		params.ws.send(JSON.stringify(response));
+		// const response = {
+		// 	type: "SET_LOBBY",
+		// 	data: await LobbyController.GetLobbyData(
+		// 		lobby.id
+		// 	)
+		// } as SetLobbyMessage;
+
+		// params.ws.send(JSON.stringify(response));
 	} catch (error) {
 		console.error(error);
 		params.ws.send(String(error));
@@ -306,79 +318,61 @@ const handleJoinLobby: BackendMessageHandler<
 const handleLeaveLobby: BackendMessageHandler<
 	LeaveLobbyMessage
 > = async (params) => {
-	// TODO: Notify the other players that the lobby state has changed
-	// TODO: Add SQL trigger to delete the lobby if the last player leaves
-	// TODO: Fix leaving lobby as it is currently not working
-	if (!params.userSession) {
+	if (
+		!params.userSession ||
+		!params.userSession.sessionKey
+	) {
 		console.log(
 			"Attempted to remove unverified user from session."
 		);
 		return;
 	}
 
-	const lobby = await prisma.lobby.findFirst({
-		where: {
-			players: {
-				some: {
-					userId: params.userSession.sessionKey
+	const lobbyId = (
+		await LobbyRepository.findFirst({
+			where: {
+				players: {
+					some: {
+						userId: params.userSession
+							.sessionKey
+					}
 				}
-			}
-		}
-	});
+			},
+			select: { id: true }
+		})
+	)?.id;
 
-	if (!lobby) {
+	if (!lobbyId) {
 		params.ws.send("You are not currently in a lobby.");
 		return;
 	}
 
-	const lobbyPlayers =
-		await LobbyController.GetLobbyPlayerFromUserSession(
-			params.userSession.sessionKey
-		);
-
 	// Remove the player from the lobby
 	const removed = await LobbyController.removePlayer(
-		lobby,
+		lobbyId,
 		params.userSession
 	);
 
 	if (!removed) {
 		console.log(
-			`Failed to remove player ${params.userSession.sessionKey} from lobby #${lobby.id}.`
+			`Failed to remove player ${params.userSession.sessionKey} from lobby #${lobbyId}.`
 		);
 		return;
 	}
 
-	const otherPlayers =
-		await LobbyController.getPlayersFrom(lobby);
+	const lobby =
+		await LobbyController.GetByLobbyId(lobbyId);
 
-	const lobbyData = await LobbyController.GetLobbyData(
-		lobby.id
+	if (!lobby)
+		throw new Error(
+			"Lobby couldn't be found from valid lobbyId. A serious backend error has occured."
+		);
+
+	resendLobby(lobby.id);
+
+	console.log(
+		`Telling player ${params.userSession.sessionKey} to leave the lobby.`
 	);
-
-	console.log(otherPlayers.length, otherPlayers);
-
-	otherPlayers.forEach(async (userSession) => {
-		const ws =
-			connectionsToWebsocket[userSession.sessionKey];
-
-		if (!ws) {
-			console.log(
-				`Unable to send lobby data to ${userSession.sessionKey}.`
-			);
-			return;
-		}
-
-		console.log(
-			`Sending updated lobby data to ${userSession.sessionKey}.`
-		);
-		ws.send(
-			JSON.stringify({
-				type: "SET_LOBBY",
-				data: lobbyData
-			} as SetLobbyMessage)
-		);
-	});
 
 	params.ws.send(
 		JSON.stringify({
@@ -387,120 +381,38 @@ const handleLeaveLobby: BackendMessageHandler<
 	);
 };
 
-// const handleCheckSessionKeyMessage: BackendMessageHandler<
-// 	CheckSessionKeyMessage
-// > = async (params) => {
-// 	if (!params.userBrowserId) return;
+export async function resendLobby(lobbyId: number) {
+	const lobbyData =
+		await LobbyController.GetLobbyData(lobbyId);
 
-// 	const successfulRenew =
-// 		await SessionKeyController.Renew(
-// 			params.message.data,
-// 			params.userBrowserId
-// 		);
+	const lobbyPlayers =
+		await LobbyController.getUserSessions(lobbyId);
 
-// 	console.log(
-// 		`Renewal: ${successfulRenew ? "Success" : "Failure"}`
-// 	);
-// 	params.ws.send(
-// 		JSON.stringify(
-// 			(successfulRenew
-// 				? {
-// 						type: "SESSION_KEY_VERIFIED",
-// 						data: params.message.data
-// 					}
-// 				: {
-// 						type: "CLEAR_LOCAL_DATA"
-// 					}) as FrontendMessage
-// 		)
-// 	);
-// };
+	lobbyPlayers.forEach(async (lobbyPlayer) => {
+		const sessionKey = lobbyPlayer.sessionKey;
 
-// const handleNewSessionKey: BackendMessageHandler<
-// 	NewSessionKeyMessage
-// > = async (params) => {
-// 	if (!params.userBrowserId) {
-// 		params.ws.send(
-// 			"Unsupported connection type. Please try another browser."
-// 		);
-// 		return;
-// 	}
+		const ws = connectionsToWebsocket[sessionKey];
 
-// 	const existingSessionKey =
-// 		await SessionKeyController.FindByBrowserId(
-// 			params.userBrowserId
-// 		);
+		if (!ws) {
+			console.log(
+				`Unable to send lobby data to ${sessionKey}.`
+			);
+			return;
+		}
 
-// 	// Handle existing session keys
-// 	if (existingSessionKey) {
-// 		handleCheckSessionKeyMessage({
-// 			...params,
-// 			message: {
-// 				type: "CHECK_SESSION_KEY",
-// 				data: params.message.data
-// 			}
-// 		});
-// 		const keyMessage = {
-// 			type: "NEW_SESSION_KEY",
-// 			data: existingSessionKey.lobbyPlayer.sessionKey
-// 				.sessionKey
-// 		} as FrontendMessage;
-// 		params.ws.send(JSON.stringify(keyMessage));
+		console.log(
+			`Sending updated lobby data to ${sessionKey}.`
+		);
 
-// 		if (existingSessionKey.lobbyPlayer.lobby) {
-// 			const lobbyMessage = {
-// 				type: "SET_LOBBY",
-// 				data: existingSessionKey.lobbyPlayer.lobby.toLobbyData()
-// 			} as FrontendMessage;
-// 			params.ws.send(JSON.stringify(lobbyMessage));
-// 		}
-// 		return;
-// 	}
+		const { hosting, ...restOfLobbyData } = lobbyData;
 
-// 	// Handle new session keys
-// 	const sessionKey = await SessionKeyController.New(
-// 		params.userBrowserId
-// 	);
-
-// 	if (!sessionKey) {
-// 		params.ws.send("Error creating session key.");
-// 		return;
-// 	}
-
-// 	console.log(
-// 		`Sending new session key back to ${params.userBrowserId}`
-// 	);
-
-// 	params.ws.send(
-// 		JSON.stringify({
-// 			type: "NEW_SESSION_KEY",
-// 			data: sessionKey.sessionKey
-// 		} as FrontendMessage)
-// 	);
-
-// 	return;
-// };
-
-// router.get("/", async (req, res) => {
-// 	res.send("testing");
-// });
-
-// router.get(
-// 	"/new",
-// 	async (req: Request, res: Response) => {
-// 		// const game = NewGame();
-// 		res.send("New game!");
-// 		console.log("Created new game.");
-// 	}
-// );
-
-// app.ws("/game/:gameid/socket", (ws, req) => {
-// 	ws.on("connection", (ws: WebSocket) => {
-// 		ws.send("Hello world!");
-// 	});
-
-// 	ws.on("message", (msg: string) => {
-// 		console.log(msg);
-// 	});
-// });
+		ws.send(
+			JSON.stringify({
+				type: "SET_LOBBY",
+				data: restOfLobbyData
+			} as SetLobbyMessage)
+		);
+	});
+}
 
 module.exports = routeHandler;

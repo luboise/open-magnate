@@ -11,7 +11,11 @@
 		"experimentalDecorators": true /* Enable experimental support for legacy experimental decorators. */,
 		"emitDecoratorMetadata": true /* Emit design-type metadata for decorated declarations in source files. */
 	},
-	"include": ["src/**/*.ts", "prisma/seed.ts"],
+	"include": [
+		"src/**/*.ts",
+		"prisma/seed.ts",
+		"../shared/CONVERSION_MAP.ts",
+		"../shared/MapParsing.ts"
+	],
 	"exclude": ["node_modules"]
 }
-

@@ -1,6 +1,12 @@
-import prisma from "../src/datasource";
+// import prisma from "../src/datasource";
 
+import {
+	PrismaClient,
+	PrismaPromise,
+	Restaurant
+} from "@prisma/client";
 import { RESTAURANT_NAMES } from "../../shared";
+// import prisma from "../src/datasource";
 
 // const [
 // 	seedRestaurant1,
@@ -13,10 +19,11 @@ import { RESTAURANT_NAMES } from "../../shared";
 // 	name: res
 // }));
 export const SEED_RESAURANTS = RESTAURANT_NAMES.map(
-	(res) => {
+	(res, index) => {
 		return {
+			id: index + 1,
 			name: res
-		};
+		} as Restaurant;
 	}
 );
 
@@ -71,11 +78,11 @@ export const seedUserOutOfLobby5 = {
 	name: "outoflobby-5"
 };
 
-export const seedUserOutOfLobby6 = {
-	sessionKey: "outoflobby-6",
-	browserId: "outoflobby-6",
-	name: "outoflobby-6"
-};
+// export const seedUserOutOfLobby6 = {
+// 	sessionKey: "outoflobby-6",
+// 	browserId: "outoflobby-6",
+// 	name: "outoflobby-6"
+// };
 
 export const SEED_USERS = [
 	seedUser1,
@@ -84,8 +91,8 @@ export const SEED_USERS = [
 	seedUserOutOfLobby2,
 	seedUserOutOfLobby3,
 	seedUserOutOfLobby4,
-	seedUserOutOfLobby5,
-	seedUserOutOfLobby6
+	seedUserOutOfLobby5
+	// seedUserOutOfLobby6
 ];
 
 export const seedLobby1 = {
@@ -96,83 +103,116 @@ export const seedLobby1 = {
 	playerCount: 2
 };
 
+// TODO: Fix main throwing an error when running without debug mode on GitHub actions
 async function main() {
+	const prisma = new PrismaClient();
 	try {
-		// Delete lobby dependees
-		await prisma.gameState.deleteMany();
-		await prisma.lobbyPlayer.deleteMany();
+		const transactions = [];
+		// // Delete lobby dependees
+		// await prisma.gameState.deleteMany();
+		// await prisma.lobbyPlayer.deleteMany();
 
-		// Delete lobby
-		await prisma.lobby.deleteMany();
+		// // Delete lobby
+		// await prisma.lobby.deleteMany();
 
-		// Delete Lobby dependents
-		await prisma.restaurant.deleteMany();
-		await prisma.userSession.deleteMany();
+		// // Delete Lobby dependents
+		// await prisma.restaurant.deleteMany();
 
-		await prisma.userSession.createMany({
-			data: SEED_USERS
-		});
+		for (const user of SEED_USERS) {
+			transactions.push(
+				prisma.userSession.upsert({
+					where: {
+						sessionKey: user.sessionKey
+					},
+					update: {
+						name: user.name,
+						browserId: user.browserId
+					},
+					create: user
+				})
+			);
+		}
 
-		await prisma.restaurant.createMany({
-			data: SEED_RESAURANTS.map((res, index) => ({
-				name: res.name,
-				id: index + 1
-			}))
-		});
-
-		// await Promise.all(
-		// 	SEED_USERS.map(async (user) => {
-		// 		await prisma.userSession.upsert({
-		// 			where: { sessionKey: user.sessionKey },
-		// 			create: user,
-		// 			update: {
-		// 				name: user.name,
-		// 				browserId: user.browserId
-		// 			}
-		// 		});
-		// 	})
-		// );
-
-		await prisma.lobby.create({
-			data: {
-				...seedLobby1
-			}
-		});
-
-		await prisma.lobbyPlayer.create({
-			data: {
-				userSession: {
-					connect: {
-						sessionKey: seedUser1.sessionKey
+		for (const res of SEED_RESAURANTS) {
+			transactions.push(
+				prisma.restaurant.upsert({
+					where: {
+						id: res.id
+					},
+					update: {
+						name: res.name
+					},
+					create: {
+						id: res.id,
+						name: res.name
 					}
-				},
-				lobby: { connect: { id: seedLobby1.id } },
-				restaurant: {
-					connect: { id: 1 }
-				}
-			}
-		});
+				})
+			);
+		}
 
-		await prisma.lobbyPlayer.create({
-			data: {
-				userSession: {
-					connect: {
-						sessionKey: seedUser2.sessionKey
-					}
-				},
-				lobby: { connect: { id: seedLobby1.id } },
-				restaurant: {
-					connect: { id: 2 }
+		transactions.push(
+			prisma.lobby.upsert({
+				where: { id: seedLobby1.id },
+				update: seedLobby1,
+				create: seedLobby1
+			})
+		);
+
+		const seedLP1 = {
+			userSession: {
+				connect: {
+					sessionKey: seedUser1.sessionKey
 				}
+			},
+			lobby: {
+				connect: { id: seedLobby1.id }
+			},
+			restaurant: {
+				connect: { id: 1 }
 			}
-		});
+		};
+
+		const seedLP2 = {
+			userSession: {
+				connect: {
+					sessionKey: seedUser2.sessionKey
+				}
+			},
+			lobby: { connect: { id: seedLobby1.id } },
+			restaurant: {
+				connect: { id: 2 }
+			}
+		};
+
+		transactions.push(
+			prisma.lobbyPlayer.upsert({
+				where: {
+					userId: seedUser1.sessionKey
+				},
+				update: seedLP1,
+				create: seedLP1
+			})
+		);
+
+		transactions.push(
+			prisma.lobbyPlayer.upsert({
+				where: {
+					userId: seedUser2.sessionKey
+				},
+				update: seedLP2,
+				create: seedLP2
+			})
+		);
+
+		await prisma.$transaction(transactions);
 
 		await prisma.$disconnect();
+		return;
 	} catch (error) {
 		console.error("Unable to seed the database.");
 		console.error(error);
 		await prisma.$disconnect();
-		process.exit(1);
+		throw error;
 	}
 }
 
@@ -182,5 +222,83 @@ main();
 export async function reseedDatabase() {
 	await main();
 }
+
+export async function dropEverything() {
+	const prisma = new PrismaClient();
+
+	const transactions: PrismaPromise<any>[] = [];
+	transactions.push(
+		prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`
+	);
+
+	const tablenames = await prisma.$queryRaw<
+		Array<{ TABLE_NAME: string }>
+	>`SELECT TABLE_NAME from information_schema.TABLES WHERE TABLE_SCHEMA = 'tests';`;
+
+	for (const { TABLE_NAME } of tablenames) {
+		if (TABLE_NAME !== "_prisma_migrations") {
+			try {
+				transactions.push(
+					prisma.$executeRawUnsafe(
+						`TRUNCATE ${TABLE_NAME};`
+					)
+				);
+			} catch (error) {
+				console.log({ error });
+				throw error;
+			}
+		}
+	}
+
+	transactions.push(
+		prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`
+	);
+
+	try {
+		await prisma.$transaction(transactions);
+	} catch (error) {
+		console.log({ error });
+	}
+}
+// async function deleteAllRowsFromAllTables() {
+// 	try {
+// 		// Start a transaction
+// 		await prisma.$executeRaw`START TRANSACTION;`;
+
+// 		// Disable foreign key checks
+// 		await prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`;
+
+// 		// Generate and execute DELETE statements for each table
+// 		const tables = await prisma.$queryRaw`
+//             SELECT table_name
+//             FROM information_schema.tables
+//             WHERE table_schema = 'your_database_name'
+//             AND table_type = 'BASE TABLE';
+//         `;
+
+// 		for (const table of tables as {
+// 			table_name: string;
+// 		}[]) {
+// 			const tableName = table.table_name;
+// 			await prisma.$executeRaw`DELETE FROM ${tableName};`;
+// 		}
+
+// 		// Enable foreign key checks
+// 		await prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 1;`;
+
+// 		// Commit transaction
+// 		await prisma.$executeRaw`COMMIT;`;
+
+// 		console.log(
+// 			"All rows deleted from all tables successfully."
+// 		);
+// 	} catch (error) {
+// 		// Rollback transaction on error
+// 		await prisma.$executeRaw`ROLLBACK;`;
+// 		console.error("Error deleting rows:", error);
+// 	} finally {
+// 		await prisma.$disconnect();
+// 	}
+// }
 
 export const SEED_LOBBIES = [seedLobby1];

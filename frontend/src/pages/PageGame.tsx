@@ -8,6 +8,7 @@ import Form from "../components/Form/Form";
 import FormInput from "../components/Form/FormInput";
 import SelectionButtonList from "../components/Form/SelectionButtonList";
 import { WEB_SOCKET_BASE_URL } from "../hooks/useAPI";
+import { useGameState } from "../hooks/useGameState";
 import useLocalVal from "../hooks/useLocalVal";
 import {
 	APIRoutes,
@@ -22,6 +23,7 @@ import MagnateGame from "./MagnateGame/MagnateGame";
 import { PageGameAtom } from "./PageGameContext";
 
 const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
+const LOCAL_STORAGE_INVITE_CODE_NAME = "inviteCode";
 
 type PageState =
 	| "AWAITING_VERIFICATION"
@@ -48,6 +50,15 @@ function PageGame() {
 	const [sessionKey, setSessionKey] = useLocalVal<string>(
 		LOCAL_STORAGE_SESSION_KEY_NAME
 	);
+
+	const [inviteCode, setInviteCode] = useLocalVal<string>(
+		LOCAL_STORAGE_INVITE_CODE_NAME
+	);
+
+	const { setState } = useGameState();
+	function setGameState(state: GamePageState) {
+		setState(state.lobbyData?.gameState ?? null);
+	}
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -121,11 +132,13 @@ function PageGame() {
 
 		switch (message.type) {
 			case "SET_LOBBY": {
-				return {
+				const newState = {
 					...state,
 					pageState: "HOSTING_LOBBY",
 					lobbyData: message.data
 				} as GamePageState;
+				setGameState(newState);
+				return newState;
 			}
 			case "LOBBY_UPDATED": {
 				if (!state) {
@@ -133,13 +146,15 @@ function PageGame() {
 						"Attempted to update lobby with null state."
 					);
 				}
-				return {
+				const newState = {
 					...state,
 					lobbyData: {
 						...state.lobbyData,
 						...message.data
 					}
 				} as GamePageState;
+				setGameState(newState);
+				return newState;
 			}
 			case "CREATING_LOBBY": {
 				if (state.lobbyData) {
@@ -188,10 +203,15 @@ function PageGame() {
 				};
 			}
 			case "LEAVE_LOBBY": {
-				return {
+				console.debug("Leaving lobby.");
+
+				const newState = {
 					...state,
-					pageState: "VERIFIED"
-				};
+					pageState: "VERIFIED",
+					lobbyData: null
+				} as GamePageState;
+				setGameState(newState);
+				return newState;
 			}
 			default:
 				console.debug(
@@ -244,15 +264,19 @@ function PageGame() {
 				<Form
 					submitText="Join Lobby"
 					onSubmit={(data) => {
+						const formData =
+							data as JoinLobbySubmissionData;
+
 						sendJsonMessage({
 							type: "JOIN_LOBBY",
-							data: data as JoinLobbySubmissionData
+							data: formData
 						} as JoinLobbyMessage);
+						setInviteCode(formData.inviteCode);
 					}}
 				>
 					<FormInput
 						name="inviteCode"
-						defaultValue=""
+						defaultValue={inviteCode ?? ""}
 						regex={/^[a-zA-Z\d]{8}$/}
 						labelText="Invite Code"
 					/>
@@ -267,7 +291,12 @@ function PageGame() {
 	} else if (state.pageState === "CREATING_LOBBY") {
 		return (
 			<Form
-				onSubmit={(data) => {
+				onSubmit={(data: any) => {
+					console.debug(
+						`Attempting to create a lobby using the following data: `,
+						data
+					);
+
 					sendJsonMessage({
 						type: "CREATE_LOBBY",
 						data: data as LobbySubmissionData

@@ -4,12 +4,9 @@ import Button from "../../components/Button";
 import useClipboard from "../../hooks/useClipboard";
 import useNotification from "../../hooks/useNotification";
 import usePageGame from "../../hooks/usePageGame";
-import {
-	APIRoutes,
-	FRONTEND_BASE_URL,
-	MagnateLobbyView
-} from "../../utils";
-import PlayerDisplay from "./PlayerDisplay";
+import { MagnateLobbyView } from "../../utils";
+import MapPreview from "./MapPreview";
+import PlayerList from "./PlayerList";
 
 function MagnateGame(props: { data: MagnateLobbyView }) {
 	const { writeClipboard } = useClipboard();
@@ -18,13 +15,7 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 	const { leaveLobby } = usePageGame();
 
 	function onCopyInviteLink() {
-		const url =
-			FRONTEND_BASE_URL +
-			APIRoutes.PLAY +
-			"?inviteCode=" +
-			props.data.inviteCode;
-
-		writeClipboard(url);
+		writeClipboard(props.data.inviteCode);
 		sendNotification(
 			"Copied invite link to clipboard.",
 			"Notification stuff."
@@ -33,39 +24,55 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 
 	// console.debug(props.data);
 	return (
-		<div>
-			<div>
-				<h1>Lobby</h1>
-				<p>Lobby: {props.data.lobbyName}</p>
-				<div className="lobby-container">
-					<h2>
-						Players:{" "}
-						{props.data.lobbyPlayers.length}
-						<div className="player-display-container">
-							{props.data.lobbyPlayers.map(
-								(player) => (
-									<PlayerDisplay
-										player={player}
-									/>
-								)
-							)}
-						</div>
-						<span>
-							Invite code:{" "}
-							{props.data.inviteCode}
-						</span>
-						<Button
-							onClick={onCopyInviteLink}
-							text="Copy invite"
+		<>
+			<div id="lobby-outer-container">
+				{/* <h2>Lobby</h2> */}
+				{/* <div id="lobby-inner-container"> */}
+				<div id="lobby-player-container">
+					<p>Lobby: {props.data.lobbyName}</p>
+					<div className="lobby-container">
+						<h2>
+							Players:{" "}
+							{props.data.lobbyPlayers.length}
+						</h2>
+						<PlayerList
+							lobbySize={
+								props.data.playerCount
+							}
+							players={
+								props.data.lobbyPlayers
+							}
 						/>
-					</h2>
+					</div>
+					<span>
+						Invite code: {props.data.inviteCode}
+					</span>
+					<Button
+						onClick={onCopyInviteLink}
+						text="Copy invite"
+					/>
+					<div id="lobby-btn-start-leave">
+						<Button
+							id="btn-leave-lobby"
+							text="Leave Lobby"
+							onClick={leaveLobby}
+						/>
+						<Button
+							id="btn-start-game"
+							text="Start Game"
+							onClick={alert}
+							inactive={!props.data.hosting}
+							inactiveHoverText="You must be the host to start the game."
+						/>
+					</div>
 				</div>
-				<Button
-					text="Leave Lobby"
-					onClick={leaveLobby}
-				/>
+
+				{/* </div> */}
 			</div>
-		</div>
+			<div id="lobby-map-preview">
+				<MapPreview type="full" />
+			</div>
+		</>
 	);
 }
 

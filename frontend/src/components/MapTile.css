@@ -1,9 +1,22 @@
+:root {
+	--map-tile-border-size: 0.1vmin;
+	--map-tile-thick-border-size: calc(
+		2.5 * var(--map-tile-border-size)
+	);
+	--map-tile-piece-border-colour: red;
+}
+
 .map-tile {
 	position: relative;
 	display: flex;
 
-	width: 100%;
-	height: 100%;
+	/* box-sizing: border-box; */
+	border: black solid var(--map-tile-border-size);
+	/* flex: 1; */
+
+	/* min-width: 40px; */
+	/* height: %; */
+	aspect-ratio: 1;
 	background-color: aliceblue;
 }
 
@@ -17,7 +30,28 @@
 	aspect-ratio: 1;
 }
 
-.map-tile-wrapper {
+.tile-boundary-north {
+	border-top-color: var(--map-tile-piece-border-colour);
+	border-top-width: var(--map-tile-thick-border-size);
+}
+
+.tile-boundary-south {
+	border-bottom-color: var(
+		--map-tile-piece-border-colour
+	);
+	border-bottom-width: var(--map-tile-thick-border-size);
+}
+
+.tile-boundary-east {
+	border-right-color: var(--map-tile-piece-border-colour);
+	border-right-width: var(--map-tile-thick-border-size);
+}
+
+.tile-boundary-west {
+	border-left-color: var(--map-tile-piece-border-colour);
+	border-left-width: var(--map-tile-thick-border-size);
+}
+/* .map-tile-wrapper {
 	display: grid;
 
 	width: 500px;
@@ -28,8 +62,9 @@
 
 	grid-template-columns: repeat(5, 1fr);
 	grid-template-rows: repeat(5, 1fr);
-}
+} */
 
 .mixin-image {
 	mix-blend-mode: hard-light;
 }
+

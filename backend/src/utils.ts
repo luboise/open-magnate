@@ -1,7 +1,5 @@
 import { Response } from "express";
 
-export * from "../../shared";
-
 export function new2DArray<T>(
 	rows: number,
 	cols: number
@@ -88,3 +86,38 @@ export const HandleRequest = {
 		}
 	}
 };
+
+// Override prototype of array
+
+interface Array<T> {
+	clone(): T[];
+}
+
+export function CloneArray<T>(array: T[]): T[] {
+	const newArray = array.map((val) => {
+		if (Array.isArray(val)) return CloneArray(val) as T;
+		else if (typeof val === "object") {
+			return { ...val } as T;
+		} else return val;
+	});
+
+	return newArray;
+}
+
+export function GetTransposed<T>(array: T[][]) {
+	// Create an empty array to transpose into
+	const transposed = new2DArray<T>(
+		array[0].length,
+		array.length
+	);
+
+	for (let i = 0; i < array.length; i++) {
+		for (let j = 0; j < array[i].length; j++) {
+			transposed[j][i] = array[i][j];
+		}
+	}
+
+	return transposed;
+}
+
+export * from "../../shared";
