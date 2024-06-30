@@ -7,9 +7,14 @@ import {
 import {
 	CloneArray,
 	GetTransposed,
-	RoadAdjacencyType,
 	TileType
 } from "../../../backend/src/utils";
+import {
+	IsConnecting,
+	IsMaxBound,
+	IsMinBound,
+	RoadAdjacencyType
+} from "../../../shared/MapData";
 import {
 	GameStateView,
 	Map2D,
@@ -82,6 +87,7 @@ export function useGameState(): {
 		setState: _setState
 	};
 }
+
 function addMapDetails(baseMap: Map2D): Map2D {
 	const newMap = CloneArray(baseMap);
 
@@ -95,15 +101,35 @@ function addMapDetails(baseMap: Map2D): Map2D {
 
 		for (let y = 0; y <= maxY; y++) {
 			const val = newMap[x][y];
+
+			val.connecting = IsConnecting(val.x, val.y);
+
 			if (val.type === TileType.ROAD) {
 				val.data = {
 					north:
-						y > 0 &&
-						newMap[x][y - 1].type ===
-							TileType.ROAD,
-					south: false,
-					east: false,
-					west: false
+						(!IsMinBound(y) &&
+							y > 0 &&
+							newMap[x][y - 1].type ===
+								TileType.ROAD) ||
+						IsConnecting(x, y - 1),
+					south:
+						(!IsMaxBound(y) &&
+							y < maxY &&
+							newMap[x][y + 1].type ===
+								TileType.ROAD) ||
+						IsConnecting(x, y + 1),
+					east:
+						(!IsMaxBound(x) &&
+							x < maxX &&
+							newMap[x + 1][y].type ===
+								TileType.ROAD) ||
+						IsConnecting(val.x + 1, val.y),
+					west:
+						(!IsMinBound(x) &&
+							x > 0 &&
+							newMap[x - 1][y].type ===
+								TileType.ROAD) ||
+						IsConnecting(val.x - 1, val.y)
 				} as RoadAdjacencyType;
 			}
 		}
