@@ -4,6 +4,23 @@ on: [push]
 jobs:
     Test-backend:
         runs-on: ubuntu-latest
+
+        services:
+            db:
+                image: mysql:latest
+                ports:
+                    - 3307:3306
+                options: >-
+                    --health-cmd="mysqladmin ping -h localhost || exit 1"
+                    --health-interval=10s
+                    --health-timeout=20s
+                    --health-retries=5
+                env:
+                    MYSQL_DATABASE: tests
+                    MYSQL_USER: prisma
+                    MYSQL_PASSWORD: password
+                    MYSQL_ROOT_PASSWORD: password
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v4
@@ -22,5 +39,6 @@ jobs:
             - name: Run Tests
               run: |
                   cd ./backend
-                  npm run test:integration
+                  npm run test:integration:setup:db
+                  npm run test:integration:run
 
