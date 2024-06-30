@@ -1,3 +1,0 @@
--- AlterTable
-ALTER TABLE `gamestate` ADD COLUMN `currentPlayer` INTEGER NOT NULL DEFAULT 1,
-    ADD COLUMN `currentTurn` INTEGER NOT NULL DEFAULT 1;

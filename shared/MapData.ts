@@ -1,5 +1,3 @@
-import { MapTileData } from "../frontend/src/utils";
-
 export const MAP_PIECE_WIDTH = 5;
 export const MAP_PIECE_HEIGHT = 5;
 export const MAP_PIECE_SIZE =
@@ -42,3 +40,12 @@ export const CHAR_TO_MAP_TILE_CONVERTER: Record<
 	C: { type: TileType.COLA },
 	B: { type: TileType.BEER }
 };
+export type MapTileData = {
+	x: number;
+	y: number;
+	type: TileType;
+	data?: any;
+};
+
+export type Map2D = MapTileData[][];
+

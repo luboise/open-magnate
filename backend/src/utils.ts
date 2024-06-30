@@ -99,4 +99,21 @@ export const HandleRequest = {
 	}
 };
 
+// Override prototype of array
+
+interface Array<T> {
+	clone(): T[];
+}
+
+export function cloneArray<T>(array: T[]): T[] {
+	const newArray = array.map((val) => {
+		if (Array.isArray(val)) return cloneArray(val) as T;
+		else if (typeof val === "object") {
+			return { ...val } as T;
+		} else return val;
+	});
+
+	return newArray;
+}
+
 export * from "../../shared";

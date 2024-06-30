@@ -25,6 +25,8 @@ model UserSession {
   browserId   String       @unique
   name        String       @default("")
   lobbyPlayer LobbyPlayer?
+
+  @@map("user_session")
 }
 
 model LobbyPlayer {
@@ -40,6 +42,8 @@ model LobbyPlayer {
   restaurantId Int
 
   @@unique([restaurantId, lobbyId])
+
+  @@map("lobby_player")
 }
 
 model Lobby {
@@ -53,6 +57,8 @@ model Lobby {
   inviteCode String
 
   gameState GameState?
+
+  @@map("lobby")
 }
 
 model Restaurant {
@@ -60,6 +66,8 @@ model Restaurant {
   name String
 
   lobbyPlayers LobbyPlayer[]
+
+  @@map("restaurant")
 }
 
 model GameState {
@@ -77,6 +85,8 @@ model GameState {
   marketingCampaigns MarketingCampaign[]
 
   players GamePlayer[]
+
+  @@map("game_state")
 }
 
 model House {
@@ -97,6 +107,8 @@ model House {
 
   // Game 1 can only have a single of house x
   @@unique([gameId, number])
+
+  @@map("game_house")
 }
 
 model Garden {
@@ -107,6 +119,8 @@ model Garden {
   y Int
 
   orientation ORIENTATION @default(HORIZONTAL)
+
+  @@map("game_house_garden")
 }
 
 model Demand {
@@ -114,6 +128,8 @@ model Demand {
   house   House @relation(fields: [houseId], references: [id], onDelete: Cascade)
 
   type DEMAND_TYPE
+
+  @@map("game_house_demand")
 }
 
 model MarketingCampaign {
@@ -132,6 +148,8 @@ model MarketingCampaign {
   orientation ORIENTATION
 
   @@unique([gameId, number])
+
+  @@map("game_marketing_campaign")
 }
 
 model GamePlayer {
@@ -145,6 +163,8 @@ model GamePlayer {
   employees  Json
 
   @@unique([gameId, number])
+
+  @@map("game_player")
 }
 
 enum ORIENTATION {
