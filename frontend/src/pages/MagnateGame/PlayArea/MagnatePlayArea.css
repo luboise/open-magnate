@@ -1,0 +1,13 @@
+#magnate-map-section {
+	display: flex;
+	flex-direction: column;
+}
+
+#magnate-play-area {
+	display: flex;
+	flex-wrap: wrap;
+
+	justify-content: space-between;
+
+	align-self: flex-end;
+}

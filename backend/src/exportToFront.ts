@@ -1,7 +1,8 @@
 import {
 	DEMAND_TYPE,
 	House,
-	ORIENTATION
+	ORIENTATION,
+	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
 import { LobbyPlayerView } from "./utils";
 
@@ -21,10 +22,12 @@ type FullHouseType = House & {
 export type GameStateView = {
 	players: LobbyPlayerView[];
 
-	// turnProgress: TurnProgress;
+	turnProgress: TURN_PROGRESS;
 	currentTurn: number;
 	currentPlayer: number;
 	houses: FullHouseType[];
 	map: string;
 	turnOrder: Array<number> | null;
 };
+
+export type TURN_PROGRESS = PrismaTurnProgress;

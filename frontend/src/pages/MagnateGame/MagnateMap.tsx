@@ -1,21 +1,26 @@
 import MapTile from "../../components/MapTile";
 import { useGameState } from "../../hooks/useGameState";
 import { MapTileData } from "../../utils";
-import "./MapPreview.css";
+import "./MagnateMap.css";
 
-type MapPreviewProps =
-	| {
-			type: "full";
-	  }
-	| {
-			type: "cropped";
-			xMin: number;
-			xMax: number;
-			yMin: number;
-			yMax: number;
-	  };
+type BaseMapProps = {
+	onTileClicked?: (tile: MapTileData) => void;
+};
+type MapProps = BaseMapProps &
+	(
+		| {
+				type: "full";
+		  }
+		| {
+				type: "cropped";
+				xMin: number;
+				xMax: number;
+				yMin: number;
+				yMax: number;
+		  }
+	);
 
-function MapPreview(props: MapPreviewProps) {
+function MagnateMap(props: MapProps) {
 	const { mapRowOrder: map, houses } = useGameState();
 
 	if (!map) return <></>;
@@ -70,5 +75,4 @@ function MapPreview(props: MapPreviewProps) {
 	);
 }
 
-export default MapPreview;
-
+export default MagnateMap;

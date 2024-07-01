@@ -1,0 +1,30 @@
+#root {
+	--magnate-item-border-width: 0.23em;
+}
+
+.magnate-tp-container {
+	width: 100%;
+
+	display: grid;
+}
+
+.magnate-tp-group {
+	display: flex;
+	flex-wrap: nowrap;
+
+	background-color: black;
+
+	gap: var(--magnate-item-border-width);
+	padding: var(--magnate-item-border-width);
+
+	margin-top: var(--magnate-item-border-width);
+}
+
+.magnate-tp-group > * {
+	flex: 1;
+}
+
+.magnate-tp-item {
+	color: black;
+	background-color: white;
+}

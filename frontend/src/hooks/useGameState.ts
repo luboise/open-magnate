@@ -7,6 +7,7 @@ import {
 import {
 	CloneArray,
 	GetTransposed,
+	TURN_PROGRESS,
 	TileType
 } from "../../../backend/src/utils";
 import {
@@ -77,6 +78,19 @@ const mapHouseSelector = selector({
 	}
 });
 
+const RECOIL_TURN_PROGRESS_KEY = "TURN_PROGRESS";
+const turnProgressSelector = selector<TURN_PROGRESS | null>(
+	{
+		key: RECOIL_TURN_PROGRESS_KEY,
+		get: ({ get }) => {
+			const turnProgress =
+				get(GameStateAtom)?.turnProgress;
+
+			return turnProgress ?? null;
+		}
+	}
+);
+
 export function useGameState() {
 	// : {
 	// 	state: GameStateAtomType;
@@ -94,12 +108,17 @@ export function useGameState() {
 
 	const houses = useRecoilValue(mapHouseSelector);
 
+	const turnProgress = useRecoilValue(
+		turnProgressSelector
+	);
+
 	return {
 		state,
 		mapColOrder,
 		mapRowOrder,
 		houses,
-		setState: _setState
+		setState: _setState,
+		turnProgress
 	};
 }
 

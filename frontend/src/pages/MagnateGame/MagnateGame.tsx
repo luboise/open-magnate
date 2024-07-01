@@ -1,12 +1,12 @@
 import "./MagnateGame.css";
 
 import Button from "../../components/Button";
-import Resizable from "../../components/Resizable";
 import useClipboard from "../../hooks/useClipboard";
 import useNotification from "../../hooks/useNotification";
 import usePageGame from "../../hooks/usePageGame";
 import { MagnateLobbyView } from "../../utils";
-import MapPreview from "./MapPreview";
+import MagnateMap from "./MagnateMap";
+import MagnatePlayArea from "./PlayArea/MagnatePlayArea";
 import PlayerList from "./PlayerList";
 
 function MagnateGame(props: { data: MagnateLobbyView }) {
@@ -24,7 +24,7 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 	}
 
 	return (
-		<>
+		<div id="magnate-game-page">
 			<div id="lobby-outer-container">
 				{/* <h2>Lobby</h2> */}
 				{/* <div id="lobby-inner-container"> */}
@@ -75,15 +75,15 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 				{/* </div> */}
 			</div>
 			{props.data.inGame ? (
-				<div>Implement the actual game here</div>
+				<MagnatePlayArea />
 			) : (
-				<Resizable defaultWidth={1000}>
-					<div id="lobby-map-preview">
-						<MapPreview type="full" />
-					</div>
-				</Resizable>
+				// <Resizable defaultWidth={1000}>
+				<div id="lobby-map-preview">
+					<MagnateMap type="full" />
+				</div>
+				// </Resizable>
 			)}
-		</>
+		</div>
 	);
 }
 

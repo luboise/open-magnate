@@ -9,11 +9,6 @@ import {
 	useRef
 } from "react";
 
-interface ResizableProps {
-	defaultWidth: number;
-	color?: Color;
-}
-
 let resizableElementId = 1;
 
 interface Position {
@@ -24,6 +19,7 @@ interface Position {
 interface BaseResizeState {
 	width: number;
 	aspectRatio: number | undefined;
+	pos: Position;
 }
 
 interface IdleState extends BaseResizeState {
@@ -31,21 +27,36 @@ interface IdleState extends BaseResizeState {
 }
 interface DraggingState extends BaseResizeState {
 	type: "DRAGGING";
-	startPos: Position;
-	currentPos: Position;
+	dragFrom: Position;
+	dragTo: Position;
+}
+interface MovingState extends BaseResizeState {
+	type: "MOVING";
+	moveFrom: Position;
+	moveTo: Position;
 }
 
-type ResizableState = IdleState | DraggingState;
+type ResizableState =
+	| IdleState
+	| DraggingState
+	| MovingState;
 
 type ResizableAction =
 	| {
-			type: "START_DRAG";
+			type: "START_RESIZE";
 			pos: Position;
 	  }
+	| { type: "START_MOVING"; pos: Position }
 	| { type: "MOVE_MOUSE"; pos: Position }
-	| { type: "STOP_DRAG" }
+	| { type: "CLICK_RELEASED" }
 	| { type: "SET_ASPECT_RATIO"; aspectRatio: number };
 
+interface ResizableProps
+	extends React.HTMLAttributes<HTMLDivElement> {
+	defaultWidth: number;
+	defaultPosition?: Position;
+	color?: Color;
+}
 function Resizable(
 	props: PropsWithChildren<ResizableProps> = {
 		// defaultHeight: 0,
@@ -53,6 +64,14 @@ function Resizable(
 		color: "#000000"
 	}
 ) {
+	const {
+		color,
+		defaultWidth,
+		defaultPosition,
+		children,
+		...args
+	} = props;
+
 	const [state, dispatch] = useReducer(
 		(
 			state: ResizableState,
@@ -69,23 +88,31 @@ function Resizable(
 			switch (state.type) {
 				case "IDLE": {
 					switch (action.type) {
-						case "START_DRAG": {
-							const startPos = {
-								x:
-									action.pos.x -
-									state.width,
-								y:
-									(action.pos.y -
-										state.width) /
-									(state.aspectRatio ?? 1)
-							};
+						case "START_RESIZE": {
+							// const startPos = {
+							// 	x:
+							// 		action.pos.x -
+							// 		state.width,
+							// 	y:
+							// 		(action.pos.y -
+							// 			state.width) /
+							// 		(state.aspectRatio ?? 1)
+							// };
 							// addEventListeners();
 
 							return {
 								...state,
 								type: "DRAGGING",
-								currentPos: action.pos,
-								startPos: startPos
+								dragTo: action.pos,
+								dragFrom: action.pos
+							};
+						}
+						case "START_MOVING": {
+							return {
+								...state,
+								type: "MOVING",
+								moveFrom: action.pos,
+								moveTo: action.pos
 							};
 						}
 						default:
@@ -97,23 +124,53 @@ function Resizable(
 						case "MOVE_MOUSE":
 							return {
 								...state,
-								currentPos: {
+								dragTo: {
 									...action.pos
 								}
 							};
-						case "STOP_DRAG": {
-							// removeEventListeners();
-
+						case "CLICK_RELEASED": {
 							return {
 								...state,
 								type: "IDLE",
 								width: state.aspectRatio
 									? getMinRectangleX(
-											state.startPos,
-											state.currentPos,
+											state.pos,
+											state.dragTo,
 											state.aspectRatio
 										)
 									: state.width
+							};
+						}
+						default:
+							return {
+								...state
+							};
+					}
+				}
+				case "MOVING": {
+					switch (action.type) {
+						case "MOVE_MOUSE":
+							return {
+								...state,
+								moveTo: {
+									...action.pos
+								}
+							};
+						case "CLICK_RELEASED": {
+							return {
+								...state,
+								type: "IDLE",
+								pos: {
+									x:
+										state.moveTo.x -
+										state.moveFrom.x +
+										state.pos.x,
+
+									y:
+										state.moveTo.y -
+										state.moveFrom.y +
+										state.pos.y
+								}
 							};
 						}
 						default:
@@ -126,17 +183,19 @@ function Resizable(
 		},
 		{
 			type: "IDLE",
-			width: props.defaultWidth,
+			width: defaultWidth,
+			pos: {
+				x: defaultPosition?.x ?? 0,
+				y: defaultPosition?.y ?? 0
+			},
 			aspectRatio: undefined
 		}
 	);
 
 	const id = useRef(
-		`resizable-element-${resizableElementId++}`
+		props.id ??
+			`resizable-element-${resizableElementId++}`
 	);
-	// const [height, setHeight] = useState(
-	// 	props.defaultHeight
-	// );
 
 	function fetchAspectRatio() {
 		if (!state || state.aspectRatio !== undefined)
@@ -165,7 +224,7 @@ function Resizable(
 
 		document.body.addEventListener(
 			"mouseup",
-			stopCapturing
+			clickReleased
 		);
 	}
 
@@ -177,7 +236,7 @@ function Resizable(
 
 		document.body.removeEventListener(
 			"mouseup",
-			stopCapturing
+			clickReleased
 		);
 	}
 
@@ -187,12 +246,23 @@ function Resizable(
 		return () => removeEventListeners();
 	}, []);
 
-	function startCapturing(e: MouseEvent) {
+	function startResize(e: MouseEvent) {
 		e.preventDefault();
 
 		if (state.type === "IDLE") {
 			dispatch({
-				type: "START_DRAG",
+				type: "START_RESIZE",
+				pos: { x: e.clientX, y: e.clientY }
+			});
+		}
+	}
+
+	function startMoving(e: MouseEvent) {
+		e.preventDefault();
+
+		if (state.type === "IDLE") {
+			dispatch({
+				type: "START_MOVING",
 				pos: { x: e.clientX, y: e.clientY }
 			});
 		}
@@ -226,10 +296,10 @@ function Resizable(
 		} else return widthFromX;
 	}
 
-	function stopCapturing(e: globalThis.MouseEvent) {
+	function clickReleased(e: globalThis.MouseEvent) {
 		e.preventDefault();
 
-		dispatch({ type: "STOP_DRAG" });
+		dispatch({ type: "CLICK_RELEASED" });
 
 		// console.debug(
 		// 	"Stopped capturing, but the user was never dragging."
@@ -277,28 +347,46 @@ function Resizable(
 	return (
 		<>
 			<div
+				{...args}
 				className="resizable-element"
 				id={id.current}
 				style={{
 					width:
 						state.type === "DRAGGING" &&
 						state.aspectRatio
-							? getMinRectangleX(
-									state.startPos,
-									state.currentPos,
+							? state.width -
+								getMinRectangleX(
+									state.dragTo,
+									state.dragFrom,
 									state.aspectRatio
 								)
 							: state.width,
-					color: props.color,
+					color: color,
+
+					left: `${state.pos.x + (state.type === "MOVING" ? state.moveTo.x - state.moveFrom.x : 0)}px`,
+					top: `${state.pos.y + (state.type === "MOVING" ? state.moveTo.y - state.moveFrom.y : 0)}px`,
+
 					aspectRatio: state.aspectRatio
 				}}
 				onLoad={fetchAspectRatio}
 			>
-				{props.children}
+				<div
+					style={{
+						width: "100%",
+						height: "1em",
+						backgroundColor: "white",
+						position: "absolute",
+						// Fix to be in css instead
+						top: "-1em",
+						zIndex: 2
+					}}
+					onMouseDown={startMoving}
+				/>
+				{children}
 				<div
 					className="resizable-element-handle"
 					// Start capturing when the user clicks on the handle
-					onMouseDown={startCapturing}
+					onMouseDown={startResize}
 				/>
 			</div>
 		</>

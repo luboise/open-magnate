@@ -1,18 +1,35 @@
+#root {
+	--resizable-element-border-size: 1.5em;
+}
+
 .resizable-element {
 	display: flex;
-	position: relative;
+	position: absolute;
+	top: 0;
+	right: 0;
 
 	aspect-ratio: 1;
 	/* height: auto; */
+
+	box-sizing: border-box;
+
+	border: var(--resizable-element-border-size) black solid;
+	border-radius: var(--resizable-element-border-size);
 }
 
 .resizable-element-handle {
 	position: absolute;
-	bottom: 0;
-	right: 0;
+	bottom: calc(
+		-1 / 1.15 * var(--resizable-element-border-size)
+	);
+	right: calc(
+		-1 / 1.15 * var(--resizable-element-border-size)
+	);
 
-	background-color: purple;
+	background-color: white;
 
-	width: 50px;
-	height: 50px;
+	width: var(--resizable-element-border-size);
+	height: var(--resizable-element-border-size);
+
+	border-radius: 100%;
 }
