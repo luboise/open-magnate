@@ -241,31 +241,37 @@ const GameStateController = {
 			players: gameStateView.lobby.players.map(
 				(player) => ({
 					name: player.userSession.name,
-					restaurant: player.restaurant.name
+					restaurant: player.restaurant.name,
+					host: player.host
 				})
 			),
-
 			currentTurn: gameStateView.currentTurn,
 			currentPlayer: gameStateView.currentPlayer,
 			map: gameStateView.rawMap,
 			houses: gameStateView.houses,
-			// TODO: Fix turn order to be included in the view
-			// turnOrder: gs.turnOrder
-			turnOrder: null
+			turnOrder: Array.from(gs.turnOrder).map((val) =>
+				Number(val)
+			)
 		} as GameStateView;
 	},
 
-	StartGame: async (
-		lobbyId: number
-	): Promise<boolean> => {
+	StartGame: async (lobby: Lobby): Promise<boolean> => {
+		// Get the players in a random order
+		const playerOrder = new Array(lobby.playerCount)
+			.fill(null)
+			.map((item, index) => index + 1)
+			.sort((a, b) => Math.random() - 0.5);
+
 		const updated = await GameStateRepository.update({
 			where: {
-				id: lobbyId
+				id: lobby.id
 			},
 			data: {
 				currentTurn: 1,
-				currentPlayer: 1,
-				turnProgress: TURN_PROGRESS.SETTING_UP
+				currentPlayer: playerOrder[0],
+				turnOrder: playerOrder.join(""),
+				turnProgress:
+					TURN_PROGRESS.RESTAURANT_PLACEMENT
 			}
 		});
 

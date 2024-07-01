@@ -429,9 +429,9 @@ const handleStartGame: BackendMessageHandler<
 		return;
 	}
 
-	const gameStarted = await GameStateController.StartGame(
-		lobby.id
-	);
+	const gameStarted =
+		await GameStateController.StartGame(lobby);
+
 	if (gameStarted) {
 		resendLobby(lobby.id);
 	} else {
