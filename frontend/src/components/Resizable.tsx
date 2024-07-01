@@ -58,7 +58,7 @@ function Resizable(
 			state: ResizableState,
 			action: ResizableAction
 		): ResizableState => {
-			console.debug("Received action:", action);
+			// console.debug("Received action:", action);
 
 			if (action.type === "SET_ASPECT_RATIO")
 				return {
@@ -210,11 +210,16 @@ function Resizable(
 		outerPoint: Position,
 		aspectRatio: number
 	): number {
+		// TODO: Fix it so that negative and positive amounts both work
 		const widthFromX = outerPoint.x - origin.x;
 		const yDiff = outerPoint.y - origin.y;
 
 		// Use the y diff to get the x diff at that value
 		const widthFromY = yDiff * aspectRatio;
+
+		// If negative, return the smaller of the 2
+
+		// If positive, return the larger of the 2
 
 		if (widthFromY < widthFromX) {
 			return widthFromY;
@@ -276,10 +281,12 @@ function Resizable(
 				id={id.current}
 				style={{
 					width:
-						state.type === "DRAGGING"
+						state.type === "DRAGGING" &&
+						state.aspectRatio
 							? getMinRectangleX(
 									state.startPos,
-									state.currentPos
+									state.currentPos,
+									state.aspectRatio
 								)
 							: state.width,
 					color: props.color,
