@@ -381,6 +381,7 @@ const handleLeaveLobby: BackendMessageHandler<
 	);
 };
 
+// TODO: Fix resendLobby() altering the host on the frontend
 export async function resendLobby(lobbyId: number) {
 	const lobbyData =
 		await LobbyController.GetLobbyData(lobbyId);

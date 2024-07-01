@@ -1,6 +1,7 @@
 import "./MagnateGame.css";
 
 import Button from "../../components/Button";
+import Resizable from "../../components/Resizable";
 import useClipboard from "../../hooks/useClipboard";
 import useNotification from "../../hooks/useNotification";
 import usePageGame from "../../hooks/usePageGame";
@@ -69,9 +70,11 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 
 				{/* </div> */}
 			</div>
-			<div id="lobby-map-preview">
-				<MapPreview type="full" />
-			</div>
+			<Resizable defaultWidth={1000}>
+				<div id="lobby-map-preview">
+					<MapPreview type="full" />
+				</div>
+			</Resizable>
 		</>
 	);
 }
