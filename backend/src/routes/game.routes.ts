@@ -11,12 +11,14 @@ import {
 	JoinLobbyMessage,
 	LeaveLobbyMessage,
 	LobbySubmissionData,
-	SetLobbyMessage
+	SetLobbyMessage,
+	StartGameMessage
 } from "../utils";
 
 // Fixes issues from using base WebSocket without extended methods
 import { UserSession } from "@prisma/client";
 import WebSocket from "ws";
+import GameStateController from "../database/controller/gamestate.controller";
 import LobbyRepository from "../database/repository/lobby.repository";
 import { connectionsToWebsocket } from "./connections";
 
@@ -88,6 +90,10 @@ const routeHandler: RouteHandler = (express, app) => {
 				}
 				case "LEAVE_LOBBY": {
 					handleLeaveLobby(params);
+					return;
+				}
+				case "START_GAME": {
+					handleStartGame(params);
 					return;
 				}
 			}
@@ -379,6 +385,58 @@ const handleLeaveLobby: BackendMessageHandler<
 			type: "LEAVE_LOBBY"
 		} as LeaveLobbyMessage)
 	);
+};
+
+const handleStartGame: BackendMessageHandler<
+	StartGameMessage
+> = async (params) => {
+	if (
+		!params.userSession ||
+		!params.userSession.sessionKey
+	) {
+		console.log(
+			"Unable to start game without valid session."
+		);
+		return;
+	}
+
+	const lobby = await LobbyController.GetFromSessionKey(
+		params.userSession.sessionKey
+	);
+
+	if (!lobby) {
+		params.ws.send("You are not currently in a lobby.");
+		return;
+	}
+
+	const playerAsHost = lobby.players.find(
+		(player) =>
+			player.host &&
+			player.userId === params.userSession!.sessionKey
+	);
+
+	if (!playerAsHost) {
+		params.ws.send(
+			"You must be the host of the lobby to start the game."
+		);
+		return;
+	}
+
+	if (lobby.players.length !== lobby.playerCount) {
+		params.ws.send(
+			"Not all players have joined the lobby."
+		);
+		return;
+	}
+
+	const gameStarted = await GameStateController.StartGame(
+		lobby.id
+	);
+	if (gameStarted) {
+		resendLobby(lobby.id);
+	} else {
+		params.ws.send("Unable to start game.");
+	}
 };
 
 // TODO: Fix resendLobby() altering the host on the frontend

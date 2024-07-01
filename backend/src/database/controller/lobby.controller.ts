@@ -5,6 +5,7 @@ import {
 	LobbyPlayer,
 	Prisma,
 	Restaurant,
+	TURN_PROGRESS,
 	UserSession
 } from "@prisma/client";
 import {
@@ -82,6 +83,22 @@ const LobbyController = {
 		);
 	},
 
+	GetFromSessionKey: async (sessionKey: string) => {
+		const lobby = await LobbyController._get(
+			{
+				players: {
+					some: {
+						userSession: {
+							sessionKey: sessionKey
+						}
+					}
+				}
+			},
+			true
+		);
+
+		return lobby ?? null;
+	},
 	// _getNewGamestatePlayers: async (
 	// 	playerCount: number
 	// ) => {
@@ -227,7 +244,7 @@ const LobbyController = {
 			(player) => player.host
 		);
 
-		return {
+		const lobbyData = {
 			lobbyName: lobby.name,
 			lobbyId: lobby.id,
 			lobbyPlayers: await Promise.all(
@@ -242,8 +259,15 @@ const LobbyController = {
 			hosting:
 				lobbyHost &&
 				requesteeSessionKey &&
-				lobbyHost.userId === requesteeSessionKey
+				lobbyHost.userId === requesteeSessionKey,
+			inGame:
+				lobby.gameState.turnProgress !==
+					TURN_PROGRESS.PREGAME &&
+				lobby.gameState.turnProgress !==
+					TURN_PROGRESS.POSTGAME
 		} as MagnateLobbyView;
+
+		return lobbyData;
 	},
 
 	async GetLobbyPlayerView(

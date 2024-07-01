@@ -13,7 +13,7 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 	const { writeClipboard } = useClipboard();
 	const { sendNotification } = useNotification();
 
-	const { leaveLobby } = usePageGame();
+	const { leaveLobby, startGame } = usePageGame();
 
 	function onCopyInviteLink() {
 		writeClipboard(props.data.inviteCode);
@@ -23,7 +23,6 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 		);
 	}
 
-	// console.debug(props.data);
 	return (
 		<>
 			<div id="lobby-outer-container">
@@ -61,8 +60,13 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 						<Button
 							id="btn-start-game"
 							text="Start Game"
-							onClick={alert}
-							inactive={!props.data.hosting}
+							onClick={startGame}
+							inactive={
+								!props.data.hosting ||
+								props.data.lobbyPlayers
+									.length <
+									props.data.playerCount
+							}
 							inactiveHoverText="You must be the host to start the game."
 						/>
 					</div>
@@ -70,11 +74,15 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 
 				{/* </div> */}
 			</div>
-			<Resizable defaultWidth={1000}>
-				<div id="lobby-map-preview">
-					<MapPreview type="full" />
-				</div>
-			</Resizable>
+			{props.data.inGame ? (
+				<div>Implement the actual game here</div>
+			) : (
+				<Resizable defaultWidth={1000}>
+					<div id="lobby-map-preview">
+						<MapPreview type="full" />
+					</div>
+				</Resizable>
+			)}
 		</>
 	);
 }

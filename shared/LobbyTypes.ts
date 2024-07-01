@@ -25,7 +25,7 @@ export type MagnateLobbyView = {
 	playerCount: number;
 	hosting: boolean;
 	lobbyPlayers: LobbyPlayerView[];
+	inGame: boolean;
 	gameState: GameStateView;
 	inviteCode: string;
 };
-

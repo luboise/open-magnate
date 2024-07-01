@@ -20,6 +20,7 @@ type FullHouseType = House & {
 
 export type GameStateView = {
 	players: LobbyPlayerView[];
+
 	// turnProgress: TurnProgress;
 	currentTurn: number;
 	currentPlayer: number;
@@ -27,4 +28,3 @@ export type GameStateView = {
 	map: string;
 	turnOrder: Array<number> | null;
 };
-

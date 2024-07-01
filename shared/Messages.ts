@@ -48,7 +48,8 @@ export type BackendMessage =
 	| NewSessionKeyMessage
 	| CreateLobbyMessage
 	| JoinLobbyMessage
-	| LeaveLobbyMessage;
+	| LeaveLobbyMessage
+	| StartGameMessage;
 
 export interface CheckSessionKeyMessage
 	extends BaseMessage {
@@ -73,4 +74,8 @@ export interface JoinLobbyMessage extends BaseMessage {
 
 export interface LeaveLobbyMessage extends BaseMessage {
 	type: "LEAVE_LOBBY";
+}
+
+export interface StartGameMessage extends BaseMessage {
+	type: "START_GAME";
 }

@@ -1,6 +1,9 @@
 import { useRecoilState } from "recoil";
 import { PageGameAtom } from "../pages/PageGameContext";
-import { LeaveLobbyMessage } from "../utils";
+import {
+	LeaveLobbyMessage,
+	StartGameMessage
+} from "../utils";
 
 function usePageGame() {
 	const [pageGame] = useRecoilState(PageGameAtom);
@@ -11,8 +14,15 @@ function usePageGame() {
 		} as LeaveLobbyMessage);
 	}
 
+	function startGame() {
+		pageGame.sendMessage({
+			type: "START_GAME"
+		} as StartGameMessage);
+	}
+
 	return {
-		leaveLobby
+		leaveLobby,
+		startGame
 	};
 }
 

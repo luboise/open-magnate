@@ -1,4 +1,9 @@
-import { GameState, Lobby, Prisma } from "@prisma/client";
+import {
+	GameState,
+	Lobby,
+	Prisma,
+	TURN_PROGRESS
+} from "@prisma/client";
 import {
 	MAP_PIECES,
 	MapStringChar,
@@ -248,6 +253,23 @@ const GameStateController = {
 			// turnOrder: gs.turnOrder
 			turnOrder: null
 		} as GameStateView;
+	},
+
+	StartGame: async (
+		lobbyId: number
+	): Promise<boolean> => {
+		const updated = await GameStateRepository.update({
+			where: {
+				id: lobbyId
+			},
+			data: {
+				currentTurn: 1,
+				currentPlayer: 1,
+				turnProgress: TURN_PROGRESS.SETTING_UP
+			}
+		});
+
+		return Boolean(updated);
 	}
 };
 

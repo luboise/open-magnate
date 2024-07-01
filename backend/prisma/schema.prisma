@@ -41,10 +41,9 @@ model LobbyPlayer {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   restaurantId Int
 
-  host	Boolean	@default(false)
+  host Boolean @default(false)
 
   @@unique([restaurantId, lobbyId])
-
   @@map("lobby_player")
 }
 
@@ -77,11 +76,13 @@ model GameState {
   id    Int   @id @map("gamestate_id")
   lobby Lobby @relation(fields: [id], references: [id], onDelete: Cascade)
 
+  turnProgress TURN_PROGRESS	@default(PREGAME)
+
   // Scalar fields
   rawMap        String @db.VarChar(2048)
-  currentTurn   Int	@default(1)
-  currentPlayer Int	@default(1)
-  turnOrder		String	@default("1234")
+  currentTurn   Int    @default(1)
+  currentPlayer Int    @default(1)
+  turnOrder     String @default("1234")
 
   // Relations
   houses             House[]
@@ -110,7 +111,6 @@ model House {
 
   // Game 1 can only have a single of house x
   @@unique([gameId, number])
-
   @@map("game_house")
 }
 
@@ -151,7 +151,6 @@ model MarketingCampaign {
   orientation ORIENTATION
 
   @@unique([gameId, number])
-
   @@map("game_marketing_campaign")
 }
 
@@ -166,7 +165,6 @@ model GamePlayer {
   employees  Json
 
   @@unique([gameId, number])
-
   @@map("game_player")
 }
 
@@ -188,4 +186,22 @@ enum MARKETING_TYPE {
   MAILBOX
   PLANE
   RADIO
+}
+
+enum TURN_PROGRESS {
+  // In lobby
+  PREGAME
+
+  // In a game
+  SETTING_UP
+  RESTAURANT_PLACEMENT
+  RESTRUCTURING
+  TURN_ORDER_SELECTION
+  USE_EMPLOYEES
+  SALARY_PAYOUTS
+  MARKETING_CAMPAIGNS
+  CLEAN_UP
+
+  // After lobby
+  POSTGAME
 }
