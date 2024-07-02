@@ -22,8 +22,10 @@ type MapProps = BaseMapProps &
 	);
 
 function MagnateMap(props: MapProps) {
-	const { sendMapObjectClickEvent: mapObjectClicked } =
-		useMap();
+	const {
+		sendMapObjectClickEvent: mapObjectClicked,
+		getAllRenderables
+	} = useMap();
 
 	const { mapRowOrder: map, houses } = useGameState();
 
@@ -94,6 +96,11 @@ function MagnateMap(props: MapProps) {
 					#{house.number}
 				</div>
 			))}
+
+			{/* Extras */}
+			{...Array.from(
+				Object.values(getAllRenderables)
+			).flat(2)}
 		</div>
 	);
 }

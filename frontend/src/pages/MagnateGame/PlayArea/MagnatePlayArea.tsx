@@ -12,6 +12,10 @@ function MagnatePlayArea() {
 		console.log("clicked", event);
 	});
 
+	// const logicDiv: JSX.Element = (()=>{
+	// 	switch ()
+	// })();
+
 	return (
 		<div id="magnate-play-area">
 			<Resizable

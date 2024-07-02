@@ -91,6 +91,21 @@ const turnProgressSelector = selector<TURN_PROGRESS | null>(
 	}
 );
 
+const RECOIL_IS_MY_TURN_KEY = "IS_MY_TURN";
+const isMyTurnSelector = selector<TURN_PROGRESS | null>({
+	key: RECOIL_IS_MY_TURN_KEY,
+	get: ({ get }) => {
+		get(GameStateAtom)?.currentPlayer ===
+			lobbyPlayer.playerNumber;
+
+		return turnProgress ?? null;
+	}
+});
+
+export function isMyTurn() {
+	return useRecoilValue(isMyTurnSelector);
+}
+
 export function useGameState() {
 	// : {
 	// 	state: GameStateAtomType;

@@ -30,20 +30,25 @@ model UserSession {
 }
 
 model LobbyPlayer {
-  lobby   Lobby @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
-  lobbyId Int
+  isHost Boolean @default(false)
 
+  // The lobby that the player is in
+  lobby       Lobby       @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  lobbyId     Int
+  // The user session of the player
   userSession UserSession @relation(fields: [userId], references: [sessionKey])
   userId      String      @unique
 
   timeJoined DateTime @default(now())
 
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId Int
+  // Which player they are in the match
+  playerData   GamePlayer  @relation(fields: [gameStateId, playerNumber], references: [gameId, number])
+  gameStateId  Int
+  playerNumber Int
+  Restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
+  restaurantId Int?
 
-  host Boolean @default(false)
-
-  @@unique([restaurantId, lobbyId])
+  @@unique([gameStateId, playerNumber])
   @@map("lobby_player")
 }
 
@@ -51,7 +56,6 @@ model Lobby {
   id          Int     @id @default(autoincrement()) @map("lobby_id")
   name        String
   password    String?
-  playerCount Int
 
   players LobbyPlayer[]
 
@@ -62,13 +66,26 @@ model Lobby {
   @@map("lobby")
 }
 
-model Restaurant {
-  id   Int    @id @default(autoincrement()) @map("restaurant_id")
-  name String
+model GamePlayer {
+  gameId Int
+  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
-  lobbyPlayers LobbyPlayer[]
+  number Int @map("player_number")
 
-  @@map("restaurant")
+  money      Int  @default(0)
+  milestones Json
+  employees  Json
+
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+
+  lobbyPlayer LobbyPlayer?
+
+  // Each game can only have a player number once
+  @@unique([gameId, number])
+  // Each game can only have a restaurant once
+  @@unique([gameId, restaurantId])
+  @@map("game_player")
 }
 
 model GameState {
@@ -76,12 +93,15 @@ model GameState {
   id    Int   @id @map("gamestate_id")
   lobby Lobby @relation(fields: [id], references: [id], onDelete: Cascade)
 
-  turnProgress TURN_PROGRESS	@default(PREGAME)
+  turnProgress TURN_PROGRESS @default(PREGAME)
 
   // Scalar fields
   rawMap        String @db.VarChar(2048)
+  
   currentTurn   Int    @default(1)
   currentPlayer Int    @default(1)
+  playerCount Int
+  
   turnOrder     String @default("1234")
 
   // Relations
@@ -154,18 +174,14 @@ model MarketingCampaign {
   @@map("game_marketing_campaign")
 }
 
-model GamePlayer {
-  gameId Int
-  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+model Restaurant {
+  id   Int    @id @default(autoincrement()) @map("restaurant_id")
+  name String
 
-  number Int @map("player_number")
+  lobbyPlayers LobbyPlayer[]
+  GamePlayer   GamePlayer[]
 
-  money      Int  @default(0)
-  milestones Json
-  employees  Json
-
-  @@unique([gameId, number])
-  @@map("game_player")
+  @@map("restaurant")
 }
 
 enum ORIENTATION {

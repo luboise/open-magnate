@@ -115,13 +115,18 @@ function useMap() {
 		RECOIL_MAP_CALLBACK_LIST.push(callback);
 	}
 
+	function getAllRenderables() {
+		return { ...mapRenderList };
+	}
+
 	return {
 		addRenderable,
 		removeRenderable,
 		getRenderList,
 		removeRenderList,
 		onMapObjectClicked,
-		sendMapObjectClickEvent
+		sendMapObjectClickEvent,
+		getAllRenderables
 	};
 }
 

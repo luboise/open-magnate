@@ -1,9 +1,11 @@
 // import prisma from "../src/datasource";
 
 import {
+	Prisma,
 	PrismaClient,
 	PrismaPromise,
-	Restaurant
+	Restaurant,
+	TURN_PROGRESS
 } from "@prisma/client";
 import { RESTAURANT_NAMES } from "../../shared";
 // import prisma from "../src/datasource";
@@ -84,7 +86,7 @@ export const seedUserOutOfLobby5 = {
 // 	name: "outoflobby-6"
 // };
 
-export const SEED_USERS = [
+export const SEED_USERS: Prisma.UserSessionCreateInput[] = [
 	seedUser1,
 	seedUser2,
 	seedUserOutOfLobby1,
@@ -99,9 +101,37 @@ export const seedLobby1 = {
 	id: -1,
 	name: "seed-lobby-unstarted",
 	password: "",
-	inviteCode: "SEEDLB01",
-	playerCount: 2
+	inviteCode: "SEEDLB01"
 };
+
+export const seedGameState1 = {
+	currentPlayer: 1,
+	currentTurn: 0,
+	lobby: {
+		connect: { id: seedLobby1.id }
+	},
+	turnProgress: TURN_PROGRESS.RESTAURANT_PLACEMENT,
+	playerCount: 2,
+	rawMap: "RRRRRRRRRRRRRRR;RRRRRRRRRRRRRRR;RRRRRRRRRRRRRRR",
+	players: {
+		createMany: {
+			data: [
+				{
+					number: 1,
+					employees: [],
+					milestones: [],
+					restaurantId: seedRestaurant1.id
+				},
+				{
+					number: 2,
+					employees: [],
+					milestones: [],
+					restaurantId: seedRestaurant2.id
+				}
+			]
+		}
+	}
+} as Prisma.GameStateCreateInput;
 
 // TODO: Fix main throwing an error when running without debug mode on GitHub actions
 async function main() {
@@ -158,7 +188,15 @@ async function main() {
 			})
 		);
 
-		const seedLP1 = {
+		transactions.push(
+			prisma.gameState.upsert({
+				where: { id: seedLobby1.id },
+				update: {},
+				create: seedGameState1
+			})
+		);
+
+		const seedLP1: Prisma.LobbyPlayerCreateInput = {
 			userSession: {
 				connect: {
 					sessionKey: seedUser1.sessionKey
@@ -167,8 +205,13 @@ async function main() {
 			lobby: {
 				connect: { id: seedLobby1.id }
 			},
-			restaurant: {
-				connect: { id: 1 }
+			playerData: {
+				connect: {
+					gameId_number: {
+						gameId: seedLobby1.id,
+						number: 1
+					}
+				}
 			}
 		};
 
@@ -178,9 +221,16 @@ async function main() {
 					sessionKey: seedUser2.sessionKey
 				}
 			},
-			lobby: { connect: { id: seedLobby1.id } },
-			restaurant: {
-				connect: { id: 2 }
+			lobby: {
+				connect: { id: seedLobby1.id }
+			},
+			playerData: {
+				connect: {
+					gameId_number: {
+						gameId: seedLobby1.id,
+						number: 2
+					}
+				}
 			}
 		};
 
