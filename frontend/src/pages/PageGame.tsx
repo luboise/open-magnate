@@ -137,6 +137,7 @@ function PageGame() {
 					pageState: "HOSTING_LOBBY",
 					lobbyData: message.data
 				} as GamePageState;
+
 				setGameState(newState);
 				return newState;
 			}

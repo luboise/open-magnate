@@ -1,5 +1,6 @@
 import MapTile from "../../components/MapTile";
 import { useGameState } from "../../hooks/useGameState";
+import useMap from "../../hooks/useMap";
 import { MapTileData } from "../../utils";
 import "./MagnateMap.css";
 
@@ -21,6 +22,9 @@ type MapProps = BaseMapProps &
 	);
 
 function MagnateMap(props: MapProps) {
+	const { sendMapObjectClickEvent: mapObjectClicked } =
+		useMap();
+
 	const { mapRowOrder: map, houses } = useGameState();
 
 	if (!map) return <></>;
@@ -48,10 +52,23 @@ function MagnateMap(props: MapProps) {
 				aspectRatio: `${map[0].length} / ${map.length}`
 			}}
 		>
+			{/* Tiles */}
 			{...map
 				.flat(2)
 				.filter(FilterPreviewFiles)
-				.map((tile) => <MapTile tile={tile} />)}
+				.map((tile) => (
+					<MapTile
+						onClick={() => {
+							mapObjectClicked({
+								type: "TILE",
+								data: tile
+							});
+						}}
+						tile={tile}
+					/>
+				))}
+
+			{/* Houses */}
 			{...(houses ?? []).map((house) => (
 				<div
 					style={{
@@ -66,6 +83,12 @@ function MagnateMap(props: MapProps) {
 						lineHeight: "10px",
 						fontSize: "10px",
 						zIndex: 2
+					}}
+					onClick={() => {
+						mapObjectClicked({
+							type: "HOUSE",
+							data: house
+						});
 					}}
 				>
 					#{house.number}

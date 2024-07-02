@@ -5,22 +5,27 @@ import {
 } from "../utils";
 import "./MapTile.css";
 
-function MapTile(props: { tile: MapTileData }) {
-	if (!props.tile) return <p>invalid map tile</p>;
+interface MapTileProps
+	extends React.HTMLAttributes<HTMLDivElement> {
+	tile: MapTileData;
+}
+
+function MapTile(props: MapTileProps) {
+	const { tile, ...args } = props;
+
+	if (!tile) return <p>invalid map tile</p>;
 
 	const elements: JSX.Element[] = [];
 
 	// Check if has valid image
-	if (props.tile.type !== TileType.EMPTY) {
+	if (tile.type !== TileType.EMPTY) {
 		elements.push(
-			<img
-				src={`/resources/${props.tile.type}.png`}
-			/>
+			<img src={`/resources/${tile.type}.png`} />
 		);
 	}
 
-	if (props.tile.type === TileType.ROAD) {
-		const roadData = props.tile.data as DirectionBools;
+	if (tile.type === TileType.ROAD) {
+		const roadData = tile.data as DirectionBools;
 
 		if (!roadData) {
 			throw new Error(
@@ -72,7 +77,7 @@ function MapTile(props: { tile: MapTileData }) {
 		"west"
 	]) {
 		if (
-			props.tile.pieceEdges[
+			tile.pieceEdges[
 				direction as keyof DirectionBools
 			]
 		)
@@ -80,10 +85,11 @@ function MapTile(props: { tile: MapTileData }) {
 	}
 	return (
 		<div
+			{...args}
 			className={classes.join(" ")}
 			style={{
-				gridColumn: `${props.tile.x + 1}`,
-				gridRow: `${props.tile.y + 1}`
+				gridColumn: `${tile.x + 1}`,
+				gridRow: `${tile.y + 1}`
 			}}
 		>
 			{/* <div className="map-tile-content"> */}
