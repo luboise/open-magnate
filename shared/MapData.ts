@@ -87,4 +87,3 @@ export function IsConnecting(
 		(IsMiddle(y) && IsEdge(x))
 	);
 }
-

@@ -10,5 +10,4 @@ export * from "./RestaurantNames";
 export * from "./Routes";
 
 // Shared types that rely on backend types
-export * from "../backend/src/exportToFront";
-
+export * from "../backend/src/dataViews";

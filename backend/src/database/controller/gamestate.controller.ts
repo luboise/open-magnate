@@ -1,9 +1,5 @@
-import {
-	GameState,
-	Lobby,
-	Prisma,
-	TURN_PROGRESS
-} from "@prisma/client";
+import { Prisma, TURN_PROGRESS } from "@prisma/client";
+import { GardenView } from "../../dataViews";
 import {
 	MAP_PIECES,
 	MapStringChar,
@@ -17,7 +13,7 @@ import {
 	PLAYER_DEFAULTS
 } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
-import LobbyRepository from "../repository/lobby.repository";
+import { FullLobby } from "./lobby.controller";
 function copyArray<T>(
 	data: T[][],
 	mainArray: T[][],
@@ -37,11 +33,40 @@ function copyArray<T>(
 
 const GameStateController = {
 	Get: async (id: number) => {
-		return await LobbyRepository.findFirst({
-			where: {
-				id: id
-			}
-		});
+		try {
+			return await GameStateRepository.findFirst({
+				where: {
+					id: id
+				},
+				include: {
+					houses: {
+						include: {
+							demand: true,
+							garden: true
+						}
+					},
+					marketingCampaigns: true,
+					players: {
+						include: {
+							restaurant: true,
+							lobbyPlayer: {
+								include: {
+									userSession: {
+										select: {
+											name: true
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			});
+		} catch (error) {
+			console.error(error);
+		}
+
+		return null;
 	},
 
 	NewMap: (
@@ -150,117 +175,109 @@ const GameStateController = {
 		return [outString, houses];
 	},
 
-	Create: async (lobby: Lobby) => {
-		const [map, houses] = GameStateController.NewMap(
-			lobby.playerCount
-		);
-		return await GameStateRepository.create({
-			data: {
-				lobby: {
-					connect: {
-						id: lobby.id
-					}
-				},
-				rawMap: map,
-				houses: {
-					createMany: {
-						data: houses
-					}
-				}
+	// Create: async (lobby: FullLobby) => {
+	// 	const [map, houses] = GameStateController.NewMap(
+	// 		lobby.gameState.playerCount
+	// 	);
+	// 	return await GameStateRepository.create({
+	// 		data: {
+	// 			lobby: {
+	// 				connect: {
+	// 					id: lobby.id
+	// 				}
+	// 			},
+	// 			rawMap: map,
+	// 			houses: {
+	// 				createMany: {
+	// 					data: houses
+	// 				}
+	// 			}
 
-				// currentTurn: 0,
-				// currentPlayer: null,
-				// turnProgress: TurnProgress.SETTING_UP
-			}
-		});
-	},
-
-	AddStateToLobby: async (lobby: Lobby) => {
-		const [map, houses] = GameStateController.NewMap(
-			lobby.playerCount
-		);
-
-		const encodedMap =
-			// Buffer.from(map).toString("base64");
-			map;
-
-		const updated = await LobbyRepository.update({
-			where: {
-				id: lobby.id
-			},
-			data: {
-				gameState: {
-					create: {
-						rawMap: encodedMap,
-						houses: {
-							createMany: {
-								data: houses
-							}
-						}
-					}
-				}
-			}
-		});
-
-		return Boolean(updated);
-	},
+	// 			// currentTurn: 0,
+	// 			// currentPlayer: null,
+	// 			// turnProgress: TurnProgress.SETTING_UP
+	// 		}
+	// 	});
+	// },
 
 	GetGameStateView: async (
-		gs: GameState
+		lobbyId: number
 	): Promise<GameStateView | null> => {
-		if (!gs) return null;
-
-		const gameStateView =
-			await GameStateRepository.findFirstOrThrow({
-				where: {
-					id: gs.id
-				},
-				include: {
-					lobby: {
-						include: {
-							players: {
-								include: {
-									restaurant: true,
-									userSession: true
-								}
-							}
-						}
-					},
-					houses: {
-						include: {
-							demand: true,
-							garden: true
-						}
-					},
-					marketingCampaigns: true,
-					players: true
-				}
-			});
+		const gameState =
+			await GameStateController.Get(lobbyId);
+		if (!gameState) return null;
 
 		return {
-			players: gameStateView.lobby.players.map(
-				(player) => ({
-					name: player.userSession.name,
-					restaurant: player.restaurant.name,
-					host: player.host
-				})
-			),
-			currentTurn: gameStateView.currentTurn,
-			currentPlayer: gameStateView.currentPlayer,
-			map: gameStateView.rawMap,
-			houses: gameStateView.houses,
-			turnOrder: Array.from(gs.turnOrder).map((val) =>
-				Number(val)
-			)
-		} as GameStateView;
+			currentPlayer: gameState.currentPlayer,
+			currentTurn: gameState.currentTurn,
+			turnProgress: gameState.turnProgress,
+			map: gameState.rawMap,
+			playerCount: gameState.playerCount,
+			turnOrder:
+				gameState.turnOrder
+					.split("")
+					.map((str) => Number(str)) ?? null,
+			marketingCampaigns:
+				gameState.marketingCampaigns.map(
+					(campaign) => {
+						return {
+							priority: campaign.number,
+							turnsRemaining:
+								campaign.turnsRemaining,
+
+							type: campaign.type,
+							x: campaign.x,
+							y: campaign.y,
+							orientation:
+								campaign.orientation
+						};
+					}
+				),
+			gardens: gameState.houses
+				.filter((house) => house.garden)
+				.map((house): GardenView => {
+					// Can safely ignore TypeScript type complaints since we pre-filtered the list
+					return {
+						houseNumber: house.number,
+						x: house.garden!.x,
+						y: house.garden!.y,
+						orientation:
+							house.garden!.orientation
+					};
+				}),
+			houses: gameState.houses.map((house) => ({
+				demand: house.demand.map(
+					(demand) => demand.type
+				),
+				demandLimit: house.demandLimit,
+				priority: house.number,
+				x: house.x,
+				y: house.y,
+				garden: house.garden
+					? {
+							houseNumber:
+								house.garden?.houseId,
+							x: house.garden?.x,
+							y: house.garden?.y,
+							orientation:
+								house.garden?.orientation
+						}
+					: null,
+				orientation: "HORIZONTAL"
+			}))
+		};
 	},
 
-	StartGame: async (lobby: Lobby): Promise<boolean> => {
+	StartGame: async (
+		lobby: FullLobby
+	): Promise<boolean> => {
 		// Get the players in a random order
-		const playerOrder = new Array(lobby.playerCount)
+		const playerOrder = new Array(
+			lobby.gameState.playerCount
+		)
 			.fill(null)
-			.map((item, index) => index + 1)
-			.sort((a, b) => Math.random() - 0.5);
+			.map((_, index) => index + 1)
+			.sort((_a, _b) => Math.random() - 0.5);
 
 		const updated = await GameStateRepository.update({
 			where: {

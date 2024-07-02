@@ -35,6 +35,7 @@ model LobbyPlayer {
   // The lobby that the player is in
   lobby       Lobby       @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
   lobbyId     Int
+
   // The user session of the player
   userSession UserSession @relation(fields: [userId], references: [sessionKey])
   userId      String      @unique
@@ -45,8 +46,6 @@ model LobbyPlayer {
   playerData   GamePlayer  @relation(fields: [gameStateId, playerNumber], references: [gameId, number])
   gameStateId  Int
   playerNumber Int
-  Restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
-  restaurantId Int?
 
   @@unique([gameStateId, playerNumber])
   @@map("lobby_player")
@@ -57,7 +56,7 @@ model Lobby {
   name        String
   password    String?
 
-  players LobbyPlayer[]
+  playersInLobby LobbyPlayer[]
 
   inviteCode String
 
@@ -178,7 +177,6 @@ model Restaurant {
   id   Int    @id @default(autoincrement()) @map("restaurant_id")
   name String
 
-  lobbyPlayers LobbyPlayer[]
   GamePlayer   GamePlayer[]
 
   @@map("restaurant")

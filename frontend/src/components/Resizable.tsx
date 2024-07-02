@@ -1,3 +1,4 @@
+import { Position } from "../../../backend/src/dataViews";
 import { Color } from "../utils";
 import "./Resizable.css";
 
@@ -10,11 +11,6 @@ import {
 } from "react";
 
 let resizableElementId = 1;
-
-interface Position {
-	x: number;
-	y: number;
-}
 
 interface BaseResizeState {
 	width: number;

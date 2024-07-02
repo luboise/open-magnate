@@ -93,7 +93,7 @@ function MagnateMap(props: MapProps) {
 						});
 					}}
 				>
-					#{house.number}
+					#{house.priority}
 				</div>
 			))}
 

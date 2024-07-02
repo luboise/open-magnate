@@ -1,6 +1,8 @@
+import { GameStateViewPerPlayer } from "../backend/src/dataViews";
 import {
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
+	LobbyViewPerPlayer,
 	MagnateLobbyView
 } from "./LobbyTypes";
 
@@ -25,7 +27,10 @@ export type FrontendMessage =
 
 export interface SetLobbyMessage extends BaseMessage {
 	type: "SET_LOBBY";
-	data: MagnateLobbyView;
+	data: {
+		lobby: LobbyViewPerPlayer;
+		gamestate: GameStateViewPerPlayer;
+	};
 }
 export interface LobbyUpdatedMessage extends BaseMessage {
 	type: "LOBBY_UPDATED";

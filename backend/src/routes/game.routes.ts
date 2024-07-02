@@ -195,10 +195,16 @@ async function handleNewConnection(
 		);
 		const lobbyMessage = {
 			type: "SET_LOBBY",
-			data: await LobbyController.GetLobbyData(
-				userSession.lobbyPlayer.lobby.id,
-				userSession.sessionKey
-			)
+			data: {
+				lobby: await LobbyController.GetLobbyView(
+					userSession.lobbyPlayer.lobby.id
+				),
+				gamestate:
+					await GameStateController.GetGameStateData(
+						userSession.lobbyPlayer.lobby.id,
+						userSession.sessionKey
+					)
+			}
 		} as FrontendMessage;
 		ws.send(JSON.stringify(lobbyMessage));
 	} else {
@@ -250,7 +256,7 @@ const handleCreateLobby: BackendMessageHandler<
 		params.ws.send(
 			JSON.stringify({
 				type: "SET_LOBBY",
-				data: await LobbyController.GetLobbyData(
+				data: await LobbyController.GetLobbyView(
 					newLobby.id,
 					params.userSession.sessionKey
 				)
@@ -409,7 +415,7 @@ const handleStartGame: BackendMessageHandler<
 		return;
 	}
 
-	const playerAsHost = lobby.players.find(
+	const playerAsHost = lobby.playersInLobby.find(
 		(player) =>
 			player.host &&
 			player.userId === params.userSession!.sessionKey
@@ -422,7 +428,7 @@ const handleStartGame: BackendMessageHandler<
 		return;
 	}
 
-	if (lobby.players.length !== lobby.playerCount) {
+	if (lobby.playersInLobby.length !== lobby.playerCount) {
 		params.ws.send(
 			"Not all players have joined the lobby."
 		);
@@ -442,7 +448,7 @@ const handleStartGame: BackendMessageHandler<
 // TODO: Fix resendLobby() altering the host on the frontend
 export async function resendLobby(lobbyId: number) {
 	const lobbyData =
-		await LobbyController.GetLobbyData(lobbyId);
+		await LobbyController.GetLobbyView(lobbyId);
 
 	const lobbyPlayers =
 		await LobbyController.getUserSessions(lobbyId);

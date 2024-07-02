@@ -18,14 +18,14 @@ import {
 	IsMinBound
 } from "../../../shared/MapData";
 import {
-	GameStateView,
+	GameStateViewPerPlayer,
 	Map2D,
 	MapTileData,
 	parseMapChar
 } from "../utils";
 
 const RECOIL_GAMESTATE_KEY = "GameState";
-type GameStateAtomType = GameStateView | null;
+type GameStateAtomType = GameStateViewPerPlayer | null;
 const GameStateAtom = atom<GameStateAtomType>({
 	key: RECOIL_GAMESTATE_KEY, // unique ID (with respect to other atoms/selectors)
 	default: null

@@ -4,52 +4,31 @@ import {
 	Lobby,
 	LobbyPlayer,
 	Prisma,
-	Restaurant,
 	TURN_PROGRESS,
 	UserSession
 } from "@prisma/client";
 import {
-	LobbyPlayerView,
 	LobbySubmissionData,
-	MagnateLobbyView
+	LobbyView,
+	LobbyViewPerPlayer
 } from "../../utils";
 
 import prisma from "../../datasource";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
-import RestaurantRepository from "../repository/restaurant.repository";
 import UserSessionRepository from "../repository/usersession.repository";
 import GameStateController from "./gamestate.controller";
 
 interface FullLobbyPlayer extends LobbyPlayer {
 	userSession: UserSession;
-	restaurant: Restaurant;
 }
 
 export interface FullLobby extends Lobby {
-	players: FullLobbyPlayer[];
+	playersInLobby: FullLobbyPlayer[];
 	gameState: GameState;
 }
 
 const LobbyController = {
-	defaultInclude: {
-		players: {
-			include: {
-				restaurant: true
-			}
-		}
-	},
-
-	fullInclude: {
-		players: {
-			include: {
-				restaurant: true,
-				userSession: true
-			}
-		},
-		gameState: true
-	},
-
 	_get: async <T extends boolean = false>(
 		where: Prisma.LobbyWhereInput,
 		fullGet?: T
@@ -60,8 +39,21 @@ const LobbyController = {
 			where: where,
 
 			include: fullGet
-				? LobbyController.fullInclude
-				: LobbyController.defaultInclude
+				? {
+						playersInLobby: {
+							include: {
+								userSession: true
+							}
+						},
+						gameState: {
+							include: {
+								houses: true,
+								marketingCampaigns: true,
+								players: true
+							}
+						}
+					}
+				: undefined
 		});
 
 		return lobby as T extends true ? FullLobby : Lobby;
@@ -86,7 +78,7 @@ const LobbyController = {
 	GetFromSessionKey: async (sessionKey: string) => {
 		const lobby = await LobbyController._get(
 			{
-				players: {
+				playersInLobby: {
 					some: {
 						userSession: {
 							sessionKey: sessionKey
@@ -118,7 +110,7 @@ const LobbyController = {
 	// },
 
 	NewLobby: async (
-		users: UserSession | UserSession[],
+		host: UserSession,
 		newLobbyData: LobbySubmissionData
 	): Promise<Lobby | null> => {
 		try {
@@ -126,36 +118,51 @@ const LobbyController = {
 				return null;
 			}
 
-			let restaurantCounter = 1;
-
-			const receivedArray = Array.isArray(users);
-
-			const hostUser = receivedArray
-				? users[0]
-				: users;
-
 			const newLobby: Lobby =
 				await prisma.$transaction(async (ctx) => {
+					const [map, houses] =
+						GameStateController.NewMap(
+							newLobbyData.playerCount
+						);
+
 					const lobby = await ctx.lobby.create({
 						data: {
 							name: newLobbyData.name,
 							password: newLobbyData.password,
-							playerCount: Number(
-								newLobbyData.playerCount
-							),
 							inviteCode:
 								LobbyController.generateInviteCode(),
-							players: {
+							gameState: {
 								create: {
-									userSession: {
-										connect: hostUser
-									},
-									restaurant: {
-										connect: {
-											id: restaurantCounter++
+									playerCount:
+										newLobbyData.playerCount,
+									rawMap: map,
+									houses: {
+										createMany: {
+											data: houses
 										}
 									},
-									host: true
+									players: {
+										createMany: {
+											data: new Array(
+												newLobbyData.playerCount
+											)
+												.fill(null)
+												.map(
+													(
+														_,
+														index
+													) => ({
+														number: index,
+														employees:
+															[],
+														milestones:
+															[],
+														restaurantId:
+															index
+													})
+												)
+										}
+									}
 								}
 							}
 						}
@@ -163,138 +170,165 @@ const LobbyController = {
 
 					if (!lobby) {
 						throw new Error(
-							"Unable to create new lobby"
+							"Unable to create new lobby."
 						);
 					}
 
-					if (receivedArray) {
-						for (const userSession of users.slice(
-							1
-						)) {
-							const newPlayer =
-								await ctx.lobbyPlayer.create(
-									{
-										data: {
-											userSession: {
-												connect:
-													userSession
-											},
-											restaurant: {
-												connect: {
-													id: restaurantCounter++
-												}
-											},
-											lobby: {
-												connect:
-													lobby as Lobby
-											}
+					const lobbyPlayer =
+						await ctx.lobbyPlayer.create({
+							data: {
+								lobby: {
+									connect: {
+										id: lobby.id
+									}
+								},
+								userSession: {
+									connect: {
+										sessionKey:
+											host.sessionKey
+									}
+								},
+								playerData: {
+									connect: {
+										gameId_number: {
+											number: 1,
+											gameId: lobby.id
 										}
 									}
-								);
-
-							if (!newPlayer) {
-								throw new Error(
-									"Unable to create new player"
-								);
+								}
 							}
-						}
-					}
+						});
 
-					return lobby;
+					if (!lobbyPlayer)
+						throw new Error(
+							"Unable to create lobby player for the host. Rolling back transaction."
+						);
+
+					return newLobby;
 				});
-
-			const addedState =
-				await GameStateController.AddStateToLobby(
-					newLobby
-				);
-
-			if (!addedState) return null;
-
-			const lob = await LobbyController.GetByLobbyId(
-				newLobby.id
-			);
-
-			return lob;
 		} catch (error) {
 			console.error(error);
-			return null;
 		}
+
+		return null;
 	},
 
-	async GetLobbyData(
-		id: number,
-		requesteeSessionKey?: string
-	) {
-		// console.log(GetRelationsFrom(LobbyRepository));
-
-		const lobby = await this.GetByLobbyId(id);
-
-		// const lobby = await LobbyRepository.findFirst({
-		// 	include: { players: true },
-		// 	where: {
-		// 		id: id
-		// 	}
-		// });
-
-		if (!lobby) {
-			throw new Error("Could not find lobby");
-		}
-
-		const lobbyHost = lobby.players.find(
-			(player) => player.host
-		);
-
-		const lobbyData = {
-			lobbyName: lobby.name,
-			lobbyId: lobby.id,
-			lobbyPlayers: await Promise.all(
-				lobby.players.map(this.GetLobbyPlayerView)
-			),
-			playerCount: lobby.playerCount,
-			inviteCode: lobby.inviteCode,
-			gameState:
-				await GameStateController.GetGameStateView(
-					lobby.gameState
-				),
-			hosting:
-				lobbyHost &&
-				requesteeSessionKey &&
-				lobbyHost.userId === requesteeSessionKey,
-			inGame:
+	MakeLobbyView(lobby: FullLobby) {
+		const lobbyData: LobbyView = {
+			inGame: Boolean(
 				lobby.gameState.turnProgress !==
 					TURN_PROGRESS.PREGAME &&
-				lobby.gameState.turnProgress !==
-					TURN_PROGRESS.POSTGAME
-		} as MagnateLobbyView;
+					lobby.gameState.turnProgress !==
+						TURN_PROGRESS.POSTGAME
+			),
+
+			lobbyId: lobby.id,
+			lobbyName: lobby.name,
+
+			inviteCode: lobby.inviteCode,
+			players: lobby.playersInLobby.map((player) => ({
+				name: player.userSession.name,
+				playerNumber: player.playerNumber,
+				host: player.isHost
+			}))
+		};
 
 		return lobbyData;
 	},
 
-	async GetLobbyPlayerView(
-		lobbyPlayer: FullLobbyPlayer
-	): Promise<LobbyPlayerView> {
-		if (
-			!lobbyPlayer ||
-			!lobbyPlayer.userSession ||
-			!lobbyPlayer.restaurant
-		)
-			throw new Error("Invalid lobbyPlayer");
+	MakeLobbyViewForPlayer(
+		lobby: FullLobby,
+		sessionKey: string
+	): LobbyViewPerPlayer | null {
+		try {
+			const lobbyView =
+				LobbyController.MakeLobbyView(lobby);
 
-		const lobbyPlayerView: LobbyPlayerView = {
-			name: lobbyPlayer.userSession.name,
-			restaurant:
-				lobbyPlayer.restaurant?.name ?? null,
-			host: lobbyPlayer.host
-		};
-		return lobbyPlayerView;
+			const player = lobby.playersInLobby.find(
+				(player) =>
+					player.userSession.sessionKey ===
+					sessionKey
+			);
+
+			if (!player)
+				throw new Error(
+					"Unable to find player in lobby."
+				);
+
+			return {
+				...lobbyView,
+				hosting: player.isHost,
+				playerNumber: player.playerNumber
+			};
+		} catch (error) {
+			console.error(error);
+		}
+		return null;
 	},
 
-	async addPlayer(
-		lobbyId: number,
-		player: UserSession,
-		restaurant?: Restaurant
-	) {
+	async GetLobbyView(
+		lobbyId: number
+	): Promise<LobbyView | null> {
+		// console.log(GetRelationsFrom(LobbyRepository));
 		try {
+			const fullLobby = await this._get(
+				{ id: lobbyId },
+				true
+			);
+			if (!fullLobby) {
+				throw new Error("Unable to find lobby.");
+			}
+			const lobbyView = this.MakeLobbyView(fullLobby);
+			if (!lobbyView) {
+				throw new Error(
+					"Unable to get lobby view from existing lobby."
+				);
+			}
+		} catch (error) {
+			console.error(error);
+		}
+
+		return null;
+	},
+
+	async GetLobbyViewForPlayer(
+		lobbyId: number,
+		sessionKey: string
+	): Promise<LobbyViewPerPlayer | null> {
+		try {
+			const lobby = await LobbyController._get(
+				{ id: lobbyId },
+				true
+			);
+			if (!lobby)
+				throw new Error("Unable to find lobby.");
+
+			return LobbyController.MakeLobbyViewForPlayer(
+				lobby,
+				sessionKey
+			);
+		} catch (error) {
+			console.error(error);
+		}
+		return null;
+	},
+
+	async addPlayer(lobbyId: number, player: UserSession) {
+		try {
+			// Find an available GamePlayer (slot) in the lobby
+			const availableSlot =
+				await prisma.gamePlayer.findFirst({
+					where: {
+						gameId: lobbyId,
+						lobbyPlayer: null
+					}
+				});
+
+			if (!availableSlot)
+				throw new Error(
+					"No available slots in lobby. Unable to add player to the lobby."
+				);
+
 			const newLobbyPlayer =
 				await LobbyPlayerRepository.create({
 					data: {
@@ -307,36 +341,16 @@ const LobbyController = {
 									player.sessionKey
 							}
 						},
-						restaurant: {
+						playerData: {
 							connect: {
-								id:
-									restaurant?.id ??
-									(
-										await RestaurantRepository.findFirst(
-											{
-												where: {
-													lobbyPlayers:
-														{
-															none: {
-																lobbyId:
-																	lobbyId
-															}
-														}
-												}
-											}
-										)
-									)?.id
+								gameId_number: {
+									number: availableSlot.number,
+									gameId: lobbyId
+								}
 							}
 						}
 					}
 				});
-
-			if (!newLobbyPlayer) {
-				console.error(
-					`Failed to create LobbyPlayer for player ${player.name} in lobby ${lobbyId}`
-				);
-				return null;
-			}
 
 			console.log(
 				`Created LobbyPlayer for player ${player.name} in lobby ${lobbyId}`
@@ -345,6 +359,8 @@ const LobbyController = {
 		} catch (error) {
 			console.log(error);
 		}
+
+		return null;
 	},
 
 	async removePlayer(
