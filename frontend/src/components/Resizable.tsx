@@ -291,7 +291,7 @@ function Resizable(
 
 		// If positive, return the larger of the 2
 
-		if (widthFromY < widthFromX) {
+		if (widthFromY > widthFromX) {
 			return widthFromY;
 		} else return widthFromX;
 	}
@@ -354,10 +354,9 @@ function Resizable(
 					width:
 						state.type === "DRAGGING" &&
 						state.aspectRatio
-							? state.width -
-								getMinRectangleX(
+							? getMinRectangleX(
+									state.pos,
 									state.dragTo,
-									state.dragFrom,
 									state.aspectRatio
 								)
 							: state.width,
