@@ -1,4 +1,5 @@
 import { Position } from "../../../backend/src/dataViews";
+import useLocalVal from "../hooks/useLocalVal";
 import { Color } from "../utils";
 import "./Resizable.css";
 
@@ -49,6 +50,7 @@ type ResizableAction =
 
 interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
+	localKey?: string;
 	defaultWidth: number;
 	defaultPosition?: Position;
 	color?: Color;
@@ -65,8 +67,15 @@ function Resizable(
 		defaultWidth,
 		defaultPosition,
 		children,
+		localKey,
 		...args
 	} = props;
+
+	const [localVals, setLocalVals] = useLocalVal<{
+		x: number;
+		y: number;
+		width: number;
+	}>(localKey || `resizable-${resizableElementId++}`);
 
 	const [state, dispatch] = useReducer(
 		(
@@ -153,19 +162,22 @@ function Resizable(
 								}
 							};
 						case "CLICK_RELEASED": {
+							const newX =
+								state.moveTo.x -
+								state.moveFrom.x +
+								state.pos.x;
+
+							const newY =
+								state.moveTo.y -
+								state.moveFrom.y +
+								state.pos.y;
+
 							return {
 								...state,
 								type: "IDLE",
 								pos: {
-									x:
-										state.moveTo.x -
-										state.moveFrom.x +
-										state.pos.x,
-
-									y:
-										state.moveTo.y -
-										state.moveFrom.y +
-										state.pos.y
+									x: newX,
+									y: newY
 								}
 							};
 						}
@@ -179,10 +191,10 @@ function Resizable(
 		},
 		{
 			type: "IDLE",
-			width: defaultWidth,
+			width: localVals?.width ?? defaultWidth,
 			pos: {
-				x: defaultPosition?.x ?? 0,
-				y: defaultPosition?.y ?? 0
+				x: localVals?.x ?? defaultPosition?.x ?? 0,
+				y: localVals?.y ?? defaultPosition?.y ?? 0
 			},
 			aspectRatio: undefined
 		}
@@ -339,6 +351,14 @@ function Resizable(
 			JSON.stringify(state)
 		);
 	}, [state, state.type]);
+
+	useEffect(() => {
+		setLocalVals({
+			x: state.pos.x,
+			y: state.pos.y,
+			width: state.width
+		});
+	}, [state.pos.x, state.pos.y, state.width]);
 
 	return (
 		<>
