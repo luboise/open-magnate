@@ -1,16 +1,23 @@
 import { Prisma, TURN_PROGRESS } from "@prisma/client";
-import { GardenView } from "../../dataViews";
+import {
+	MAP_PIECE_HEIGHT,
+	MAP_PIECE_WIDTH,
+	PLAYER_DEFAULTS
+} from "../../../../shared";
+import {
+	GamePlayerViewPrivate,
+	GameStateView,
+	GameStateViewPerPlayer,
+	GardenView
+} from "../../dataViews";
 import {
 	MAP_PIECES,
 	MapStringChar,
 	createMapString
 } from "../../game/MapPieces";
 import {
-	GameStateView,
 	GetTransposed,
-	MAP_PIECE_HEIGHT,
-	MAP_PIECE_WIDTH,
-	PLAYER_DEFAULTS
+	readJsonNumberArray
 } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
 import { FullLobby } from "./lobby.controller";
@@ -206,11 +213,12 @@ const GameStateController = {
 	// 	});
 	// },
 
-	GetGameStateView: (
-		lobby: FullLobby
-	): GameStateView | null => {
+	GetGameStateView: (lobby: FullLobby): GameStateView => {
 		const gameState = lobby.gameState;
-		if (!gameState) return null;
+		if (!gameState)
+			throw new Error(
+				"Unable to fetch GameStateView from lobby, as its GameState is null."
+			);
 
 		return {
 			currentPlayer: gameState.currentPlayer,
@@ -269,8 +277,47 @@ const GameStateController = {
 						}
 					: null,
 				orientation: "HORIZONTAL"
-			}))
+			})),
+			players: gameState.players.map(
+				(player): GamePlayerViewPrivate => ({
+					money: player.money,
+					playerNumber: player.number,
+					restaurant: player.restaurant.name,
+					milestones: readJsonNumberArray(
+						player.milestones
+					),
+					employees: readJsonNumberArray(
+						player.employees
+					)
+				})
+			)
 		};
+	},
+
+	GetPublicGameStateView: (
+		gsv: GameStateView,
+		playerNumber: number
+	): GameStateViewPerPlayer => {
+		const player = gsv.players.find(
+			(player) => player.playerNumber === playerNumber
+		);
+		if (!player)
+			throw new Error(
+				`Unable to get public game state for invalid player: ${playerNumber}`
+			);
+
+		const newVal: GameStateViewPerPlayer = {
+			...gsv,
+			players: gsv.players.map((eachPlayer) => {
+				const { employees, ...rest } = eachPlayer;
+				return {
+					...rest
+				};
+			}),
+			privateData: player
+		};
+
+		return newVal;
 	},
 
 	StartGame: async (

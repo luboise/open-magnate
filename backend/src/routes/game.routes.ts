@@ -5,6 +5,10 @@ import LobbyController, {
 	FullLobby
 } from "../database/controller/lobby.controller";
 import UserSessionController from "../database/controller/usersession.controller";
+
+// Fixes issues from using base WebSocket without extended methods
+import { UserSession } from "@prisma/client";
+import WebSocket from "ws";
 import {
 	BackendMessage,
 	BaseMessage,
@@ -14,11 +18,7 @@ import {
 	LeaveLobbyMessage,
 	LobbySubmissionData,
 	StartGameMessage
-} from "../utils";
-
-// Fixes issues from using base WebSocket without extended methods
-import { UserSession } from "@prisma/client";
-import WebSocket from "ws";
+} from "../../../shared";
 import GameStateController from "../database/controller/gamestate.controller";
 import { connectionsToWebsocket } from "./connections";
 
@@ -212,7 +212,13 @@ async function handleNewConnection(
 		return;
 	}
 
-	updateOnePlayer(lobby, userSession, "ALL");
+	try {
+		updateOnePlayer(lobby, userSession, "ALL");
+	} catch (error) {
+		console.error(error);
+		ws.send(String(error));
+		return;
+	}
 }
 
 const handleCreateLobby: BackendMessageHandler<
@@ -286,15 +292,52 @@ function updateOnePlayer(
 			} as FrontendMessage)
 		);
 	} else if (updateType === "GAMESTATE") {
+		const gameStateView =
+			GameStateController.GetGameStateView(lobby);
+		if (!gameStateView)
+			throw new Error(
+				"Unable to get game state from lobby."
+			);
+
+		const playerNumber = lobby.playersInLobby.find(
+			(lobbyPlayer) =>
+				lobbyPlayer.userSession.sessionKey ===
+				player.sessionKey
+		)?.playerNumber;
+
+		if (!playerNumber)
+			throw new Error(
+				"Unable to find player in lobby."
+			);
+
 		ws.send(
 			JSON.stringify({
 				type: "GAMESTATE_UPDATED",
-				data: GameStateController.GetGameStateView(
-					lobby
+				data: GameStateController.GetPublicGameStateView(
+					gameStateView,
+					playerNumber
 				)
 			} as FrontendMessage)
 		);
 	} else if (updateType === "ALL") {
+		// TODO: Refactor this to not be repeated
+		const gameStateView =
+			GameStateController.GetGameStateView(lobby);
+		if (!gameStateView)
+			throw new Error(
+				"Unable to get game state from lobby."
+			);
+
+		const playerNumber = lobby.playersInLobby.find(
+			(lobbyPlayer) =>
+				lobbyPlayer.userId === player.sessionKey
+		)?.playerNumber;
+
+		if (!playerNumber)
+			throw new Error(
+				"Unable to find player in lobby."
+			);
+
 		ws.send(
 			JSON.stringify({
 				type: "ALL_UPDATED",
@@ -305,8 +348,9 @@ function updateOnePlayer(
 							sessionKey
 						),
 					gameState:
-						GameStateController.GetGameStateView(
-							lobby
+						GameStateController.GetPublicGameStateView(
+							gameStateView,
+							playerNumber
 						)
 				}
 			} as FrontendMessage)

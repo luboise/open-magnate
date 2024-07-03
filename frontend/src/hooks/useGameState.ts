@@ -6,21 +6,21 @@ import {
 } from "recoil";
 import {
 	CloneArray,
-	GetTransposed,
-	TURN_PROGRESS,
-	TileType
+	GetTransposed
 } from "../../../backend/src/utils";
 import {
 	DirectionBools,
 	IsConnecting,
 	IsEdge,
 	IsMaxBound,
-	IsMinBound
+	IsMinBound,
+	TileType
 } from "../../../shared/MapData";
 import {
 	GameStateViewPerPlayer,
 	Map2D,
 	MapTileData,
+	TURN_PROGRESS,
 	parseMapChar
 } from "../utils";
 
@@ -92,13 +92,17 @@ const turnProgressSelector = selector<TURN_PROGRESS | null>(
 );
 
 const RECOIL_IS_MY_TURN_KEY = "IS_MY_TURN";
-const isMyTurnSelector = selector<TURN_PROGRESS | null>({
+const isMyTurnSelector = selector<boolean | null>({
 	key: RECOIL_IS_MY_TURN_KEY,
 	get: ({ get }) => {
-		get(GameStateAtom)?.currentPlayer ===
-			lobbyPlayer.playerNumber;
+		const gameState = get(GameStateAtom);
 
-		return turnProgress ?? null;
+		if (!gameState) return null;
+
+		return (
+			gameState.privateData.playerNumber ===
+			gameState.currentPlayer
+		);
 	}
 });
 

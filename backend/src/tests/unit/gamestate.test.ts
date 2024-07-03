@@ -1,10 +1,10 @@
-import GameStateController from "../../database/controller/gamestate.controller";
 import {
-	GetTransposed,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
-} from "../../utils";
+} from "../../../../shared";
+import GameStateController from "../../database/controller/gamestate.controller";
+import { GetTransposed } from "../../utils";
 
 function testNewMap(playerCount: number) {
 	const [map, houses] =
@@ -107,4 +107,3 @@ describe("Util function tests", () => {
 		});
 	});
 });
-

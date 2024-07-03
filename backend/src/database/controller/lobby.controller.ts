@@ -5,12 +5,12 @@ import {
 	TURN_PROGRESS,
 	UserSession
 } from "@prisma/client";
+
 import {
 	LobbySubmissionData,
 	LobbyView,
 	LobbyViewPerPlayer
-} from "../../utils";
-
+} from "../../../../shared";
 import prisma from "../../datasource";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";

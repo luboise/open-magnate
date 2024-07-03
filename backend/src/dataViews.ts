@@ -4,8 +4,9 @@ import {
 	ORIENTATION,
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
+import { RESTAURANT_NAME } from "../../shared";
 
-export interface GameStateView {
+interface BaseGameStateView {
 	turnProgress: TURN_PROGRESS;
 	currentTurn: number;
 	currentPlayer: number;
@@ -21,19 +22,31 @@ export interface GameStateView {
 	marketingCampaigns: MarketingCampaignView[];
 }
 
+export interface GameStateView extends BaseGameStateView {
+	players: GamePlayerViewPrivate[];
+}
+
 export interface GameStateViewPerPlayer
-	extends GameStateView {
-	players: GamePlayerView[];
+	extends BaseGameStateView {
+	players: GamePlayerViewPublic[];
 
-	//  // Relations
-	//  houses             House[]
+	// The player's private data
+	privateData: GamePlayerViewPrivate;
+}
 
-	//  players GamePlayer[]
+export interface GamePlayerViewPublic {
+	playerNumber: number;
+	milestones: number[];
+	restaurant: RESTAURANT_NAME;
+	money: number;
+}
+
+export interface GamePlayerViewPrivate
+	extends GamePlayerViewPublic {
+	employees: number[];
 }
 
 export type TURN_PROGRESS = PrismaTurnProgress;
-
-export type GamePlayerView = {};
 
 export interface MarketingCampaignView extends Position {
 	priority: number;

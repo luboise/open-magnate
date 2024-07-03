@@ -1,6 +1,6 @@
+import { LobbySubmissionData } from "../../../../shared";
 import LobbyController from "../../database/controller/lobby.controller";
 import UserSessionRepository from "../../database/repository/usersession.repository";
-import { LobbySubmissionData } from "../../utils";
 import { basicAfterEach, basicBeforeEach } from "./utils";
 
 beforeEach(async () => {

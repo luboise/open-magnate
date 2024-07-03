@@ -1,3 +1,7 @@
+import {
+	JsonArray,
+	JsonValue
+} from "@prisma/client/runtime/library";
 import { Response } from "express";
 
 export function new2DArray<T>(
@@ -120,4 +124,17 @@ export function GetTransposed<T>(array: T[][]) {
 	return transposed;
 }
 
-export * from "../../shared";
+// Reads a JSON number array. Can't have NaN in the array
+export function readJsonNumberArray(array: JsonValue) {
+	const asArray = array as JsonArray | null;
+	if (asArray === null) return [];
+
+	const vals: number[] = Array.isArray(array)
+		? array.map((value) =>
+				typeof value === "number" ? value : NaN
+			) // Convert each element to number, defaulting to NaN if not a number
+		: [];
+
+	// Return the list of numbers with the NaNs filtered out
+	return vals.filter((val) => !Number.isNaN(val));
+}

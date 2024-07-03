@@ -1,13 +1,13 @@
+import { new2DArray } from "../backend/src/utils";
 import {
+	CHAR_TO_MAP_TILE_CONVERTER,
 	DirectionBools,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_SIZE,
 	MAP_PIECE_WIDTH,
 	MapPieceData,
-	MapTileData,
-	new2DArray
-} from "../backend/src/utils";
-import { CHAR_TO_MAP_TILE_CONVERTER } from "./MapData";
+	MapTileData
+} from "./MapData";
 
 export function translateMapTile(
 	tile: MapTileData,
@@ -197,4 +197,3 @@ export function parseMap(
 		? []
 		: pieces;
 }
-
