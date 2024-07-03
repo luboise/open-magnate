@@ -4,19 +4,27 @@ import Button from "../../components/Button";
 import useClipboard from "../../hooks/useClipboard";
 import useNotification from "../../hooks/useNotification";
 import usePageGame from "../../hooks/usePageGame";
-import { MagnateLobbyView } from "../../utils";
+import {
+	GameStateViewPerPlayer,
+	LobbyViewPerPlayer
+} from "../../utils";
 import MagnateMap from "./MagnateMap";
 import MagnatePlayArea from "./PlayArea/MagnatePlayArea";
 import PlayerList from "./PlayerList";
 
-function MagnateGame(props: { data: MagnateLobbyView }) {
+function MagnateGame(props: {
+	lobby: LobbyViewPerPlayer;
+	gameState: GameStateViewPerPlayer;
+}) {
+	const { lobby, gameState } = props;
+
 	const { writeClipboard } = useClipboard();
 	const { sendNotification } = useNotification();
 
 	const { leaveLobby, startGame } = usePageGame();
 
 	function onCopyInviteLink() {
-		writeClipboard(props.data.inviteCode);
+		writeClipboard(lobby.inviteCode);
 		sendNotification(
 			"Copied invite link to clipboard.",
 			"Notification stuff."
@@ -29,23 +37,20 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 				{/* <h2>Lobby</h2> */}
 				{/* <div id="lobby-inner-container"> */}
 				<div id="lobby-player-container">
-					<p>Lobby: {props.data.lobbyName}</p>
+					<p>Lobby: {lobby.lobbyName}</p>
 					<div className="lobby-container">
 						<h2>
-							Players:{" "}
-							{props.data.lobbyPlayers.length}
+							Players: {lobby.players.length}
 						</h2>
 						<PlayerList
 							lobbySize={
-								props.data.playerCount
+								gameState.playerCount
 							}
-							players={
-								props.data.lobbyPlayers
-							}
+							players={lobby.players}
 						/>
 					</div>
 					<span>
-						Invite code: {props.data.inviteCode}
+						Invite code: {lobby.inviteCode}
 					</span>
 					<Button
 						onClick={onCopyInviteLink}
@@ -62,10 +67,9 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 							text="Start Game"
 							onClick={startGame}
 							inactive={
-								!props.data.hosting ||
-								props.data.lobbyPlayers
-									.length <
-									props.data.playerCount
+								!lobby.hosting ||
+								lobby.players.length <
+									gameState.playerCount
 							}
 							inactiveHoverText="You must be the host to start the game."
 						/>
@@ -74,7 +78,7 @@ function MagnateGame(props: { data: MagnateLobbyView }) {
 
 				{/* </div> */}
 			</div>
-			{props.data.inGame ? (
+			{lobby.inGame ? (
 				<MagnatePlayArea />
 			) : (
 				// <Resizable defaultWidth={1000}>

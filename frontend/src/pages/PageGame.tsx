@@ -1,4 +1,4 @@
-import { useReducer, useRef } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import useWebSocket, {
 	ReadyState
 } from "react-use-websocket";
@@ -14,10 +14,11 @@ import {
 	APIRoutes,
 	BackendMessage,
 	FrontendMessage,
+	GameStateViewPerPlayer,
 	JoinLobbyMessage,
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
-	MagnateLobbyView
+	LobbyViewPerPlayer
 } from "../utils";
 import MagnateGame from "./MagnateGame/MagnateGame";
 import { PageGameAtom } from "./PageGameContext";
@@ -29,14 +30,12 @@ type PageState =
 	| "AWAITING_VERIFICATION"
 	| "UNVERIFIED"
 	| "VERIFIED"
-	| "CREATING_LOBBY"
-	| "HOSTING_LOBBY"
-	| "JOINING_LOBBY"
-	| "IN_GAME";
+	| "CREATING_LOBBY";
 
 type GamePageState = {
 	pageState: PageState;
-	lobbyData: MagnateLobbyView | null;
+	lobbyState: LobbyViewPerPlayer | null;
+	gameState: GameStateViewPerPlayer | null;
 };
 
 type GamePageStateMessage = {
@@ -56,8 +55,10 @@ function PageGame() {
 	);
 
 	const { setState } = useGameState();
-	function setGameState(state: GamePageState) {
-		setState(state.lobbyData?.gameState ?? null);
+	function setGameState(
+		gameState: GameStateViewPerPlayer | null
+	) {
+		setState(gameState);
 	}
 
 	const reconnectOnFail = useRef(false);
@@ -131,14 +132,20 @@ function PageGame() {
 		console.debug(message);
 
 		switch (message.type) {
-			case "SET_LOBBY": {
-				const newState = {
+			case "ALL_UPDATED": {
+				const newState: GamePageState = {
 					...state,
-					pageState: "HOSTING_LOBBY",
-					lobbyData: message.data
-				} as GamePageState;
+					pageState: "VERIFIED",
+					lobbyState: message.data.lobbyState,
+					gameState: message.data.gameState
+				};
+				// if (newState.lobbyState) {
+				// 	if (newState.lobbyState.inGame) {
+				// 		newState.;
+				// 	}
+				// }
+				setGameState(message.data.gameState);
 
-				setGameState(newState);
 				return newState;
 			}
 			case "LOBBY_UPDATED": {
@@ -147,18 +154,20 @@ function PageGame() {
 						"Attempted to update lobby with null state."
 					);
 				}
-				const newState = {
+				const newState: GamePageState = {
 					...state,
-					lobbyData: {
-						...state.lobbyData,
-						...message.data
-					}
-				} as GamePageState;
-				setGameState(newState);
+					lobbyState: message.data
+				};
 				return newState;
 			}
+			case "GAMESTATE_UPDATED": {
+				return {
+					...state,
+					gameState: message.data
+				};
+			}
 			case "CREATING_LOBBY": {
-				if (state.lobbyData) {
+				if (state.lobbyState) {
 					throw new Error(
 						"Attempted to create lobby while already in lobby."
 					);
@@ -206,12 +215,12 @@ function PageGame() {
 			case "LEAVE_LOBBY": {
 				console.debug("Leaving lobby.");
 
-				const newState = {
+				const newState: GamePageState = {
 					...state,
 					pageState: "VERIFIED",
-					lobbyData: null
-				} as GamePageState;
-				setGameState(newState);
+					lobbyState: null
+				};
+				setGameState(null);
 				return newState;
 			}
 			default:
@@ -227,9 +236,17 @@ function PageGame() {
 		reducer,
 		{
 			pageState: "UNVERIFIED",
-			lobbyData: null
+			lobbyState: null
 		} as GamePageState
 	);
+
+	useEffect(() => {
+		console.debug("Page state updated: ", state);
+	}, [
+		state.gameState,
+		state.lobbyState,
+		state.pageState
+	]);
 
 	// Check for bad ready states
 	switch (readyState) {
@@ -251,9 +268,50 @@ function PageGame() {
 			return <div>Unknown error.</div>;
 	}
 
+	// If unverified
 	if (state.pageState === "UNVERIFIED") {
 		return <div>Verifying. Please wait.</div>;
-	} else if (state.pageState === "VERIFIED") {
+	}
+	// If creating a lobby
+	else if (state.pageState === "CREATING_LOBBY") {
+		return (
+			<Form
+				onSubmit={(data: any) => {
+					console.debug(
+						`Attempting to create a lobby using the following data: `,
+						data
+					);
+
+					sendJsonMessage({
+						type: "CREATE_LOBBY",
+						data: {
+							...data,
+							playerCount: Number(
+								data.playerCount
+							)
+						} as LobbySubmissionData
+					} as BackendMessage);
+				}}
+			>
+				<FormInput
+					name="name"
+					labelText="Lobby Name"
+				/>
+				<SelectionButtonList
+					name="playerCount"
+					// regex={/2|3|4|5|6/}
+					defaultValue={2}
+					valueList={[2, 3, 4, 5, 6]}
+				/>
+				<FormInput
+					name="password"
+					labelText="Password (optional)"
+				/>
+			</Form>
+		);
+	}
+	// If out of lobby
+	else if (!state.lobbyState) {
 		return (
 			<>
 				<Button
@@ -289,41 +347,16 @@ function PageGame() {
 				</Form>
 			</>
 		);
-	} else if (state.pageState === "CREATING_LOBBY") {
-		return (
-			<Form
-				onSubmit={(data: any) => {
-					console.debug(
-						`Attempting to create a lobby using the following data: `,
-						data
-					);
-
-					sendJsonMessage({
-						type: "CREATE_LOBBY",
-						data: data as LobbySubmissionData
-					} as BackendMessage);
-				}}
-			>
-				<FormInput
-					name="name"
-					labelText="Lobby Name"
-				/>
-				<SelectionButtonList
-					name="playerCount"
-					// regex={/2|3|4|5|6/}
-					defaultValue={2}
-					valueList={[2, 3, 4, 5, 6]}
-				/>
-				<FormInput
-					name="password"
-					labelText="Password (optional)"
-				/>
-			</Form>
-		);
-	} else if (state.lobbyData !== null) {
+	}
+	// If creating a lobby
+	else if (
+		state.lobbyState !== null &&
+		state.gameState !== null
+	) {
 		return (
 			<MagnateGame
-				data={state.lobbyData}
+				lobby={state.lobbyState}
+				gameState={state.gameState}
 			></MagnateGame>
 		);
 	} else return <div>Unknown error.</div>;

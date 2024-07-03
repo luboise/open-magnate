@@ -1,13 +1,13 @@
 import "./PlayerList.css";
 
 import { useMemo } from "react";
-import { LobbyPlayerView } from "../../utils";
+import { LobbyPlayerData } from "../../utils";
 import EmptyPlayer from "./EmptyPlayer";
 import PlayerDisplay from "./PlayerDisplay";
 
 function PlayerList(props: {
 	lobbySize: number;
-	players: LobbyPlayerView[];
+	players: LobbyPlayerData[];
 }) {
 	const jsxElements: JSX.Element[] = useMemo(() => {
 		const stuff = new Array<JSX.Element>(

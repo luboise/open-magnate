@@ -31,8 +31,8 @@ export type FrontendMessage =
 export interface AllUpdatedMessage extends BaseMessage {
 	type: "ALL_UPDATED";
 	data: {
-		lobby: LobbyViewPerPlayer;
-		gamestate: GameStateViewPerPlayer;
+		lobbyState: LobbyViewPerPlayer;
+		gameState: GameStateViewPerPlayer;
 	};
 }
 export interface LobbyUpdatedMessage extends BaseMessage {

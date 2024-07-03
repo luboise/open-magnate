@@ -1,9 +1,9 @@
 import "./PlayerDisplay.css";
 
 import Image from "../../components/Image";
-import { LobbyPlayerView } from "../../utils";
+import { LobbyPlayerData } from "../../utils";
 
-function PlayerDisplay(props: { player: LobbyPlayerView }) {
+function PlayerDisplay(props: { player: LobbyPlayerData }) {
 	return (
 		<div className="player-display">
 			<Image

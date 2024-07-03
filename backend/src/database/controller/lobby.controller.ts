@@ -226,7 +226,13 @@ const LobbyController = {
 			players: lobby.playersInLobby.map((player) => ({
 				name: player.userSession.name,
 				playerNumber: player.playerNumber,
-				host: player.isHost
+				isHost: player.isHost,
+				restaurant:
+					lobby.gameState?.players.find(
+						(innerPlayer) =>
+							innerPlayer.number ===
+							player.playerNumber
+					)?.restaurant.name ?? ""
 			}))
 		};
 
@@ -405,6 +411,18 @@ const LobbyController = {
 		});
 
 		return users;
+	},
+
+	async refresh(
+		lobby: Lobby | FullLobby
+	): Promise<FullLobby> {
+		const refreshedLobby =
+			await LobbyController.GetByLobbyId(lobby.id);
+
+		if (!refreshedLobby)
+			throw new Error("Unable to refresh lobby.");
+
+		return refreshedLobby;
 	},
 
 	generateInviteCode(): string {

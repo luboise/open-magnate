@@ -1,6 +1,8 @@
 // import { House } from "@prisma/client";
-import { GameStateViewPerPlayer } from "../backend/src/utils";
-import { RESTAURANT_NAME } from "./RestaurantNames";
+import {
+	GameStateViewPerPlayer,
+	RESTAURANT_NAME
+} from "../backend/src/utils";
 
 export interface LobbySubmissionData {
 	name: string;
@@ -13,27 +15,22 @@ export interface JoinLobbySubmissionData {
 	password?: string;
 }
 
-export type LobbyPlayerView = {
-	name: string;
-	restaurant: RESTAURANT_NAME;
-	host: boolean;
-};
-
 export type MagnateLobbyView = {
 	lobbyId: number;
 	lobbyName: string;
 	playerCount: number;
 	hosting: boolean;
-	lobbyPlayers: LobbyPlayerView[];
+	lobbyPlayers: LobbyPlayerData[];
 	inGame: boolean;
 	gameState: GameStateViewPerPlayer;
 	inviteCode: string;
 };
 
-interface LobbyPlayerData {
+export interface LobbyPlayerData {
 	name: string;
 	playerNumber: number;
-	host: boolean;
+	isHost: boolean;
+	restaurant: RESTAURANT_NAME;
 }
 
 // The base lobby view that is player agnostic

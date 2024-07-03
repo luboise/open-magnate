@@ -299,11 +299,12 @@ function updateOnePlayer(
 			JSON.stringify({
 				type: "ALL_UPDATED",
 				data: {
-					lobby: LobbyController.MakeLobbyViewForPlayer(
-						lobby,
-						sessionKey
-					),
-					gamestate:
+					lobbyState:
+						LobbyController.MakeLobbyViewForPlayer(
+							lobby,
+							sessionKey
+						),
+					gameState:
 						GameStateController.GetGameStateView(
 							lobby
 						)
@@ -368,7 +369,10 @@ const handleJoinLobby: BackendMessageHandler<
 			);
 		}
 
-		updateAllPlayers(lobby, "ALL");
+		updateAllPlayers(
+			await LobbyController.refresh(lobby),
+			"ALL"
+		);
 
 		// const response = {
 		// 	type: "SET_LOBBY",
@@ -482,7 +486,7 @@ const handleStartGame: BackendMessageHandler<
 		);
 		return;
 	}
-	("");
+
 	const gameStarted =
 		await GameStateController.StartGame(lobby);
 
@@ -491,7 +495,10 @@ const handleStartGame: BackendMessageHandler<
 		return;
 	}
 
-	updateAllPlayers(lobby, "ALL");
+	updateAllPlayers(
+		await LobbyController.refresh(lobby),
+		"ALL"
+	);
 };
 
 module.exports = routeHandler;
