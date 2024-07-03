@@ -1,5 +1,6 @@
 import LobbyController from "../../database/controller/lobby.controller";
 import UserSessionRepository from "../../database/repository/usersession.repository";
+import { LobbySubmissionData } from "../../utils";
 import { basicAfterEach, basicBeforeEach } from "./utils";
 
 beforeEach(async () => {
@@ -27,7 +28,7 @@ describe("Testing lobby", () => {
 			const lobby =
 				await LobbyController.GetByLobbyId(-1);
 			expect(lobby).toBeTruthy();
-			expect(lobby!.players).toHaveLength(2);
+			expect(lobby!.playersInLobby).toHaveLength(2);
 		});
 	});
 
@@ -48,37 +49,56 @@ describe("Testing lobby", () => {
 				);
 			}
 
-			const lobby = await LobbyController.NewLobby(
-				users,
-				{
-					name: "testlobby-existing-users",
-					password: "",
-					playerCount: EXPECTED_LENGTH
-				}
+			const submissionData: LobbySubmissionData = {
+				name: "testlobby-existing-users",
+				password: "",
+				playerCount: EXPECTED_LENGTH
+			};
+
+			const newLobby = await LobbyController.NewLobby(
+				users[0],
+				submissionData
 			);
 
-			expect(lobby).toBeTruthy();
-			expect(lobby).toHaveProperty("id");
-			expect(lobby).toHaveProperty("inviteCode");
+			expect(newLobby).toBeTruthy();
 
-			const lobbyPlayers = (
+			for (const user of users.slice(1)) {
+				const added =
+					await LobbyController.addPlayer(
+						newLobby!.id,
+						user
+					);
+				expect(added).toBeTruthy();
+			}
+
+			const lobby =
 				await LobbyController.GetByLobbyId(
-					lobby!.id
-				)
-			)?.players;
-			expect(lobbyPlayers).toBeTruthy();
-			expect(lobbyPlayers).toHaveLength(
+					newLobby!.id
+				);
+
+			expect(lobby).toBeTruthy();
+			expect(lobby?.playersInLobby).toBeTruthy();
+			expect(lobby?.gameState).toBeTruthy();
+
+			expect(lobby?.playersInLobby).toHaveLength(
 				EXPECTED_LENGTH
 			);
 			expect(
-				lobbyPlayers!.length
-			).toBeLessThanOrEqual(lobby!.playerCount);
+				lobby?.playersInLobby.length
+			).toBeLessThanOrEqual(
+				lobby!.gameState!.playerCount
+			);
+			expect(lobby!.gameState).toBeTruthy();
+
+			expect(lobby).toHaveProperty("id");
+			expect(lobby).toHaveProperty("inviteCode");
 
 			// Make sure the lobby has a host
 			expect(
-				lobbyPlayers!.some((player) => player.host)
+				lobby?.playersInLobby!.some(
+					(player) => player.isHost
+				)
 			).toBeTruthy();
 		});
 	});
 });
-

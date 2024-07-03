@@ -1,7 +1,9 @@
 import { RouteHandler } from "../types";
 
 import { Request } from "express";
-import LobbyController from "../database/controller/lobby.controller";
+import LobbyController, {
+	FullLobby
+} from "../database/controller/lobby.controller";
 import UserSessionController from "../database/controller/usersession.controller";
 import {
 	BackendMessage,
@@ -11,7 +13,6 @@ import {
 	JoinLobbyMessage,
 	LeaveLobbyMessage,
 	LobbySubmissionData,
-	SetLobbyMessage,
 	StartGameMessage
 } from "../utils";
 
@@ -19,7 +20,6 @@ import {
 import { UserSession } from "@prisma/client";
 import WebSocket from "ws";
 import GameStateController from "../database/controller/gamestate.controller";
-import LobbyRepository from "../database/repository/lobby.repository";
 import { connectionsToWebsocket } from "./connections";
 
 // Helpers
@@ -189,25 +189,7 @@ async function handleNewConnection(
 
 	connectionsToWebsocket[sessionKey] = ws;
 
-	if (userSession.lobbyPlayer) {
-		console.log(
-			`Found an existing lobby for player ${userSession.sessionKey}`
-		);
-		const lobbyMessage = {
-			type: "SET_LOBBY",
-			data: {
-				lobby: await LobbyController.GetLobbyView(
-					userSession.lobbyPlayer.lobby.id
-				),
-				gamestate:
-					await GameStateController.GetGameStateData(
-						userSession.lobbyPlayer.lobby.id,
-						userSession.sessionKey
-					)
-			}
-		} as FrontendMessage;
-		ws.send(JSON.stringify(lobbyMessage));
-	} else {
+	if (!userSession.lobbyPlayer) {
 		console.log(
 			`Unable to find a lobby for session key ${sessionKey}. Sending them to lobby creation.`
 		);
@@ -216,56 +198,131 @@ async function handleNewConnection(
 				type: "SESSION_KEY_VERIFIED"
 			} as FrontendMessage)
 		);
+		return;
 	}
+
+	const lobby = await LobbyController.GetByLobbyId(
+		userSession.lobbyPlayer.gameStateId
+	);
+
+	if (!lobby) {
+		const msg = `Unable to find a lobby for session key ${sessionKey}.`;
+		console.error(msg);
+		ws.send(msg);
+		return;
+	}
+
+	updateOnePlayer(lobby, userSession, "ALL");
 }
 
 const handleCreateLobby: BackendMessageHandler<
 	CreateLobbyMessage
 > = async (params) => {
 	try {
-		if (!params.message.data.name) {
-			params.ws.send("Invalid lobby name.");
-			return;
-		} else if (
+		if (!params.message.data.name)
+			throw new Error("Invalid lobby name.");
+		if (
 			!params.message.data.playerCount ||
 			params.message.data.playerCount < 2
-		) {
-			params.ws.send("Invalid player count.");
-			return;
-		} else if (!params.userSession) {
-			params.ws.send(
+		)
+			throw new Error("Invalid player count.");
+		if (!params.userSession)
+			throw new Error(
 				"Unable to create lobby without valid session."
 			);
-			return;
-		}
 
 		const newLobby = await LobbyController.NewLobby(
 			params.userSession,
 			params.message.data as LobbySubmissionData
 		);
 
-		if (!newLobby) {
-			params.ws.send("Unable to create new lobby.");
-			return;
-		}
+		if (!newLobby)
+			throw new Error("Unable to create new lobby.");
 
 		console.log(
 			`Responding with ${JSON.stringify(newLobby)}`
 		);
 
-		params.ws.send(
-			JSON.stringify({
-				type: "SET_LOBBY",
-				data: await LobbyController.GetLobbyView(
-					newLobby.id,
-					params.userSession.sessionKey
-				)
-			} as FrontendMessage)
+		const fullLobby =
+			await LobbyController.GetByLobbyId(newLobby.id);
+		if (!fullLobby) {
+			console.error(
+				"Unable to get freshly created lobby. "
+			);
+			return;
+		}
+
+		updateOnePlayer(
+			fullLobby,
+			params.userSession,
+			"ALL"
 		);
 	} catch (error) {
 		console.error(error);
+		params.ws.send(String(error));
 	}
 };
+
+type UPDATE_TYPE = "LOBBY" | "GAMESTATE" | "ALL";
+
+function updateOnePlayer(
+	lobby: FullLobby,
+	player: UserSession,
+	updateType: UPDATE_TYPE
+) {
+	const sessionKey = player.sessionKey;
+	const ws = connectionsToWebsocket[sessionKey];
+
+	if (!ws) return;
+
+	if (updateType === "LOBBY") {
+		ws.send(
+			JSON.stringify({
+				type: "LOBBY_UPDATED",
+				data: LobbyController.MakeLobbyViewForPlayer(
+					lobby,
+					sessionKey
+				)
+			} as FrontendMessage)
+		);
+	} else if (updateType === "GAMESTATE") {
+		ws.send(
+			JSON.stringify({
+				type: "GAMESTATE_UPDATED",
+				data: GameStateController.GetGameStateView(
+					lobby
+				)
+			} as FrontendMessage)
+		);
+	} else if (updateType === "ALL") {
+		ws.send(
+			JSON.stringify({
+				type: "ALL_UPDATED",
+				data: {
+					lobby: LobbyController.MakeLobbyViewForPlayer(
+						lobby,
+						sessionKey
+					),
+					gamestate:
+						GameStateController.GetGameStateView(
+							lobby
+						)
+				}
+			} as FrontendMessage)
+		);
+	}
+}
+
+function updateAllPlayers(
+	lobby: FullLobby,
+	updateType: UPDATE_TYPE
+) {
+	for (const player of lobby.playersInLobby.map(
+		(player) => player.userSession
+	)) {
+		updateOnePlayer(lobby, player, updateType);
+	}
+}
 
 const handleJoinLobby: BackendMessageHandler<
 	JoinLobbyMessage
@@ -311,7 +368,7 @@ const handleJoinLobby: BackendMessageHandler<
 			);
 		}
 
-		await resendLobby(lobby.id);
+		updateAllPlayers(lobby, "ALL");
 
 		// const response = {
 		// 	type: "SET_LOBBY",
@@ -341,17 +398,9 @@ const handleLeaveLobby: BackendMessageHandler<
 	}
 
 	const lobbyId = (
-		await LobbyRepository.findFirst({
-			where: {
-				players: {
-					some: {
-						userId: params.userSession
-							.sessionKey
-					}
-				}
-			},
-			select: { id: true }
-		})
+		await LobbyController.GetFromSessionKey(
+			params.userSession.sessionKey
+		)
 	)?.id;
 
 	if (!lobbyId) {
@@ -380,11 +429,7 @@ const handleLeaveLobby: BackendMessageHandler<
 			"Lobby couldn't be found from valid lobbyId. A serious backend error has occured."
 		);
 
-	resendLobby(lobby.id);
-
-	console.log(
-		`Telling player ${params.userSession.sessionKey} to leave the lobby.`
-	);
+	updateAllPlayers(lobby, "LOBBY");
 
 	params.ws.send(
 		JSON.stringify({
@@ -417,7 +462,7 @@ const handleStartGame: BackendMessageHandler<
 
 	const playerAsHost = lobby.playersInLobby.find(
 		(player) =>
-			player.host &&
+			player.isHost &&
 			player.userId === params.userSession!.sessionKey
 	);
 
@@ -428,56 +473,25 @@ const handleStartGame: BackendMessageHandler<
 		return;
 	}
 
-	if (lobby.playersInLobby.length !== lobby.playerCount) {
+	if (
+		lobby.playersInLobby.length !==
+		lobby.gameState?.playerCount
+	) {
 		params.ws.send(
 			"Not all players have joined the lobby."
 		);
 		return;
 	}
-
+	("");
 	const gameStarted =
 		await GameStateController.StartGame(lobby);
 
-	if (gameStarted) {
-		resendLobby(lobby.id);
-	} else {
+	if (!gameStarted) {
 		params.ws.send("Unable to start game.");
+		return;
 	}
+
+	updateAllPlayers(lobby, "ALL");
 };
-
-// TODO: Fix resendLobby() altering the host on the frontend
-export async function resendLobby(lobbyId: number) {
-	const lobbyData =
-		await LobbyController.GetLobbyView(lobbyId);
-
-	const lobbyPlayers =
-		await LobbyController.getUserSessions(lobbyId);
-
-	lobbyPlayers.forEach(async (lobbyPlayer) => {
-		const sessionKey = lobbyPlayer.sessionKey;
-
-		const ws = connectionsToWebsocket[sessionKey];
-
-		if (!ws) {
-			console.log(
-				`Unable to send lobby data to ${sessionKey}.`
-			);
-			return;
-		}
-
-		console.log(
-			`Sending updated lobby data to ${sessionKey}.`
-		);
-
-		const { hosting, ...restOfLobbyData } = lobbyData;
-
-		ws.send(
-			JSON.stringify({
-				type: "SET_LOBBY",
-				data: restOfLobbyData
-			} as SetLobbyMessage)
-		);
-	});
-}
 
 module.exports = routeHandler;

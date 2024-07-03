@@ -2,8 +2,7 @@ import { GameStateViewPerPlayer } from "../backend/src/dataViews";
 import {
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
-	LobbyViewPerPlayer,
-	MagnateLobbyView
+	LobbyViewPerPlayer
 } from "./LobbyTypes";
 
 // export type FrontendMessageType =
@@ -18,15 +17,19 @@ export interface BaseMessage {
 }
 
 export type FrontendMessage =
-	| SetLobbyMessage
-	| LobbyUpdatedMessage
+	// Auth messages
 	| NewSessionKeyMessage
 	| ClearLocalDataMessage
 	| SuccessfulSessionKeyVerificationMessage
-	| LeaveLobbyMessage;
+	// Joining/leaving lobbies
+	| LeaveLobbyMessage
+	// State updates
+	| AllUpdatedMessage
+	| LobbyUpdatedMessage
+	| GameStateUpdatedMessage;
 
-export interface SetLobbyMessage extends BaseMessage {
-	type: "SET_LOBBY";
+export interface AllUpdatedMessage extends BaseMessage {
+	type: "ALL_UPDATED";
 	data: {
 		lobby: LobbyViewPerPlayer;
 		gamestate: GameStateViewPerPlayer;
@@ -34,8 +37,15 @@ export interface SetLobbyMessage extends BaseMessage {
 }
 export interface LobbyUpdatedMessage extends BaseMessage {
 	type: "LOBBY_UPDATED";
-	data: Partial<MagnateLobbyView>;
+	data: LobbyViewPerPlayer;
 }
+
+export interface GameStateUpdatedMessage
+	extends BaseMessage {
+	type: "GAMESTATE_UPDATED";
+	data: GameStateViewPerPlayer;
+}
+
 export interface NewSessionKeyMessage extends BaseMessage {
 	type: "NEW_SESSION_KEY";
 	data: string;

@@ -1,8 +1,6 @@
 import {
-	GameState,
 	// GameState,
 	Lobby,
-	LobbyPlayer,
 	Prisma,
 	TURN_PROGRESS,
 	UserSession
@@ -17,16 +15,24 @@ import prisma from "../../datasource";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import UserSessionRepository from "../repository/usersession.repository";
-import GameStateController from "./gamestate.controller";
+import GameStateController, {
+	FullGameStateInclude
+} from "./gamestate.controller";
 
-interface FullLobbyPlayer extends LobbyPlayer {
-	userSession: UserSession;
-}
+const LobbyGetParams = {
+	playersInLobby: {
+		include: {
+			userSession: true
+		}
+	},
+	gameState: {
+		include: { ...FullGameStateInclude }
+	}
+};
 
-export interface FullLobby extends Lobby {
-	playersInLobby: FullLobbyPlayer[];
-	gameState: GameState;
-}
+export type FullLobby = Prisma.LobbyGetPayload<{
+	include: typeof LobbyGetParams;
+}>;
 
 const LobbyController = {
 	_get: async <T extends boolean = false>(
@@ -38,22 +44,7 @@ const LobbyController = {
 		const lobby = await LobbyRepository.findFirst({
 			where: where,
 
-			include: fullGet
-				? {
-						playersInLobby: {
-							include: {
-								userSession: true
-							}
-						},
-						gameState: {
-							include: {
-								houses: true,
-								marketingCampaigns: true,
-								players: true
-							}
-						}
-					}
-				: undefined
+			include: fullGet ? LobbyGetParams : undefined
 		});
 
 		return lobby as T extends true ? FullLobby : Lobby;
@@ -152,13 +143,16 @@ const LobbyController = {
 														_,
 														index
 													) => ({
-														number: index,
+														number:
+															index +
+															1,
 														employees:
 															[],
 														milestones:
 															[],
 														restaurantId:
-															index
+															index +
+															1
 													})
 												)
 										}
@@ -195,7 +189,8 @@ const LobbyController = {
 											gameId: lobby.id
 										}
 									}
-								}
+								},
+								isHost: true
 							}
 						});
 
@@ -204,8 +199,10 @@ const LobbyController = {
 							"Unable to create lobby player for the host. Rolling back transaction."
 						);
 
-					return newLobby;
+					return lobby;
 				});
+
+			return newLobby;
 		} catch (error) {
 			console.error(error);
 		}
@@ -215,12 +212,12 @@ const LobbyController = {
 
 	MakeLobbyView(lobby: FullLobby) {
 		const lobbyData: LobbyView = {
-			inGame: Boolean(
+			inGame:
+				lobby.gameState !== null &&
 				lobby.gameState.turnProgress !==
 					TURN_PROGRESS.PREGAME &&
-					lobby.gameState.turnProgress !==
-						TURN_PROGRESS.POSTGAME
-			),
+				lobby.gameState.turnProgress !==
+					TURN_PROGRESS.POSTGAME,
 
 			lobbyId: lobby.id,
 			lobbyName: lobby.name,
@@ -269,7 +266,6 @@ const LobbyController = {
 	async GetLobbyView(
 		lobbyId: number
 	): Promise<LobbyView | null> {
-		// console.log(GetRelationsFrom(LobbyRepository));
 		try {
 			const fullLobby = await this._get(
 				{ id: lobbyId },
@@ -357,7 +353,7 @@ const LobbyController = {
 			);
 			return newLobbyPlayer;
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 		}
 
 		return null;
@@ -408,9 +404,7 @@ const LobbyController = {
 			distinct: "sessionKey"
 		});
 
-		// console.log("users: ", users);
 		return users;
-		// return users ?? null;
 	},
 
 	generateInviteCode(): string {

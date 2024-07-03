@@ -8,7 +8,7 @@
 		"migrate": "npx prisma migrate db --name init",
 		"migrate-dev": "npx dotenv -e .env.dev -- npx prisma migrate dev --name init",
 		"dev": "npm run migrate-dev && npx dotenv -e .env.dev -- nodemon --config ../config/nodemon.json",
-		"test:integration:setup:docker": "docker compose up -d && npx wait-on tcp:localhost:3307",
+		"test:integration:setup:docker": "docker compose up --force-recreate -d && npx wait-on tcp:localhost:3307",
 		"test:integration:teardown": "docker compose down",
 		"test:integration:setup:db": "npx dotenv -e .env.test -- npx prisma migrate deploy && npx dotenv -e .env.test -- npx prisma db seed",
 		"test:integration:run": "npx dotenv -e .env.test -- jest -i --runInBand",
@@ -48,4 +48,3 @@
 		"seed": "ts-node prisma/seed.ts"
 	}
 }
-

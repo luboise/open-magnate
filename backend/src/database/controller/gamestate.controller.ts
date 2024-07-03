@@ -31,6 +31,34 @@ function copyArray<T>(
 	// return outArray;
 }
 
+export const FullGameStateInclude = {
+	houses: {
+		include: {
+			demand: true,
+			garden: true
+		}
+	},
+	marketingCampaigns: true,
+	players: {
+		include: {
+			restaurant: true,
+			lobbyPlayer: {
+				include: {
+					userSession: {
+						select: {
+							name: true
+						}
+					}
+				}
+			}
+		}
+	}
+};
+
+export type FullGameState = Prisma.GameStateGetPayload<{
+	include: typeof FullGameStateInclude;
+}>;
+
 const GameStateController = {
 	Get: async (id: number) => {
 		try {
@@ -38,29 +66,7 @@ const GameStateController = {
 				where: {
 					id: id
 				},
-				include: {
-					houses: {
-						include: {
-							demand: true,
-							garden: true
-						}
-					},
-					marketingCampaigns: true,
-					players: {
-						include: {
-							restaurant: true,
-							lobbyPlayer: {
-								include: {
-									userSession: {
-										select: {
-											name: true
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				include: FullGameStateInclude
 			});
 		} catch (error) {
 			console.error(error);
@@ -200,11 +206,10 @@ const GameStateController = {
 	// 	});
 	// },
 
-	GetGameStateView: async (
-		lobbyId: number
-	): Promise<GameStateView | null> => {
-		const gameState =
-			await GameStateController.Get(lobbyId);
+	GetGameStateView: (
+		lobby: FullLobby
+	): GameStateView | null => {
+		const gameState = lobby.gameState;
 		if (!gameState) return null;
 
 		return {
@@ -271,6 +276,8 @@ const GameStateController = {
 	StartGame: async (
 		lobby: FullLobby
 	): Promise<boolean> => {
+		if (!lobby.gameState) return false;
+
 		// Get the players in a random order
 		const playerOrder = new Array(
 			lobby.gameState.playerCount
