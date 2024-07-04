@@ -41,19 +41,21 @@ CREATE TABLE `game_player` (
     `employees` JSON NOT NULL,
     `restaurantDataId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `game_player_gameId_player_number_key`(`gameId`, `player_number`),
-    UNIQUE INDEX `game_player_gameId_restaurantDataId_key`(`gameId`, `restaurantDataId`)
+    UNIQUE INDEX `game_player_gameId_restaurantDataId_key`(`gameId`, `restaurantDataId`),
+    PRIMARY KEY (`gameId`, `player_number`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `game_player_restaurant` (
+    `game_player_restaurant_id` INTEGER NOT NULL AUTO_INCREMENT,
     `gameId` INTEGER NOT NULL,
     `playerNumber` INTEGER NOT NULL,
     `x` INTEGER NOT NULL,
     `y` INTEGER NOT NULL,
     `entrance` ENUM('TOPLEFT', 'TOPRIGHT', 'BOTTOMLEFT', 'BOTTOMRIGHT') NOT NULL,
 
-    UNIQUE INDEX `game_player_restaurant_gameId_playerNumber_key`(`gameId`, `playerNumber`)
+    UNIQUE INDEX `game_player_restaurant_gameId_playerNumber_x_y_key`(`gameId`, `playerNumber`, `x`, `y`),
+    PRIMARY KEY (`game_player_restaurant_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable

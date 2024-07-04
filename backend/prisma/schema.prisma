@@ -82,14 +82,16 @@ model GamePlayer {
 
   lobbyPlayer LobbyPlayer?
 
-  // Each game can only have a player number once
-  @@unique([gameId, number])
   // Each game can only have a restaurant once
   @@unique([gameId, restaurantDataId])
+
   @@map("game_player")
+  @@id(name: "gamePlayerId", [gameId, number])
 }
 
 model GamePlayerRestaurant {
+	id	Int		@id	@map("game_player_restaurant_id")	@default(autoincrement())
+
 	gameId	Int
 	playerNumber	Int
 	player	GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number])

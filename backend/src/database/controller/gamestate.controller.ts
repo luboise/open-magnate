@@ -383,17 +383,13 @@ const GameStateController = {
 	): Promise<boolean> => {
 		try {
 			// TODO: Add validation
+			console.log(details);
 			const updated =
 				await prisma.gamePlayerRestaurant.create({
 					data: {
-						player: {
-							connect: {
-								gameId_number: {
-									gameId: player.gameId,
-									number: player.number
-								}
-							}
-						},
+						gameId: player.gameId,
+						playerNumber: player.number,
+
 						x: details.x,
 						y: details.y,
 						entrance: details.entrance
@@ -422,9 +418,11 @@ const GameStateController = {
 			return false;
 		}
 
-		const currentOrder = parseJsonNumberArray(
-			gameState.turnOrder
-		);
+		console.log(gameState.turnOrder);
+
+		const currentOrder = gameState.turnOrder
+			.split("")
+			.map((val) => Number(val));
 
 		console.log("Current Order: ", currentOrder);
 		console.log(

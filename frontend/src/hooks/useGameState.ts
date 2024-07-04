@@ -21,6 +21,7 @@ import {
 	GameStateViewPerPlayer,
 	Map2D,
 	MapTileData,
+	RestaurantView,
 	TURN_PROGRESS,
 	parseMapChar
 } from "../utils";
@@ -135,6 +136,16 @@ const playersSelector = selector<
 // 	return useRecoilValue(playersSelector);
 // }
 
+const restaurantsSelector = selector<RestaurantView[]>({
+	key: "RESTAURANTS",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+
+		if (!gameState) return [];
+
+		return gameState.restaurants;
+	}
+});
 export function useGameState() {
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
@@ -151,6 +162,8 @@ export function useGameState() {
 
 	const players = useRecoilValue(playersSelector);
 
+	const restaurants = useRecoilValue(restaurantsSelector);
+
 	return {
 		state,
 		mapColOrder,
@@ -158,7 +171,8 @@ export function useGameState() {
 		houses,
 		setState: _setState,
 		turnProgress,
-		players: players
+		players: players,
+		restaurants: restaurants
 	};
 }
 

@@ -1,5 +1,6 @@
 import { PropsWithChildren } from "react";
 import MapTile from "../../components/MapTile";
+import RestaurantImage from "../../components/RestaurantImage";
 import { useGameState } from "../../hooks/useGameState";
 import useMap from "../../hooks/useMap";
 import { MapTileData } from "../../utils";
@@ -29,7 +30,12 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 		getAllRenderables
 	} = useMap();
 
-	const { mapRowOrder: map, houses } = useGameState();
+	const {
+		mapRowOrder: map,
+		houses,
+		restaurants,
+		players
+	} = useGameState();
 
 	if (!map) return <></>;
 
@@ -104,6 +110,29 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 					#{house.priority}
 				</div>
 			))}
+
+			{/* Restaurant */}
+			{...restaurants.map((restaurant) => {
+				const player = players?.find(
+					(player) =>
+						player.playerNumber ===
+						restaurant.player
+				);
+
+				if (!player) return <></>;
+
+				return (
+					<RestaurantImage
+						restaurantNumber={player.restaurant}
+						style={{
+							gridColumn: `${restaurant.x + 1} / span 2`,
+							gridRow: `${restaurant.y + 1} / span 2`,
+							width: "100%",
+							height: "100%"
+						}}
+					/>
+				);
+			})}
 
 			{/* Extras */}
 			{...Array.from(

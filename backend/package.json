@@ -6,7 +6,7 @@
 		"build": "tsc",
 		"start": "node dist/backend/src/index.js",
 		"migrate": "npx prisma migrate db --name init",
-		"migrate-dev": "npx dotenv -e .env.dev -- npx prisma migrate dev --name init",
+		"migrate-dev": "npx dotenv -e .env.dev -- npx prisma migrate dev",
 		"dev": "npm run migrate-dev && npx dotenv -e .env.dev -- nodemon --config ../config/nodemon.json",
 		"test:integration:setup:docker": "docker compose up --force-recreate -d && npx wait-on tcp:localhost:3307",
 		"test:integration:teardown": "docker compose down",

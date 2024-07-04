@@ -138,14 +138,13 @@ const LobbyController = {
 											data: houses
 										}
 									},
-									turnOrder:
-										JSON.stringify(
-											playerIndices.sort(
-												(_a, _b) =>
-													Math.random() -
-													0.5
-											)
-										),
+									turnOrder: playerIndices
+										.sort(
+											(_a, _b) =>
+												Math.random() -
+												0.5
+										)
+										.join(""),
 									players: {
 										createMany: {
 											data: playerIndices.map(
@@ -190,7 +189,7 @@ const LobbyController = {
 								},
 								playerData: {
 									connect: {
-										gameId_number: {
+										gamePlayerId: {
 											number: 1,
 											gameId: lobby.id
 										}
@@ -351,7 +350,7 @@ const LobbyController = {
 						},
 						playerData: {
 							connect: {
-								gameId_number: {
+								gamePlayerId: {
 									number: availableSlot.number,
 									gameId: lobbyId
 								}

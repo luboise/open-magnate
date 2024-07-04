@@ -24,6 +24,10 @@
 	/* grid-template-rows: repeat(5, minmax(auto, 1fr)); */
 }
 
+.map-preview-container > *:not(.map-tile) {
+	z-index: 2;
+}
+
 /* .map-preview-container > *:nth-child(5n) {
 	column-gap: 5em;
 	background-color: red;

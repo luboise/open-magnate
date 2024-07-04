@@ -207,7 +207,7 @@ async function main() {
 			},
 			playerData: {
 				connect: {
-					gameId_number: {
+					gamePlayerId: {
 						gameId: seedLobby1.id,
 						number: 1
 					}
@@ -226,7 +226,7 @@ async function main() {
 			},
 			playerData: {
 				connect: {
-					gameId_number: {
+					gamePlayerId: {
 						gameId: seedLobby1.id,
 						number: 2
 					}
