@@ -116,6 +116,12 @@ const LobbyController = {
 							newLobbyData.playerCount
 						);
 
+					const playerIndices = new Array(
+						newLobbyData.playerCount
+					)
+						.fill(null)
+						.map((_, index) => index + 1);
+
 					const lobby = await ctx.lobby.create({
 						data: {
 							name: newLobbyData.name,
@@ -132,29 +138,29 @@ const LobbyController = {
 											data: houses
 										}
 									},
+									turnOrder:
+										JSON.stringify(
+											playerIndices.sort(
+												(_a, _b) =>
+													Math.random() -
+													0.5
+											)
+										),
 									players: {
 										createMany: {
-											data: new Array(
-												newLobbyData.playerCount
+											data: playerIndices.map(
+												(
+													playerNumber
+												) => ({
+													number: playerNumber,
+													employees:
+														[],
+													milestones:
+														[],
+													restaurantDataId:
+														playerNumber
+												})
 											)
-												.fill(null)
-												.map(
-													(
-														_,
-														index
-													) => ({
-														number:
-															index +
-															1,
-														employees:
-															[],
-														milestones:
-															[],
-														restaurantId:
-															index +
-															1
-													})
-												)
 										}
 									}
 								}
@@ -232,7 +238,7 @@ const LobbyController = {
 						(innerPlayer) =>
 							innerPlayer.number ===
 							player.playerNumber
-					)?.restaurant.name ?? ""
+					)?.restaurantData.id ?? 1
 			}))
 		};
 

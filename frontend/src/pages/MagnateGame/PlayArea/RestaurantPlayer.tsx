@@ -1,7 +1,7 @@
-function RestaurantPlayer() {
-	const [restaurant];
+// function RestaurantPlayer() {
+// 	const [restaurant];
 
-	return <div>RestaurantPlayer</div>;
-}
+// 	return <div>RestaurantPlayer</div>;
+// }
 
-export default RestaurantPlayer;
+// export default RestaurantPlayer;

@@ -1,3 +1,5 @@
+import { ENTRANCE_CORNER } from "../backend/src/dataViews";
+
 export const MAP_PIECE_WIDTH = 5;
 export const MAP_PIECE_HEIGHT = 5;
 export const MAP_PIECE_SIZE =
@@ -86,4 +88,20 @@ export function IsConnecting(
 		(IsMiddle(x) && IsEdge(y)) ||
 		(IsMiddle(y) && IsEdge(x))
 	);
+}
+
+export function rotateEntranceCorner(
+	corner: ENTRANCE_CORNER,
+	inverted: boolean = false
+): ENTRANCE_CORNER {
+	switch (corner) {
+		case "TOPLEFT":
+			return inverted ? "BOTTOMLEFT" : "TOPRIGHT";
+		case "TOPRIGHT":
+			return inverted ? "TOPLEFT" : "BOTTOMRIGHT";
+		case "BOTTOMRIGHT":
+			return inverted ? "TOPRIGHT" : "BOTTOMLEFT";
+		case "BOTTOMLEFT":
+			return inverted ? "BOTTOMRIGHT" : "TOPLEFT";
+	}
 }

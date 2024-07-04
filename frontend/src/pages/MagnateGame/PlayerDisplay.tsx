@@ -1,13 +1,13 @@
 import "./PlayerDisplay.css";
 
-import Image from "../../components/Image";
+import RestaurantImage from "../../components/RestaurantImage";
 import { LobbyPlayerData } from "../../utils";
 
 function PlayerDisplay(props: { player: LobbyPlayerData }) {
 	return (
 		<div className="player-display">
-			<Image
-				url={`${props.player.restaurant}`}
+			<RestaurantImage
+				restaurantNumber={props.player.restaurant}
 				alt={`Player ${props.player.name}'s restaurant logo`}
 			/>
 			<p>{props.player.name}</p>

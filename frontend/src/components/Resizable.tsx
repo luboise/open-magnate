@@ -193,7 +193,15 @@ function Resizable(
 			type: "IDLE",
 			width: localVals?.width ?? defaultWidth,
 			pos: {
-				x: localVals?.x ?? defaultPosition?.x ?? 0,
+				x:
+					(localVals &&
+					localVals.x &&
+					localVals.x !== defaultPosition?.x
+						? localVals.x
+						: null) ??
+					localVals?.x ??
+					defaultPosition?.x ??
+					0,
 				y: localVals?.y ?? defaultPosition?.y ?? 0
 			},
 			aspectRatio: undefined
@@ -350,7 +358,7 @@ function Resizable(
 			"Reducer state: ",
 			JSON.stringify(state)
 		);
-	}, [state, state.type]);
+	}, [state.type]);
 
 	useEffect(() => {
 		setLocalVals({

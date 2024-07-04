@@ -11,13 +11,15 @@ CREATE TABLE `user_session` (
 
 -- CreateTable
 CREATE TABLE `lobby_player` (
+    `isHost` BOOLEAN NOT NULL DEFAULT false,
     `lobbyId` INTEGER NOT NULL,
     `userId` VARCHAR(191) NOT NULL,
     `timeJoined` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
-    `restaurantId` INTEGER NOT NULL,
+    `gameStateId` INTEGER NOT NULL,
+    `playerNumber` INTEGER NOT NULL,
 
     UNIQUE INDEX `lobby_player_userId_key`(`userId`),
-    UNIQUE INDEX `lobby_player_restaurantId_lobbyId_key`(`restaurantId`, `lobbyId`)
+    UNIQUE INDEX `lobby_player_gameStateId_playerNumber_key`(`gameStateId`, `playerNumber`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -25,26 +27,44 @@ CREATE TABLE `lobby` (
     `lobby_id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NULL,
-    `playerCount` INTEGER NOT NULL,
     `inviteCode` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`lobby_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `restaurant` (
-    `restaurant_id` INTEGER NOT NULL AUTO_INCREMENT,
-    `name` VARCHAR(191) NOT NULL,
+CREATE TABLE `game_player` (
+    `gameId` INTEGER NOT NULL,
+    `player_number` INTEGER NOT NULL,
+    `money` INTEGER NOT NULL DEFAULT 0,
+    `milestones` JSON NOT NULL,
+    `employees` JSON NOT NULL,
+    `restaurantDataId` INTEGER NOT NULL,
 
-    PRIMARY KEY (`restaurant_id`)
+    UNIQUE INDEX `game_player_gameId_player_number_key`(`gameId`, `player_number`),
+    UNIQUE INDEX `game_player_gameId_restaurantDataId_key`(`gameId`, `restaurantDataId`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `game_player_restaurant` (
+    `gameId` INTEGER NOT NULL,
+    `playerNumber` INTEGER NOT NULL,
+    `x` INTEGER NOT NULL,
+    `y` INTEGER NOT NULL,
+    `entrance` ENUM('TOPLEFT', 'TOPRIGHT', 'BOTTOMLEFT', 'BOTTOMRIGHT') NOT NULL,
+
+    UNIQUE INDEX `game_player_restaurant_gameId_playerNumber_key`(`gameId`, `playerNumber`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `game_state` (
     `gamestate_id` INTEGER NOT NULL,
+    `turnProgress` ENUM('PREGAME', 'SETTING_UP', 'RESTAURANT_PLACEMENT', 'RESTRUCTURING', 'TURN_ORDER_SELECTION', 'USE_EMPLOYEES', 'SALARY_PAYOUTS', 'MARKETING_CAMPAIGNS', 'CLEAN_UP', 'POSTGAME') NOT NULL DEFAULT 'PREGAME',
     `rawMap` VARCHAR(2048) NOT NULL,
     `currentTurn` INTEGER NOT NULL DEFAULT 1,
     `currentPlayer` INTEGER NOT NULL DEFAULT 1,
+    `playerCount` INTEGER NOT NULL,
+    `turnOrder` VARCHAR(191) NOT NULL DEFAULT '1234',
 
     PRIMARY KEY (`gamestate_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -94,14 +114,11 @@ CREATE TABLE `game_marketing_campaign` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `game_player` (
-    `gameId` INTEGER NOT NULL,
-    `player_number` INTEGER NOT NULL,
-    `money` INTEGER NOT NULL DEFAULT 0,
-    `milestones` JSON NOT NULL,
-    `employees` JSON NOT NULL,
+CREATE TABLE `restaurant_data` (
+    `restaurant_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
 
-    UNIQUE INDEX `game_player_gameId_player_number_key`(`gameId`, `player_number`)
+    PRIMARY KEY (`restaurant_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
@@ -111,7 +128,16 @@ ALTER TABLE `lobby_player` ADD CONSTRAINT `lobby_player_lobbyId_fkey` FOREIGN KE
 ALTER TABLE `lobby_player` ADD CONSTRAINT `lobby_player_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `user_session`(`sessionKey`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `lobby_player` ADD CONSTRAINT `lobby_player_restaurantId_fkey` FOREIGN KEY (`restaurantId`) REFERENCES `restaurant`(`restaurant_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `lobby_player` ADD CONSTRAINT `lobby_player_gameStateId_playerNumber_fkey` FOREIGN KEY (`gameStateId`, `playerNumber`) REFERENCES `game_player`(`gameId`, `player_number`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `game_player` ADD CONSTRAINT `game_player_gameId_fkey` FOREIGN KEY (`gameId`) REFERENCES `game_state`(`gamestate_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `game_player` ADD CONSTRAINT `game_player_restaurantDataId_fkey` FOREIGN KEY (`restaurantDataId`) REFERENCES `restaurant_data`(`restaurant_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `game_player_restaurant` ADD CONSTRAINT `game_player_restaurant_gameId_playerNumber_fkey` FOREIGN KEY (`gameId`, `playerNumber`) REFERENCES `game_player`(`gameId`, `player_number`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `game_state` ADD CONSTRAINT `game_state_gamestate_id_fkey` FOREIGN KEY (`gamestate_id`) REFERENCES `lobby`(`lobby_id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -127,6 +153,3 @@ ALTER TABLE `game_house_demand` ADD CONSTRAINT `game_house_demand_houseId_fkey` 
 
 -- AddForeignKey
 ALTER TABLE `game_marketing_campaign` ADD CONSTRAINT `game_marketing_campaign_gameId_fkey` FOREIGN KEY (`gameId`) REFERENCES `game_state`(`gamestate_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `game_player` ADD CONSTRAINT `game_player_gameId_fkey` FOREIGN KEY (`gameId`) REFERENCES `game_state`(`gamestate_id`) ON DELETE CASCADE ON UPDATE CASCADE;

@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import MapTile from "../../components/MapTile";
 import { useGameState } from "../../hooks/useGameState";
 import useMap from "../../hooks/useMap";
@@ -21,9 +22,10 @@ type MapProps = BaseMapProps &
 		  }
 	);
 
-function MagnateMap(props: MapProps) {
+function MagnateMap(props: PropsWithChildren<MapProps>) {
 	const {
 		sendMapObjectClickEvent: mapObjectClicked,
+		sendMapObjectHoverEvent: mapObjectHovered,
 		getAllRenderables
 	} = useMap();
 
@@ -66,6 +68,12 @@ function MagnateMap(props: MapProps) {
 								data: tile
 							});
 						}}
+						onMouseEnter={() => {
+							mapObjectHovered({
+								type: "TILE",
+								data: tile
+							});
+						}}
 						tile={tile}
 					/>
 				))}
@@ -101,6 +109,8 @@ function MagnateMap(props: MapProps) {
 			{...Array.from(
 				Object.values(getAllRenderables)
 			).flat(2)}
+
+			{props.children}
 		</div>
 	);
 }

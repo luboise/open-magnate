@@ -1,8 +1,14 @@
-import { Prisma, TURN_PROGRESS } from "@prisma/client";
+import {
+	ENTRANCE_CORNER,
+	GamePlayer,
+	Prisma,
+	TURN_PROGRESS
+} from "@prisma/client";
 import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
-	PLAYER_DEFAULTS
+	PLAYER_DEFAULTS,
+	RestaurantView
 } from "../../../../shared";
 import {
 	GamePlayerViewPrivate,
@@ -10,6 +16,7 @@ import {
 	GameStateViewPerPlayer,
 	GardenView
 } from "../../dataViews";
+import prisma from "../../datasource";
 import {
 	MAP_PIECES,
 	MapStringChar,
@@ -17,7 +24,7 @@ import {
 } from "../../game/MapPieces";
 import {
 	GetTransposed,
-	readJsonNumberArray
+	readJsonNumberArray as parseJsonNumberArray
 } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
 import { FullLobby } from "./lobby.controller";
@@ -48,7 +55,7 @@ export const FullGameStateInclude = {
 	marketingCampaigns: true,
 	players: {
 		include: {
-			restaurant: true,
+			restaurantData: true,
 			lobbyPlayer: {
 				include: {
 					userSession: {
@@ -57,7 +64,8 @@ export const FullGameStateInclude = {
 						}
 					}
 				}
-			}
+			},
+			restaurants: true
 		}
 	}
 };
@@ -65,6 +73,12 @@ export const FullGameStateInclude = {
 export type FullGameState = Prisma.GameStateGetPayload<{
 	include: typeof FullGameStateInclude;
 }>;
+
+interface NewRestaurantDetails {
+	x: number;
+	y: number;
+	entrance: ENTRANCE_CORNER;
+}
 
 const GameStateController = {
 	Get: async (id: number) => {
@@ -282,15 +296,29 @@ const GameStateController = {
 				(player): GamePlayerViewPrivate => ({
 					money: player.money,
 					playerNumber: player.number,
-					restaurant: player.restaurant.name,
-					milestones: readJsonNumberArray(
+					restaurant: player.restaurantData.id,
+					milestones: parseJsonNumberArray(
 						player.milestones
 					),
-					employees: readJsonNumberArray(
+					employees: parseJsonNumberArray(
 						player.employees
 					)
 				})
-			)
+			),
+			restaurants: gameState.players
+				.map((player) =>
+					player.restaurants.map((res) => {
+						const rv: RestaurantView = {
+							player: player.number,
+							x: res.x,
+							y: res.y,
+							orientation: "HORIZONTAL"
+						};
+
+						return rv;
+					})
+				)
+				.flat(1)
 		};
 	},
 
@@ -347,6 +375,133 @@ const GameStateController = {
 		});
 
 		return Boolean(updated);
+	},
+
+	AddNewRestaurant: async (
+		player: GamePlayer,
+		details: NewRestaurantDetails
+	): Promise<boolean> => {
+		try {
+			// TODO: Add validation
+			const updated =
+				await prisma.gamePlayerRestaurant.create({
+					data: {
+						player: {
+							connect: {
+								gameId_number: {
+									gameId: player.gameId,
+									number: player.number
+								}
+							}
+						},
+						x: details.x,
+						y: details.y,
+						entrance: details.entrance
+					}
+				});
+
+			return Boolean(updated);
+		} catch (error) {
+			console.error(error);
+		}
+		return false;
+	},
+
+	AdvanceGameState: async (gameStateId: number) => {
+		const gameState =
+			await GameStateRepository.findFirst({
+				where: {
+					id: gameStateId
+				}
+			});
+
+		if (!gameState) {
+			console.error(
+				"Unable to find gamestate. A backend error has occured."
+			);
+			return false;
+		}
+
+		const currentOrder = parseJsonNumberArray(
+			gameState.turnOrder
+		);
+
+		console.log("Current Order: ", currentOrder);
+		console.log(
+			"Current Player: ",
+			gameState.currentPlayer
+		);
+
+		const currentPlayerIndex = currentOrder.findIndex(
+			(player) => player === gameState.currentPlayer
+		);
+
+		if (currentPlayerIndex === -1) {
+			console.error(
+				"Unable to find current player in turn order."
+			);
+			return false;
+		}
+
+		let nextPlayer = currentPlayerIndex;
+		let nextTurnProgress = gameState.turnProgress;
+
+		// Check if all players have completed their turn this round
+		if (
+			currentPlayerIndex ===
+			gameState.playerCount - 1
+		) {
+			nextPlayer = currentOrder[0];
+			switch (gameState.turnProgress) {
+				case "RESTRUCTURING": {
+					nextTurnProgress =
+						"TURN_ORDER_SELECTION";
+					break;
+				}
+				case "TURN_ORDER_SELECTION": {
+					nextTurnProgress = "USE_EMPLOYEES";
+					break;
+				}
+				case "USE_EMPLOYEES": {
+					nextTurnProgress = "SALARY_PAYOUTS";
+					break;
+				}
+				case "SALARY_PAYOUTS": {
+					nextTurnProgress = "CLEAN_UP";
+					break;
+				}
+				case "MARKETING_CAMPAIGNS": {
+					nextTurnProgress = "CLEAN_UP";
+					break;
+				}
+				case "CLEAN_UP": {
+					nextTurnProgress = "RESTRUCTURING";
+					break;
+				}
+				case "RESTAURANT_PLACEMENT": {
+					nextTurnProgress = "USE_EMPLOYEES";
+					break;
+				}
+			}
+		} else {
+			nextPlayer = currentPlayerIndex + 1;
+		}
+
+		const updated = await GameStateRepository.update({
+			where: {
+				id: gameState.id
+			},
+			data: {
+				currentPlayer: nextPlayer,
+				turnProgress: nextTurnProgress
+			}
+		});
+		if (!updated) {
+			console.log("Unable to advance gamestate.");
+			return false;
+		}
+
+		return true;
 	}
 };
 

@@ -1,4 +1,5 @@
 import { useRecoilState } from "recoil";
+import { MoveData } from "../../../shared/Moves";
 import { PageGameAtom } from "../pages/PageGameContext";
 import {
 	LeaveLobbyMessage,
@@ -20,9 +21,17 @@ function usePageGame() {
 		} as StartGameMessage);
 	}
 
+	function makeMove(moveData: MoveData) {
+		pageGame.sendMessage({
+			type: "MAKE_MOVE",
+			data: moveData
+		});
+	}
+
 	return {
 		leaveLobby,
-		startGame
+		startGame,
+		makeMove
 	};
 }
 

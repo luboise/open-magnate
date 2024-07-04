@@ -2,9 +2,16 @@ import {
 	DEMAND_TYPE,
 	MARKETING_TYPE,
 	ORIENTATION,
+	ENTRANCE_CORNER as PrismaEntranceCorner,
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
-import { RESTAURANT_NAME } from "../../shared";
+
+export type TURN_PROGRESS = PrismaTurnProgress;
+export type ENTRANCE_CORNER = PrismaEntranceCorner;
+
+export interface RestaurantView extends Position {
+	player: number;
+}
 
 interface BaseGameStateView {
 	turnProgress: TURN_PROGRESS;
@@ -15,6 +22,8 @@ interface BaseGameStateView {
 	turnOrder: Array<number> | null;
 
 	playerCount: number;
+
+	restaurants: RestaurantView[];
 
 	houses: HouseView[];
 	gardens: GardenView[];
@@ -37,7 +46,7 @@ export interface GameStateViewPerPlayer
 export interface GamePlayerViewPublic {
 	playerNumber: number;
 	milestones: number[];
-	restaurant: RESTAURANT_NAME;
+	restaurant: number;
 	money: number;
 }
 
@@ -45,8 +54,6 @@ export interface GamePlayerViewPrivate
 	extends GamePlayerViewPublic {
 	employees: number[];
 }
-
-export type TURN_PROGRESS = PrismaTurnProgress;
 
 export interface MarketingCampaignView extends Position {
 	priority: number;

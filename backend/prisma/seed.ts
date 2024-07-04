@@ -4,7 +4,7 @@ import {
 	Prisma,
 	PrismaClient,
 	PrismaPromise,
-	Restaurant,
+	RestaurantData,
 	TURN_PROGRESS
 } from "@prisma/client";
 import { RESTAURANT_NAMES } from "../../shared";
@@ -25,7 +25,7 @@ export const SEED_RESAURANTS = RESTAURANT_NAMES.map(
 		return {
 			id: index + 1,
 			name: res
-		} as Restaurant;
+		} as RestaurantData;
 	}
 );
 
@@ -104,7 +104,7 @@ export const seedLobby1 = {
 	inviteCode: "SEEDLB01"
 };
 
-export const seedGameState1 = {
+export const seedGameState1: Prisma.GameStateCreateInput = {
 	currentPlayer: 1,
 	currentTurn: 0,
 	lobby: {
@@ -120,13 +120,13 @@ export const seedGameState1 = {
 					number: 1,
 					employees: [],
 					milestones: [],
-					restaurantId: seedRestaurant1.id
+					restaurantDataId: seedRestaurant1.id
 				},
 				{
 					number: 2,
 					employees: [],
 					milestones: [],
-					restaurantId: seedRestaurant2.id
+					restaurantDataId: seedRestaurant2.id
 				}
 			]
 		}
@@ -165,7 +165,7 @@ async function main() {
 
 		for (const res of SEED_RESAURANTS) {
 			transactions.push(
-				prisma.restaurant.upsert({
+				prisma.restaurantData.upsert({
 					where: {
 						id: res.id
 					},

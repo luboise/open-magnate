@@ -17,6 +17,7 @@ import {
 	TileType
 } from "../../../shared/MapData";
 import {
+	GamePlayerViewPublic,
 	GameStateViewPerPlayer,
 	Map2D,
 	MapTileData,
@@ -99,6 +100,13 @@ const isMyTurnSelector = selector<boolean | null>({
 
 		if (!gameState) return null;
 
+		console.log(
+			"aaa: ",
+			gameState.privateData,
+			"bbb: ",
+			gameState.currentPlayer
+		);
+
 		return (
 			gameState.privateData.playerNumber ===
 			gameState.currentPlayer
@@ -110,14 +118,24 @@ export function isMyTurn() {
 	return useRecoilValue(isMyTurnSelector);
 }
 
+const RECOIL_PLAYERS_KEY = "PLAYERS";
+const playersSelector = selector<
+	GamePlayerViewPublic[] | null
+>({
+	key: RECOIL_PLAYERS_KEY,
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+
+		if (!gameState) return null;
+
+		return gameState.players;
+	}
+});
+// export function usePlayers() {
+// 	return useRecoilValue(playersSelector);
+// }
+
 export function useGameState() {
-	// : {
-	// 	state: GameStateAtomType;
-	// 	mapColOrder: MapSelectorType;
-	// 	mapRowOrder: MapSelectorType;
-	// 	houses: ;
-	// 	setState: (newState: GameStateAtomType) => void;
-	// }
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
 	const mapColOrder = useRecoilValue(
@@ -131,13 +149,16 @@ export function useGameState() {
 		turnProgressSelector
 	);
 
+	const players = useRecoilValue(playersSelector);
+
 	return {
 		state,
 		mapColOrder,
 		mapRowOrder,
 		houses,
 		setState: _setState,
-		turnProgress
+		turnProgress,
+		players: players
 	};
 }
 

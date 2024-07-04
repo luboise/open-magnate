@@ -17,8 +17,10 @@ import {
 	JoinLobbyMessage,
 	LeaveLobbyMessage,
 	LobbySubmissionData,
+	MakeMoveMessage,
 	StartGameMessage
 } from "../../../shared";
+import { MOVE_TYPE } from "../../../shared/Moves";
 import GameStateController from "../database/controller/gamestate.controller";
 import { connectionsToWebsocket } from "./connections";
 
@@ -94,6 +96,10 @@ const routeHandler: RouteHandler = (express, app) => {
 				}
 				case "START_GAME": {
 					handleStartGame(params);
+					return;
+				}
+				case "MAKE_MOVE": {
+					handleMoveMade(params);
 					return;
 				}
 			}
@@ -542,6 +548,75 @@ const handleStartGame: BackendMessageHandler<
 	updateAllPlayers(
 		await LobbyController.refresh(lobby),
 		"ALL"
+	);
+};
+
+const handleMoveMade: BackendMessageHandler<
+	MakeMoveMessage
+> = async (params) => {
+	if (
+		!params.userSession ||
+		!params.userSession.sessionKey
+	) {
+		return;
+	}
+
+	const lobby = await LobbyController.GetFromSessionKey(
+		params.userSession.sessionKey
+	);
+
+	if (!lobby) {
+		params.ws.send("You are not currently in a lobby.");
+		return;
+	}
+
+	const gamePlayer = lobby.gameState?.players.find(
+		(player) =>
+			player.lobbyPlayer?.userId ===
+			params.userSession?.sessionKey
+	);
+
+	if (!gamePlayer) {
+		params.ws.send(
+			"You must be the host of the lobby to start the game."
+		);
+		return;
+	}
+
+	const message = params.message.data;
+	if (message.MoveType === MOVE_TYPE.PLACE_RESTAURANT) {
+		const success =
+			await GameStateController.AddNewRestaurant(
+				gamePlayer,
+				{
+					x: message.x,
+					y: message.y,
+					entrance: message.entrance
+				}
+			);
+
+		if (!success) {
+			console.error(
+				"Unable to create new restaurant."
+			);
+			return;
+		}
+
+		const updated =
+			await GameStateController.AdvanceGameState(
+				lobby.id
+			);
+		if (!updated) {
+			const msg = "Unable to advance the game state";
+			console.error(msg);
+			params.ws.send(msg);
+			return;
+		}
+	}
+
+	updateAllPlayers(
+		await LobbyController.refresh(lobby),
+		"GAMESTATE"
 	);
 };
 

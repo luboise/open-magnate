@@ -5,4 +5,12 @@ type HEX = `#${string}`;
 
 export type Color = RGB | RGBA | HEX;
 
+export function Clamp(
+	val: number,
+	min: number,
+	max: number
+) {
+	return Math.floor(Math.min(Math.max(val, min), max));
+}
+
 export * from "../../shared";

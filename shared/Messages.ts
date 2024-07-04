@@ -4,6 +4,7 @@ import {
 	LobbySubmissionData,
 	LobbyViewPerPlayer
 } from "./LobbyTypes";
+import { MoveData } from "./Moves";
 
 // export type FrontendMessageType =
 // 	| "NEW_LOBBY"
@@ -64,7 +65,8 @@ export type BackendMessage =
 	| CreateLobbyMessage
 	| JoinLobbyMessage
 	| LeaveLobbyMessage
-	| StartGameMessage;
+	| StartGameMessage
+	| MakeMoveMessage;
 
 export interface CheckSessionKeyMessage
 	extends BaseMessage {
@@ -93,4 +95,9 @@ export interface LeaveLobbyMessage extends BaseMessage {
 
 export interface StartGameMessage extends BaseMessage {
 	type: "START_GAME";
+}
+
+export interface MakeMoveMessage extends BaseMessage {
+	type: "MAKE_MOVE";
+	data: MoveData;
 }

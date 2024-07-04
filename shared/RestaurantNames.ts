@@ -9,4 +9,3 @@ export const RESTAURANT_NAMES: string[] = [
 
 export type RESTAURANT_NAME =
 	(typeof RESTAURANT_NAMES)[number];
-

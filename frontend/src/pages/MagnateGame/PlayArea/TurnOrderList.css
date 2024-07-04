@@ -1,0 +1,11 @@
+.game-turn-order-list {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	flex-direction: column;
+}
+
+.game-turn-order-list > * {
+	/* flex: 1; */
+	aspect-ratio: 4;
+}
