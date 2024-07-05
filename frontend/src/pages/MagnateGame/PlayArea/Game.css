@@ -15,3 +15,10 @@
 #magnagte-play-area {
 	transition: background-color 0.8;
 }
+
+#magnate-play-area > .map-preview-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+

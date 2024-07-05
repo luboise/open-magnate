@@ -33,6 +33,8 @@ function Game() {
 	const { turnProgress, isMyTurn } = useGameState();
 	const { onMapObjectClicked } = useMap();
 
+	const { mapRowOrder: map } = useGameState();
+
 	const [toolbarStatus, setToolbarStatus] =
 		useLocalVal<GameInterfaceState>("TOOLBAR_STATUS");
 
@@ -131,7 +133,18 @@ function Game() {
 	]);
 
 	return (
-		<div id="magnate-play-area">
+		<div
+			id="magnate-play-area"
+			className="map-preview-container"
+			style={{
+				gridTemplateColumns: map
+					? `repeat(${map[0].length}, 1fr)`
+					: undefined,
+				aspectRatio: map
+					? `${map[0].length} / ${map.length}`
+					: undefined
+			}}
+		>
 			<WindowToolbar
 				onClick={(clicked) =>
 					dispatch({
@@ -164,16 +177,16 @@ function Game() {
 				<TurnPlanner />
 			</Resizable>
 
-			<Resizable
+			{/* <Resizable
 				defaultWidth={1000}
 				localKey="magnate-map-section"
 				id="magnate-map-section"
 				minimiseIf={!toolbarStatus?.showMap}
-			>
-				<MagnateMap type="full">
-					{mapConditional}
-				</MagnateMap>
-			</Resizable>
+			> */}
+			<MagnateMap type="full">
+				{mapConditional}
+			</MagnateMap>
+			{/* </Resizable> */}
 		</div>
 	);
 }

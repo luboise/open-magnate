@@ -1,4 +1,8 @@
-import { PropsWithChildren } from "react";
+import {
+	HTMLAttributes,
+	PropsWithChildren,
+	ReactNode
+} from "react";
 import MapTile from "../../components/MapTile";
 import RestaurantImage from "../../components/RestaurantImage";
 import { useGameState } from "../../hooks/useGameState";
@@ -6,9 +10,11 @@ import useMap from "../../hooks/useMap";
 import { MapTileData } from "../../utils";
 import "./MagnateMap.css";
 
-type BaseMapProps = {
+interface BaseMapProps
+	extends HTMLAttributes<HTMLDivElement> {
 	onTileClicked?: (tile: MapTileData) => void;
-};
+	children?: ReactNode;
+}
 type MapProps = BaseMapProps &
 	(
 		| {

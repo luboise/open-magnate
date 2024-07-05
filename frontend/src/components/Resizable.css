@@ -38,5 +38,6 @@
 
 .resizable-minimized {
 	opacity: 0;
+	pointer-events: none;
 }
 
