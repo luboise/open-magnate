@@ -1,10 +1,7 @@
 import "./MagnatePlayArea.css";
 
 import Resizable from "../../../components/Resizable";
-import {
-	isMyTurn,
-	useGameState
-} from "../../../hooks/useGameState";
+import { useGameState } from "../../../hooks/useGameState";
 import useMap from "../../../hooks/useMap";
 import MagnateMap from "../MagnateMap";
 import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
@@ -12,13 +9,11 @@ import TurnOrderList from "./TurnOrderList";
 import TurnProgressIndicator from "./TurnProgressIndicator";
 
 function MagnatePlayArea() {
-	const { turnProgress } = useGameState();
+	const { turnProgress, isMyTurn } = useGameState();
 	const { onMapObjectClicked } = useMap();
 
-	const myTurn = isMyTurn();
-
 	const conditionalRender: JSX.Element = (() => {
-		if (!myTurn) return <></>;
+		if (!isMyTurn) return <></>;
 
 		if (turnProgress === "RESTAURANT_PLACEMENT") {
 			return <RestaurantPlacer />;
@@ -29,7 +24,7 @@ function MagnatePlayArea() {
 
 	onMapObjectClicked((event) => {
 		if (
-			myTurn &&
+			isMyTurn &&
 			turnProgress === "RESTAURANT_PLACEMENT"
 		)
 			console.log("clicked", event);

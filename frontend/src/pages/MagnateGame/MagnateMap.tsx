@@ -24,6 +24,7 @@ type MapProps = BaseMapProps &
 	);
 
 function MagnateMap(props: PropsWithChildren<MapProps>) {
+	console.debug("Rendering magnate map.");
 	const {
 		sendMapObjectClickEvent: mapObjectClicked,
 		sendMapObjectHoverEvent: mapObjectHovered,
@@ -36,6 +37,14 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 		restaurants,
 		players
 	} = useGameState();
+
+	console.debug(
+		"Rendering magnate map.",
+		map,
+		houses,
+		restaurants,
+		players
+	);
 
 	if (!map) return <></>;
 

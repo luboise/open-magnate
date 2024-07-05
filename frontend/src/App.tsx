@@ -1,7 +1,5 @@
 import "./App.css";
 
-import { RecoilRoot } from "recoil";
-
 import {
 	BrowserRouter,
 	Link,
@@ -9,6 +7,7 @@ import {
 	Routes
 } from "react-router-dom";
 // import PageAllMapPieces from "./pages/PageAllMapPieces";
+import { RecoilRoot } from "recoil";
 import PageGame from "./pages/PageGame";
 import PageHomepage from "./pages/PageHomepage";
 import { FrontendRoutes } from "./utils";
@@ -25,7 +24,7 @@ function App() {
 	// }
 
 	return (
-		<RecoilRoot>
+		<>
 			<h1>Open Magnate</h1>
 			<BrowserRouter>
 				<Routes>
@@ -36,14 +35,18 @@ function App() {
 					{/* <Route
 						path="/alltiles"
 						element={<PageAllMapPieces />}
-					/> */}
+						/> */}
 					{/* <Route
 						path={FrontendRoutes.PLAY}
 						element={<PagePlay />}
-					/> */}
+						/> */}
 					<Route
 						path={FrontendRoutes.PLAY}
-						element={<PageGame />}
+						element={
+							<RecoilRoot>
+								<PageGame />
+							</RecoilRoot>
+						}
 					/>
 					<Route
 						path="*"
@@ -64,7 +67,7 @@ function App() {
 					/>
 				</Routes>
 			</BrowserRouter>
-		</RecoilRoot>
+		</>
 	);
 }
 

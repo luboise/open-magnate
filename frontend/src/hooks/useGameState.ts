@@ -115,9 +115,9 @@ const isMyTurnSelector = selector<boolean | null>({
 	}
 });
 
-export function isMyTurn() {
-	return useRecoilValue(isMyTurnSelector);
-}
+// export function isMyTurn() {
+// 	return useRecoilValue(isMyTurnSelector);
+// }
 
 const RECOIL_PLAYERS_KEY = "PLAYERS";
 const playersSelector = selector<
@@ -164,6 +164,8 @@ export function useGameState() {
 
 	const restaurants = useRecoilValue(restaurantsSelector);
 
+	const isMyTurn = useRecoilValue(isMyTurnSelector);
+
 	return {
 		state,
 		mapColOrder,
@@ -172,7 +174,8 @@ export function useGameState() {
 		setState: _setState,
 		turnProgress,
 		players: players,
-		restaurants: restaurants
+		restaurants: restaurants,
+		isMyTurn
 	};
 }
 

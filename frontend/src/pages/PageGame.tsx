@@ -54,12 +54,7 @@ function PageGame() {
 		LOCAL_STORAGE_INVITE_CODE_NAME
 	);
 
-	const { setState } = useGameState();
-	function setGameState(
-		gameState: GameStateViewPerPlayer | null
-	) {
-		setState(gameState);
-	}
+	const { setState: setGameState } = useGameState();
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -144,7 +139,6 @@ function PageGame() {
 				// 		newState.;
 				// 	}
 				// }
-				setGameState(message.data.gameState);
 
 				return newState;
 			}
@@ -247,6 +241,11 @@ function PageGame() {
 		state.lobbyState,
 		state.pageState
 	]);
+
+	// Update the gamestate when it changes
+	useEffect(() => {
+		setGameState(state.gameState);
+	}, [state.gameState]);
 
 	// Check for bad ready states
 	switch (readyState) {
