@@ -20,7 +20,7 @@ import {
 	LobbySubmissionData,
 	LobbyViewPerPlayer
 } from "../utils";
-import MagnateGame from "./MagnateGame/MagnateGame";
+import LobbyManager from "./MagnateGame/LobbyManager";
 import { PageGameAtom } from "./PageGameContext";
 
 const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
@@ -353,10 +353,10 @@ function PageGame() {
 		state.gameState !== null
 	) {
 		return (
-			<MagnateGame
+			<LobbyManager
 				lobby={state.lobbyState}
 				gameState={state.gameState}
-			></MagnateGame>
+			></LobbyManager>
 		);
 	} else return <div>Unknown error.</div>;
 }

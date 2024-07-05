@@ -424,12 +424,6 @@ const GameStateController = {
 			.split("")
 			.map((val) => Number(val));
 
-		console.log("Current Order: ", currentOrder);
-		console.log(
-			"Current Player: ",
-			gameState.currentPlayer
-		);
-
 		const currentPlayerIndex = currentOrder.findIndex(
 			(player) => player === gameState.currentPlayer
 		);
@@ -482,7 +476,8 @@ const GameStateController = {
 				}
 			}
 		} else {
-			nextPlayer = currentPlayerIndex + 1;
+			nextPlayer =
+				currentOrder[currentPlayerIndex + 1];
 		}
 
 		const updated = await GameStateRepository.update({
@@ -499,6 +494,9 @@ const GameStateController = {
 			return false;
 		}
 
+		console.log(
+			`Successfully advanced turn in game ${gameState.id}`
+		);
 		return true;
 	}
 };

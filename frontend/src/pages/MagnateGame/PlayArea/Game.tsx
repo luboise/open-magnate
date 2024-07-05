@@ -1,4 +1,4 @@
-import "./MagnatePlayArea.css";
+import "./Game.css";
 
 import Resizable from "../../../components/Resizable";
 import { useGameState } from "../../../hooks/useGameState";
@@ -8,7 +8,7 @@ import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
 import TurnOrderList from "./TurnOrderList";
 import TurnProgressIndicator from "./TurnProgressIndicator";
 
-function MagnatePlayArea() {
+function Game() {
 	const { turnProgress, isMyTurn } = useGameState();
 	const { onMapObjectClicked } = useMap();
 
@@ -57,4 +57,4 @@ function MagnatePlayArea() {
 	);
 }
 
-export default MagnatePlayArea;
+export default Game;
