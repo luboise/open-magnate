@@ -1,12 +1,25 @@
 import "./TurnOrderList.css";
 
+import RestaurantImage from "../../../components/RestaurantImage";
 import { useGameState } from "../../../hooks/useGameState";
 
-function TurnOrderList() {
+interface TurnOrderListProps {
+	orientation?: "Horizontal" | "Vertical";
+}
+
+function TurnOrderList(props: TurnOrderListProps) {
 	const { state, players } = useGameState();
 
 	return (
-		<div className="game-turn-order-list">
+		<div
+			className="game-turn-order-list"
+			style={{
+				flexDirection:
+					props.orientation === "Vertical"
+						? "column"
+						: "row"
+			}}
+		>
 			{...state?.turnOrder?.map(
 				(playerNumber, index) => {
 					const player = players?.find(
@@ -17,7 +30,7 @@ function TurnOrderList() {
 					if (!player) return <></>;
 
 					return (
-						<div
+						<span
 							style={{
 								backgroundColor:
 									state.currentPlayer ===
@@ -26,8 +39,12 @@ function TurnOrderList() {
 										: undefined
 							}}
 						>
-							#{index}: {player.restaurant}
-						</div>
+							<RestaurantImage
+								restaurantNumber={
+									player.restaurant
+								}
+							/>
+						</span>
 					);
 				}
 			) ?? []}

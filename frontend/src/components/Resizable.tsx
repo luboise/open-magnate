@@ -50,8 +50,9 @@ type ResizableAction =
 
 interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
-	localKey?: string;
 	defaultWidth: number;
+	orientation?: "Horizontal" | "Vertical";
+	localKey?: string;
 	defaultPosition?: Position;
 	color?: Color;
 }
@@ -68,6 +69,7 @@ function Resizable(
 		defaultPosition,
 		children,
 		localKey,
+		orientation,
 		...args
 	} = props;
 
@@ -294,7 +296,8 @@ function Resizable(
 	function getMinRectangleX(
 		origin: Position,
 		outerPoint: Position,
-		aspectRatio: number
+		aspectRatio: number,
+		scale: number = 1.05
 	): number {
 		// TODO: Fix it so that negative and positive amounts both work
 		const widthFromX = outerPoint.x - origin.x;
@@ -308,49 +311,14 @@ function Resizable(
 		// If positive, return the larger of the 2
 
 		if (widthFromY > widthFromX) {
-			return widthFromY;
-		} else return widthFromX;
+			return widthFromY * scale;
+		} else return widthFromX * scale;
 	}
 
 	function clickReleased(e: globalThis.MouseEvent) {
 		e.preventDefault();
 
 		dispatch({ type: "CLICK_RELEASED" });
-
-		// console.debug(
-		// 	"Stopped capturing, but the user was never dragging."
-		// );
-
-		// console.log(
-		// 	"start pos: ",
-		// 	startPos,
-		// 	"temp pos: ",
-		// 	tempPos
-		// );
-
-		// // Update if we can
-		// if (startPos) {
-		// 	const newPos: Position = {
-		// 		x: e.clientX,
-		// 		y: e.clientY
-		// 	};
-
-		// 	const newWidth = getMinRectangleX(
-		// 		startPos,
-		// 		newPos
-		// 	);
-
-		// 	// const newWidth = width + diff;
-		// 	console.debug(
-		// 		`Updating resizable element ${id.current} from ${width} to ${newWidth}.`
-		// 	);
-
-		// 	setWidth(newWidth);
-
-		// 	setStartPos(undefined);
-		// 	setTempPos(undefined);
-
-		// 	capturing.current = false;
 	}
 
 	useEffect(() => {
@@ -389,7 +357,11 @@ function Resizable(
 					left: `${state.pos.x + (state.type === "MOVING" ? state.moveTo.x - state.moveFrom.x : 0)}px`,
 					top: `${state.pos.y + (state.type === "MOVING" ? state.moveTo.y - state.moveFrom.y : 0)}px`,
 
-					aspectRatio: state.aspectRatio
+					aspectRatio: state.aspectRatio,
+					flexDirection:
+						orientation === "Horizontal"
+							? "row"
+							: "column"
 				}}
 				onLoad={fetchAspectRatio}
 			>

@@ -41,6 +41,7 @@ function Game() {
 				localKey="turn-order-list"
 			>
 				<TurnOrderList />
+				<TurnProgressIndicator />
 			</Resizable>
 
 			<Resizable
@@ -51,7 +52,6 @@ function Game() {
 				<MagnateMap type="full">
 					{conditionalRender}
 				</MagnateMap>
-				<TurnProgressIndicator />
 			</Resizable>
 		</div>
 	);
