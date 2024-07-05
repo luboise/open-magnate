@@ -15,6 +15,8 @@
 
 	border: var(--resizable-element-border-size) black solid;
 	border-radius: var(--resizable-element-border-size);
+
+	transition: opacity 0.02s;
 }
 
 .resizable-element-handle {
@@ -33,3 +35,8 @@
 
 	border-radius: 100%;
 }
+
+.resizable-minimized {
+	opacity: 0;
+}
+

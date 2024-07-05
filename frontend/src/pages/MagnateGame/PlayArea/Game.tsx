@@ -1,18 +1,104 @@
 import "./Game.css";
 
+import { useEffect, useReducer } from "react";
 import Resizable from "../../../components/Resizable";
 import { useGameState } from "../../../hooks/useGameState";
+import useLocalVal from "../../../hooks/useLocalVal";
 import useMap from "../../../hooks/useMap";
 import MagnateMap from "../MagnateMap";
+import EmployeeTree from "./Conditionals/EmployeeTree/EmployeeTree";
 import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
+import TurnPlanner from "./Conditionals/TurnPlanner";
 import TurnOrderList from "./TurnOrderList";
 import TurnProgressIndicator from "./TurnProgressIndicator";
+import WindowToolbar, {
+	ToolbarType
+} from "./WindowToolbar";
+
+interface GameInterfaceState {
+	showMap: boolean;
+	showEmployeeTree: boolean;
+	showPlanner: boolean;
+	showLeaderBoard: boolean;
+	showMiletones: boolean;
+	showTurnOrder: boolean;
+}
+
+type GameInterfaceAction = {
+	type: "TOGGLE";
+	toToggle: ToolbarType;
+};
 
 function Game() {
 	const { turnProgress, isMyTurn } = useGameState();
 	const { onMapObjectClicked } = useMap();
 
-	const conditionalRender: JSX.Element = (() => {
+	const [toolbarStatus, setToolbarStatus] =
+		useLocalVal<GameInterfaceState>("TOOLBAR_STATUS");
+
+	const [state, dispatch] = useReducer(
+		(
+			state: GameInterfaceState,
+			dispatch: GameInterfaceAction
+		): GameInterfaceState => {
+			if (dispatch.type === "TOGGLE") {
+				let key: keyof GameInterfaceState;
+				switch (dispatch.toToggle) {
+					case "MAP":
+						key = "showMap";
+						break;
+					case "EMPLOYEE TREE":
+						key = "showEmployeeTree";
+						break;
+					case "PLANNER":
+						key = "showPlanner";
+						break;
+
+					case "LEADERBOARD":
+						key = "showLeaderBoard";
+						break;
+
+					case "MILETONES":
+						key = "showMiletones";
+						break;
+
+					case "TURN ORDER":
+						key = "showTurnOrder";
+						break;
+
+					default:
+						return state;
+				}
+				return {
+					...state,
+					[key]: !state[key]
+				};
+			}
+
+			// Fallback case
+			return state;
+		},
+		toolbarStatus || {
+			showMap: true,
+			showTurnOrder: true,
+			showEmployeeTree: false,
+			showPlanner: false,
+			showLeaderBoard: false,
+			showMiletones: false
+		}
+	);
+
+	// const regularConditional: JSX.Element = (() => {
+	// 	if (!isMyTurn) return <></>;
+	// 	else if (turnProgress === "RESTRUCTURING") {
+	// 		return
+	// 	} else if (turnProgress === "USE_EMPLOYEES") {
+	// 	}
+
+	// 	return <></>;
+	// })();
+
+	const mapConditional: JSX.Element = (() => {
 		if (!isMyTurn) return <></>;
 
 		if (turnProgress === "RESTAURANT_PLACEMENT") {
@@ -34,23 +120,58 @@ function Game() {
 	// 	switch ()
 	// })();
 
+	useEffect(() => {
+		setToolbarStatus(state);
+	}, [
+		state.showMap,
+		state.showEmployeeTree,
+		state.showPlanner,
+		state.showLeaderBoard,
+		state.showMiletones
+	]);
+
 	return (
 		<div id="magnate-play-area">
+			<WindowToolbar
+				onClick={(clicked) =>
+					dispatch({
+						type: "TOGGLE",
+						toToggle: clicked
+					})
+				}
+			/>
+
+			<Resizable
+				defaultWidth={600}
+				minimiseIf={state.showEmployeeTree}
+			>
+				<EmployeeTree />
+			</Resizable>
+
 			<Resizable
 				defaultWidth={300}
 				localKey="turn-order-list"
+				minimiseIf={state.showTurnOrder}
 			>
 				<TurnOrderList />
 				<TurnProgressIndicator />
 			</Resizable>
 
 			<Resizable
+				defaultWidth={500}
+				minimiseIf={state.showPlanner}
+			>
+				<TurnPlanner />
+			</Resizable>
+
+			<Resizable
 				defaultWidth={1000}
 				localKey="magnate-map-section"
 				id="magnate-map-section"
+				minimiseIf={!toolbarStatus?.showMap}
 			>
 				<MagnateMap type="full">
-					{conditionalRender}
+					{mapConditional}
 				</MagnateMap>
 			</Resizable>
 		</div>
@@ -58,3 +179,4 @@ function Game() {
 }
 
 export default Game;
+

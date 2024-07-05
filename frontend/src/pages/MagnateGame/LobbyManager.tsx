@@ -52,19 +52,18 @@ function LobbyManager(props: {
 					<span>
 						Invite code: {lobby.inviteCode}
 					</span>
-					<Button
-						onClick={onCopyInviteLink}
-						text="Copy invite"
-					/>
+					<Button onClick={onCopyInviteLink}>
+						Copy invite
+					</Button>
 					<div id="lobby-btn-start-leave">
 						<Button
 							id="btn-leave-lobby"
-							text="Leave Lobby"
 							onClick={leaveLobby}
-						/>
+						>
+							Leave Lobby
+						</Button>
 						<Button
 							id="btn-start-game"
-							text="Start Game"
 							onClick={startGame}
 							inactive={
 								!lobby.hosting ||
@@ -72,7 +71,9 @@ function LobbyManager(props: {
 									gameState.playerCount
 							}
 							inactiveHoverText="You must be the host to start the game."
-						/>
+						>
+							Start Game
+						</Button>
 					</div>
 				</div>
 
@@ -92,3 +93,4 @@ function LobbyManager(props: {
 }
 
 export default LobbyManager;
+

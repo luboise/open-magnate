@@ -154,3 +154,4 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 }
 
 export default MagnateMap;
+

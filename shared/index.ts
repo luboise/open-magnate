@@ -1,3 +1,4 @@
+export * from "./Employees";
 export * from "./Food";
 export * from "./GameState";
 export * from "./LobbyTypes";
@@ -11,3 +12,4 @@ export * from "./Routes";
 
 // Shared types that rely on backend types
 export * from "../backend/src/dataViews";
+

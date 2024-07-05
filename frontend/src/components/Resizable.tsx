@@ -1,6 +1,6 @@
 import { Position } from "../../../backend/src/dataViews";
 import useLocalVal from "../hooks/useLocalVal";
-import { Color } from "../utils";
+import { Colour } from "../utils";
 import "./Resizable.css";
 
 import {
@@ -54,7 +54,8 @@ interface ResizableProps
 	orientation?: "Horizontal" | "Vertical";
 	localKey?: string;
 	defaultPosition?: Position;
-	color?: Color;
+	color?: Colour;
+	minimiseIf?: boolean;
 }
 function Resizable(
 	props: PropsWithChildren<ResizableProps> = {
@@ -70,6 +71,7 @@ function Resizable(
 		children,
 		localKey,
 		orientation,
+		minimiseIf: minimized,
 		...args
 	} = props;
 
@@ -340,7 +342,7 @@ function Resizable(
 		<>
 			<div
 				{...args}
-				className="resizable-element"
+				className={`resizable-element ${minimized ? "resizable-minimized" : ""}`}
 				id={id.current}
 				style={{
 					width:
@@ -388,3 +390,4 @@ function Resizable(
 	);
 }
 export default Resizable;
+

@@ -1,13 +1,14 @@
 import {
-	DEMAND_TYPE,
 	MARKETING_TYPE,
 	ORIENTATION,
+	DEMAND_TYPE as PrismaDemandType,
 	ENTRANCE_CORNER as PrismaEntranceCorner,
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
 
 export type TURN_PROGRESS = PrismaTurnProgress;
 export type ENTRANCE_CORNER = PrismaEntranceCorner;
+export type DEMAND_TYPE = PrismaDemandType;
 
 export interface RestaurantView extends Position {
 	player: number;
@@ -80,3 +81,4 @@ export interface Position {
 	y: number;
 	orientation?: ORIENTATION;
 }
+

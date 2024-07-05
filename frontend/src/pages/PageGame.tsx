@@ -314,11 +314,12 @@ function PageGame() {
 		return (
 			<>
 				<Button
-					text="Create Lobby"
 					onClick={() =>
 						dispatch({ type: "CREATING_LOBBY" })
 					}
-				></Button>
+				>
+					Create Lobby
+				</Button>
 				<Form
 					submitText="Join Lobby"
 					onSubmit={(data) => {

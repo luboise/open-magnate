@@ -17,6 +17,7 @@ import {
 	TileType
 } from "../../../shared/MapData";
 import {
+	GamePlayerViewPrivate,
 	GamePlayerViewPublic,
 	GameStateViewPerPlayer,
 	Map2D,
@@ -146,6 +147,19 @@ const restaurantsSelector = selector<RestaurantView[]>({
 		return gameState.restaurants;
 	}
 });
+
+const playerDataSelector =
+	selector<GamePlayerViewPrivate | null>({
+		key: "PLAYER_DATA",
+		get: ({ get }) => {
+			const gameState = get(GameStateAtom);
+
+			if (!gameState) return null;
+
+			return gameState.privateData;
+		}
+	});
+
 export function useGameState() {
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
@@ -166,6 +180,8 @@ export function useGameState() {
 
 	const isMyTurn = useRecoilValue(isMyTurnSelector);
 
+	const playerData = useRecoilValue(playerDataSelector);
+
 	return {
 		state,
 		mapColOrder,
@@ -175,7 +191,8 @@ export function useGameState() {
 		turnProgress,
 		players: players,
 		restaurants: restaurants,
-		isMyTurn
+		isMyTurn,
+		playerData: playerData
 	};
 }
 

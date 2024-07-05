@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
 function useLocalVal<T extends Object>(
-	localStorageKey: string
+	localStorageKey: string,
+	defaultValue?: T
 ): [data: T | null, setter: (newVal: T | null) => void] {
 	const { get, set, deleteFromLS } = useLocalStorage();
 

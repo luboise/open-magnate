@@ -3,7 +3,7 @@ type RGBA =
 	`rgba(${number}, ${number}, ${number}, ${number})`;
 type HEX = `#${string}`;
 
-export type Color = RGB | RGBA | HEX;
+export type Colour = RGB | RGBA | HEX;
 
 export function Clamp(
 	val: number,

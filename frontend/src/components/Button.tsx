@@ -3,10 +3,10 @@ import "./Button.css";
 
 interface ButtonProps
 	extends React.HTMLAttributes<HTMLButtonElement> {
-	text: string;
 	onClick: () => void | Promise<void>;
 	inactive?: boolean;
 	inactiveHoverText?: string;
+	children?: React.ReactNode;
 }
 
 let idGen = 0;
@@ -14,7 +14,13 @@ let idGen = 0;
 const Button: React.FC<ButtonProps> = (
 	props: ButtonProps
 ) => {
-	const { text, onClick, ...args } = props;
+	const {
+		onClick,
+		children,
+		inactive,
+		inactiveHoverText,
+		...args
+	} = props;
 
 	const [hovering, setHovering] = useState(false);
 
@@ -22,14 +28,14 @@ const Button: React.FC<ButtonProps> = (
 
 	return (
 		<>
-			{props.inactive && props.inactiveHoverText ? (
+			{inactive && inactiveHoverText ? (
 				<label
 					className={
 						"btn-tooltip" +
 						(hovering ? ` btn-show-label` : "")
 					}
 				>
-					{props.inactiveHoverText}
+					{inactiveHoverText}
 				</label>
 			) : (
 				<></>
@@ -37,7 +43,7 @@ const Button: React.FC<ButtonProps> = (
 			<button
 				id={String(buttonId)}
 				onClick={() => {
-					if (props.inactive) return;
+					if (inactive) return;
 					onClick();
 				}}
 				onMouseEnter={() => setHovering(true)}
@@ -49,7 +55,7 @@ const Button: React.FC<ButtonProps> = (
 				}
 				// disabled={props.inactive}
 			>
-				{text}
+				{children}
 			</button>
 		</>
 	);
