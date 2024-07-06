@@ -5,6 +5,7 @@ import Resizable from "../../../components/Resizable";
 import { useGameState } from "../../../hooks/useGameState";
 import useLocalVal from "../../../hooks/useLocalVal";
 import useMap from "../../../hooks/useMap";
+import usePanning from "../../../hooks/usePanning";
 import MagnateMap from "../MagnateMap";
 import EmployeeTree from "./Conditionals/EmployeeTree/EmployeeTree";
 import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
@@ -89,6 +90,8 @@ function Game() {
 			showMiletones: false
 		}
 	);
+
+	const { rightMouseOffset } = usePanning();
 
 	// const regularConditional: JSX.Element = (() => {
 	// 	if (!isMyTurn) return <></>;
@@ -183,7 +186,14 @@ function Game() {
 				id="magnate-map-section"
 				minimiseIf={!toolbarStatus?.showMap}
 			> */}
-			<MagnateMap type="full">
+			<MagnateMap
+				type="full"
+				style={{
+					left: rightMouseOffset.x,
+					top: rightMouseOffset.y,
+					zIndex: -1
+				}}
+			>
 				{mapConditional}
 			</MagnateMap>
 			{/* </Resizable> */}

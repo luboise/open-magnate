@@ -30,7 +30,7 @@ type MapProps = BaseMapProps &
 	);
 
 function MagnateMap(props: PropsWithChildren<MapProps>) {
-	console.debug("Rendering magnate map.");
+	// console.debug("Rendering magnate map.");
 	const {
 		sendMapObjectClickEvent: mapObjectClicked,
 		sendMapObjectHoverEvent: mapObjectHovered,
@@ -44,13 +44,13 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 		players
 	} = useGameState();
 
-	console.debug(
-		"Rendering magnate map.",
-		map,
-		houses,
-		restaurants,
-		players
-	);
+	// console.debug(
+	// "Rendering magnate map.",
+	// map,
+	// houses,
+	// restaurants,
+	// players
+	// );
 
 	if (!map) return <></>;
 
@@ -74,7 +74,8 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 			className="map-preview-container"
 			style={{
 				gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
-				aspectRatio: `${map[0].length} / ${map.length}`
+				aspectRatio: `${map[0].length} / ${map.length}`,
+				...props.style
 			}}
 		>
 			{/* Tiles */}

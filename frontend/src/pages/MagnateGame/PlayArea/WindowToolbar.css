@@ -12,6 +12,8 @@
 
 	/* grid-template: repeat(1fr, auto); */
 	grid-template-columns: repeat(3, minmax(0, 1fr));
+
+	z-index: 3;
 }
 
 #game-window-toolbar > * {

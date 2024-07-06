@@ -56,13 +56,45 @@ function usePanning() {
 							return {
 								...state,
 								leftMouseDown: false,
-								recordLeftMouse: true
+								leftMouseOffset: {
+									x:
+										action.pos.x -
+										state.leftMouseStart
+											.x +
+										state
+											.leftMouseOffset
+											.x,
+									y:
+										action.pos.y -
+										state.leftMouseStart
+											.y +
+										state
+											.leftMouseOffset
+											.y
+								}
 							};
 						case "RIGHT":
 							return {
 								...state,
 								rightMouseDown: false,
-								recordRightMouse: true
+								rightMouseOffset: {
+									x:
+										action.pos.x -
+										state
+											.rightMouseStart
+											.x +
+										state
+											.rightMouseOffset
+											.x,
+									y:
+										action.pos.y -
+										state
+											.rightMouseStart
+											.y +
+										state
+											.rightMouseOffset
+											.y
+								}
 							};
 					}
 				default:
@@ -83,6 +115,23 @@ function usePanning() {
 	);
 
 	const mouseEvent = useCallback((event: MouseEvent) => {
+		event.preventDefault();
+		// console.debug("Event received: ", event);
+		if (event.type === "contextmenu") return;
+		else if (
+			event.type === "mousemove" &&
+			!state.leftMouseDown &&
+			!state.rightMouseDown
+		) {
+			dispatch({
+				actionType: "MOVED",
+				pos: {
+					x: event.clientX,
+					y: event.clientY
+				}
+			});
+		}
+
 		if (event.button === 0) {
 			if (event.type === "mousedown") {
 				dispatch({
@@ -141,6 +190,10 @@ function usePanning() {
 			"mousemove",
 			mouseEvent
 		);
+		document.body.addEventListener(
+			"contextmenu",
+			mouseEvent
+		);
 
 		// Clean up event listeners
 		return () => {
@@ -156,10 +209,60 @@ function usePanning() {
 				"mousemove",
 				mouseEvent
 			);
+			document.body.removeEventListener(
+				"contextmenu",
+				mouseEvent
+			);
 		};
 	});
 
-	return {};
+	useEffect(() => {
+		console.debug(
+			"Panning state offset changed: ",
+			// state
+			state.leftMouseOffset.x,
+			state.leftMouseOffset.y,
+			state.rightMouseOffset.x,
+			state.rightMouseOffset.y
+		);
+	}, [
+		state.leftMouseOffset.x,
+		state.leftMouseOffset.y,
+		state.rightMouseOffset.x,
+		state.rightMouseOffset.y
+		// state
+	]);
+
+	return {
+		leftMouseOffset: {
+			x:
+				state.leftMouseOffset.x +
+				(state.leftMouseDown
+					? state.currentPos.x -
+						state.leftMouseStart.x
+					: 0),
+			y:
+				state.leftMouseOffset.y +
+				(state.leftMouseDown
+					? state.currentPos.y -
+						state.currentPos.y
+					: 0)
+		},
+		rightMouseOffset: {
+			x:
+				state.rightMouseOffset.x +
+				(state.rightMouseDown
+					? state.currentPos.x -
+						state.rightMouseStart.x
+					: 0),
+			y:
+				state.rightMouseOffset.y +
+				(state.rightMouseDown
+					? state.currentPos.y -
+						state.rightMouseStart.y
+					: 0)
+		}
+	};
 }
 
 export default usePanning;
