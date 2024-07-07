@@ -1,0 +1,34 @@
+#root {
+	--card-description-colour: #fdf2da;
+}
+
+.game-employee-card {
+	display: grid;
+	grid-auto-flow: column;
+	aspect-ratio: 56/87;
+	border: 0.15vw solid black;
+
+	grid-template-rows: 60% 40%;
+
+	overflow: hidden;
+
+	box-sizing: border-box;
+}
+
+.game-employee-card-description {
+	display: position;
+	width: 100%;
+
+	justify-content: center;
+	align-items: center;
+	font-size: 1.2vw;
+	color: black;
+	background-color: var(--card-description-colour);
+	padding: 10px;
+	height: 40%;
+}
+
+.game-employee-card > * {
+	height: 100%;
+	width: 100%;
+}

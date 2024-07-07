@@ -177,9 +177,21 @@ function usePanning(element: HTMLElement) {
 	}, []);
 
 	useEffect(() => {
-		element.addEventListener("mousedown", mouseEvent);
-		element.addEventListener("mouseup", mouseEvent);
-		element.addEventListener("mousemove", mouseEvent);
+		element.addEventListener(
+			"mousedown",
+			mouseEvent,
+			true
+		);
+		element.addEventListener(
+			"mouseup",
+			mouseEvent,
+			true
+		);
+		element.addEventListener(
+			"mousemove",
+			mouseEvent,
+			true
+		);
 		// element.addEventListener(
 		// 	"contextmenu",
 		// 	mouseEvent
@@ -189,15 +201,18 @@ function usePanning(element: HTMLElement) {
 		return () => {
 			element.removeEventListener(
 				"mousedown",
-				mouseEvent
+				mouseEvent,
+				true
 			);
 			element.removeEventListener(
 				"mouseup",
-				mouseEvent
+				mouseEvent,
+				true
 			);
 			element.removeEventListener(
 				"mousemove",
-				mouseEvent
+				mouseEvent,
+				true
 			);
 			// element.removeEventListener(
 			// 	"contextmenu",
@@ -256,4 +271,3 @@ function usePanning(element: HTMLElement) {
 }
 
 export default usePanning;
-

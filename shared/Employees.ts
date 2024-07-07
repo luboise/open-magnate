@@ -86,7 +86,7 @@ export function createCEOEmployee(
 // 	return null;
 // }
 
-const ManagementEmployees: Record<
+export const ManagementEmployees: Record<
 	string,
 	ManagementEmployee
 > = {
@@ -113,7 +113,7 @@ const ManagementEmployees: Record<
 	})
 } as const;
 
-const FoodEmployees: Record<string, FoodEmployee> = {
+export const FoodEmployees: Record<string, FoodEmployee> = {
 	food_1: createFoodEmployee({
 		name: "Kitchen Trainee",
 		produces: "BURGER_AND_PIZZA",
@@ -145,4 +145,3 @@ export const EmployeesById: Record<string, Employee> = {
 	...ManagementEmployees,
 	...FoodEmployees
 } as const;
-

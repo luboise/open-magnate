@@ -105,13 +105,6 @@ const isMyTurnSelector = selector<boolean | null>({
 
 		if (!gameState) return null;
 
-		console.log(
-			"aaa: ",
-			gameState.privateData,
-			"bbb: ",
-			gameState.currentPlayer
-		);
-
 		return (
 			gameState.privateData.playerNumber ===
 			gameState.currentPlayer

@@ -14,8 +14,11 @@ import {
 let resizableElementId = 1;
 
 interface BaseResizeState {
-	width: number;
-	aspectRatio: number | undefined;
+	scaledWidth: number;
+	details: {
+		width: number;
+		aspectRatio: number | undefined;
+	};
 	pos: Position;
 }
 
@@ -46,7 +49,13 @@ type ResizableAction =
 	| { type: "START_MOVING"; pos: Position }
 	| { type: "MOVE_MOUSE"; pos: Position }
 	| { type: "CLICK_RELEASED" }
-	| { type: "SET_ASPECT_RATIO"; aspectRatio: number };
+	| {
+			type: "SET_DIV_DETAILS";
+			details: {
+				width: number;
+				aspectRatio: number;
+			};
+	  };
 
 interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
@@ -86,29 +95,27 @@ function Resizable(
 			state: ResizableState,
 			action: ResizableAction
 		): ResizableState => {
-			// console.debug("Received action:", action);
+			// if (action.type !== "MOVE_MOUSE")
+			// 	console.debug("Received action:", action);
 
-			if (action.type === "SET_ASPECT_RATIO")
-				return {
+			if (action.type === "SET_DIV_DETAILS") {
+				const newState: ResizableState = {
 					...state,
-					aspectRatio: action.aspectRatio
+
+					details: {
+						width: action.details.width,
+						aspectRatio:
+							action.details.aspectRatio
+					}
 				};
+
+				return newState;
+			}
 
 			switch (state.type) {
 				case "IDLE": {
 					switch (action.type) {
 						case "START_RESIZE": {
-							// const startPos = {
-							// 	x:
-							// 		action.pos.x -
-							// 		state.width,
-							// 	y:
-							// 		(action.pos.y -
-							// 			state.width) /
-							// 		(state.aspectRatio ?? 1)
-							// };
-							// addEventListeners();
-
 							return {
 								...state,
 								type: "DRAGGING",
@@ -138,16 +145,20 @@ function Resizable(
 								}
 							};
 						case "CLICK_RELEASED": {
+							const newScaledWidth = state
+								.details?.aspectRatio
+								? getMinRectangleX(
+										state.pos,
+										state.dragTo,
+										state.details
+											.aspectRatio
+									)
+								: state.details.width;
+
 							return {
 								...state,
 								type: "IDLE",
-								width: state.aspectRatio
-									? getMinRectangleX(
-											state.pos,
-											state.dragTo,
-											state.aspectRatio
-										)
-									: state.width
+								scaledWidth: newScaledWidth
 							};
 						}
 						default:
@@ -195,7 +206,13 @@ function Resizable(
 		},
 		{
 			type: "IDLE",
-			width: localVals?.width ?? defaultWidth,
+
+			details: {
+				width: localVals?.width ?? defaultWidth,
+				aspectRatio: undefined
+			},
+			scaledWidth: localVals?.width ?? defaultWidth,
+
 			pos: {
 				x:
 					(localVals &&
@@ -205,10 +222,9 @@ function Resizable(
 						: null) ??
 					localVals?.x ??
 					defaultPosition?.x ??
-					0,
+					500,
 				y: localVals?.y ?? defaultPosition?.y ?? 0
-			},
-			aspectRatio: undefined
+			}
 		}
 	);
 
@@ -218,7 +234,10 @@ function Resizable(
 	);
 
 	function fetchAspectRatio() {
-		if (!state || state.aspectRatio !== undefined)
+		if (
+			!state ||
+			state.details.aspectRatio !== undefined
+		)
 			return;
 
 		const element = document.getElementById(id.current);
@@ -230,9 +249,14 @@ function Resizable(
 		const { width, height } =
 			element.getBoundingClientRect();
 
-		dispatch({
-			type: "SET_ASPECT_RATIO",
+		const newDetails = {
+			width,
 			aspectRatio: width / height
+		};
+
+		dispatch({
+			type: "SET_DIV_DETAILS",
+			details: newDetails
 		});
 	}
 
@@ -324,19 +348,28 @@ function Resizable(
 	}
 
 	useEffect(() => {
-		console.debug(
-			"Reducer state: ",
-			JSON.stringify(state)
-		);
-	}, [state.type]);
-
-	useEffect(() => {
 		setLocalVals({
 			x: state.pos.x,
 			y: state.pos.y,
-			width: state.width
+			width: state.details.width
 		});
-	}, [state.pos.x, state.pos.y, state.width]);
+	}, [state.pos.x, state.pos.y, state.details.width]);
+
+	useEffect(fetchAspectRatio, []);
+
+	const tempWidth =
+		state.type === "DRAGGING" &&
+		state.details.aspectRatio
+			? getMinRectangleX(
+					state.pos,
+					state.dragTo,
+					state.details.aspectRatio
+				)
+			: state.scaledWidth;
+
+	const scale: number = tempWidth / state.details.width;
+
+	// console.debug("scale: ", scale);
 
 	return (
 		<>
@@ -345,41 +378,45 @@ function Resizable(
 				className={`resizable-element ${minimized ? "resizable-minimized" : ""}`}
 				id={id.current}
 				style={{
-					width:
-						state.type === "DRAGGING" &&
-						state.aspectRatio
-							? getMinRectangleX(
-									state.pos,
-									state.dragTo,
-									state.aspectRatio
-								)
-							: state.width,
+					width: state.details.width ?? undefined,
+					// width:
+
 					color: color,
 
 					left: `${state.pos.x + (state.type === "MOVING" ? state.moveTo.x - state.moveFrom.x : 0)}px`,
 					top: `${state.pos.y + (state.type === "MOVING" ? state.moveTo.y - state.moveFrom.y : 0)}px`,
 
-					aspectRatio: state.aspectRatio,
+					aspectRatio: state.details.aspectRatio,
 					flexDirection:
 						orientation === "Horizontal"
 							? "row"
-							: "column"
+							: "column",
+
+					// Scale based on the difference between state.details.width, and state.width
+					transform: state.details
+						? `scale(${scale})`
+						: undefined,
+					// (state.type === "DRAGGING" &&
+					// state.aspectRatio
+					// 	? getMinRectangleX(
+					// 			state.pos,
+					// 			state.dragTo,
+					// 			state.aspectRatio
+					// 		)
+					// 	: state.scaledWidth)
+
+					transformOrigin: "0 0",
+					display: "inline-flex"
 				}}
-				onLoad={fetchAspectRatio}
+				// onLoad={fetchAspectRatio}
 			>
 				<div
-					style={{
-						width: "100%",
-						height: "1em",
-						backgroundColor: "white",
-						position: "absolute",
-						// Fix to be in css instead
-						top: "-1em",
-						zIndex: 2
-					}}
+					className="resizable-element-top-tab"
 					onMouseDown={startMoving}
 				/>
+
 				{children}
+
 				<div
 					className="resizable-element-handle"
 					// Start capturing when the user clicks on the handle
@@ -390,4 +427,3 @@ function Resizable(
 	);
 }
 export default Resizable;
-
