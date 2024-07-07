@@ -91,7 +91,7 @@ function Game() {
 		}
 	);
 
-	const { rightMouseOffset } = usePanning();
+	const { rightMouseOffset } = usePanning(document.body);
 
 	// const regularConditional: JSX.Element = (() => {
 	// 	if (!isMyTurn) return <></>;
@@ -139,13 +139,26 @@ function Game() {
 		<div
 			id="magnate-play-area"
 			className="map-preview-container"
+			onContextMenu={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			}}
 			style={{
 				gridTemplateColumns: map
 					? `repeat(${map[0].length}, 1fr)`
 					: undefined,
 				aspectRatio: map
 					? `${map[0].length} / ${map.length}`
-					: undefined
+					: undefined,
+				position: "fixed",
+				width: "100vw",
+				height: "100vh",
+				margin: 0,
+				padding: 0,
+				top: 0,
+				left: 0,
+				border: 0,
+				backgroundColor: "grey"
 			}}
 		>
 			<WindowToolbar
@@ -159,6 +172,7 @@ function Game() {
 
 			<Resizable
 				defaultWidth={600}
+				localKey="employee-tree"
 				minimiseIf={state.showEmployeeTree}
 			>
 				<EmployeeTree />
@@ -175,6 +189,7 @@ function Game() {
 
 			<Resizable
 				defaultWidth={500}
+				localKey="turn-planner"
 				minimiseIf={state.showPlanner}
 			>
 				<TurnPlanner />
@@ -186,16 +201,24 @@ function Game() {
 				id="magnate-map-section"
 				minimiseIf={!toolbarStatus?.showMap}
 			> */}
-			<MagnateMap
-				type="full"
-				style={{
-					left: rightMouseOffset.x,
-					top: rightMouseOffset.y,
-					zIndex: -1
-				}}
-			>
-				{mapConditional}
-			</MagnateMap>
+			{state.showMap ? (
+				<MagnateMap
+					type="full"
+					style={{
+						left: rightMouseOffset.x,
+						top: rightMouseOffset.y,
+						zIndex: -1
+					}}
+					onContextMenu={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}
+				>
+					{mapConditional}
+				</MagnateMap>
+			) : (
+				<></>
+			)}
 			{/* </Resizable> */}
 		</div>
 	);

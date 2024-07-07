@@ -41,9 +41,10 @@ const FOOD_NAMES = [
 // ] as const;
 // const PINK_NAMES = ["Waitress", "CEO"] as const;
 
-export type MANAGEMENT_NAME =
+export type MGMT_EMPLOYEE_NAME =
 	(typeof MANAGEMENT_NAMES)[number];
-export type FOOD_NAME = (typeof FOOD_NAMES)[number];
+export type FOOD_EMPLOYEE_NAME =
+	(typeof FOOD_NAMES)[number];
 // export type MARKETING_NAME =
 // 	(typeof MARKETING_NAMES)[number];
 // export type DRINK_NAME = (typeof DRINK_NAMES)[number];
@@ -55,7 +56,9 @@ export type FOOD_NAME = (typeof FOOD_NAMES)[number];
 // export type PINK_NAME = (typeof PINK_NAMES)[number];
 
 // TODO: Implement the rest of the employees
-export type EMPLOYEE_NAME = MANAGEMENT_NAME | FOOD_NAME;
+export type EMPLOYEE_NAME =
+	| MGMT_EMPLOYEE_NAME
+	| FOOD_EMPLOYEE_NAME;
 // | MARKETING_NAME
 // | DRINK_NAME
 // | TRAINER_NAME

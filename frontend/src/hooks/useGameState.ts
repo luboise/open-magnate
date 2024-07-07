@@ -8,6 +8,7 @@ import {
 	CloneArray,
 	GetTransposed
 } from "../../../backend/src/utils";
+import { Employee } from "../../../shared/EmployeeTypes";
 import {
 	DirectionBools,
 	IsConnecting,
@@ -17,6 +18,7 @@ import {
 	TileType
 } from "../../../shared/MapData";
 import {
+	EmployeesById,
 	GamePlayerViewPrivate,
 	GamePlayerViewPublic,
 	GameStateViewPerPlayer,
@@ -24,6 +26,7 @@ import {
 	MapTileData,
 	RestaurantView,
 	TURN_PROGRESS,
+	createCEOEmployee,
 	parseMapChar
 } from "../utils";
 
@@ -160,6 +163,29 @@ const playerDataSelector =
 		}
 	});
 
+const myEmployeesSelector = selector<Employee[]>({
+	key: "MY_EMPLOYEES",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		const playerData = get(playerDataSelector);
+
+		if (!gameState || !playerData) return [];
+
+		const myEmployees: Employee[] = [];
+
+		// TODO: Fix this later to change based on the bank breaking
+		myEmployees.push(createCEOEmployee(3));
+
+		playerData.employees.forEach((employeeId) => {
+			if (!(employeeId in EmployeesById)) return;
+
+			myEmployees.push(EmployeesById[employeeId]);
+		});
+
+		return myEmployees;
+	}
+});
+
 export function useGameState() {
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
@@ -182,6 +208,8 @@ export function useGameState() {
 
 	const playerData = useRecoilValue(playerDataSelector);
 
+	const myEmployees = useRecoilValue(myEmployeesSelector);
+
 	return {
 		state,
 		mapColOrder,
@@ -192,7 +220,8 @@ export function useGameState() {
 		players: players,
 		restaurants: restaurants,
 		isMyTurn,
-		playerData: playerData
+		playerData: playerData,
+		myEmployees: myEmployees
 	};
 }
 

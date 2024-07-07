@@ -21,7 +21,7 @@ type MouseDownAction =
 	  }
 	| { actionType: "MOVED"; pos: Position };
 
-function usePanning() {
+function usePanning(element: HTMLElement) {
 	const [state, dispatch] = useReducer(
 		(
 			state: MouseDownState,
@@ -117,8 +117,7 @@ function usePanning() {
 	const mouseEvent = useCallback((event: MouseEvent) => {
 		event.preventDefault();
 		// console.debug("Event received: ", event);
-		if (event.type === "contextmenu") return;
-		else if (
+		if (
 			event.type === "mousemove" &&
 			!state.leftMouseDown &&
 			!state.rightMouseDown
@@ -178,41 +177,32 @@ function usePanning() {
 	}, []);
 
 	useEffect(() => {
-		document.body.addEventListener(
-			"mousedown",
-			mouseEvent
-		);
-		document.body.addEventListener(
-			"mouseup",
-			mouseEvent
-		);
-		document.body.addEventListener(
-			"mousemove",
-			mouseEvent
-		);
-		document.body.addEventListener(
-			"contextmenu",
-			mouseEvent
-		);
+		element.addEventListener("mousedown", mouseEvent);
+		element.addEventListener("mouseup", mouseEvent);
+		element.addEventListener("mousemove", mouseEvent);
+		// element.addEventListener(
+		// 	"contextmenu",
+		// 	mouseEvent
+		// );
 
 		// Clean up event listeners
 		return () => {
-			document.body.removeEventListener(
+			element.removeEventListener(
 				"mousedown",
 				mouseEvent
 			);
-			document.body.removeEventListener(
+			element.removeEventListener(
 				"mouseup",
 				mouseEvent
 			);
-			document.body.removeEventListener(
+			element.removeEventListener(
 				"mousemove",
 				mouseEvent
 			);
-			document.body.removeEventListener(
-				"contextmenu",
-				mouseEvent
-			);
+			// element.removeEventListener(
+			// 	"contextmenu",
+			// 	mouseEvent
+			// );
 		};
 	});
 

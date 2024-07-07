@@ -31,9 +31,16 @@ function LobbyManager(props: {
 		);
 	}
 
+	if (lobby.inGame) return <Game />;
+
 	return (
 		<div id="magnate-game-page">
-			<div id="lobby-outer-container">
+			<div
+				id="lobby-outer-container"
+				onContextMenu={(e) => {
+					e.preventDefault();
+				}}
+			>
 				{/* <h2>Lobby</h2> */}
 				{/* <div id="lobby-inner-container"> */}
 				<div id="lobby-player-container">
@@ -80,7 +87,8 @@ function LobbyManager(props: {
 				{/* </div> */}
 			</div>
 			{lobby.inGame ? (
-				<Game />
+				// <Game />
+				<></>
 			) : (
 				// <Resizable defaultWidth={1000}>
 				<div id="lobby-map-preview">
