@@ -1,7 +1,8 @@
 import "./EmployeeTree.css";
 
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { Employee } from "../../../../../../../shared/EmployeeTypes";
+import Button from "../../../../../components/Button";
 import usePanning from "../../../../../hooks/usePanning";
 import {
 	EmployeesById,
@@ -69,6 +70,15 @@ function EmployeeTree() {
 
 	const { rightMouseOffset } = usePanning(document.body);
 
+	const [treeOffset, setTreeOffset] = useState<{
+		x: number;
+		y: number;
+	}>({ x: 0, y: 0 });
+
+	function resetTree() {
+		setTreeOffset({ ...rightMouseOffset });
+	}
+
 	const myEmployees: Employee[] = [
 		createCEOEmployee(3),
 		EmployeesById["mgmt_1"],
@@ -134,8 +144,28 @@ function EmployeeTree() {
 
 	const nodesInUse = getAllData(employeeTree.tree);
 
+	const offset = {
+		x: rightMouseOffset.x - treeOffset.x,
+		y: rightMouseOffset.y - treeOffset.y
+	};
+
+	const treeHasChanged =
+		rightMouseOffset.x !== treeOffset.x ||
+		rightMouseOffset.y !== treeOffset.y;
+
 	return (
 		<div className="game-employee-tree-section">
+			{treeHasChanged ? (
+				<Button
+					onClick={resetTree}
+					className="game-employee-tree-reset-button"
+				>
+					Reset View
+				</Button>
+			) : (
+				<></>
+			)}
+
 			<div className="game-employee-tree-content">
 				{...nodesInUse.map((node) => (
 					<EmployeeTreeNode
@@ -147,8 +177,9 @@ function EmployeeTree() {
 							justifyContent: "center",
 							alignItems: "center",
 							flex: 1,
-							top: rightMouseOffset.y,
-							left: rightMouseOffset.x
+							transform: `translate(${offset.x}px, ${
+								offset.y
+							}px)`
 						}}
 					/>
 				))}

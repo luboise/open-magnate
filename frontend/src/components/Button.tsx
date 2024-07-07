@@ -48,11 +48,11 @@ const Button: React.FC<ButtonProps> = (
 				}}
 				onMouseEnter={() => setHovering(true)}
 				onMouseLeave={() => setHovering(false)}
-				{...args}
 				type="button"
 				className={
 					props.inactive ? "btn-inactive" : ""
 				}
+				{...args}
 				// disabled={props.inactive}
 			>
 				{children}
