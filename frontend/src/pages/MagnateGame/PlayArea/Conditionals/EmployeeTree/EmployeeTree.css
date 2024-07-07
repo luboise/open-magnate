@@ -7,6 +7,9 @@
 
 	row-gap: 0.2em;
 
+	/* width: 1000px; */
+	width: 100%;
+
 	/* height: 900px; */
 	/* width: 100%; */
 }
@@ -29,7 +32,7 @@
 	/* height: 70%; */
 	overflow: hidden;
 
-	aspect-ratio: 1;
+	aspect-ratio: 4 / 3;
 }
 
 .game-employee-tree-nodes {
@@ -64,13 +67,17 @@
 }
 
 .game-employee-tree-node {
-	position: absolute;
+	position: relative;
 
 	/* width: 20%; */
 }
 
 /* The root node */
 .game-employee-tree-content > div {
+	position: absolute;
+
+	/* width: 100%; */
+	/* height: 100%; */
 	left: 50%;
 
 	top: 1em;

@@ -59,7 +59,7 @@ type ResizableAction =
 
 interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
-	defaultWidth: number;
+	defaultWidth?: number;
 	orientation?: "Horizontal" | "Vertical";
 	localKey?: string;
 	defaultPosition?: Position;
@@ -208,10 +208,12 @@ function Resizable(
 			type: "IDLE",
 
 			details: {
-				width: localVals?.width ?? defaultWidth,
+				width:
+					localVals?.width ?? defaultWidth ?? 700,
 				aspectRatio: undefined
 			},
-			scaledWidth: localVals?.width ?? defaultWidth,
+			scaledWidth:
+				localVals?.width ?? defaultWidth ?? 700,
 
 			pos: {
 				x:
@@ -427,3 +429,4 @@ function Resizable(
 	);
 }
 export default Resizable;
+

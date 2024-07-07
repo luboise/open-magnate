@@ -171,7 +171,7 @@ function Game() {
 			/>
 
 			<Resizable
-				defaultWidth={600}
+				defaultWidth={1200}
 				localKey="employee-tree"
 				minimiseIf={state.showEmployeeTree}
 			>
@@ -225,3 +225,4 @@ function Game() {
 }
 
 export default Game;
+

@@ -84,11 +84,74 @@ function EmployeeTree() {
 	const myEmployees: Employee[] = [
 		createCEOEmployee(3),
 		EmployeesById["mgmt_1"],
-		EmployeesById["mgmt_2"],
+		EmployeesById["mgmt_1"],
+		EmployeesById["mgmt_1"],
 		EmployeesById["food_1"]
 	];
 
 	if (!myEmployees.length) return <></>;
+
+	const testTree: EmployeeNode = {
+		data: 0,
+		children: [
+			{
+				data: 1,
+				children: [
+					{
+						data: 4,
+						children: []
+					},
+					{
+						data: 4,
+						children: []
+					},
+
+					{
+						data: 4,
+						children: []
+					}
+				]
+			},
+			{
+				data: 2,
+				children: [
+					{
+						data: 4,
+						children: []
+					},
+					{
+						data: 4,
+						children: []
+					},
+
+					{
+						data: 4,
+						children: []
+					}
+				]
+			},
+			{
+				data: 3,
+				children: [
+					{
+						data: 4,
+						children: []
+					},
+					{
+						data: 4,
+						children: []
+					},
+
+					{
+						data: 4,
+						children: []
+					}
+				]
+			}
+		]
+	};
+
+	const usingEmployees = getAllData(testTree);
 
 	const [employeeTree, dispatch] = useReducer(
 		(
@@ -140,7 +203,7 @@ function EmployeeTree() {
 		},
 		{
 			// Index 0 is the CEO
-			tree: { data: 0, children: [null, null, null] }
+			tree: testTree
 		}
 	);
 

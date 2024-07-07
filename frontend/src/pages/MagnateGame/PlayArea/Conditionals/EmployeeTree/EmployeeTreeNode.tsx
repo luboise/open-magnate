@@ -7,18 +7,25 @@ interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {
 	node: EmployeeNode;
 	employeeList: Employee[];
+	depth?: number;
 }
 
 // 400 pixels apart
-const NODE_HORIZONTAL_DISTANCE = 150;
+const NODE_HORIZONTAL_DISTANCE = 100;
 const NODE_VERTICAL_DISTANCE = 400;
 
 function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
-	const { node, employeeList, ...args } = props;
+	const { node, employeeList, depth, ...args } = props;
+	const checkedDepth = depth ?? 1;
 
 	const employee = employeeList[node.data];
 
-	const elements: JSX.Element[] = [];
+	console.debug(
+		"Children of node ",
+		node,
+		": ",
+		node.children
+	);
 
 	const childNodes: JSX.Element[] = node.children.map(
 		(child) =>
@@ -26,11 +33,24 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 				<EmployeeTreeNode
 					node={child}
 					employeeList={employeeList}
+					depth={checkedDepth + 1}
 				/>
 			) : (
-				<EmployeeCard employee={employee} />
+				<div
+					style={{
+						width: 100,
+						height: 100,
+						backgroundColor: "red"
+					}}
+				/>
 			)
 	);
+
+	const depthMap: Record<number, number> = {
+		1: 310,
+		2: 108,
+		3: 200
+	};
 
 	return (
 		<div className="game-employee-tree-node" {...args}>
@@ -45,7 +65,7 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 					left: "50%",
 					width:
 						childNodes.length *
-						NODE_HORIZONTAL_DISTANCE
+						depthMap[checkedDepth]
 				}}
 			>
 				{...childNodes}
