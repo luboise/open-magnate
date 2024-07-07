@@ -16,13 +16,15 @@ import EmployeeTreeNode from "./EmployeeTreeNode";
 // 	Array<TreeNode<T> | null>
 // >;
 
+export type EmployeeNode = TreeNode<number>;
+
 type TreeNode<T> = {
 	data: T;
 	children: Array<TreeNode<T> | null>;
 };
 
 type EmployeeTreeState = {
-	tree: TreeNode<number>;
+	tree: EmployeeNode;
 };
 
 type EmployeeTreeAction = {
@@ -43,9 +45,9 @@ function getAllData<T>(node: TreeNode<T>): Array<T> {
 }
 
 function findEmployeeRecursive(
-	node: TreeNode<number>,
+	node: EmployeeNode,
 	toFind: number
-): TreeNode<number> | null {
+): EmployeeNode | null {
 	if (node.data === toFind) {
 		return node;
 	} else {
@@ -153,6 +155,26 @@ function EmployeeTree() {
 		rightMouseOffset.x !== treeOffset.x ||
 		rightMouseOffset.y !== treeOffset.y;
 
+	// function makeEmployeeDivTree(startNode: EmployeeNode) {
+	// 	const nodes: JSX.Element[] = [];
+
+	// 		// <EmployeeTreeNode
+	// 		// 	employee={myEmployees[startNode.data]}
+	// 		// 	childSlots={startNode.children
+	// 		// 		.filter((child) => child !== null)
+	// 		// 		.map((child) => {
+	// 		// 			return myEmployees[child!.data];
+	// 		// 		})}
+	// 		// style={{
+	// 		// 	width: "20%",
+	// 		// 	transform: `translate(${offset.x}px, ${offset.y}px)`
+	// 		// }}
+	// 		// />
+	// 		();
+
+	// 	return nodes;
+	// }
+
 	return (
 		<div className="game-employee-tree-section">
 			{treeHasChanged ? (
@@ -167,22 +189,13 @@ function EmployeeTree() {
 			)}
 
 			<div className="game-employee-tree-content">
-				{...nodesInUse.map((node) => (
-					<EmployeeTreeNode
-						employee={myEmployees[node]}
-						style={{
-							position: "absolute",
-							display: "flex",
-							flexDirection: "column",
-							justifyContent: "center",
-							alignItems: "center",
-							flex: 1,
-							transform: `translate(${offset.x}px, ${
-								offset.y
-							}px)`
-						}}
-					/>
-				))}
+				<EmployeeTreeNode
+					node={employeeTree.tree}
+					employeeList={myEmployees}
+					style={{
+						transform: `translate(${offset.x}px, ${offset.y}px)`
+					}}
+				/>
 			</div>
 			<div className="game-employee-tree-cards">
 				{...myEmployees.map((employee) => (
@@ -191,6 +204,19 @@ function EmployeeTree() {
 			</div>
 		</div>
 	);
+
+	// style={{
+	// 	position: "absolute",
+	// 	display: "flex",
+	// 	flexDirection: "column",
+	// 	justifyContent: "center",
+	// 	alignItems: "center",
+	// 	flex: 1,
+	// 	transform: `translate(${offset.x}px, ${
+	// 		offset.y
+	// 	}px)`
+	// }}
 }
 
 export default EmployeeTree;
+

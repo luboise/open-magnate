@@ -13,6 +13,8 @@
 	overflow: hidden;
 
 	box-sizing: border-box;
+
+	font-size: 0.38vw;
 }
 
 .game-employee-card-description {
@@ -21,7 +23,7 @@
 
 	justify-content: center;
 	align-items: center;
-	font-size: 1.2vw;
+	/* font-size: 1.2vw; */
 	color: black;
 	background-color: var(--card-description-colour);
 	padding: 10px;
@@ -32,3 +34,4 @@
 	height: 100%;
 	width: 100%;
 }
+
