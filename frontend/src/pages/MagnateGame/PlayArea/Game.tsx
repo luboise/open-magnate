@@ -207,9 +207,8 @@ function Game() {
 				<MagnateMap
 					type="full"
 					style={{
-						left: rightMouseOffset.x,
-						top: rightMouseOffset.y,
-						zIndex: -1
+						zIndex: -1,
+						translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`
 					}}
 					onContextMenu={(e) => {
 						e.preventDefault();
