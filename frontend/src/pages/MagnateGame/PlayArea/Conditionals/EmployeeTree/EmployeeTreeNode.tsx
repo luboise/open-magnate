@@ -20,12 +20,12 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 
 	const employee = employeeList[node.data];
 
-	console.debug(
-		"Children of node ",
-		node,
-		": ",
-		node.children
-	);
+	// console.debug(
+	// 	"Children of node ",
+	// 	node,
+	// 	": ",
+	// 	node.children
+	// );
 
 	const childNodes: JSX.Element[] = node.children.map(
 		(child) =>

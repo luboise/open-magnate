@@ -70,7 +70,8 @@ function findEmployeeRecursive(
 function EmployeeTree() {
 	// const { myEmployees } = useGameState();
 
-	const { rightMouseOffset } = usePanning(document.body);
+	const { startRightPan, rightMouseOffset } =
+		usePanning();
 
 	const [treeOffset, setTreeOffset] = useState<{
 		x: number;
@@ -251,7 +252,10 @@ function EmployeeTree() {
 				<></>
 			)}
 
-			<div className="game-employee-tree-content">
+			<div
+				className="game-employee-tree-content"
+				onMouseDown={startRightPan}
+			>
 				<EmployeeTreeNode
 					node={employeeTree.tree}
 					employeeList={myEmployees}

@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useReducer } from "react";
 import { Position } from "../utils";
 
-interface MouseDownState {
-	leftMouseDown: boolean;
-	leftMouseStart: Position;
-	leftMouseOffset: Position;
+interface MouseOffsetData {
+	isDown: boolean;
+	startPosition: Position | null;
+	offset: Position;
+}
 
-	rightMouseDown: boolean;
-	rightMouseStart: Position;
-	rightMouseOffset: Position;
+interface PanningState {
+	leftButton: MouseOffsetData;
+	rightButton: MouseOffsetData;
 
 	currentPos: Position;
 }
@@ -21,175 +22,140 @@ type MouseDownAction =
 	  }
 	| { actionType: "MOVED"; pos: Position };
 
-function usePanning(element: HTMLElement) {
+function calculateOffset(
+	data: MouseOffsetData,
+	pos: Position
+): Position {
+	return data.startPosition
+		? {
+				x:
+					pos.x -
+					data.startPosition.x +
+					data.offset.x,
+				y:
+					pos.y -
+					data.startPosition.y +
+					data.offset.y
+			}
+		: { ...data.offset };
+}
+
+function usePanning() {
 	const [state, dispatch] = useReducer(
-		(
-			state: MouseDownState,
-			action: MouseDownAction
-		) => {
+		(state: PanningState, action: MouseDownAction) => {
 			if (action.actionType === "MOVED") {
 				return {
 					...state,
-					currentPos: action.pos
+					currentPos: { ...action.pos }
 				};
 			}
 
+			const updateButtonState = (
+				pressed: "leftButton" | "rightButton",
+				isDown: boolean
+			) => ({
+				...state,
+				[pressed]: {
+					...state[pressed],
+					isDown,
+					startPosition: isDown
+						? { ...action.pos }
+						: null,
+					offset: isDown
+						? state[pressed].offset
+						: calculateOffset(
+								state[pressed],
+								action.pos
+							)
+				}
+			});
+
+			const button =
+				action.actionType === "LEFT"
+					? "leftButton"
+					: "rightButton";
+
 			switch (action.result) {
 				case "DOWN":
-					switch (action.actionType) {
-						case "LEFT":
-							return {
-								...state,
-								leftMouseDown: true,
-								leftMouseStart: action.pos
-							};
-						case "RIGHT":
-							return {
-								...state,
-								rightMouseDown: true,
-								rightMouseStart: action.pos
-							};
-					}
+					return updateButtonState(button, true);
 				case "UP":
-					switch (action.actionType) {
-						case "LEFT":
-							return {
-								...state,
-								leftMouseDown: false,
-								leftMouseOffset: {
-									x:
-										action.pos.x -
-										state.leftMouseStart
-											.x +
-										state
-											.leftMouseOffset
-											.x,
-									y:
-										action.pos.y -
-										state.leftMouseStart
-											.y +
-										state
-											.leftMouseOffset
-											.y
-								}
-							};
-						case "RIGHT":
-							return {
-								...state,
-								rightMouseDown: false,
-								rightMouseOffset: {
-									x:
-										action.pos.x -
-										state
-											.rightMouseStart
-											.x +
-										state
-											.rightMouseOffset
-											.x,
-									y:
-										action.pos.y -
-										state
-											.rightMouseStart
-											.y +
-										state
-											.rightMouseOffset
-											.y
-								}
-							};
-					}
+					return state[button].isDown
+						? updateButtonState(button, false)
+						: state;
 				default:
 					return state;
 			}
 		},
-		{
-			leftMouseDown: false,
-			leftMouseStart: { x: 0, y: 0 },
-			leftMouseOffset: { x: 0, y: 0 },
 
-			rightMouseDown: false,
-			rightMouseStart: { x: 0, y: 0 },
-			rightMouseOffset: { x: 0, y: 0 },
+		{
+			leftButton: {
+				isDown: false,
+				startPosition: null,
+				offset: { x: 0, y: 0 }
+			},
+			rightButton: {
+				isDown: false,
+				startPosition: null,
+				offset: { x: 0, y: 0 }
+			},
 
 			currentPos: { x: 0, y: 0 }
 		}
 	);
 
-	const mouseEvent = useCallback((event: MouseEvent) => {
-		event.preventDefault();
-		// console.debug("Event received: ", event);
-		if (
-			event.type === "mousemove" &&
-			!state.leftMouseDown &&
-			!state.rightMouseDown
-		) {
-			dispatch({
-				actionType: "MOVED",
-				pos: {
-					x: event.clientX,
-					y: event.clientY
-				}
-			});
-		}
+	const onMouseEvent = useCallback(
+		(event: MouseEvent) => {
+			event.preventDefault();
 
-		if (event.button === 0) {
-			if (event.type === "mousedown") {
-				dispatch({
-					actionType: "LEFT",
-					result: "DOWN",
-					pos: {
-						x: event.clientX,
-						y: event.clientY
-					}
-				});
-			} else if (event.type === "mouseup") {
-				dispatch({
-					actionType: "LEFT",
-					result: "UP",
-					pos: {
-						x: event.clientX,
-						y: event.clientY
-					}
-				});
+			const {
+				type,
+				button,
+				clientX: x,
+				clientY: y
+			} = event;
+			const pos = { x, y };
+
+			if (type === "mousemove") {
+				event.stopPropagation();
+				dispatch({ actionType: "MOVED", pos });
+				return;
 			}
-		}
-		// Right click
-		else if (event.button === 2) {
-			if (event.type === "mousedown") {
-				dispatch({
-					actionType: "RIGHT",
-					result: "DOWN",
-					pos: {
-						x: event.clientX,
-						y: event.clientY
-					}
-				});
-			} else if (event.type === "mouseup") {
-				dispatch({
-					actionType: "RIGHT",
-					result: "UP",
-					pos: {
-						x: event.clientX,
-						y: event.clientY
-					}
-				});
+
+			const actionType =
+				button === 0
+					? "LEFT"
+					: button === 2
+						? "RIGHT"
+						: null;
+
+			if (
+				actionType &&
+				(type === "mousedown" || type === "mouseup")
+			) {
+				const result =
+					type === "mousedown" ? "DOWN" : "UP";
+
+				event.stopPropagation();
+				dispatch({ actionType, result, pos });
 			}
-		}
-	}, []);
+		},
+		[]
+	);
 
 	useEffect(() => {
-		element.addEventListener(
-			"mousedown",
-			mouseEvent,
-			true
-		);
-		element.addEventListener(
+		// element.addEventListener(
+		// 	"mousedown",
+		// 	mouseEvent,
+		// 	true
+		// );
+		document.body.addEventListener(
 			"mouseup",
-			mouseEvent,
+			onMouseEvent,
 			true
 		);
-		element.addEventListener(
+		document.body.addEventListener(
 			"mousemove",
-			mouseEvent,
+			onMouseEvent,
 			true
 		);
 		// element.addEventListener(
@@ -199,19 +165,19 @@ function usePanning(element: HTMLElement) {
 
 		// Clean up event listeners
 		return () => {
-			element.removeEventListener(
-				"mousedown",
-				mouseEvent,
-				true
-			);
-			element.removeEventListener(
+			// element.removeEventListener(
+			// 	"mousedown",
+			// 	mouseEvent,
+			// 	true
+			// );
+			document.body.removeEventListener(
 				"mouseup",
-				mouseEvent,
+				onMouseEvent,
 				true
 			);
-			element.removeEventListener(
+			document.body.removeEventListener(
 				"mousemove",
-				mouseEvent,
+				onMouseEvent,
 				true
 			);
 			// element.removeEventListener(
@@ -221,53 +187,64 @@ function usePanning(element: HTMLElement) {
 		};
 	});
 
-	useEffect(() => {
-		console.debug(
-			"Panning state offset changed: ",
-			// state
-			state.leftMouseOffset.x,
-			state.leftMouseOffset.y,
-			state.rightMouseOffset.x,
-			state.rightMouseOffset.y
-		);
-	}, [
-		state.leftMouseOffset.x,
-		state.leftMouseOffset.y,
-		state.rightMouseOffset.x,
-		state.rightMouseOffset.y
-		// state
-	]);
+	function startLeftPan(event: MouseEvent) {
+		onMouseEvent(event);
+		// event.preventDefault();
+
+		// if (event.button === 0)
+		// 	dispatch({
+		// 		actionType: "LEFT",
+		// 		result: "DOWN",
+		// 		pos: {
+		// 			x: event.clientX,
+		// 			y: event.clientY
+		// 		}
+		// 	});
+	}
+
+	function startRightPan(event: MouseEvent) {
+		onMouseEvent(event);
+		// event.preventDefault();
+
+		// if (event.button === 2)
+		// 	dispatch({
+		// 		actionType: "RIGHT",
+		// 		result: "DOWN",
+		// 		pos: {
+		// 			x: event.clientX,
+		// 			y: event.clientY
+		// 		}
+		// 	});
+	}
+
+	useEffect(
+		() =>
+			console.debug(
+				"Panning state changed: ",
+				state.leftButton,
+				state.rightButton,
+				state.currentPos
+			),
+		[state.leftButton, state.rightButton]
+	);
 
 	return {
-		leftMouseOffset: {
-			x:
-				state.leftMouseOffset.x +
-				(state.leftMouseDown
-					? state.currentPos.x -
-						state.leftMouseStart.x
-					: 0),
-			y:
-				state.leftMouseOffset.y +
-				(state.leftMouseDown
-					? state.currentPos.y -
-						state.currentPos.y
-					: 0)
-		},
-		rightMouseOffset: {
-			x:
-				state.rightMouseOffset.x +
-				(state.rightMouseDown
-					? state.currentPos.x -
-						state.rightMouseStart.x
-					: 0),
-			y:
-				state.rightMouseOffset.y +
-				(state.rightMouseDown
-					? state.currentPos.y -
-						state.rightMouseStart.y
-					: 0)
-		}
+		startLeftPan,
+		startRightPan,
+		leftMouseOffset: state.leftButton.isDown
+			? calculateOffset(
+					state.leftButton,
+					state.currentPos
+				)
+			: state.leftButton.offset,
+		rightMouseOffset: state.rightButton.isDown
+			? calculateOffset(
+					state.rightButton,
+					state.currentPos
+				)
+			: state.rightButton.offset
 	};
 }
 
 export default usePanning;
+

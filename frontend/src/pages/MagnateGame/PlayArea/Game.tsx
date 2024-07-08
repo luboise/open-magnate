@@ -91,7 +91,8 @@ function Game() {
 		}
 	);
 
-	const { rightMouseOffset } = usePanning(document.body);
+	const { rightMouseOffset, startRightPan } =
+		usePanning();
 
 	// const regularConditional: JSX.Element = (() => {
 	// 	if (!isMyTurn) return <></>;
@@ -138,11 +139,11 @@ function Game() {
 	return (
 		<div
 			id="magnate-play-area"
-			className="map-preview-container"
 			onContextMenu={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
 			}}
+			onMouseDown={startRightPan}
 			style={{
 				gridTemplateColumns: map
 					? `repeat(${map[0].length}, 1fr)`
@@ -151,6 +152,7 @@ function Game() {
 					? `${map[0].length} / ${map.length}`
 					: undefined,
 				position: "fixed",
+
 				width: "100vw",
 				height: "100vh",
 				margin: 0,
@@ -200,7 +202,7 @@ function Game() {
 				localKey="magnate-map-section"
 				id="magnate-map-section"
 				minimiseIf={!toolbarStatus?.showMap}
-			> */}
+				> */}
 			{state.showMap ? (
 				<MagnateMap
 					type="full"
