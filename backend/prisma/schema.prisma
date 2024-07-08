@@ -73,8 +73,8 @@ model GamePlayer {
 
   money      Int  @default(0)
   milestones Json
-  employees	Json	@default("[\"CEO\"]")
-  employeeTree  String	@db.VarChar(1000)
+  employees	Json
+  employeeTree  String	@db.VarChar(1000)	@default("0[X,X,X]")
 
   restaurantData   RestaurantData @relation(fields: [restaurantDataId], references: [id])
   restaurantDataId Int

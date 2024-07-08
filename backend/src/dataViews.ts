@@ -54,6 +54,7 @@ export interface GamePlayerViewPublic {
 export interface GamePlayerViewPrivate
 	extends GamePlayerViewPublic {
 	employees: number[];
+	employeeTreeStr: string;
 }
 
 export interface MarketingCampaignView extends Position {

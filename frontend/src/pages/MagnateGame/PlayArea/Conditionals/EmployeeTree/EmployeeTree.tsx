@@ -1,17 +1,14 @@
 import "./EmployeeTree.css";
 
-import { useReducer, useState } from "react";
+import { useMemo, useReducer, useState } from "react";
 import {
 	EmployeeNode,
-	GetAllTreeData
+	GetAllTreeData,
+	ParseEmployeeTree
 } from "../../../../../../../shared/EmployeeStructure";
-import { Employee } from "../../../../../../../shared/EmployeeTypes";
 import Button from "../../../../../components/Button";
+import { useGameState } from "../../../../../hooks/useGameState";
 import usePanning from "../../../../../hooks/usePanning";
-import {
-	EmployeesById,
-	createCEOEmployee
-} from "../../../../../utils";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeTreeNode from "./EmployeeTreeNode";
 
@@ -50,7 +47,17 @@ function findEmployeeRecursive(
 }
 
 function EmployeeTree() {
-	// const { myEmployees } = useGameState();
+	const { myEmployees, playerData } = useGameState();
+
+	const currentEmployeeTree = useMemo(() => {
+		if (!playerData || !playerData.employeeTreeStr) {
+			return null;
+		}
+
+		return ParseEmployeeTree(
+			playerData.employeeTreeStr
+		);
+	}, [playerData?.employeeTreeStr]);
 
 	const { startRightPan, rightMouseOffset } =
 		usePanning();
@@ -64,80 +71,7 @@ function EmployeeTree() {
 		setTreeOffset({ ...rightMouseOffset });
 	}
 
-	const myEmployees: Employee[] = [
-		createCEOEmployee(3),
-		EmployeesById["mgmt_1"],
-		EmployeesById["mgmt_1"],
-		EmployeesById["mgmt_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		createCEOEmployee(3)
-	];
-
 	if (!myEmployees.length) return <></>;
-
-	const testTree: EmployeeNode = {
-		data: 0,
-		children: [
-			{
-				data: 1,
-				children: [
-					{
-						data: 4,
-						children: []
-					},
-					{
-						data: 5,
-						children: []
-					},
-
-					{
-						data: 6,
-						children: []
-					}
-				]
-			},
-			{
-				data: 2,
-				children: [
-					{
-						data: 7,
-						children: []
-					},
-					{
-						data: 8,
-						children: []
-					},
-
-					{
-						data: 9,
-						children: []
-					}
-				]
-			},
-			{
-				data: 3,
-				children: [
-					{
-						data: 10,
-						children: []
-					},
-					null,
-
-					{
-						data: 11,
-						children: []
-					}
-				]
-			}
-		]
-	};
 
 	const [employeeTree, dispatch] = useReducer(
 		(
@@ -189,7 +123,7 @@ function EmployeeTree() {
 		},
 		{
 			// Index 0 is the CEO
-			tree: testTree
+			tree: currentEmployeeTree
 		}
 	);
 

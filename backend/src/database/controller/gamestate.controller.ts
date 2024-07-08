@@ -302,7 +302,8 @@ const GameStateController = {
 					),
 					employees: parseJsonNumberArray(
 						player.employees
-					)
+					),
+					employeeTreeStr: player.employeeTree
 				})
 			),
 			restaurants: gameState.players
