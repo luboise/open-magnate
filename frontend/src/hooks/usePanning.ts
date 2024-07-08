@@ -150,13 +150,11 @@ function usePanning() {
 		// );
 		document.body.addEventListener(
 			"mouseup",
-			onMouseEvent,
-			true
+			onMouseEvent
 		);
 		document.body.addEventListener(
 			"mousemove",
-			onMouseEvent,
-			true
+			onMouseEvent
 		);
 		// element.addEventListener(
 		// 	"contextmenu",
