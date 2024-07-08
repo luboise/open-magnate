@@ -118,13 +118,11 @@ export const seedGameState1: Prisma.GameStateCreateInput = {
 			data: [
 				{
 					number: 1,
-					employees: [],
 					milestones: [],
 					restaurantDataId: seedRestaurant1.id
 				},
 				{
 					number: 2,
-					employees: [],
 					milestones: [],
 					restaurantDataId: seedRestaurant2.id
 				}
@@ -352,3 +350,4 @@ export async function dropEverything() {
 // }
 
 export const SEED_LOBBIES = [seedLobby1];
+

@@ -86,6 +86,9 @@ export function createCEOEmployee(
 // 	return null;
 // }
 
+export const CEOEmployeeInitial: CEOEmployee =
+	createCEOEmployee(3);
+
 export const ManagementEmployees: Record<
 	string,
 	ManagementEmployee
@@ -143,5 +146,6 @@ export const FoodEmployees: Record<string, FoodEmployee> = {
 
 export const EmployeesById: Record<string, Employee> = {
 	...ManagementEmployees,
-	...FoodEmployees
+	...FoodEmployees,
+	CEO: CEOEmployeeInitial
 } as const;

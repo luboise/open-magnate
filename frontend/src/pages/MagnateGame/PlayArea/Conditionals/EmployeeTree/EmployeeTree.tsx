@@ -1,6 +1,10 @@
 import "./EmployeeTree.css";
 
 import { useReducer, useState } from "react";
+import {
+	EmployeeNode,
+	GetAllTreeData
+} from "../../../../../../../shared/EmployeeStructure";
 import { Employee } from "../../../../../../../shared/EmployeeTypes";
 import Button from "../../../../../components/Button";
 import usePanning from "../../../../../hooks/usePanning";
@@ -10,18 +14,6 @@ import {
 } from "../../../../../utils";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeTreeNode from "./EmployeeTreeNode";
-
-// type TreeNode<T extends string | number | symbol> = Record<
-// 	T,
-// 	Array<TreeNode<T> | null>
-// >;
-
-export type EmployeeNode = TreeNode<number>;
-
-type TreeNode<T> = {
-	data: T;
-	children: Array<TreeNode<T> | null>;
-};
 
 type EmployeeTreeState = {
 	tree: EmployeeNode;
@@ -33,16 +25,6 @@ type EmployeeTreeAction = {
 	to: number;
 	atIndex: number;
 };
-
-function getAllData<T>(node: TreeNode<T>): Array<T> {
-	let data: Array<T> = [node.data];
-
-	for (const child of node.children) {
-		if (child !== null) data.concat(getAllData(child));
-	}
-
-	return data;
-}
 
 function findEmployeeRecursive(
 	node: EmployeeNode,
@@ -87,7 +69,15 @@ function EmployeeTree() {
 		EmployeesById["mgmt_1"],
 		EmployeesById["mgmt_1"],
 		EmployeesById["mgmt_1"],
-		EmployeesById["food_1"]
+		EmployeesById["food_1"],
+		EmployeesById["food_1"],
+		EmployeesById["food_1"],
+		EmployeesById["food_1"],
+		EmployeesById["food_1"],
+		EmployeesById["food_1"],
+		EmployeesById["food_1"],
+		EmployeesById["food_1"],
+		createCEOEmployee(3)
 	];
 
 	if (!myEmployees.length) return <></>;
@@ -103,12 +93,12 @@ function EmployeeTree() {
 						children: []
 					},
 					{
-						data: 4,
+						data: 5,
 						children: []
 					},
 
 					{
-						data: 4,
+						data: 6,
 						children: []
 					}
 				]
@@ -117,16 +107,16 @@ function EmployeeTree() {
 				data: 2,
 				children: [
 					{
-						data: 4,
+						data: 7,
 						children: []
 					},
 					{
-						data: 4,
+						data: 8,
 						children: []
 					},
 
 					{
-						data: 4,
+						data: 9,
 						children: []
 					}
 				]
@@ -135,24 +125,19 @@ function EmployeeTree() {
 				data: 3,
 				children: [
 					{
-						data: 4,
+						data: 10,
 						children: []
 					},
-					{
-						data: 4,
-						children: []
-					},
+					null,
 
 					{
-						data: 4,
+						data: 11,
 						children: []
 					}
 				]
 			}
 		]
 	};
-
-	const usingEmployees = getAllData(testTree);
 
 	const [employeeTree, dispatch] = useReducer(
 		(
@@ -208,7 +193,7 @@ function EmployeeTree() {
 		}
 	);
 
-	const nodesInUse = getAllData(employeeTree.tree);
+	const nodesInUse = GetAllTreeData(employeeTree.tree);
 
 	const offset = {
 		x: rightMouseOffset.x - treeOffset.x,
@@ -265,9 +250,14 @@ function EmployeeTree() {
 				/>
 			</div>
 			<div className="game-employee-tree-cards">
-				{...myEmployees.map((employee) => (
-					<EmployeeCard employee={employee} />
-				))}
+				{...myEmployees
+					.filter(
+						(_, index) =>
+							!nodesInUse.includes(index)
+					)
+					.map((employee) => (
+						<EmployeeCard employee={employee} />
+					))}
 			</div>
 		</div>
 	);

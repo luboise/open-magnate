@@ -6,6 +6,7 @@ import { useGameState } from "../../../hooks/useGameState";
 import useLocalVal from "../../../hooks/useLocalVal";
 import useMap from "../../../hooks/useMap";
 import usePanning from "../../../hooks/usePanning";
+import useScalingValue from "../../../hooks/useScalingValue";
 import MagnateMap from "../MagnateMap";
 import EmployeeTree from "./Conditionals/EmployeeTree/EmployeeTree";
 import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
@@ -35,6 +36,11 @@ function Game() {
 	const { onMapObjectClicked } = useMap();
 
 	const { mapRowOrder: map } = useGameState();
+	const {
+		scaler: zoom,
+		onScaleUp,
+		onScaleDown
+	} = useScalingValue();
 
 	const [toolbarStatus, setToolbarStatus] =
 		useLocalVal<GameInterfaceState>("TOOLBAR_STATUS");
@@ -208,7 +214,8 @@ function Game() {
 					type="full"
 					style={{
 						zIndex: -1,
-						translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`
+						translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`,
+						scale: zoom
 					}}
 					onContextMenu={(e) => {
 						e.preventDefault();

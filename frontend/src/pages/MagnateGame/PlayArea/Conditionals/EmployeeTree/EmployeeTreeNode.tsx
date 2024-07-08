@@ -1,7 +1,7 @@
 import { HTMLAttributes } from "react";
+import { EmployeeNode } from "../../../../../../../shared/EmployeeStructure";
 import { Employee } from "../../../../../../../shared/EmployeeTypes";
 import EmployeeCard from "./EmployeeCard";
-import { EmployeeNode } from "./EmployeeTree";
 
 interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {

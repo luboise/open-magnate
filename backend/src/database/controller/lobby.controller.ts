@@ -152,8 +152,6 @@ const LobbyController = {
 													playerNumber
 												) => ({
 													number: playerNumber,
-													employees:
-														[],
 													milestones:
 														[],
 													restaurantDataId:
