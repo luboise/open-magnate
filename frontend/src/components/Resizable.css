@@ -37,7 +37,7 @@
 
 .resizable-minimized {
 	opacity: 0;
-	pointer-events: none;
+	/* pointer-events: none; */
 }
 
 .resizable-element-top-tab {

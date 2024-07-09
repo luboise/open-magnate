@@ -138,3 +138,14 @@ export function readJsonNumberArray(array: JsonValue) {
 	// Return the list of numbers with the NaNs filtered out
 	return vals.filter((val) => !Number.isNaN(val));
 }
+
+export function parseJsonArray<T>(array: JsonValue) {
+	const asArray = array as JsonArray | null;
+	if (asArray === null) return [];
+
+	const vals: string[] = Array.isArray(array)
+		? array.map((value) => String(value)) // Convert each element to number, defaulting to NaN if not a number
+		: [];
+
+	return vals;
+}

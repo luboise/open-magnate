@@ -9,14 +9,19 @@ interface EmployeeCardProps
 }
 
 function EmployeeCard(props: EmployeeCardProps) {
-	const { employee } = props;
+	const { employee, style, ...args } = props;
 
 	// Real cards are 56mm x 87mm, meaning they have an aspect ratio of 56/87
 
 	return (
 		<div
 			className="game-employee-card"
-			style={{ backgroundColor: employee.colour }}
+			style={{
+				backgroundColor: employee.colour,
+				...style,
+				pointerEvents: "auto"
+			}}
+			{...args}
 		>
 			<span className="game-employee-card-title">
 				<h3>{employee.name}</h3>
@@ -32,4 +37,3 @@ function EmployeeCard(props: EmployeeCardProps) {
 }
 
 export default EmployeeCard;
-

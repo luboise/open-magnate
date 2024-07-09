@@ -105,8 +105,6 @@ function usePanning() {
 
 	const onMouseEvent = useCallback(
 		(event: MouseEvent) => {
-			event.preventDefault();
-
 			const {
 				type,
 				button,
@@ -116,7 +114,6 @@ function usePanning() {
 			const pos = { x, y };
 
 			if (type === "mousemove") {
-				event.stopPropagation();
 				dispatch({ actionType: "MOVED", pos });
 				return;
 			}
@@ -135,6 +132,7 @@ function usePanning() {
 				const result =
 					type === "mousedown" ? "DOWN" : "UP";
 
+				// event.preventDefault();
 				event.stopPropagation();
 				dispatch({ actionType, result, pos });
 			}
@@ -215,16 +213,16 @@ function usePanning() {
 		// 	});
 	}
 
-	useEffect(
-		() =>
-			console.debug(
-				"Panning state changed: ",
-				state.leftButton,
-				state.rightButton,
-				state.currentPos
-			),
-		[state.leftButton, state.rightButton]
-	);
+	// useEffect(
+	// 	() =>
+	// 		console.debug(
+	// 			"Panning state changed: ",
+	// 			state.leftButton,
+	// 			state.rightButton,
+	// 			state.currentPos
+	// 		),
+	// 	[state.leftButton, state.rightButton]
+	// );
 
 	return {
 		startLeftPan,
@@ -245,4 +243,3 @@ function usePanning() {
 }
 
 export default usePanning;
-

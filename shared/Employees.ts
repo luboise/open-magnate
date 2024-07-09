@@ -150,4 +150,6 @@ export const EmployeesById: Record<string, Employee> = {
 	CEO: CEOEmployeeInitial
 } as const;
 
-export const DEFAULT_EMPLOYEE_ARRAY = ["CEO", null, null];
+export const DEFAULT_EMPLOYEE_ARRAY = ["CEO"];
+export const DEFAULT_SERIALISED_EMPLOYEE_STRING =
+	"0[X,X,X]";

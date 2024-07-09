@@ -44,6 +44,8 @@
 	justify-content: center;
 	align-items: center;
 	overflow: hidden;
+
+	pointer-events: none;
 }
 
 .game-employee-tree-cards {
@@ -58,6 +60,11 @@
 
 .game-employee-tree-cards > * {
 	height: 100%;
+}
+
+.game-employee-tree-cards > .game-employee-card * {
+	/* pointer-events: none; */
+	/* user-select: none; */
 }
 
 .game-employee-tree-reset-button {
@@ -91,4 +98,3 @@
 	display: flex;
 	justify-content: space-between;
 }
-

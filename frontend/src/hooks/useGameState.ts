@@ -26,7 +26,6 @@ import {
 	MapTileData,
 	RestaurantView,
 	TURN_PROGRESS,
-	createCEOEmployee,
 	parseMapChar
 } from "../utils";
 
@@ -166,14 +165,14 @@ const myEmployeesSelector = selector<Employee[]>({
 
 		const myEmployees: Employee[] = [];
 
-		// TODO: Fix this later to change based on the bank breaking
-		myEmployees.push(createCEOEmployee(3));
-
 		playerData.employees.forEach((employeeId) => {
 			if (!(employeeId in EmployeesById)) return;
 
 			myEmployees.push(EmployeesById[employeeId]);
 		});
+
+		// TODO: Remove temporary employee for testing purposes
+		myEmployees.push(EmployeesById["mgmt_1"]);
 
 		return myEmployees;
 	}

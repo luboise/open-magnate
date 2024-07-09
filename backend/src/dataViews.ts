@@ -53,7 +53,7 @@ export interface GamePlayerViewPublic {
 
 export interface GamePlayerViewPrivate
 	extends GamePlayerViewPublic {
-	employees: number[];
+	employees: string[];
 	employeeTreeStr: string;
 }
 
@@ -82,4 +82,3 @@ export interface Position {
 	y: number;
 	orientation?: ORIENTATION;
 }
-

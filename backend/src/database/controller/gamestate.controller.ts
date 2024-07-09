@@ -24,6 +24,7 @@ import {
 } from "../../game/MapPieces";
 import {
 	GetTransposed,
+	parseJsonArray,
 	readJsonNumberArray as parseJsonNumberArray
 } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
@@ -300,7 +301,7 @@ const GameStateController = {
 					milestones: parseJsonNumberArray(
 						player.milestones
 					),
-					employees: parseJsonNumberArray(
+					employees: parseJsonArray(
 						player.employees
 					),
 					employeeTreeStr: player.employeeTree

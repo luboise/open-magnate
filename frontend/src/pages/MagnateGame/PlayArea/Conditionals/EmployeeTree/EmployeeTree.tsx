@@ -1,14 +1,16 @@
 import "./EmployeeTree.css";
 
-import { useMemo, useReducer, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
 	EmployeeNode,
 	GetAllTreeData,
+	IsValidEmployeeTree,
 	ParseEmployeeTree
 } from "../../../../../../../shared/EmployeeStructure";
 import Button from "../../../../../components/Button";
 import { useGameState } from "../../../../../hooks/useGameState";
 import usePanning from "../../../../../hooks/usePanning";
+import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "../../../../../utils";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeTreeNode from "./EmployeeTreeNode";
 
@@ -16,12 +18,17 @@ type EmployeeTreeState = {
 	tree: EmployeeNode | null;
 };
 
-type EmployeeTreeAction = {
-	type: "ADD_NODE";
-	from: number;
-	to: number;
-	atIndex: number;
-};
+type EmployeeTreeAction =
+	| {
+			type: "ADD_NODE";
+			from: number;
+			to: number;
+			atIndex: number;
+	  }
+	| {
+			type: "SET_TREE";
+			tree: EmployeeNode | null;
+	  };
 
 function findEmployeeRecursive(
 	node: EmployeeNode,
@@ -52,16 +59,6 @@ function EmployeeTree() {
 	const { startRightPan, rightMouseOffset } =
 		usePanning();
 
-	const currentEmployeeTree = useMemo(() => {
-		if (!playerData || !playerData.employeeTreeStr) {
-			return null;
-		}
-
-		return ParseEmployeeTree(
-			playerData.employeeTreeStr
-		);
-	}, [playerData?.employeeTreeStr]);
-
 	const [treeOffset, setTreeOffset] = useState<{
 		x: number;
 		y: number;
@@ -72,57 +69,74 @@ function EmployeeTree() {
 			state: EmployeeTreeState,
 			action: EmployeeTreeAction
 		): EmployeeTreeState => {
-			if (action.type === "ADD_NODE") {
-				try {
-					const node = findEmployeeRecursive(
-						state.tree,
-						action.from
-					);
-
-					if (!node)
-						throw new Error(
-							"Attempting to add from invalid node."
+			switch (action.type) {
+				case "SET_TREE":
+					return { ...state, tree: action.tree };
+				case "ADD_NODE":
+					if (!state.tree) {
+						console.debug(
+							"Attempted to add node a null tree. Dismissing the action."
 						);
 
-					if (
-						action.atIndex >=
-							node.children.length ||
-						action.atIndex < 0
-					)
-						throw new Error(
-							"Invalid index provided for updating the tree."
+						return state;
+					}
+
+					try {
+						const node = findEmployeeRecursive(
+							state.tree,
+							action.from
 						);
 
-					if (node.children[action.atIndex])
-						throw new Error(
-							"Attempted to place node over an existing node."
-						);
+						if (!node)
+							throw new Error(
+								"Attempting to add from invalid node."
+							);
 
-					const newState: EmployeeTreeState = {
-						...state
-					};
-					node.children[action.atIndex] = {
-						data: action.to,
-						children: [null, null, null]
-					};
+						if (
+							action.atIndex >=
+								node.children.length ||
+							action.atIndex < 0
+						)
+							throw new Error(
+								"Invalid index provided for updating the tree."
+							);
 
-					return {
-						...newState
-					};
-				} catch (error) {
-					console.debug(error);
-				}
+						if (node.children[action.atIndex])
+							throw new Error(
+								"Attempted to place node over an existing node."
+							);
+
+						const newState: EmployeeTreeState =
+							{
+								...state
+							};
+						node.children[action.atIndex] = {
+							data: action.to,
+							children: [null, null, null]
+						};
+
+						return {
+							...newState
+						};
+					} catch (error) {
+						console.debug(error);
+					}
 			}
 			return { ...state };
 		},
 		{
 			// Index 0 is the CEO
-			tree: currentEmployeeTree
+			tree: null
 		}
 	);
 
 	function resetTree() {
-		setTreeOffset({ ...rightMouseOffset });
+		dispatch({
+			type: "SET_TREE",
+			tree: ParseEmployeeTree(
+				DEFAULT_SERIALISED_EMPLOYEE_STRING
+			)
+		});
 	}
 
 	const nodesInUse = employeeTree.tree
@@ -138,25 +152,50 @@ function EmployeeTree() {
 		rightMouseOffset.x !== treeOffset.x ||
 		rightMouseOffset.y !== treeOffset.y;
 
-	// function makeEmployeeDivTree(startNode: EmployeeNode) {
-	// 	const nodes: JSX.Element[] = [];
+	useEffect(() => {
+		if (!playerData) return;
 
-	// 		// <EmployeeTreeNode
-	// 		// 	employee={myEmployees[startNode.data]}
-	// 		// 	childSlots={startNode.children
-	// 		// 		.filter((child) => child !== null)
-	// 		// 		.map((child) => {
-	// 		// 			return myEmployees[child!.data];
-	// 		// 		})}
-	// 		// style={{
-	// 		// 	width: "20%",
-	// 		// 	transform: `translate(${offset.x}px, ${offset.y}px)`
-	// 		// }}
-	// 		// />
-	// 		();
+		const treeStr = playerData.employeeTreeStr;
+		if (treeStr === undefined) return;
+		else if (treeStr === null)
+			dispatch({ type: "SET_TREE", tree: null });
 
-	// 	return nodes;
-	// }
+		const newTree = ParseEmployeeTree(treeStr);
+
+		if (
+			newTree &&
+			!IsValidEmployeeTree(newTree, myEmployees)
+		) {
+			console.debug(
+				"Invalid employee tree. Resetting player's tree."
+			);
+			resetTree();
+			return;
+		}
+
+		dispatch({ type: "SET_TREE", tree: newTree });
+	}, [playerData?.employeeTreeStr]);
+
+	function onCardDropped(parent: number, index: number) {
+		console.debug(
+			"Card dropped on employee tree: ",
+			parent,
+			index
+		);
+
+		// dispatch({
+		// 	type: "ADD_NODE",
+		// 	from: parent,
+		// 	to: employee,
+		// 	atIndex: index
+		// });
+	}
+
+	const test = (event, id) => {
+		event.preventDefault();
+		event.dataTransfer.setData("text/plain", id);
+		alert(`Drag event: ${id}`);
+	};
 
 	return (
 		<div className="game-employee-tree-section">
@@ -182,6 +221,7 @@ function EmployeeTree() {
 						style={{
 							transform: `translate(${offset.x}px, ${offset.y}px)`
 						}}
+						dropCallback={onCardDropped}
 					/>
 				) : (
 					<></>
@@ -193,8 +233,15 @@ function EmployeeTree() {
 						(_, index) =>
 							!nodesInUse.includes(index)
 					)
-					.map((employee) => (
-						<EmployeeCard employee={employee} />
+					.map((employee, index) => (
+						<EmployeeCard
+							employee={employee}
+							draggable={true}
+							onDragStart={(event) => {
+								test(event, index);
+							}}
+							id={`employee-card-draggable-${index}`}
+						/>
 					))}
 			</div>
 		</div>

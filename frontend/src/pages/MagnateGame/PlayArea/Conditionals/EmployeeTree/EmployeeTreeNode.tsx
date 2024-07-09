@@ -8,6 +8,7 @@ interface EmployeeTreeNodeProps
 	node: EmployeeNode;
 	employeeList: Employee[];
 	depth?: number;
+	dropCallback?: (parent: number, index: number) => void;
 }
 
 // 400 pixels apart
@@ -15,7 +16,13 @@ const NODE_HORIZONTAL_DISTANCE = 100;
 const NODE_VERTICAL_DISTANCE = 400;
 
 function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
-	const { node, employeeList, depth, ...args } = props;
+	const {
+		node,
+		employeeList,
+		depth,
+		dropCallback,
+		...args
+	} = props;
 	const checkedDepth = depth ?? 1;
 
 	const employee = employeeList[node.data];
@@ -28,7 +35,7 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 	// );
 
 	const childNodes: JSX.Element[] = node.children.map(
-		(child) =>
+		(child, index) =>
 			child !== null ? (
 				<EmployeeTreeNode
 					node={child}
@@ -42,6 +49,17 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 						height: 100,
 						backgroundColor: "red"
 					}}
+					// Use drop callback if it is provided
+					{...(dropCallback
+						? {
+								onDrag: () => {
+									dropCallback(
+										node.data,
+										index
+									);
+								}
+							}
+						: {})}
 				/>
 			)
 	);
@@ -75,4 +93,3 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 }
 
 export default EmployeeTreeNode;
-
