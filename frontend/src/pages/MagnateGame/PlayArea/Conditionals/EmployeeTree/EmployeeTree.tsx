@@ -187,8 +187,6 @@ function EmployeeTree(props: EmployeeTreeProps) {
 		? GetAllTreeData(employeeTree.tree)
 		: [];
 
-	console.debug("NODES IN USE: ", nodesInUse);
-
 	const offset = {
 		x: rightMouseOffset.x - treeOffset.x,
 		y: rightMouseOffset.y - treeOffset.y

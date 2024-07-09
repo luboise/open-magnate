@@ -47,6 +47,7 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 					node={child}
 					employeeList={employeeList}
 					depth={checkedDepth + 1}
+					dropCallback={dropCallback}
 				/>
 			) : (
 				<div

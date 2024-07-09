@@ -145,6 +145,7 @@ function Game() {
 		state.showMiletones
 	]);
 
+	// TODO: Fix invisible elements to not each click inputs and keyboard inputs
 	return (
 		<div
 			id="magnate-play-area"
