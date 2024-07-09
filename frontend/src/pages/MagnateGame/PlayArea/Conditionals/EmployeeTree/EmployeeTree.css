@@ -64,7 +64,7 @@
 
 .game-employee-tree-cards > .game-employee-card * {
 	/* pointer-events: none; */
-	/* user-select: none; */
+	user-select: none;
 }
 
 .game-employee-tree-reset-button {
@@ -97,4 +97,10 @@
 .game-employee-tree-node-children {
 	display: flex;
 	justify-content: space-between;
+}
+
+.draggee {
+	position: fixed;
+	opacity: 0.5;
+	cursor: move;
 }

@@ -3,12 +3,18 @@ import { EmployeeNode } from "../../../../../../../shared/EmployeeStructure";
 import { Employee } from "../../../../../../../shared/EmployeeTypes";
 import EmployeeCard from "./EmployeeCard";
 
+export type TreeNodeDropCallback = (
+	dropped: number,
+	receiver: number,
+	index: number
+) => void;
+
 interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {
 	node: EmployeeNode;
 	employeeList: Employee[];
 	depth?: number;
-	dropCallback?: (parent: number, index: number) => void;
+	dropCallback?: TreeNodeDropCallback;
 }
 
 // 400 pixels apart
@@ -49,17 +55,30 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 						height: 100,
 						backgroundColor: "red"
 					}}
-					// Use drop callback if it is provided
-					{...(dropCallback
-						? {
-								onDrag: () => {
-									dropCallback(
-										node.data,
-										index
-									);
-								}
-							}
-						: {})}
+					onDragEnter={(event) => {
+						event.preventDefault();
+						console.debug("Enter");
+					}}
+					onDragOver={(e) => e.preventDefault()}
+					onDrop={(event) => {
+						if (!dropCallback) {
+							console.debug(
+								"No drop callback provided. Ignoring drop event."
+							);
+							return;
+						}
+
+						// event.preventDefault();
+						dropCallback(
+							Number(
+								event.dataTransfer.getData(
+									"number"
+								)
+							),
+							node.data,
+							index
+						);
+					}}
 				/>
 			)
 	);
@@ -72,9 +91,7 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 
 	return (
 		<div className="game-employee-tree-node" {...args}>
-			<EmployeeCard
-				employee={employeeList[node.data]}
-			/>
+			<EmployeeCard employee={employee} />
 			<div
 				className="game-employee-tree-node-children"
 				style={{

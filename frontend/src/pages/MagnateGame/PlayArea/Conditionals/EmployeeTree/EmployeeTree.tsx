@@ -1,9 +1,12 @@
 import "./EmployeeTree.css";
 
 import {
+	DragEventHandler,
 	HTMLAttributes,
+	useCallback,
 	useEffect,
 	useReducer,
+	useRef,
 	useState
 } from "react";
 import {
@@ -17,7 +20,9 @@ import { useGameState } from "../../../../../hooks/useGameState";
 import usePanning from "../../../../../hooks/usePanning";
 import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "../../../../../utils";
 import EmployeeCard from "./EmployeeCard";
-import EmployeeTreeNode from "./EmployeeTreeNode";
+import EmployeeTreeNode, {
+	TreeNodeDropCallback
+} from "./EmployeeTreeNode";
 
 type EmployeeTreeState = {
 	tree: EmployeeNode | null;
@@ -58,7 +63,6 @@ function findEmployeeRecursive(
 	return null;
 }
 
-// ID Must be specified since resizable depends on it
 interface EmployeeTreeProps
 	extends HTMLAttributes<HTMLDivElement> {}
 
@@ -148,6 +152,8 @@ function EmployeeTree(props: EmployeeTreeProps) {
 		});
 	}
 
+	const element = useRef<HTMLDivElement | null>(null);
+
 	const nodesInUse = employeeTree.tree
 		? GetAllTreeData(employeeTree.tree)
 		: [];
@@ -185,25 +191,88 @@ function EmployeeTree(props: EmployeeTreeProps) {
 		dispatch({ type: "SET_TREE", tree: newTree });
 	}, [playerData?.employeeTreeStr]);
 
-	function onCardDropped(parent: number, index: number) {
-		console.debug(
-			"Card dropped on employee tree: ",
-			parent,
-			index
-		);
+	const onCardDropped = useCallback<TreeNodeDropCallback>(
+		(dropped, receiver, index) => {
+			console.debug(
+				"Card dropped on employee tree: ",
+				dropped,
+				receiver,
+				index
+			);
+		},
+		[]
+	);
 
-		// dispatch({
-		// 	type: "ADD_NODE",
-		// 	from: parent,
-		// 	to: employee,
-		// 	atIndex: index
-		// });
+	// dispatch({
+	// 	type: "ADD_NODE",
+	// 	from: parent,
+	// 	to: employee,
+	// 	atIndex: index
+	// });
+
+	function styleDraggee(
+		element: HTMLElement,
+		revert: boolean = false
+	) {
+		// if (!revert) {
+		// 	element.classList.add("draggee");
+		// 	return;
+		// }
+		// element.style.translate = "";
+		// element.classList.remove("draggee");
 	}
 
-	const test = (event, id) => {
+	const onDragStart: DragEventHandler<HTMLDivElement> = (
+		event
+	) => {
+		// event.preventDefault();
+
+		// alert(`Drag event: ${id}`);
+
+		const div = event.target as HTMLDivElement;
+
+		// if (!(div instanceof HTMLDivElement)) {
+		// 	console.debug("Drag event: not a div");
+		// 	return;
+		// }
+
+		// event.dataTransfer.setData("text/plain", div.id);
+		event.dataTransfer.setDragImage(
+			div,
+			div.clientWidth / 2,
+			div.clientHeight / 2
+		);
+
+		element.current = div;
+
+		styleDraggee(element.current, true);
+
+		// div.style.position = "fixed";
+	};
+
+	const onDrag: DragEventHandler<HTMLDivElement> = (
+		event
+	) => {
 		event.preventDefault();
-		event.dataTransfer.setData("text/plain", id);
-		alert(`Drag event: ${id}`);
+
+		console.debug("drag", event.screenX, event.screenY);
+
+		// div.style.translate = `${event.clientX}px ${event.clientY}px`;
+		// div.style.position = "fixed";
+	};
+
+	const onDragEnd: DragEventHandler<HTMLDivElement> = (
+		event
+	) => {
+		if (!element.current) {
+			return;
+		}
+
+		styleDraggee(element.current, true);
+
+		element.current = null;
+
+		console.debug("drag end");
 	};
 
 	return (
@@ -237,21 +306,27 @@ function EmployeeTree(props: EmployeeTreeProps) {
 				)}
 			</div>
 			<div className="game-employee-tree-cards">
-				{...myEmployees
-					.filter(
-						(_, index) =>
-							!nodesInUse.includes(index)
-					)
-					.map((employee, index) => (
+				{...myEmployees.map((employee, index) => {
+					if (nodesInUse.includes(index))
+						return <></>;
+
+					return (
 						<EmployeeCard
 							employee={employee}
 							draggable={true}
 							onDragStart={(event) => {
-								test(event, index);
+								event.dataTransfer.setData(
+									"number",
+									String(index)
+								);
+								onDragStart(event);
 							}}
-							id={`employee-card-draggable-${index}`}
+							onDrag={onDrag}
+							onDragEnd={onDragEnd}
+							id={`employee-card-tree-${index}`}
 						/>
-					))}
+					);
+				})}
 			</div>
 		</div>
 	);

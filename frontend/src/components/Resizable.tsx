@@ -376,8 +376,6 @@ function Resizable(
 		e.preventDefault();
 		e.stopPropagation();
 
-		console.debug("Click released");
-
 		dispatch({ type: "CLICK_RELEASED" });
 	}
 
@@ -414,9 +412,12 @@ function Resizable(
 				onMouseUp={
 					clickReleased as any as MouseEventHandler<HTMLDivElement>
 				}
-				onMouseLeave={
-					clickReleased as any as MouseEventHandler<HTMLDivElement>
-				}
+				// onMouseEnter={(e)=>{
+				// 	if ()
+				// }}
+				// onMouseLeave={
+				// 	clickReleased as any as MouseEventHandler<HTMLDivElement>
+				// }
 				style={{
 					width: state.details.width ?? undefined,
 					// width:
