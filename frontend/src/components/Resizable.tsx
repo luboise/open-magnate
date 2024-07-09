@@ -1,14 +1,15 @@
 import { Position } from "../../../backend/src/dataViews";
 import useLocalVal from "../hooks/useLocalVal";
-import { Colour } from "../utils";
+import { Colour, GetReactChildId } from "../utils";
 import "./Resizable.css";
 
-import {
+import React, {
 	MouseEvent,
+	MouseEventHandler,
 	PropsWithChildren,
 	useEffect,
-	useReducer,
-	useRef
+	useMemo,
+	useReducer
 } from "react";
 
 let resizableElementId = 1;
@@ -61,11 +62,27 @@ interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
 	defaultWidth?: number;
 	orientation?: "Horizontal" | "Vertical";
-	localKey?: string;
 	defaultPosition?: Position;
 	color?: Colour;
 	minimiseIf?: boolean;
 }
+
+// type MouseCallback = (e: globalThis.MouseEvent) => void;
+
+// const mouseDownCallbacks: Array<MouseCallback> = [];
+// const mouseMoveCallbacks: Array<MouseCallback> = [];
+
+// document.body.addEventListener("mouseup", (event) =>
+// 	mouseMoveCallbacks.forEach((callback) =>
+// 		callback(event)
+// 	)
+// );
+// document.body.addEventListener("mousedown", (event) =>
+// 	mouseMoveCallbacks.forEach((callback) =>
+// 		callback(event)
+// 	)
+// );
+
 function Resizable(
 	props: PropsWithChildren<ResizableProps> = {
 		// defaultHeight: 0,
@@ -78,17 +95,25 @@ function Resizable(
 		defaultWidth,
 		defaultPosition,
 		children,
-		localKey,
 		orientation,
 		minimiseIf: minimized,
 		...args
 	} = props;
 
+	const id = useMemo(() => {
+		return GetReactChildId(children);
+	}, [children]);
+
+	if (!id)
+		throw new Error(
+			"Unable to find an id in the child component of a Resizeable component"
+		);
+
 	const [localVals, setLocalVals] = useLocalVal<{
 		x: number;
 		y: number;
 		width: number;
-	}>(localKey || `resizable-${resizableElementId++}`);
+	}>(`resizable-${resizableElementId++}`);
 
 	const [state, dispatch] = useReducer(
 		(
@@ -230,10 +255,10 @@ function Resizable(
 		}
 	);
 
-	const id = useRef(
-		props.id ??
-			`resizable-element-${resizableElementId++}`
-	);
+	// const id = useRef(
+	// 	props.id ??
+	// 		`resizable-element-${resizableElementId++}`
+	// );
 
 	function fetchAspectRatio() {
 		if (
@@ -242,10 +267,10 @@ function Resizable(
 		)
 			return;
 
-		const element = document.getElementById(id.current);
+		const element = document.getElementById(id);
 		if (!element)
 			throw new Error(
-				`Unable to find resizable element by id ${id.current}.`
+				`Unable to find resizable element by id ${id}.`
 			);
 
 		const { width, height } =
@@ -263,27 +288,28 @@ function Resizable(
 	}
 
 	function addEventListeners() {
-		document.body.addEventListener(
-			"mousemove",
-			updatePos
-		);
+		const div = document.getElementById(id);
 
-		document.body.addEventListener(
-			"mouseup",
-			clickReleased
-		);
+		if (!div)
+			throw new Error(
+				"Unable to find the div element"
+			);
+
+		div.addEventListener("mousemove", updatePos);
+		div.addEventListener("mouseup", clickReleased);
 	}
 
 	function removeEventListeners() {
-		document.body.removeEventListener(
-			"mousemove",
-			updatePos
-		);
-
-		document.body.removeEventListener(
-			"mouseup",
-			clickReleased
-		);
+		// const element = document.getElementById(id);
+		// if (!element)
+		// 	throw new Error(
+		// 		`Unable to find resizable element by id ${id}. This should have already been verified beforehand.`
+		// 	);
+		// element.removeEventListener("mousemove", updatePos);
+		// element.removeEventListener(
+		// 	"mouseup",
+		// 	clickReleased
+		// );
 	}
 
 	useEffect(() => {
@@ -315,6 +341,9 @@ function Resizable(
 	}
 
 	function updatePos(e: globalThis.MouseEvent) {
+		// e.preventDefault();
+		// e.stopPropagation();
+
 		dispatch({
 			type: "MOVE_MOUSE",
 			pos: { x: e.clientX, y: e.clientY }
@@ -345,6 +374,9 @@ function Resizable(
 
 	function clickReleased(e: globalThis.MouseEvent) {
 		e.preventDefault();
+		e.stopPropagation();
+
+		console.debug("Click released");
 
 		dispatch({ type: "CLICK_RELEASED" });
 	}
@@ -378,7 +410,13 @@ function Resizable(
 			<div
 				{...args}
 				className={`resizable-element ${minimized ? "resizable-minimized" : ""}`}
-				id={id.current}
+				id={id}
+				onMouseUp={
+					clickReleased as any as MouseEventHandler<HTMLDivElement>
+				}
+				onMouseLeave={
+					clickReleased as any as MouseEventHandler<HTMLDivElement>
+				}
 				style={{
 					width: state.details.width ?? undefined,
 					// width:

@@ -133,7 +133,7 @@ function usePanning() {
 					type === "mousedown" ? "DOWN" : "UP";
 
 				// event.preventDefault();
-				event.stopPropagation();
+				// event.stopPropagation();
 				dispatch({ actionType, result, pos });
 			}
 		},
@@ -148,11 +148,13 @@ function usePanning() {
 		// );
 		document.body.addEventListener(
 			"mouseup",
-			onMouseEvent
+			onMouseEvent,
+			true
 		);
 		document.body.addEventListener(
 			"mousemove",
-			onMouseEvent
+			onMouseEvent,
+			true
 		);
 		// element.addEventListener(
 		// 	"contextmenu",

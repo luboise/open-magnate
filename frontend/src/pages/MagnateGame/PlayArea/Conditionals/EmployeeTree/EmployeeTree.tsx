@@ -1,6 +1,11 @@
 import "./EmployeeTree.css";
 
-import { useEffect, useReducer, useState } from "react";
+import {
+	HTMLAttributes,
+	useEffect,
+	useReducer,
+	useState
+} from "react";
 import {
 	EmployeeNode,
 	GetAllTreeData,
@@ -53,7 +58,11 @@ function findEmployeeRecursive(
 	return null;
 }
 
-function EmployeeTree() {
+// ID Must be specified since resizable depends on it
+interface EmployeeTreeProps
+	extends HTMLAttributes<HTMLDivElement> {}
+
+function EmployeeTree(props: EmployeeTreeProps) {
 	const { myEmployees, playerData } = useGameState();
 
 	const { startRightPan, rightMouseOffset } =
