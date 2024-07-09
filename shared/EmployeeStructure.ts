@@ -177,9 +177,8 @@ export function GetAllTreeData<T>(
 			}
 			continue;
 		}
-		data.concat(GetAllTreeData(child, nullChar));
+		data = data.concat(GetAllTreeData(child, nullChar));
 	}
 
 	return data;
 }
-

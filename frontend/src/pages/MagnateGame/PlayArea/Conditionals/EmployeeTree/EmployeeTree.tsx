@@ -31,9 +31,9 @@ type EmployeeTreeState = {
 type EmployeeTreeAction =
 	| {
 			type: "ADD_NODE";
-			from: number;
-			to: number;
-			atIndex: number;
+			parent: number;
+			newChild: number;
+			parentIndex: number;
 	  }
 	| {
 			type: "SET_TREE";
@@ -86,6 +86,12 @@ function EmployeeTree(props: EmployeeTreeProps) {
 				case "SET_TREE":
 					return { ...state, tree: action.tree };
 				case "ADD_NODE":
+					const {
+						parent,
+						newChild: childEmployeeIndex,
+						parentIndex
+					} = action;
+
 					if (!state.tree) {
 						console.debug(
 							"Attempted to add node a null tree. Dismissing the action."
@@ -95,9 +101,10 @@ function EmployeeTree(props: EmployeeTreeProps) {
 					}
 
 					try {
+						// Find the parent node
 						const node = findEmployeeRecursive(
 							state.tree,
-							action.from
+							parent
 						);
 
 						if (!node)
@@ -105,28 +112,50 @@ function EmployeeTree(props: EmployeeTreeProps) {
 								"Attempting to add from invalid node."
 							);
 
+						// Check valid index
 						if (
-							action.atIndex >=
+							parentIndex >=
 								node.children.length ||
-							action.atIndex < 0
+							parentIndex < 0
 						)
 							throw new Error(
 								"Invalid index provided for updating the tree."
 							);
 
-						if (node.children[action.atIndex])
-							throw new Error(
-								"Attempted to place node over an existing node."
-							);
+						// Check that there isn't already a child at that index
+						if (node.children[parentIndex])
+							return state;
 
 						const newState: EmployeeTreeState =
 							{
 								...state
 							};
-						node.children[action.atIndex] = {
-							data: action.to,
-							children: [null, null, null]
+
+						const newEmployee =
+							myEmployees[childEmployeeIndex];
+						const hasCapacity =
+							newEmployee.type ===
+							"MANAGEMENT";
+
+						const newNode: EmployeeNode = {
+							data: childEmployeeIndex,
+							children: hasCapacity
+								? new Array(
+										newEmployee.capacity
+									).fill(null)
+								: []
 						};
+
+						// TODO: Add index validation for inserting into the parent
+						node.children[parentIndex] =
+							newNode;
+
+						console.debug(
+							"NEW EMPLOYEE: ",
+							newEmployee,
+							"NEW NODE: ",
+							newNode
+						);
 
 						return {
 							...newState
@@ -157,6 +186,8 @@ function EmployeeTree(props: EmployeeTreeProps) {
 	const nodesInUse = employeeTree.tree
 		? GetAllTreeData(employeeTree.tree)
 		: [];
+
+	console.debug("NODES IN USE: ", nodesInUse);
 
 	const offset = {
 		x: rightMouseOffset.x - treeOffset.x,
@@ -192,13 +223,20 @@ function EmployeeTree(props: EmployeeTreeProps) {
 	}, [playerData?.employeeTreeStr]);
 
 	const onCardDropped = useCallback<TreeNodeDropCallback>(
-		(dropped, receiver, index) => {
+		(parent, child, index) => {
 			console.debug(
 				"Card dropped on employee tree: ",
-				dropped,
-				receiver,
+				child,
+				parent,
 				index
 			);
+
+			dispatch({
+				type: "ADD_NODE",
+				parent: parent,
+				newChild: child,
+				parentIndex: index
+			});
 		},
 		[]
 	);
@@ -213,14 +251,7 @@ function EmployeeTree(props: EmployeeTreeProps) {
 	function styleDraggee(
 		element: HTMLElement,
 		revert: boolean = false
-	) {
-		// if (!revert) {
-		// 	element.classList.add("draggee");
-		// 	return;
-		// }
-		// element.style.translate = "";
-		// element.classList.remove("draggee");
-	}
+	) {}
 
 	const onDragStart: DragEventHandler<HTMLDivElement> = (
 		event

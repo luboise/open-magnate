@@ -4,9 +4,9 @@ import { Employee } from "../../../../../../../shared/EmployeeTypes";
 import EmployeeCard from "./EmployeeCard";
 
 export type TreeNodeDropCallback = (
-	dropped: number,
-	receiver: number,
-	index: number
+	parent: number,
+	newChild: number,
+	parentIndex: number
 ) => void;
 
 interface EmployeeTreeNodeProps
@@ -23,7 +23,7 @@ const NODE_VERTICAL_DISTANCE = 400;
 
 function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 	const {
-		node,
+		node: parent,
 		employeeList,
 		depth,
 		dropCallback,
@@ -31,7 +31,7 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 	} = props;
 	const checkedDepth = depth ?? 1;
 
-	const employee = employeeList[node.data];
+	const employee = employeeList[parent.data];
 
 	// console.debug(
 	// 	"Children of node ",
@@ -40,7 +40,7 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 	// 	node.children
 	// );
 
-	const childNodes: JSX.Element[] = node.children.map(
+	const childNodes: JSX.Element[] = parent.children.map(
 		(child, index) =>
 			child !== null ? (
 				<EmployeeTreeNode
@@ -70,12 +70,12 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 
 						// event.preventDefault();
 						dropCallback(
+							parent.data,
 							Number(
 								event.dataTransfer.getData(
 									"number"
 								)
 							),
-							node.data,
 							index
 						);
 					}}
