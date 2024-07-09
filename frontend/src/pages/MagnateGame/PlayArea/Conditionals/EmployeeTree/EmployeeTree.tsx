@@ -13,7 +13,7 @@ import EmployeeCard from "./EmployeeCard";
 import EmployeeTreeNode from "./EmployeeTreeNode";
 
 type EmployeeTreeState = {
-	tree: EmployeeNode;
+	tree: EmployeeNode | null;
 };
 
 type EmployeeTreeAction = {
@@ -49,6 +49,9 @@ function findEmployeeRecursive(
 function EmployeeTree() {
 	const { myEmployees, playerData } = useGameState();
 
+	const { startRightPan, rightMouseOffset } =
+		usePanning();
+
 	const currentEmployeeTree = useMemo(() => {
 		if (!playerData || !playerData.employeeTreeStr) {
 			return null;
@@ -59,19 +62,10 @@ function EmployeeTree() {
 		);
 	}, [playerData?.employeeTreeStr]);
 
-	const { startRightPan, rightMouseOffset } =
-		usePanning();
-
 	const [treeOffset, setTreeOffset] = useState<{
 		x: number;
 		y: number;
 	}>({ x: 0, y: 0 });
-
-	function resetTree() {
-		setTreeOffset({ ...rightMouseOffset });
-	}
-
-	if (!myEmployees.length) return <></>;
 
 	const [employeeTree, dispatch] = useReducer(
 		(
@@ -127,7 +121,13 @@ function EmployeeTree() {
 		}
 	);
 
-	const nodesInUse = GetAllTreeData(employeeTree.tree);
+	function resetTree() {
+		setTreeOffset({ ...rightMouseOffset });
+	}
+
+	const nodesInUse = employeeTree.tree
+		? GetAllTreeData(employeeTree.tree)
+		: [];
 
 	const offset = {
 		x: rightMouseOffset.x - treeOffset.x,
@@ -175,13 +175,17 @@ function EmployeeTree() {
 				className="game-employee-tree-content"
 				onMouseDown={startRightPan}
 			>
-				<EmployeeTreeNode
-					node={employeeTree.tree}
-					employeeList={myEmployees}
-					style={{
-						transform: `translate(${offset.x}px, ${offset.y}px)`
-					}}
-				/>
+				{employeeTree.tree ? (
+					<EmployeeTreeNode
+						node={employeeTree.tree}
+						employeeList={myEmployees}
+						style={{
+							transform: `translate(${offset.x}px, ${offset.y}px)`
+						}}
+					/>
+				) : (
+					<></>
+				)}
 			</div>
 			<div className="game-employee-tree-cards">
 				{...myEmployees
@@ -210,4 +214,3 @@ function EmployeeTree() {
 }
 
 export default EmployeeTree;
-

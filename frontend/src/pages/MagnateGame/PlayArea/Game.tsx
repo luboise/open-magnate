@@ -32,10 +32,13 @@ type GameInterfaceAction = {
 };
 
 function Game() {
-	const { turnProgress, isMyTurn } = useGameState();
+	const {
+		turnProgress,
+		isMyTurn,
+		mapRowOrder: map
+	} = useGameState();
 	const { onMapObjectClicked } = useMap();
 
-	const { mapRowOrder: map } = useGameState();
 	const {
 		scaler: zoom,
 		onScaleUp,
@@ -44,6 +47,9 @@ function Game() {
 
 	const [toolbarStatus, setToolbarStatus] =
 		useLocalVal<GameInterfaceState>("TOOLBAR_STATUS");
+
+	const { rightMouseOffset, startRightPan } =
+		usePanning();
 
 	const [state, dispatch] = useReducer(
 		(
@@ -96,9 +102,6 @@ function Game() {
 			showMiletones: false
 		}
 	);
-
-	const { rightMouseOffset, startRightPan } =
-		usePanning();
 
 	// const regularConditional: JSX.Element = (() => {
 	// 	if (!isMyTurn) return <></>;
@@ -233,4 +236,3 @@ function Game() {
 }
 
 export default Game;
-

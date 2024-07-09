@@ -1,4 +1,5 @@
 // import prisma from "../src/datasource";
+import { DEFAULT_EMPLOYEE_ARRAY } from "../../shared/Employees";
 
 import {
 	Prisma,
@@ -118,11 +119,13 @@ export const seedGameState1: Prisma.GameStateCreateInput = {
 			data: [
 				{
 					number: 1,
+					employees: DEFAULT_EMPLOYEE_ARRAY,
 					milestones: [],
 					restaurantDataId: seedRestaurant1.id
 				},
 				{
 					number: 2,
+					employees: DEFAULT_EMPLOYEE_ARRAY,
 					milestones: [],
 					restaurantDataId: seedRestaurant2.id
 				}
@@ -350,4 +353,3 @@ export async function dropEverything() {
 // }
 
 export const SEED_LOBBIES = [seedLobby1];
-

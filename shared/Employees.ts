@@ -149,3 +149,5 @@ export const EmployeesById: Record<string, Employee> = {
 	...FoodEmployees,
 	CEO: CEOEmployeeInitial
 } as const;
+
+export const DEFAULT_EMPLOYEE_ARRAY = ["CEO", null, null];

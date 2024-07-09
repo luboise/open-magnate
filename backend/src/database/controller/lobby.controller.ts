@@ -7,6 +7,7 @@ import {
 } from "@prisma/client";
 
 import {
+	DEFAULT_EMPLOYEE_ARRAY,
 	LobbySubmissionData,
 	LobbyView,
 	LobbyViewPerPlayer
@@ -152,6 +153,8 @@ const LobbyController = {
 													playerNumber
 												) => ({
 													number: playerNumber,
+													employees:
+														DEFAULT_EMPLOYEE_ARRAY,
 													milestones:
 														[],
 													restaurantDataId:
