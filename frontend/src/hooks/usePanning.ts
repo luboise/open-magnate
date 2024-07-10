@@ -4,6 +4,7 @@ import React, {
 	useReducer
 } from "react";
 import { Position } from "../utils";
+import useLocalVal from "./useLocalVal";
 
 interface MouseOffsetData {
 	isDown: boolean;
@@ -46,7 +47,18 @@ function calculateOffset(
 		: { ...data.offset };
 }
 
-function usePanning() {
+function usePanning(panId: string) {
+	if (!panId)
+		throw new Error(
+			"A Pan ID is required when using usePanning()."
+		);
+
+	const [panningOptions, setPanningOptions] =
+		useLocalVal<{
+			leftOffset: Position;
+			rightOffset: Position;
+		}>(`panning-options-${panId}`);
+
 	const [state, dispatch] = useReducer(
 		(state: PanningState, action: MouseDownAction) => {
 			if (action.actionType === "MOVED") {
@@ -97,12 +109,18 @@ function usePanning() {
 			leftButton: {
 				isDown: false,
 				startPosition: null,
-				offset: { x: 0, y: 0 }
+				offset: panningOptions?.leftOffset ?? {
+					x: 0,
+					y: 0
+				}
 			},
 			rightButton: {
 				isDown: false,
 				startPosition: null,
-				offset: { x: 0, y: 0 }
+				offset: panningOptions?.rightOffset ?? {
+					x: 0,
+					y: 0
+				}
 			},
 
 			currentPos: { x: 0, y: 0 }
@@ -140,6 +158,13 @@ function usePanning() {
 				const result =
 					type === "mousedown" ? "DOWN" : "UP";
 
+				if (result === "DOWN") {
+					event.preventDefault();
+					event.stopPropagation();
+				}
+
+				console.debug("Dropped");
+
 				// event.preventDefault();
 				// event.stopPropagation();
 				dispatch({ actionType, result, pos });
@@ -156,18 +181,14 @@ function usePanning() {
 		// );
 		document.body.addEventListener(
 			"mouseup",
-			onMouseEvent,
-			true
+			onMouseEvent
+			// true
 		);
 		document.body.addEventListener(
 			"mousemove",
-			onMouseEvent,
-			true
+			onMouseEvent
+			// true
 		);
-		// element.addEventListener(
-		// 	"contextmenu",
-		// 	mouseEvent
-		// );
 
 		// Clean up event listeners
 		return () => {
@@ -178,49 +199,30 @@ function usePanning() {
 			// );
 			document.body.removeEventListener(
 				"mouseup",
-				onMouseEvent,
-				true
+				onMouseEvent
+				// true
 			);
 			document.body.removeEventListener(
 				"mousemove",
-				onMouseEvent,
-				true
+				onMouseEvent
+				// true
 			);
-			// element.removeEventListener(
-			// 	"contextmenu",
-			// 	mouseEvent
-			// );
 		};
 	});
 
+	useEffect(() => {
+		setPanningOptions({
+			leftOffset: state.leftButton.offset,
+			rightOffset: state.rightButton.offset
+		});
+	}, [state.leftButton.offset]);
+
 	function startLeftPan(event: MouseEventType) {
 		onMouseEvent(event);
-		// event.preventDefault();
-
-		// if (event.button === 0)
-		// 	dispatch({
-		// 		actionType: "LEFT",
-		// 		result: "DOWN",
-		// 		pos: {
-		// 			x: event.clientX,
-		// 			y: event.clientY
-		// 		}
-		// 	});
 	}
 
 	function startRightPan(event: MouseEventType) {
 		onMouseEvent(event);
-		// event.preventDefault();
-
-		// if (event.button === 2)
-		// 	dispatch({
-		// 		actionType: "RIGHT",
-		// 		result: "DOWN",
-		// 		pos: {
-		// 			x: event.clientX,
-		// 			y: event.clientY
-		// 		}
-		// 	});
 	}
 
 	// useEffect(
@@ -253,4 +255,3 @@ function usePanning() {
 }
 
 export default usePanning;
-

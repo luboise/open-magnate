@@ -319,6 +319,9 @@ function Resizable(
 	}, []);
 
 	function startResize(e: MouseEvent) {
+		if (e.button !== 0) return;
+
+		e.stopPropagation();
 		e.preventDefault();
 
 		if (state.type === "IDLE") {
@@ -330,6 +333,9 @@ function Resizable(
 	}
 
 	function startMoving(e: MouseEvent) {
+		if (e.button !== 0) return;
+
+		e.stopPropagation();
 		e.preventDefault();
 
 		if (state.type === "IDLE") {
@@ -373,6 +379,8 @@ function Resizable(
 	}
 
 	function clickReleased(e: globalThis.MouseEvent) {
+		if (e.button !== 0) return;
+
 		e.preventDefault();
 		e.stopPropagation();
 

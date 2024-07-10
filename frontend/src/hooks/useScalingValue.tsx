@@ -24,10 +24,6 @@ function useScalingValue(
 			minScale,
 			maxScale
 		);
-		console.debug(
-			"Scale: ",
-			scaler + " -> " + newScale
-		);
 		setScaler(newScale);
 	}
 
@@ -39,4 +35,3 @@ function useScalingValue(
 }
 
 export default useScalingValue;
-

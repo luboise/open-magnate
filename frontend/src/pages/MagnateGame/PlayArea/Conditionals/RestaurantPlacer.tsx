@@ -167,4 +167,3 @@ function RestaurantPlacer() {
 }
 
 export default RestaurantPlacer;
-

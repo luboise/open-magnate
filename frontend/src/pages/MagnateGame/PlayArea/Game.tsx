@@ -1,6 +1,6 @@
 import "./Game.css";
 
-import { useEffect, useReducer } from "react";
+import { useEffect, useMemo, useReducer } from "react";
 import Resizable from "../../../components/Resizable";
 import { useGameState } from "../../../hooks/useGameState";
 import useLocalVal from "../../../hooks/useLocalVal";
@@ -50,7 +50,7 @@ function Game() {
 		useLocalVal<GameInterfaceState>("TOOLBAR_STATUS");
 
 	const { rightMouseOffset, startRightPan } =
-		usePanning();
+		usePanning("outer-offset");
 
 	const [state, dispatch] = useReducer(
 		(
@@ -132,6 +132,14 @@ function Game() {
 			console.log("clicked", event);
 	});
 
+	const styleProperties = useMemo(
+		() => ({
+			translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`,
+			scale: String(zoom)
+		}),
+		[rightMouseOffset, zoom]
+	);
+
 	// const logicDiv: JSX.Element = (()=>{
 	// 	switch ()
 	// })();
@@ -150,11 +158,10 @@ function Game() {
 	return (
 		<div
 			id="magnate-play-area"
-			onContextMenu={(e) => {
+			onContextMenuCapture={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
 			}}
-			onMouseDown={startRightPan}
 			style={{
 				gridTemplateColumns: map
 					? `repeat(${map[0].length}, 1fr)`
@@ -173,7 +180,61 @@ function Game() {
 				border: 0,
 				backgroundColor: "grey"
 			}}
+			onMouseDown={startRightPan}
 		>
+			<div
+				id="game-moving-parts"
+				style={{ ...styleProperties }}
+				onContextMenu={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+				}}
+				// When the user scrolls up, call onScaleUp
+				onWheel={(e) => {
+					e.preventDefault();
+
+					if (e.deltaY < 0) mapZoomIn();
+					else mapZoomOut();
+				}}
+			>
+				{state.showMap ? (
+					<MagnateMap
+						id="rz-magnate-map"
+						style={{
+							zIndex: -1
+						}}
+					>
+						{mapConditional}
+					</MagnateMap>
+				) : (
+					<></>
+				)}
+
+				<Resizable
+					defaultWidth={1200}
+					minimiseIf={state.showEmployeeTree}
+				>
+					<EmployeeTree id="rz-employee-tree" />
+				</Resizable>
+
+				<Resizable
+					defaultWidth={300}
+					minimiseIf={state.showTurnOrder}
+				>
+					<div id="rz-turn-order-list">
+						<TurnOrderList />
+						<TurnProgressIndicator />
+					</div>
+				</Resizable>
+
+				<Resizable
+					defaultWidth={500}
+					minimiseIf={state.showPlanner}
+				>
+					<TurnPlanner id="rz-turn-planner" />
+				</Resizable>
+			</div>
+			<TurnHandler />
 			<WindowToolbar
 				onClick={(clicked) =>
 					dispatch({
@@ -182,65 +243,6 @@ function Game() {
 					})
 				}
 			/>
-
-			<Resizable
-				defaultWidth={1200}
-				minimiseIf={state.showEmployeeTree}
-			>
-				<EmployeeTree id="rz-employee-tree" />
-			</Resizable>
-
-			<Resizable
-				defaultWidth={300}
-				minimiseIf={state.showTurnOrder}
-			>
-				<div id="rz-turn-order-list">
-					<TurnOrderList />
-					<TurnProgressIndicator />
-				</div>
-			</Resizable>
-
-			<Resizable
-				defaultWidth={500}
-				minimiseIf={state.showPlanner}
-			>
-				<TurnPlanner id="rz-turn-planner" />
-			</Resizable>
-
-			<TurnHandler />
-
-			{/* <Resizable
-				defaultWidth={1000}
-				localKey="magnate-map-section"
-				id="magnate-map-section"
-				minimiseIf={!toolbarStatus?.showMap}
-				> */}
-			{state.showMap ? (
-				<MagnateMap
-					id="rz-magnate-map"
-					style={{
-						zIndex: -1,
-						translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`,
-						scale: String(zoom)
-					}}
-					onContextMenu={(e) => {
-						e.preventDefault();
-						e.stopPropagation();
-					}}
-					// When the user scrolls up, call onScaleUp
-					onWheel={(e) => {
-						e.preventDefault();
-
-						if (e.deltaY < 0) mapZoomIn();
-						else mapZoomOut();
-					}}
-				>
-					{mapConditional}
-				</MagnateMap>
-			) : (
-				<></>
-			)}
-			{/* </Resizable> */}
 		</div>
 	);
 }
