@@ -92,7 +92,7 @@ function LobbyManager(props: {
 			) : (
 				// <Resizable defaultWidth={1000}>
 				<div id="lobby-map-preview">
-					<MagnateMap type="full" />
+					<MagnateMap mapType="full" />
 				</div>
 				// </Resizable>
 			)}

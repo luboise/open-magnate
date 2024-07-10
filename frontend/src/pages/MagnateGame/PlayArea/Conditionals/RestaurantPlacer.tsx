@@ -90,8 +90,18 @@ function RestaurantPlacer() {
 	onMapObjectHovered((event) => {
 		dispatch({
 			action: "NEW_POSITION",
-			x: Clamp(event.data.x, 0, boardInfo.width - 2),
-			y: Clamp(event.data.y, 0, boardInfo.height - 2)
+			x: Clamp(
+				event.data.x,
+				0,
+				boardInfo.width - 2,
+				true
+			),
+			y: Clamp(
+				event.data.y,
+				0,
+				boardInfo.height - 2,
+				true
+			)
 		});
 	});
 
@@ -157,3 +167,4 @@ function RestaurantPlacer() {
 }
 
 export default RestaurantPlacer;
+

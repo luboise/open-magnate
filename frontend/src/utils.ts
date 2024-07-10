@@ -10,9 +10,12 @@ export type Colour = RGB | RGBA | HEX;
 export function Clamp(
 	val: number,
 	min: number,
-	max: number
+	max: number,
+	floor: boolean = false
 ) {
-	return Math.floor(Math.min(Math.max(val, min), max));
+	const clamped = Math.min(Math.max(val, min), max);
+
+	return floor ? Math.floor(clamped) : clamped;
 }
 
 export function GetReactChildId(

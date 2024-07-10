@@ -6,8 +6,7 @@ import {
 	useCallback,
 	useEffect,
 	useReducer,
-	useRef,
-	useState
+	useRef
 } from "react";
 import {
 	EmployeeNode,
@@ -66,16 +65,11 @@ function findEmployeeRecursive(
 interface EmployeeTreeProps
 	extends HTMLAttributes<HTMLDivElement> {}
 
-function EmployeeTree(props: EmployeeTreeProps) {
+function EmployeeTree(_props: EmployeeTreeProps) {
 	const { myEmployees, playerData } = useGameState();
 
-	const { startRightPan, rightMouseOffset } =
+	const { startRightPan, rightMouseOffset: offset } =
 		usePanning();
-
-	const [treeOffset, setTreeOffset] = useState<{
-		x: number;
-		y: number;
-	}>({ x: 0, y: 0 });
 
 	const [employeeTree, dispatch] = useReducer(
 		(
@@ -187,22 +181,15 @@ function EmployeeTree(props: EmployeeTreeProps) {
 		? GetAllTreeData(employeeTree.tree)
 		: [];
 
-	const offset = {
-		x: rightMouseOffset.x - treeOffset.x,
-		y: rightMouseOffset.y - treeOffset.y
-	};
-
-	const treeHasChanged =
-		rightMouseOffset.x !== treeOffset.x ||
-		rightMouseOffset.y !== treeOffset.y;
+	const treeHasMoved = offset.x !== 0 || offset.y !== 0;
 
 	useEffect(() => {
 		if (!playerData) return;
 
 		const treeStr = playerData.employeeTreeStr;
 		if (treeStr === undefined) return;
-		else if (treeStr === null)
-			dispatch({ type: "SET_TREE", tree: null });
+		// else if (treeStr === null)
+		// dispatch({ type: "SET_TREE", tree: null });
 
 		const newTree = ParseEmployeeTree(treeStr);
 
@@ -217,6 +204,17 @@ function EmployeeTree(props: EmployeeTreeProps) {
 			return;
 		}
 
+		if (employeeTree.tree) {
+			console.debug(
+				"A tree already exists. Not updating.",
+				"Old tree: ",
+				employeeTree.tree,
+				"New tree: ",
+				newTree
+			);
+
+			return;
+		}
 		dispatch({ type: "SET_TREE", tree: newTree });
 	}, [playerData?.employeeTreeStr]);
 
@@ -239,16 +237,9 @@ function EmployeeTree(props: EmployeeTreeProps) {
 		[]
 	);
 
-	// dispatch({
-	// 	type: "ADD_NODE",
-	// 	from: parent,
-	// 	to: employee,
-	// 	atIndex: index
-	// });
-
 	function styleDraggee(
-		element: HTMLElement,
-		revert: boolean = false
+		_element: HTMLElement,
+		_revert: boolean = false
 	) {}
 
 	const onDragStart: DragEventHandler<HTMLDivElement> = (
@@ -291,7 +282,7 @@ function EmployeeTree(props: EmployeeTreeProps) {
 	};
 
 	const onDragEnd: DragEventHandler<HTMLDivElement> = (
-		event
+		_event
 	) => {
 		if (!element.current) {
 			return;
@@ -306,7 +297,7 @@ function EmployeeTree(props: EmployeeTreeProps) {
 
 	return (
 		<div className="game-employee-tree-section">
-			{treeHasChanged ? (
+			{treeHasMoved ? (
 				<Button
 					onClick={resetTree}
 					className="game-employee-tree-reset-button"
@@ -374,3 +365,4 @@ function EmployeeTree(props: EmployeeTreeProps) {
 }
 
 export default EmployeeTree;
+

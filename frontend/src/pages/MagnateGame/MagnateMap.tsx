@@ -1,8 +1,4 @@
-import {
-	HTMLAttributes,
-	PropsWithChildren,
-	ReactNode
-} from "react";
+import { HTMLAttributes, PropsWithChildren } from "react";
 import MapTile from "../../components/MapTile";
 import RestaurantImage from "../../components/RestaurantImage";
 import { useGameState } from "../../hooks/useGameState";
@@ -10,27 +6,17 @@ import useMap from "../../hooks/useMap";
 import { MapTileData } from "../../utils";
 import "./MagnateMap.css";
 
-interface BaseMapProps
-	extends HTMLAttributes<HTMLDivElement> {
-	onTileClicked?: (tile: MapTileData) => void;
-	children?: ReactNode;
-}
-type MapProps = BaseMapProps &
-	(
-		| {
-				type: "full";
-		  }
-		| {
-				type: "cropped";
-				xMin: number;
-				xMax: number;
-				yMin: number;
-				yMax: number;
-		  }
-	);
+interface MapProps extends HTMLAttributes<HTMLDivElement> {}
 
 function MagnateMap(props: PropsWithChildren<MapProps>) {
 	// console.debug("Rendering magnate map.");
+	const {
+		// onTileClicked,
+		children,
+		style,
+		...args
+	} = props;
+
 	const {
 		sendMapObjectClickEvent: mapObjectClicked,
 		sendMapObjectHoverEvent: mapObjectHovered,
@@ -55,16 +41,17 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 	if (!map) return <></>;
 
 	function FilterPreviewFiles(
-		tile: MapTileData
+		_tile: MapTileData
 	): boolean {
-		if (props.type === "cropped") {
-			return (
-				tile.x >= props.xMin &&
-				tile.x <= props.xMax &&
-				tile.y >= props.yMin &&
-				tile.y <= props.yMax
-			);
-		}
+		// if (mapType === "cropped") {
+		// 	return (
+		// 		tile.x >= props.xMin &&
+		// 		tile.x <= xMax &&
+		// 		tile.y >= yMin &&
+		// 		tile.y <= yMax
+		// 	);
+		// }
+
 		// Default is to allow through filter
 		return true;
 	}
@@ -75,8 +62,9 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 			style={{
 				gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
 				aspectRatio: `${map[0].length} / ${map.length}`,
-				...props.style
+				...style
 			}}
+			{...args}
 		>
 			{/* Tiles */}
 			{...map
@@ -155,7 +143,7 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 				Object.values(getAllRenderables)
 			).flat(2)}
 
-			{props.children}
+			{children}
 		</div>
 	);
 }

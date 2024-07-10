@@ -4,34 +4,37 @@ import { Clamp } from "../utils";
 function useScalingValue(
 	minScale: number = 0.01,
 	maxScale: number = 8,
-	scalingAmount: number = 2
+	scalingAmount: number = 1.5
 ) {
 	const [scaler, setScaler] = useState<number>(1);
 
-	function onScaleUp() {
-		setScaler(
-			Clamp(
-				scaler * scalingAmount,
-				minScale,
-				maxScale
-			)
-		);
+	function scaleUp() {
+		updateScale();
 	}
 
-	function onScaleDown() {
-		setScaler(
-			Clamp(
-				scaler / scalingAmount,
-				minScale,
-				maxScale
-			)
+	function scaleDown() {
+		updateScale(true);
+	}
+
+	function updateScale(down: boolean = false) {
+		const newScale = Clamp(
+			down
+				? scaler / scalingAmount
+				: scaler * scalingAmount,
+			minScale,
+			maxScale
 		);
+		console.debug(
+			"Scale: ",
+			scaler + " -> " + newScale
+		);
+		setScaler(newScale);
 	}
 
 	return {
 		scaler,
-		onScaleUp,
-		onScaleDown
+		scaleUp,
+		scaleDown
 	};
 }
 

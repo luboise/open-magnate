@@ -11,6 +11,7 @@ import MagnateMap from "../MagnateMap";
 import EmployeeTree from "./Conditionals/EmployeeTree/EmployeeTree";
 import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
 import TurnPlanner from "./Conditionals/TurnPlanner";
+import TurnHandler from "./TurnHandler";
 import TurnOrderList from "./TurnOrderList";
 import TurnProgressIndicator from "./TurnProgressIndicator";
 import WindowToolbar, {
@@ -41,9 +42,9 @@ function Game() {
 
 	const {
 		scaler: zoom,
-		onScaleUp,
-		onScaleDown
-	} = useScalingValue();
+		scaleUp: mapZoomIn,
+		scaleDown: mapZoomOut
+	} = useScalingValue(0.3, 4, 1.25);
 
 	const [toolbarStatus, setToolbarStatus] =
 		useLocalVal<GameInterfaceState>("TOOLBAR_STATUS");
@@ -206,6 +207,8 @@ function Game() {
 				<TurnPlanner id="rz-turn-planner" />
 			</Resizable>
 
+			<TurnHandler />
+
 			{/* <Resizable
 				defaultWidth={1000}
 				localKey="magnate-map-section"
@@ -215,15 +218,22 @@ function Game() {
 			{state.showMap ? (
 				<MagnateMap
 					id="rz-magnate-map"
-					type="full"
+					mapType="full"
 					style={{
 						zIndex: -1,
 						translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`,
-						scale: zoom
+						scale: String(zoom)
 					}}
 					onContextMenu={(e) => {
 						e.preventDefault();
 						e.stopPropagation();
+					}}
+					// When the user scrolls up, call onScaleUp
+					onWheel={(e) => {
+						e.preventDefault();
+
+						if (e.deltaY < 0) mapZoomIn();
+						else mapZoomOut();
 					}}
 				>
 					{mapConditional}
@@ -237,3 +247,4 @@ function Game() {
 }
 
 export default Game;
+

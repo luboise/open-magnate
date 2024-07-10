@@ -1,4 +1,8 @@
-import { useCallback, useEffect, useReducer } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useReducer
+} from "react";
 import { Position } from "../utils";
 
 interface MouseOffsetData {
@@ -21,6 +25,8 @@ type MouseDownAction =
 			pos: Position;
 	  }
 	| { actionType: "MOVED"; pos: Position };
+
+type MouseEventType = globalThis.MouseEvent;
 
 function calculateOffset(
 	data: MouseOffsetData,
@@ -104,7 +110,9 @@ function usePanning() {
 	);
 
 	const onMouseEvent = useCallback(
-		(event: MouseEvent) => {
+		(
+			event: React.MouseEvent | globalThis.MouseEvent
+		) => {
 			const {
 				type,
 				button,
@@ -185,7 +193,7 @@ function usePanning() {
 		};
 	});
 
-	function startLeftPan(event: MouseEvent) {
+	function startLeftPan(event: MouseEventType) {
 		onMouseEvent(event);
 		// event.preventDefault();
 
@@ -200,7 +208,7 @@ function usePanning() {
 		// 	});
 	}
 
-	function startRightPan(event: MouseEvent) {
+	function startRightPan(event: MouseEventType) {
 		onMouseEvent(event);
 		// event.preventDefault();
 
@@ -245,3 +253,4 @@ function usePanning() {
 }
 
 export default usePanning;
+
