@@ -1,7 +1,8 @@
 import { useMemo } from "react";
 import Button from "../../../components/Button";
 import { useGameState } from "../../../hooks/useGameState";
-import { TURN_PROGRESS_VALUES } from "../../../utils";
+
+import { TURN_PROGRESS_VALUES } from "../../../../../backend/src/dataViews";
 import SpinningStatus from "./SpinningStatus";
 
 function TurnHandler() {

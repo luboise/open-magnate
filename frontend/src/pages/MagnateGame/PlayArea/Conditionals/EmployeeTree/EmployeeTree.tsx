@@ -68,10 +68,8 @@ interface EmployeeTreeProps
 function EmployeeTree(_props: EmployeeTreeProps) {
 	const { myEmployees, playerData } = useGameState();
 
-	const { startPanning, offset } = usePanning(
-		"employee-tree",
-		"RIGHT"
-	);
+	const { startPanning, offset, resetOffset } =
+		usePanning("employee-tree", "RIGHT");
 
 	const [employeeTree, dispatch] = useReducer(
 		(
@@ -169,6 +167,8 @@ function EmployeeTree(_props: EmployeeTreeProps) {
 	);
 
 	function resetTree() {
+		resetOffset;
+
 		dispatch({
 			type: "SET_TREE",
 			tree: ParseEmployeeTree(
@@ -301,7 +301,7 @@ function EmployeeTree(_props: EmployeeTreeProps) {
 		<div className="game-employee-tree-section">
 			{treeHasMoved ? (
 				<Button
-					onClick={resetTree}
+					onClick={resetOffset}
 					className="game-employee-tree-reset-button"
 				>
 					Reset View

@@ -20,7 +20,7 @@ type MouseDownAction =
 			actionType: "PRESSED" | "MOVED";
 			pos: Position;
 	  }
-	| { actionType: "RELEASED" };
+	| { actionType: "RELEASED" | "RESET_OFFSET" };
 
 type MouseEventType = globalThis.MouseEvent;
 
@@ -108,6 +108,12 @@ function usePanning(
 						)
 					};
 				}
+				case "RESET_OFFSET": {
+					return {
+						...state,
+						offset: { x: 0, y: 0 }
+					};
+				}
 
 				default:
 					return state;
@@ -178,6 +184,10 @@ function usePanning(
 		[]
 	);
 
+	const resetOffset = useCallback(() => {
+		dispatch({ actionType: "RESET_OFFSET" });
+	}, []);
+
 	useEffect(() => {
 		document.body.addEventListener(
 			"mouseup",
@@ -224,7 +234,8 @@ function usePanning(
 						state.panCursorStart,
 						state.panCursorCurrentPos
 					)
-				: state.offset
+				: state.offset,
+		resetOffset
 	};
 }
 
