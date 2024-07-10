@@ -183,6 +183,26 @@ const myEmployeesSelector = selector<Employee[]>({
 	}
 });
 
+const currentPlayerSelector =
+	selector<GamePlayerViewPublic | null>({
+		key: "CURRENT_PLAYER",
+		get: ({ get }) => {
+			const gameState = get(GameStateAtom);
+
+			if (!gameState) return null;
+
+			const currentPlayer = gameState.players.find(
+				(player) =>
+					player.playerNumber ===
+					gameState.currentPlayer
+			);
+
+			if (!currentPlayer) return null;
+
+			return currentPlayer;
+		}
+	});
+
 export function useGameState() {
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
@@ -207,6 +227,10 @@ export function useGameState() {
 
 	const myEmployees = useRecoilValue(myEmployeesSelector);
 
+	const currentPlayer = useRecoilValue(
+		currentPlayerSelector
+	);
+
 	return {
 		state,
 		mapColOrder,
@@ -218,7 +242,8 @@ export function useGameState() {
 		restaurants: restaurants,
 		isMyTurn,
 		playerData: playerData,
-		myEmployees: myEmployees
+		myEmployees: myEmployees,
+		currentPlayer
 	};
 }
 

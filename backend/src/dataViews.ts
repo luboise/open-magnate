@@ -6,7 +6,11 @@ import {
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
 
+export const TURN_PROGRESS_VALUES: TURN_PROGRESS[] =
+	Object.values(PrismaTurnProgress);
+
 export type TURN_PROGRESS = PrismaTurnProgress;
+
 export type ENTRANCE_CORNER = PrismaEntranceCorner;
 export type DEMAND_TYPE = PrismaDemandType;
 

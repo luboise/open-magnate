@@ -218,7 +218,6 @@ function Game() {
 			{state.showMap ? (
 				<MagnateMap
 					id="rz-magnate-map"
-					mapType="full"
 					style={{
 						zIndex: -1,
 						translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`,
@@ -247,4 +246,3 @@ function Game() {
 }
 
 export default Game;
-
