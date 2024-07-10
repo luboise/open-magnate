@@ -68,8 +68,10 @@ interface EmployeeTreeProps
 function EmployeeTree(_props: EmployeeTreeProps) {
 	const { myEmployees, playerData } = useGameState();
 
-	const { startRightPan, rightMouseOffset: offset } =
-		usePanning("employee-tree");
+	const { startPanning, offset } = usePanning(
+		"employee-tree",
+		"RIGHT"
+	);
 
 	const [employeeTree, dispatch] = useReducer(
 		(
@@ -310,7 +312,7 @@ function EmployeeTree(_props: EmployeeTreeProps) {
 
 			<div
 				className="game-employee-tree-content"
-				onMouseDown={startRightPan}
+				onMouseDown={startPanning}
 			>
 				{employeeTree.tree ? (
 					<EmployeeTreeNode
@@ -365,3 +367,4 @@ function EmployeeTree(_props: EmployeeTreeProps) {
 }
 
 export default EmployeeTree;
+

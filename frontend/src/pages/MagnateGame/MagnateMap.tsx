@@ -1,4 +1,8 @@
-import { HTMLAttributes, PropsWithChildren } from "react";
+import {
+	HTMLAttributes,
+	PropsWithChildren,
+	useMemo
+} from "react";
 import MapTile from "../../components/MapTile";
 import RestaurantImage from "../../components/RestaurantImage";
 import { useGameState } from "../../hooks/useGameState";
@@ -38,8 +42,6 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 	// players
 	// );
 
-	if (!map) return <></>;
-
 	function FilterPreviewFiles(
 		_tile: MapTileData
 	): boolean {
@@ -56,96 +58,116 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 		return true;
 	}
 
-	return (
-		<div
-			className="map-preview-container"
-			style={{
-				gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
-				aspectRatio: `${map[0].length} / ${map.length}`,
-				...style
-			}}
-			{...args}
-		>
-			{/* Tiles */}
-			{...map
-				.flat(2)
-				.filter(FilterPreviewFiles)
-				.map((tile) => (
-					<MapTile
+	const returnDiv = useMemo((): JSX.Element => {
+		return !map ? (
+			<></>
+		) : (
+			<div
+				className="map-preview-container"
+				style={{
+					gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
+					aspectRatio: `${map[0].length} / ${map.length}`,
+					...style
+				}}
+				{...args}
+			>
+				{/* Tiles */}
+				{...map
+					.flat(2)
+					.filter(FilterPreviewFiles)
+					.map((tile) => (
+						<MapTile
+							onClick={() => {
+								mapObjectClicked({
+									type: "TILE",
+									data: tile
+								});
+							}}
+							onMouseEnter={() => {
+								mapObjectHovered({
+									type: "TILE",
+									data: tile
+								});
+							}}
+							tile={tile}
+						/>
+					))}
+
+				{/* Houses */}
+				{...(houses ?? []).map((house) => (
+					<div
+						style={{
+							gridColumn: `${house.x + 1} / span 2`,
+							gridRow: `${house.y + 1} / span 2`,
+							backgroundColor: "pink",
+							color: "white",
+							border: "1px solid black",
+							width: "100%",
+							height: "100%",
+							textAlign: "center",
+							lineHeight: "10px",
+							fontSize: "10px",
+							zIndex: 2
+						}}
 						onClick={() => {
 							mapObjectClicked({
-								type: "TILE",
-								data: tile
+								type: "HOUSE",
+								data: house
 							});
 						}}
-						onMouseEnter={() => {
-							mapObjectHovered({
-								type: "TILE",
-								data: tile
-							});
-						}}
-						tile={tile}
-					/>
+					>
+						#{house.priority}
+					</div>
 				))}
 
-			{/* Houses */}
-			{...(houses ?? []).map((house) => (
-				<div
-					style={{
-						gridColumn: `${house.x + 1} / span 2`,
-						gridRow: `${house.y + 1} / span 2`,
-						backgroundColor: "pink",
-						color: "white",
-						border: "1px solid black",
-						width: "100%",
-						height: "100%",
-						textAlign: "center",
-						lineHeight: "10px",
-						fontSize: "10px",
-						zIndex: 2
-					}}
-					onClick={() => {
-						mapObjectClicked({
-							type: "HOUSE",
-							data: house
-						});
-					}}
-				>
-					#{house.priority}
-				</div>
-			))}
+				{/* Restaurant */}
+				{...restaurants.map((restaurant) => {
+					const player = players?.find(
+						(player) =>
+							player.playerNumber ===
+							restaurant.player
+					);
 
-			{/* Restaurant */}
-			{...restaurants.map((restaurant) => {
-				const player = players?.find(
-					(player) =>
-						player.playerNumber ===
-						restaurant.player
-				);
+					if (!player) return <></>;
 
-				if (!player) return <></>;
+					return (
+						<RestaurantImage
+							restaurantNumber={
+								player.restaurant
+							}
+							style={{
+								gridColumn: `${restaurant.x + 1} / span 2`,
+								gridRow: `${restaurant.y + 1} / span 2`,
+								width: "100%",
+								height: "100%"
+							}}
+						/>
+					);
+				})}
 
-				return (
-					<RestaurantImage
-						restaurantNumber={player.restaurant}
-						style={{
-							gridColumn: `${restaurant.x + 1} / span 2`,
-							gridRow: `${restaurant.y + 1} / span 2`,
-							width: "100%",
-							height: "100%"
-						}}
-					/>
-				);
-			})}
+				{/* Extras */}
+				{...Array.from(
+					Object.values(getAllRenderables)
+				).flat(2)}
 
-			{/* Extras */}
-			{...Array.from(
-				Object.values(getAllRenderables)
-			).flat(2)}
+				{children}
+			</div>
+		);
+	}, [
+		map,
+		houses,
+		restaurants,
+		players,
+		getAllRenderables,
+		mapObjectClicked,
+		mapObjectHovered,
+		style,
+		args,
+		children
+	]);
 
-			{children}
-		</div>
-	);
+	if (!map) return <></>;
+	return returnDiv;
 }
 
 export default MagnateMap;

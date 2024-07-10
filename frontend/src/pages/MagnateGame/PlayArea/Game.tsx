@@ -49,8 +49,10 @@ function Game() {
 	const [toolbarStatus, setToolbarStatus] =
 		useLocalVal<GameInterfaceState>("TOOLBAR_STATUS");
 
-	const { rightMouseOffset, startRightPan } =
-		usePanning("outer-offset");
+	const { offset, startPanning } = usePanning(
+		"outer-offset",
+		"RIGHT"
+	);
 
 	const [state, dispatch] = useReducer(
 		(
@@ -134,10 +136,10 @@ function Game() {
 
 	const styleProperties = useMemo(
 		() => ({
-			translate: `${rightMouseOffset.x}px ${rightMouseOffset.y}px`,
+			translate: `${offset.x}px ${offset.y}px`,
 			scale: String(zoom)
 		}),
-		[rightMouseOffset, zoom]
+		[offset, zoom]
 	);
 
 	// const logicDiv: JSX.Element = (()=>{
@@ -180,7 +182,7 @@ function Game() {
 				border: 0,
 				backgroundColor: "grey"
 			}}
-			onMouseDown={startRightPan}
+			onMouseDown={startPanning}
 		>
 			<div
 				id="game-moving-parts"
@@ -191,8 +193,6 @@ function Game() {
 				}}
 				// When the user scrolls up, call onScaleUp
 				onWheel={(e) => {
-					e.preventDefault();
-
 					if (e.deltaY < 0) mapZoomIn();
 					else mapZoomOut();
 				}}
@@ -248,3 +248,4 @@ function Game() {
 }
 
 export default Game;
+

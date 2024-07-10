@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
 function useLocalVal<T extends Object>(
@@ -7,28 +7,31 @@ function useLocalVal<T extends Object>(
 ): [data: T | null, setter: (newVal: T | null) => void] {
 	const { get, set, deleteFromLS } = useLocalStorage();
 
-	const [val, setVal] = useState<T | null>(getter());
+	const setter = useCallback(
+		(newVal: T | null) => {
+			if (newVal === null) {
+				deleteFromLS(localStorageKey);
+				setVal(null);
+				return;
+			}
 
-	function setter(newVal: T | null) {
-		if (newVal === null) {
-			deleteFromLS(localStorageKey);
-			setVal(null);
-			return;
-		}
+			set(localStorageKey, newVal);
 
-		set(localStorageKey, newVal);
+			setVal(
+				typeof newVal === "string"
+					? newVal
+					: { ...newVal }
+			);
+		},
+		[localStorageKey]
+	);
 
-		setVal(
-			typeof newVal === "string"
-				? newVal
-				: { ...newVal }
-		);
-	}
-
-	function getter(): T | null {
+	const getter = useCallback((): T | null => {
 		const readVal = get(localStorageKey) as T;
 		return readVal || null;
-	}
+	}, [localStorageKey]);
+
+	const [val, setVal] = useState<T | null>(getter());
 
 	return [val, setter];
 }
