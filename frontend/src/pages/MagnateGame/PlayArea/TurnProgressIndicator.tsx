@@ -16,7 +16,7 @@ function TurnProgressIndicator() {
 	return (
 		<div className="magnate-tp-container">
 			<div className="magnate-tp-group">
-				{topRow.map((item) => (
+				{...topRow.map((item) => (
 					<div className="magnate-tp-item">
 						<span
 							style={{
@@ -37,3 +37,4 @@ function TurnProgressIndicator() {
 }
 
 export default TurnProgressIndicator;
+

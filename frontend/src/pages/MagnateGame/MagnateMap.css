@@ -1,10 +1,3 @@
-/* .map-tile-row {
-	display: flex;
-	width: 100%;
-
-	flex: 1;
-} */
-
 .map-preview-container {
 	display: grid;
 	border: var(--map-tile-piece-border-colour)
@@ -16,22 +9,11 @@
 	grid-auto-rows: 1fr;
 
 	background-color: black;
-	/* grid-template-columns: repeat(1fr, 10); */
-
-	/* grid-template-rows: repeat(auto, 1fr); */
 
 	/* GRID TEMPLATE ROWS MUST BE SPECIFIED FROM THE CODE SIDE */
 	/* grid-template-rows: repeat(5, minmax(auto, 1fr)); */
 }
 
-/* .map-preview-container > *:nth-child(5n) {
-	column-gap: 5em;
-	background-color: red;
-	border-right: black 3em solid;
-} */
-
-/* .map-preview-container .map-tile { */
-/* width: 100%; */
-/* height: 100%; */
-/* padding: 0.1em; */
-/* } */
+.map-preview-container > *:not(.map-tile) {
+	z-index: 2;
+}

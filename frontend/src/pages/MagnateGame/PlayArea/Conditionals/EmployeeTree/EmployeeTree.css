@@ -1,0 +1,106 @@
+.game-employee-tree-section {
+	display: flex;
+
+	flex-direction: column;
+
+	justify-content: space-between;
+
+	row-gap: 0.2em;
+
+	/* width: 1000px; */
+	width: 100%;
+
+	background-color: gray;
+
+	/* height: 900px; */
+	/* width: 100%; */
+}
+
+.game-employee-tree-section > div {
+	width: 100%;
+	border: 0.1em solid black;
+}
+
+.game-employee-tree-section * {
+	box-sizing: border-box;
+}
+
+.game-employee-tree-section .game-employee-card {
+	width: 100px;
+}
+
+.game-employee-tree-content {
+	position: relative;
+	/* height: 70%; */
+	overflow: hidden;
+
+	aspect-ratio: 4 / 3;
+}
+
+.game-employee-tree-nodes {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+
+	pointer-events: none;
+}
+
+.game-employee-tree-cards {
+	display: flex;
+
+	overflow: auto;
+	overflow-y: hidden;
+
+	gap: 0.2em;
+	padding: 0.2em;
+}
+
+.game-employee-tree-cards > * {
+	height: 100%;
+}
+
+.game-employee-tree-cards > .game-employee-card * {
+	/* pointer-events: none; */
+	user-select: none;
+}
+
+.game-employee-tree-reset-button {
+	position: absolute;
+	z-index: 2;
+
+	top: 0.3em;
+	right: 0.3em;
+}
+
+.game-employee-tree-node {
+	position: relative;
+
+	/* width: 20%; */
+}
+
+/* The root node */
+.game-employee-tree-content > div {
+	position: absolute;
+
+	/* width: 100%; */
+	/* height: 100%; */
+	left: 50%;
+
+	top: 1em;
+
+	translate: -50% 0;
+}
+
+.game-employee-tree-node-children {
+	display: flex;
+	justify-content: space-between;
+}
+
+.draggee {
+	position: fixed;
+	opacity: 0.5;
+	cursor: move;
+}

@@ -1,20 +1,25 @@
 import { Position } from "../../../backend/src/dataViews";
-import { Color } from "../utils";
+import useLocalVal from "../hooks/useLocalVal";
+import { Colour, GetReactChildId } from "../utils";
 import "./Resizable.css";
 
-import {
+import React, {
 	MouseEvent,
+	MouseEventHandler,
 	PropsWithChildren,
 	useEffect,
-	useReducer,
-	useRef
+	useMemo,
+	useReducer
 } from "react";
 
 let resizableElementId = 1;
 
 interface BaseResizeState {
-	width: number;
-	aspectRatio: number | undefined;
+	scaledWidth: number;
+	details: {
+		width: number;
+		aspectRatio: number | undefined;
+	};
 	pos: Position;
 }
 
@@ -45,14 +50,39 @@ type ResizableAction =
 	| { type: "START_MOVING"; pos: Position }
 	| { type: "MOVE_MOUSE"; pos: Position }
 	| { type: "CLICK_RELEASED" }
-	| { type: "SET_ASPECT_RATIO"; aspectRatio: number };
+	| {
+			type: "SET_DIV_DETAILS";
+			details: {
+				width: number;
+				aspectRatio: number;
+			};
+	  };
 
 interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
-	defaultWidth: number;
+	defaultWidth?: number;
+	orientation?: "Horizontal" | "Vertical";
 	defaultPosition?: Position;
-	color?: Color;
+	color?: Colour;
+	minimiseIf?: boolean;
 }
+
+// type MouseCallback = (e: globalThis.MouseEvent) => void;
+
+// const mouseDownCallbacks: Array<MouseCallback> = [];
+// const mouseMoveCallbacks: Array<MouseCallback> = [];
+
+// document.body.addEventListener("mouseup", (event) =>
+// 	mouseMoveCallbacks.forEach((callback) =>
+// 		callback(event)
+// 	)
+// );
+// document.body.addEventListener("mousedown", (event) =>
+// 	mouseMoveCallbacks.forEach((callback) =>
+// 		callback(event)
+// 	)
+// );
+
 function Resizable(
 	props: PropsWithChildren<ResizableProps> = {
 		// defaultHeight: 0,
@@ -65,37 +95,52 @@ function Resizable(
 		defaultWidth,
 		defaultPosition,
 		children,
+		orientation,
+		minimiseIf: minimized,
 		...args
 	} = props;
+
+	const id = useMemo(() => {
+		return GetReactChildId(children);
+	}, [children]);
+
+	if (!id)
+		throw new Error(
+			"Unable to find an id in the child component of a Resizeable component"
+		);
+
+	const [localVals, setLocalVals] = useLocalVal<{
+		x: number;
+		y: number;
+		width: number;
+	}>(`resizable-${resizableElementId++}`);
 
 	const [state, dispatch] = useReducer(
 		(
 			state: ResizableState,
 			action: ResizableAction
 		): ResizableState => {
-			// console.debug("Received action:", action);
+			// if (action.type !== "MOVE_MOUSE")
+			// 	console.debug("Received action:", action);
 
-			if (action.type === "SET_ASPECT_RATIO")
-				return {
+			if (action.type === "SET_DIV_DETAILS") {
+				const newState: ResizableState = {
 					...state,
-					aspectRatio: action.aspectRatio
+
+					details: {
+						width: action.details.width,
+						aspectRatio:
+							action.details.aspectRatio
+					}
 				};
+
+				return newState;
+			}
 
 			switch (state.type) {
 				case "IDLE": {
 					switch (action.type) {
 						case "START_RESIZE": {
-							// const startPos = {
-							// 	x:
-							// 		action.pos.x -
-							// 		state.width,
-							// 	y:
-							// 		(action.pos.y -
-							// 			state.width) /
-							// 		(state.aspectRatio ?? 1)
-							// };
-							// addEventListeners();
-
 							return {
 								...state,
 								type: "DRAGGING",
@@ -125,16 +170,20 @@ function Resizable(
 								}
 							};
 						case "CLICK_RELEASED": {
+							const newScaledWidth = state
+								.details?.aspectRatio
+								? getMinRectangleX(
+										state.pos,
+										state.dragTo,
+										state.details
+											.aspectRatio
+									)
+								: state.details.width;
+
 							return {
 								...state,
 								type: "IDLE",
-								width: state.aspectRatio
-									? getMinRectangleX(
-											state.pos,
-											state.dragTo,
-											state.aspectRatio
-										)
-									: state.width
+								scaledWidth: newScaledWidth
 							};
 						}
 						default:
@@ -153,19 +202,22 @@ function Resizable(
 								}
 							};
 						case "CLICK_RELEASED": {
+							const newX =
+								state.moveTo.x -
+								state.moveFrom.x +
+								state.pos.x;
+
+							const newY =
+								state.moveTo.y -
+								state.moveFrom.y +
+								state.pos.y;
+
 							return {
 								...state,
 								type: "IDLE",
 								pos: {
-									x:
-										state.moveTo.x -
-										state.moveFrom.x +
-										state.pos.x,
-
-									y:
-										state.moveTo.y -
-										state.moveFrom.y +
-										state.pos.y
+									x: newX,
+									y: newY
 								}
 							};
 						}
@@ -179,61 +231,85 @@ function Resizable(
 		},
 		{
 			type: "IDLE",
-			width: defaultWidth,
-			pos: {
-				x: defaultPosition?.x ?? 0,
-				y: defaultPosition?.y ?? 0
+
+			details: {
+				width:
+					localVals?.width ?? defaultWidth ?? 700,
+				aspectRatio: undefined
 			},
-			aspectRatio: undefined
+			scaledWidth:
+				localVals?.width ?? defaultWidth ?? 700,
+
+			pos: {
+				x:
+					(localVals &&
+					localVals.x &&
+					localVals.x !== defaultPosition?.x
+						? localVals.x
+						: null) ??
+					localVals?.x ??
+					defaultPosition?.x ??
+					500,
+				y: localVals?.y ?? defaultPosition?.y ?? 0
+			}
 		}
 	);
 
-	const id = useRef(
-		props.id ??
-			`resizable-element-${resizableElementId++}`
-	);
+	// const id = useRef(
+	// 	props.id ??
+	// 		`resizable-element-${resizableElementId++}`
+	// );
 
 	function fetchAspectRatio() {
-		if (!state || state.aspectRatio !== undefined)
+		if (
+			!state ||
+			state.details.aspectRatio !== undefined
+		)
 			return;
 
-		const element = document.getElementById(id.current);
+		const element = document.getElementById(id);
 		if (!element)
 			throw new Error(
-				`Unable to find resizable element by id ${id.current}.`
+				`Unable to find resizable element by id ${id}.`
 			);
 
 		const { width, height } =
 			element.getBoundingClientRect();
 
-		dispatch({
-			type: "SET_ASPECT_RATIO",
+		const newDetails = {
+			width,
 			aspectRatio: width / height
+		};
+
+		dispatch({
+			type: "SET_DIV_DETAILS",
+			details: newDetails
 		});
 	}
 
 	function addEventListeners() {
-		document.body.addEventListener(
-			"mousemove",
-			updatePos
-		);
+		const div = document.getElementById(id);
 
-		document.body.addEventListener(
-			"mouseup",
-			clickReleased
-		);
+		if (!div)
+			throw new Error(
+				"Unable to find the div element"
+			);
+
+		div.addEventListener("mousemove", updatePos);
+		div.addEventListener("mouseup", clickReleased);
 	}
 
 	function removeEventListeners() {
-		document.body.removeEventListener(
-			"mousemove",
-			updatePos
-		);
-
-		document.body.removeEventListener(
-			"mouseup",
-			clickReleased
-		);
+		// const element = document.getElementById(id);
+		// if (!element)
+		// 	throw new Error(
+		// 		`Unable to find resizable element by id ${id}. This should have already been verified beforehand.`
+		// 	);
+		// element.removeEventListener("mousemove", updatePos);
+		// element.removeEventListener(
+		// 	"mouseup",
+		// 	clickReleased
+		// );
 	}
 
 	useEffect(() => {
@@ -243,6 +319,9 @@ function Resizable(
 	}, []);
 
 	function startResize(e: MouseEvent) {
+		if (e.button !== 0) return;
+
+		e.stopPropagation();
 		e.preventDefault();
 
 		if (state.type === "IDLE") {
@@ -254,6 +333,9 @@ function Resizable(
 	}
 
 	function startMoving(e: MouseEvent) {
+		if (e.button !== 0) return;
+
+		e.stopPropagation();
 		e.preventDefault();
 
 		if (state.type === "IDLE") {
@@ -265,6 +347,9 @@ function Resizable(
 	}
 
 	function updatePos(e: globalThis.MouseEvent) {
+		// e.preventDefault();
+		// e.stopPropagation();
+
 		dispatch({
 			type: "MOVE_MOUSE",
 			pos: { x: e.clientX, y: e.clientY }
@@ -274,7 +359,8 @@ function Resizable(
 	function getMinRectangleX(
 		origin: Position,
 		outerPoint: Position,
-		aspectRatio: number
+		aspectRatio: number,
+		scale: number = 1.05
 	): number {
 		// TODO: Fix it so that negative and positive amounts both work
 		const widthFromX = outerPoint.x - origin.x;
@@ -288,96 +374,98 @@ function Resizable(
 		// If positive, return the larger of the 2
 
 		if (widthFromY > widthFromX) {
-			return widthFromY;
-		} else return widthFromX;
+			return widthFromY * scale;
+		} else return widthFromX * scale;
 	}
 
 	function clickReleased(e: globalThis.MouseEvent) {
+		if (e.button !== 0) return;
+
 		e.preventDefault();
+		e.stopPropagation();
 
 		dispatch({ type: "CLICK_RELEASED" });
-
-		// console.debug(
-		// 	"Stopped capturing, but the user was never dragging."
-		// );
-
-		// console.log(
-		// 	"start pos: ",
-		// 	startPos,
-		// 	"temp pos: ",
-		// 	tempPos
-		// );
-
-		// // Update if we can
-		// if (startPos) {
-		// 	const newPos: Position = {
-		// 		x: e.clientX,
-		// 		y: e.clientY
-		// 	};
-
-		// 	const newWidth = getMinRectangleX(
-		// 		startPos,
-		// 		newPos
-		// 	);
-
-		// 	// const newWidth = width + diff;
-		// 	console.debug(
-		// 		`Updating resizable element ${id.current} from ${width} to ${newWidth}.`
-		// 	);
-
-		// 	setWidth(newWidth);
-
-		// 	setStartPos(undefined);
-		// 	setTempPos(undefined);
-
-		// 	capturing.current = false;
 	}
 
 	useEffect(() => {
-		console.debug(
-			"Reducer state: ",
-			JSON.stringify(state)
-		);
-	}, [state, state.type]);
+		setLocalVals({
+			x: state.pos.x,
+			y: state.pos.y,
+			width: state.details.width
+		});
+	}, [state.pos.x, state.pos.y, state.details.width]);
+
+	useEffect(fetchAspectRatio, []);
+
+	const tempWidth =
+		state.type === "DRAGGING" &&
+		state.details.aspectRatio
+			? getMinRectangleX(
+					state.pos,
+					state.dragTo,
+					state.details.aspectRatio
+				)
+			: state.scaledWidth;
+
+	const scale: number = tempWidth / state.details.width;
+
+	// console.debug("scale: ", scale);
 
 	return (
 		<>
 			<div
 				{...args}
-				className="resizable-element"
-				id={id.current}
+				className={`resizable-element ${minimized ? "resizable-minimized" : ""}`}
+				id={id}
+				onMouseUp={
+					clickReleased as any as MouseEventHandler<HTMLDivElement>
+				}
+				// onMouseEnter={(e)=>{
+				// 	if ()
+				// }}
+				// onMouseLeave={
+				// 	clickReleased as any as MouseEventHandler<HTMLDivElement>
+				// }
 				style={{
-					width:
-						state.type === "DRAGGING" &&
-						state.aspectRatio
-							? getMinRectangleX(
-									state.pos,
-									state.dragTo,
-									state.aspectRatio
-								)
-							: state.width,
+					width: state.details.width ?? undefined,
+					// width:
+
 					color: color,
 
 					left: `${state.pos.x + (state.type === "MOVING" ? state.moveTo.x - state.moveFrom.x : 0)}px`,
 					top: `${state.pos.y + (state.type === "MOVING" ? state.moveTo.y - state.moveFrom.y : 0)}px`,
 
-					aspectRatio: state.aspectRatio
+					aspectRatio: state.details.aspectRatio,
+					flexDirection:
+						orientation === "Horizontal"
+							? "row"
+							: "column",
+
+					// Scale based on the difference between state.details.width, and state.width
+					transform: state.details
+						? `scale(${scale})`
+						: undefined,
+					// (state.type === "DRAGGING" &&
+					// state.aspectRatio
+					// 	? getMinRectangleX(
+					// 			state.pos,
+					// 			state.dragTo,
+					// 			state.aspectRatio
+					// 		)
+					// 	: state.scaledWidth)
+
+					transformOrigin: "0 0",
+					display: "inline-flex"
 				}}
-				onLoad={fetchAspectRatio}
+				// onLoad={fetchAspectRatio}
 			>
 				<div
-					style={{
-						width: "100%",
-						height: "1em",
-						backgroundColor: "white",
-						position: "absolute",
-						// Fix to be in css instead
-						top: "-1em",
-						zIndex: 2
-					}}
+					className="resizable-element-top-tab"
 					onMouseDown={startMoving}
 				/>
+
 				{children}
+
 				<div
 					className="resizable-element-handle"
 					// Start capturing when the user clicks on the handle

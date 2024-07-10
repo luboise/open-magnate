@@ -5,12 +5,13 @@ import {
 	TURN_PROGRESS,
 	UserSession
 } from "@prisma/client";
+
 import {
+	DEFAULT_EMPLOYEE_ARRAY,
 	LobbySubmissionData,
 	LobbyView,
 	LobbyViewPerPlayer
-} from "../../utils";
-
+} from "../../../../shared";
 import prisma from "../../datasource";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
@@ -116,6 +117,12 @@ const LobbyController = {
 							newLobbyData.playerCount
 						);
 
+					const playerIndices = new Array(
+						newLobbyData.playerCount
+					)
+						.fill(null)
+						.map((_, index) => index + 1);
+
 					const lobby = await ctx.lobby.create({
 						data: {
 							name: newLobbyData.name,
@@ -132,29 +139,28 @@ const LobbyController = {
 											data: houses
 										}
 									},
+									turnOrder: playerIndices
+										.sort(
+											(_a, _b) =>
+												Math.random() -
+												0.5
+										)
+										.join(""),
 									players: {
 										createMany: {
-											data: new Array(
-												newLobbyData.playerCount
+											data: playerIndices.map(
+												(
+													playerNumber
+												) => ({
+													number: playerNumber,
+													employees:
+														DEFAULT_EMPLOYEE_ARRAY,
+													milestones:
+														[],
+													restaurantDataId:
+														playerNumber
+												})
 											)
-												.fill(null)
-												.map(
-													(
-														_,
-														index
-													) => ({
-														number:
-															index +
-															1,
-														employees:
-															[],
-														milestones:
-															[],
-														restaurantId:
-															index +
-															1
-													})
-												)
 										}
 									}
 								}
@@ -184,7 +190,7 @@ const LobbyController = {
 								},
 								playerData: {
 									connect: {
-										gameId_number: {
+										gamePlayerId: {
 											number: 1,
 											gameId: lobby.id
 										}
@@ -232,7 +238,7 @@ const LobbyController = {
 						(innerPlayer) =>
 							innerPlayer.number ===
 							player.playerNumber
-					)?.restaurant.name ?? ""
+					)?.restaurantData.id ?? 1
 			}))
 		};
 
@@ -345,7 +351,7 @@ const LobbyController = {
 						},
 						playerData: {
 							connect: {
-								gameId_number: {
+								gamePlayerId: {
 									number: availableSlot.number,
 									gameId: lobbyId
 								}

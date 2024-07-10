@@ -3,18 +3,19 @@
 }
 
 .resizable-element {
-	display: flex;
+	display: inline-flex;
 	position: absolute;
 	top: 0;
 	right: 0;
 
-	aspect-ratio: 1;
 	/* height: auto; */
 
 	box-sizing: border-box;
 
 	border: var(--resizable-element-border-size) black solid;
 	border-radius: var(--resizable-element-border-size);
+
+	transition: opacity 0.02s;
 }
 
 .resizable-element-handle {
@@ -32,4 +33,18 @@
 	height: var(--resizable-element-border-size);
 
 	border-radius: 100%;
+}
+
+.resizable-minimized {
+	opacity: 0;
+	/* pointer-events: none; */
+}
+
+.resizable-element-top-tab {
+	width: 100%;
+	height: 1em;
+	background-color: white;
+	position: absolute;
+	top: -1em;
+	z-index: 2;
 }

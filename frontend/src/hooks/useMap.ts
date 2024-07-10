@@ -1,5 +1,7 @@
+import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
 import { HouseView, MapTileData } from "../utils";
+import { useGameState } from "./useGameState";
 
 type MapRenderListType = Record<string, JSX.Element[]>;
 
@@ -9,9 +11,13 @@ const MapRenderAtom = atom<MapRenderListType>({
 	default: {}
 });
 
-const RECOIL_MAP_CALLBACK_LIST: MapClickCallback[] = [];
+const RECOIL_MAP_CLICK_CALLBACK_LIST: MapClickCallback[] =
+	[];
+const RECOIL_MAP_HOVER_CALLBACK_LIST: MapClickCallback[] =
+	[];
+
 type MapClickCallback = (
-	event: MapObjectClickEvent
+	event: MouseEvent
 ) => void | Promise<void>;
 
 // interface Renderable {
@@ -24,59 +30,86 @@ export enum MAP_RENDER_KEYS {
 	HOUSES = "HOUSES"
 }
 
-type MapObjectClickEvent =
+type MouseEvent =
 	| {
 			type: "TILE";
 			data: MapTileData;
 	  }
 	| { type: "HOUSE"; data: HouseView };
 
+// type MouseEvent =
+// 	| {
+// 			type: "TILE";
+// 			data: MapTileData;
+// 	  }
+// 	| { type: "HOUSE"; data: HouseView };
+
+// type MapObjectHoverEvent =
+// 	|
+
+export function useBoardInfo() {
+	const { mapRowOrder } = useGameState();
+
+	const width = mapRowOrder?.length || 0;
+	const height = mapRowOrder?.[0]?.length || 0;
+
+	return {
+		width,
+		height
+	};
+}
+
 function useMap() {
 	const [mapRenderList, setMapRenderList] =
 		useRecoilState(MapRenderAtom);
 
-	function addRenderable(
-		key: string,
-		value: JSX.Element | JSX.Element[]
-	) {
-		if (!mapRenderList[key]) {
-			mapRenderList[key] = [];
-		}
-
-		if (!Array.isArray(value)) value = [value];
-
-		const newArray = mapRenderList[key].concat(value);
-		setMapRenderList({
-			...mapRenderList,
-			[key]: newArray
-		});
-	}
-
-	function removeRenderable(
-		key: string,
-		value: JSX.Element
-	) {
-		if (mapRenderList[key]) {
-			const newList = mapRenderList[key].filter(
-				(v) => v !== value
-			);
-
-			const newRenderList = { ...mapRenderList };
-
-			if (
-				newList.length === newRenderList[key].length
-			) {
-				console.debug(
-					"No item was removed from the render list."
-				);
-				return;
+	const addRenderable = useCallback(
+		(
+			key: string,
+			value: JSX.Element | JSX.Element[]
+		) => {
+			if (!mapRenderList[key]) {
+				mapRenderList[key] = [];
 			}
-			if (newList.length >= 0)
-				delete newRenderList[key];
 
-			setMapRenderList(newRenderList);
-		}
-	}
+			if (!Array.isArray(value)) value = [value];
+
+			const newArray =
+				mapRenderList[key].concat(value);
+			setMapRenderList({
+				...mapRenderList,
+				[key]: newArray
+			});
+		},
+		[]
+	);
+
+	const removeRenderable = useCallback(
+		(key: string, value: JSX.Element) => {
+			if (mapRenderList[key]) {
+				const newList = mapRenderList[key].filter(
+					(v) => v !== value
+				);
+
+				const newRenderList = { ...mapRenderList };
+
+				if (
+					newList.length ===
+					newRenderList[key].length
+				) {
+					console.debug(
+						"No item was removed from the render list."
+					);
+					return;
+				}
+				if (newList.length >= 0)
+					delete newRenderList[key];
+
+				setMapRenderList(newRenderList);
+			}
+		},
+		[]
+	);
 
 	function getRenderList(key: string) {
 		return (mapRenderList[key] || []).map((v) => ({
@@ -93,9 +126,9 @@ function useMap() {
 	}
 
 	async function sendMapObjectClickEvent(
-		event: MapObjectClickEvent
+		event: MouseEvent
 	) {
-		for (const callback of RECOIL_MAP_CALLBACK_LIST) {
+		for (const callback of RECOIL_MAP_CLICK_CALLBACK_LIST) {
 			try {
 				await callback(event);
 			} catch (error) {
@@ -107,27 +140,61 @@ function useMap() {
 		}
 	}
 
-	function onMapObjectClicked(
-		callback: (
-			event: MapObjectClickEvent
-		) => void | Promise<void>
+	async function sendMapObjectHoverEvent(
+		event: MouseEvent
 	) {
-		RECOIL_MAP_CALLBACK_LIST.push(callback);
+		for (const callback of RECOIL_MAP_HOVER_CALLBACK_LIST) {
+			try {
+				await callback(event);
+			} catch (error) {
+				console.error(
+					"Error occured during map hover callback: ",
+					error
+				);
+			}
+		}
 	}
 
-	function getAllRenderables() {
+	const onMapObjectClicked = useCallback(
+		(
+			callback: (
+				event: MouseEvent
+			) => void | Promise<void>
+		) => {
+			RECOIL_MAP_CLICK_CALLBACK_LIST.push(callback);
+		},
+		[]
+	);
+
+	const onMapObjectHovered = useCallback(
+		(
+			callback: (
+				event: MouseEvent
+			) => void | Promise<void>
+		) => {
+			RECOIL_MAP_HOVER_CALLBACK_LIST.push(callback);
+		},
+		[]
+	);
+
+	const getAllRenderables = useCallback(() => {
 		return { ...mapRenderList };
-	}
+	}, []);
 
 	return {
+		// Renderables
 		addRenderable,
 		removeRenderable,
 		getRenderList,
 		removeRenderList,
+		getAllRenderables,
+		// Mouse events
 		onMapObjectClicked,
+		onMapObjectHovered,
 		sendMapObjectClickEvent,
-		getAllRenderables
+		sendMapObjectHoverEvent
 	};
 }
 
 export default useMap;
+

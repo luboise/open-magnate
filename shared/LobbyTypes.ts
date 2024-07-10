@@ -1,8 +1,6 @@
 // import { House } from "@prisma/client";
-import {
-	GameStateViewPerPlayer,
-	RESTAURANT_NAME
-} from "../backend/src/utils";
+
+import { GameStateViewPerPlayer } from ".";
 
 export interface LobbySubmissionData {
 	name: string;
@@ -30,7 +28,7 @@ export interface LobbyPlayerData {
 	name: string;
 	playerNumber: number;
 	isHost: boolean;
-	restaurant: RESTAURANT_NAME;
+	restaurant: number;
 }
 
 // The base lobby view that is player agnostic

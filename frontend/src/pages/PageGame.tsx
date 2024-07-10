@@ -20,7 +20,7 @@ import {
 	LobbySubmissionData,
 	LobbyViewPerPlayer
 } from "../utils";
-import MagnateGame from "./MagnateGame/MagnateGame";
+import LobbyManager from "./MagnateGame/LobbyManager";
 import { PageGameAtom } from "./PageGameContext";
 
 const LOCAL_STORAGE_SESSION_KEY_NAME = "sessionKey";
@@ -54,12 +54,7 @@ function PageGame() {
 		LOCAL_STORAGE_INVITE_CODE_NAME
 	);
 
-	const { setState } = useGameState();
-	function setGameState(
-		gameState: GameStateViewPerPlayer | null
-	) {
-		setState(gameState);
-	}
+	const { setState: setGameState } = useGameState();
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -144,7 +139,6 @@ function PageGame() {
 				// 		newState.;
 				// 	}
 				// }
-				setGameState(message.data.gameState);
 
 				return newState;
 			}
@@ -248,6 +242,11 @@ function PageGame() {
 		state.pageState
 	]);
 
+	// Update the gamestate when it changes
+	useEffect(() => {
+		setGameState(state.gameState);
+	}, [state.gameState]);
+
 	// Check for bad ready states
 	switch (readyState) {
 		case ReadyState.OPEN:
@@ -315,11 +314,12 @@ function PageGame() {
 		return (
 			<>
 				<Button
-					text="Create Lobby"
 					onClick={() =>
 						dispatch({ type: "CREATING_LOBBY" })
 					}
-				></Button>
+				>
+					Create Lobby
+				</Button>
 				<Form
 					submitText="Join Lobby"
 					onSubmit={(data) => {
@@ -354,10 +354,10 @@ function PageGame() {
 		state.gameState !== null
 	) {
 		return (
-			<MagnateGame
+			<LobbyManager
 				lobby={state.lobbyState}
 				gameState={state.gameState}
-			></MagnateGame>
+			></LobbyManager>
 		);
 	} else return <div>Unknown error.</div>;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 
 interface ImageProps
 	extends React.ImgHTMLAttributes<HTMLImageElement> {
@@ -12,27 +12,18 @@ if (!FallbackImage)
 	);
 
 const Image: React.FC<ImageProps> = (props: ImageProps) => {
-	const { url, ...args } = useMemo(() => props, [props]);
-	const [image, setImage] = useState();
+	const { url, ...args } = props;
+	const [validImage, setValidImage] = useState(true);
 
-	useEffect(() => {
-		(async () => {
-			try {
-				/* @vite-ignore*/
-				const image = await import(props.url);
-				if (!image)
-					throw new Error(
-						`Unable to load image from "${props.url}"`
-					);
-
-				setImage(image);
-			} catch (error) {
-				console.error(error);
-			}
-		})();
-	}, []);
-
-	return <img src={image ?? FallbackImage} {...args} />;
+	return (
+		<img
+			src={validImage ? url : FallbackImage}
+			{...args}
+			onError={() => {
+				setValidImage(false);
+			}}
+		/>
+	);
 };
 
 export default Image;

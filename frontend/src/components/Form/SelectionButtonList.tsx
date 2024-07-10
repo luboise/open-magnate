@@ -17,7 +17,6 @@ function SelectionButtonList<T>(props: {
 			<div className="selection-btn-list">
 				{...props.valueList.map((currentValue) => (
 					<Button
-						text={String(currentValue)}
 						onClick={() =>
 							setValue(currentValue)
 						}
@@ -31,7 +30,9 @@ function SelectionButtonList<T>(props: {
 								? { borderColor: "red" }
 								: {}
 						}
-					/>
+					>
+						{String(currentValue)}
+					</Button>
 				))}
 			</div>
 			<input

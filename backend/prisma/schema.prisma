@@ -73,18 +73,36 @@ model GamePlayer {
 
   money      Int  @default(0)
   milestones Json
-  employees  Json
+  employees	Json
+  employeeTree  String	@db.VarChar(1000)	@default("0[X,X,X]")
 
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
-  restaurantId Int
+  restaurantData   RestaurantData @relation(fields: [restaurantDataId], references: [id])
+  restaurantDataId Int
+
+	restaurants	GamePlayerRestaurant[]
 
   lobbyPlayer LobbyPlayer?
 
-  // Each game can only have a player number once
-  @@unique([gameId, number])
   // Each game can only have a restaurant once
-  @@unique([gameId, restaurantId])
+  @@unique([gameId, restaurantDataId])
+
   @@map("game_player")
+  @@id(name: "gamePlayerId", [gameId, number])
+}
+
+model GamePlayerRestaurant {
+	id	Int		@id	@map("game_player_restaurant_id")	@default(autoincrement())
+
+	gameId	Int
+	playerNumber	Int
+	player	GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number])
+
+	x	Int
+	y	Int
+	entrance	ENTRANCE_CORNER
+
+	@@unique([gameId, playerNumber, x, y])
+	@@map("game_player_restaurant")
 }
 
 model GameState {
@@ -173,13 +191,13 @@ model MarketingCampaign {
   @@map("game_marketing_campaign")
 }
 
-model Restaurant {
+model RestaurantData {
   id   Int    @id @default(autoincrement()) @map("restaurant_id")
   name String
 
   GamePlayer   GamePlayer[]
 
-  @@map("restaurant")
+  @@map("restaurant_data")
 }
 
 enum ORIENTATION {
@@ -218,4 +236,11 @@ enum TURN_PROGRESS {
 
   // After lobby
   POSTGAME
+}
+
+enum ENTRANCE_CORNER {
+	TOPLEFT
+	TOPRIGHT
+	BOTTOMLEFT
+	BOTTOMRIGHT
 }

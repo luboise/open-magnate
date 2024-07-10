@@ -6,21 +6,26 @@ import {
 } from "recoil";
 import {
 	CloneArray,
-	GetTransposed,
-	TURN_PROGRESS,
-	TileType
+	GetTransposed
 } from "../../../backend/src/utils";
+import { Employee } from "../../../shared/EmployeeTypes";
 import {
 	DirectionBools,
 	IsConnecting,
 	IsEdge,
 	IsMaxBound,
-	IsMinBound
+	IsMinBound,
+	TileType
 } from "../../../shared/MapData";
 import {
+	EmployeesById,
+	GamePlayerViewPrivate,
+	GamePlayerViewPublic,
 	GameStateViewPerPlayer,
 	Map2D,
 	MapTileData,
+	RestaurantView,
+	TURN_PROGRESS,
 	parseMapChar
 } from "../utils";
 
@@ -92,28 +97,113 @@ const turnProgressSelector = selector<TURN_PROGRESS | null>(
 );
 
 const RECOIL_IS_MY_TURN_KEY = "IS_MY_TURN";
-const isMyTurnSelector = selector<TURN_PROGRESS | null>({
+const isMyTurnSelector = selector<boolean | null>({
 	key: RECOIL_IS_MY_TURN_KEY,
 	get: ({ get }) => {
-		get(GameStateAtom)?.currentPlayer ===
-			lobbyPlayer.playerNumber;
+		const gameState = get(GameStateAtom);
 
-		return turnProgress ?? null;
+		if (!gameState) return null;
+
+		return (
+			gameState.privateData.playerNumber ===
+			gameState.currentPlayer
+		);
 	}
 });
 
-export function isMyTurn() {
-	return useRecoilValue(isMyTurnSelector);
-}
+// export function isMyTurn() {
+// 	return useRecoilValue(isMyTurnSelector);
+// }
+
+const RECOIL_PLAYERS_KEY = "PLAYERS";
+const playersSelector = selector<
+	GamePlayerViewPublic[] | null
+>({
+	key: RECOIL_PLAYERS_KEY,
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+
+		if (!gameState) return null;
+
+		return gameState.players;
+	}
+});
+// export function usePlayers() {
+// 	return useRecoilValue(playersSelector);
+// }
+
+const restaurantsSelector = selector<RestaurantView[]>({
+	key: "RESTAURANTS",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+
+		if (!gameState) return [];
+
+		return gameState.restaurants;
+	}
+});
+
+const playerDataSelector =
+	selector<GamePlayerViewPrivate | null>({
+		key: "PLAYER_DATA",
+		get: ({ get }) => {
+			const gameState = get(GameStateAtom);
+
+			if (!gameState) return null;
+
+			return gameState.privateData;
+		}
+	});
+
+const myEmployeesSelector = selector<Employee[]>({
+	key: "MY_EMPLOYEES",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		const playerData = get(playerDataSelector);
+
+		if (!gameState || !playerData) return [];
+
+		const myEmployees: Employee[] = [];
+
+		playerData.employees.forEach((employeeId) => {
+			if (!(employeeId in EmployeesById)) return;
+
+			myEmployees.push(EmployeesById[employeeId]);
+		});
+
+		// TODO: Remove temporary employee for testing purposes
+		myEmployees.push(EmployeesById["mgmt_1"]);
+		myEmployees.push(EmployeesById["mgmt_1"]);
+		myEmployees.push(EmployeesById["mgmt_2"]);
+		myEmployees.push(EmployeesById["mgmt_3"]);
+		myEmployees.push(EmployeesById["food_1"]);
+		myEmployees.push(EmployeesById["burger_1"]);
+
+		return myEmployees;
+	}
+});
+
+const currentPlayerSelector =
+	selector<GamePlayerViewPublic | null>({
+		key: "CURRENT_PLAYER",
+		get: ({ get }) => {
+			const gameState = get(GameStateAtom);
+
+			if (!gameState) return null;
+
+			const currentPlayer = gameState.players.find(
+				(player) =>
+					player.playerNumber ===
+					gameState.currentPlayer
+			);
+
+			if (!currentPlayer) return null;
+
+			return currentPlayer;
+		}
+	});
 
 export function useGameState() {
-	// : {
-	// 	state: GameStateAtomType;
-	// 	mapColOrder: MapSelectorType;
-	// 	mapRowOrder: MapSelectorType;
-	// 	houses: ;
-	// 	setState: (newState: GameStateAtomType) => void;
-	// }
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
 	const mapColOrder = useRecoilValue(
@@ -127,13 +217,33 @@ export function useGameState() {
 		turnProgressSelector
 	);
 
+	const players = useRecoilValue(playersSelector);
+
+	const restaurants = useRecoilValue(restaurantsSelector);
+
+	const isMyTurn = useRecoilValue(isMyTurnSelector);
+
+	const playerData = useRecoilValue(playerDataSelector);
+
+	const myEmployees = useRecoilValue(myEmployeesSelector);
+
+	const currentPlayer = useRecoilValue(
+		currentPlayerSelector
+	);
+
 	return {
 		state,
 		mapColOrder,
 		mapRowOrder,
 		houses,
 		setState: _setState,
-		turnProgress
+		turnProgress,
+		players: players,
+		restaurants: restaurants,
+		isMyTurn,
+		playerData: playerData,
+		myEmployees: myEmployees,
+		currentPlayer
 	};
 }
 

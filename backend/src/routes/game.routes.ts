@@ -5,6 +5,10 @@ import LobbyController, {
 	FullLobby
 } from "../database/controller/lobby.controller";
 import UserSessionController from "../database/controller/usersession.controller";
+
+// Fixes issues from using base WebSocket without extended methods
+import { UserSession } from "@prisma/client";
+import WebSocket from "ws";
 import {
 	BackendMessage,
 	BaseMessage,
@@ -13,12 +17,10 @@ import {
 	JoinLobbyMessage,
 	LeaveLobbyMessage,
 	LobbySubmissionData,
+	MakeMoveMessage,
 	StartGameMessage
-} from "../utils";
-
-// Fixes issues from using base WebSocket without extended methods
-import { UserSession } from "@prisma/client";
-import WebSocket from "ws";
+} from "../../../shared";
+import { MOVE_TYPE } from "../../../shared/Moves";
 import GameStateController from "../database/controller/gamestate.controller";
 import { connectionsToWebsocket } from "./connections";
 
@@ -94,6 +96,10 @@ const routeHandler: RouteHandler = (express, app) => {
 				}
 				case "START_GAME": {
 					handleStartGame(params);
+					return;
+				}
+				case "MAKE_MOVE": {
+					handleMoveMade(params);
 					return;
 				}
 			}
@@ -212,7 +218,13 @@ async function handleNewConnection(
 		return;
 	}
 
-	updateOnePlayer(lobby, userSession, "ALL");
+	try {
+		updateOnePlayer(lobby, userSession, "ALL");
+	} catch (error) {
+		console.error(error);
+		ws.send(String(error));
+		return;
+	}
 }
 
 const handleCreateLobby: BackendMessageHandler<
@@ -286,15 +298,52 @@ function updateOnePlayer(
 			} as FrontendMessage)
 		);
 	} else if (updateType === "GAMESTATE") {
+		const gameStateView =
+			GameStateController.GetGameStateView(lobby);
+		if (!gameStateView)
+			throw new Error(
+				"Unable to get game state from lobby."
+			);
+
+		const playerNumber = lobby.playersInLobby.find(
+			(lobbyPlayer) =>
+				lobbyPlayer.userSession.sessionKey ===
+				player.sessionKey
+		)?.playerNumber;
+
+		if (!playerNumber)
+			throw new Error(
+				"Unable to find player in lobby."
+			);
+
 		ws.send(
 			JSON.stringify({
 				type: "GAMESTATE_UPDATED",
-				data: GameStateController.GetGameStateView(
-					lobby
+				data: GameStateController.GetPublicGameStateView(
+					gameStateView,
+					playerNumber
 				)
 			} as FrontendMessage)
 		);
 	} else if (updateType === "ALL") {
+		// TODO: Refactor this to not be repeated
+		const gameStateView =
+			GameStateController.GetGameStateView(lobby);
+		if (!gameStateView)
+			throw new Error(
+				"Unable to get game state from lobby."
+			);
+
+		const playerNumber = lobby.playersInLobby.find(
+			(lobbyPlayer) =>
+				lobbyPlayer.userId === player.sessionKey
+		)?.playerNumber;
+
+		if (!playerNumber)
+			throw new Error(
+				"Unable to find player in lobby."
+			);
+
 		ws.send(
 			JSON.stringify({
 				type: "ALL_UPDATED",
@@ -305,8 +354,9 @@ function updateOnePlayer(
 							sessionKey
 						),
 					gameState:
-						GameStateController.GetGameStateView(
-							lobby
+						GameStateController.GetPublicGameStateView(
+							gameStateView,
+							playerNumber
 						)
 				}
 			} as FrontendMessage)
@@ -498,6 +548,75 @@ const handleStartGame: BackendMessageHandler<
 	updateAllPlayers(
 		await LobbyController.refresh(lobby),
 		"ALL"
+	);
+};
+
+const handleMoveMade: BackendMessageHandler<
+	MakeMoveMessage
+> = async (params) => {
+	if (
+		!params.userSession ||
+		!params.userSession.sessionKey
+	) {
+		return;
+	}
+
+	const lobby = await LobbyController.GetFromSessionKey(
+		params.userSession.sessionKey
+	);
+
+	if (!lobby) {
+		params.ws.send("You are not currently in a lobby.");
+		return;
+	}
+
+	const gamePlayer = lobby.gameState?.players.find(
+		(player) =>
+			player.lobbyPlayer?.userId ===
+			params.userSession?.sessionKey
+	);
+
+	if (!gamePlayer) {
+		params.ws.send(
+			"You must be the host of the lobby to start the game."
+		);
+		return;
+	}
+
+	const message = params.message.data;
+	if (message.MoveType === MOVE_TYPE.PLACE_RESTAURANT) {
+		const success =
+			await GameStateController.AddNewRestaurant(
+				gamePlayer,
+				{
+					x: message.x,
+					y: message.y,
+					entrance: message.entrance
+				}
+			);
+
+		if (!success) {
+			console.error(
+				"Unable to create new restaurant."
+			);
+			return;
+		}
+
+		const updated =
+			await GameStateController.AdvanceGameState(
+				lobby.id
+			);
+		if (!updated) {
+			const msg = "Unable to advance the game state";
+			console.error(msg);
+			params.ws.send(msg);
+			return;
+		}
+	}
+
+	updateAllPlayers(
+		await LobbyController.refresh(lobby),
+		"GAMESTATE"
 	);
 };
 

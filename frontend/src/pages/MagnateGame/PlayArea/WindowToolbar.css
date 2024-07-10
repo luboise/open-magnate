@@ -1,0 +1,26 @@
+#game-window-toolbar {
+	display: grid;
+
+	/* Middle of screen */
+	position: fixed;
+	bottom: 0;
+	left: 50%;
+	translate: -50%;
+
+	margin-bottom: 0em;
+	grid-auto-flow: column;
+
+	/* grid-template: repeat(1fr, auto); */
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+
+	z-index: 3;
+}
+
+#game-window-toolbar > * {
+	/* flex: 1 1 0px; */
+	aspect-ratio: 1;
+	/* width: 100%; */
+	height: 100%;
+	width: 75%;
+}
+

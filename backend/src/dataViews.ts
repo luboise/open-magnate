@@ -1,11 +1,24 @@
 import {
-	DEMAND_TYPE,
 	MARKETING_TYPE,
 	ORIENTATION,
+	DEMAND_TYPE as PrismaDemandType,
+	ENTRANCE_CORNER as PrismaEntranceCorner,
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
 
-export interface GameStateView {
+export const TURN_PROGRESS_VALUES: TURN_PROGRESS[] =
+	Object.values(PrismaTurnProgress);
+
+export type TURN_PROGRESS = PrismaTurnProgress;
+
+export type ENTRANCE_CORNER = PrismaEntranceCorner;
+export type DEMAND_TYPE = PrismaDemandType;
+
+export interface RestaurantView extends Position {
+	player: number;
+}
+
+interface BaseGameStateView {
 	turnProgress: TURN_PROGRESS;
 	currentTurn: number;
 	currentPlayer: number;
@@ -15,25 +28,38 @@ export interface GameStateView {
 
 	playerCount: number;
 
+	restaurants: RestaurantView[];
+
 	houses: HouseView[];
 	gardens: GardenView[];
 
 	marketingCampaigns: MarketingCampaignView[];
 }
 
-export interface GameStateViewPerPlayer
-	extends GameStateView {
-	players: GamePlayerView[];
-
-	//  // Relations
-	//  houses             House[]
-
-	//  players GamePlayer[]
+export interface GameStateView extends BaseGameStateView {
+	players: GamePlayerViewPrivate[];
 }
 
-export type TURN_PROGRESS = PrismaTurnProgress;
+export interface GameStateViewPerPlayer
+	extends BaseGameStateView {
+	players: GamePlayerViewPublic[];
 
-export type GamePlayerView = {};
+	// The player's private data
+	privateData: GamePlayerViewPrivate;
+}
+
+export interface GamePlayerViewPublic {
+	playerNumber: number;
+	milestones: number[];
+	restaurant: number;
+	money: number;
+}
+
+export interface GamePlayerViewPrivate
+	extends GamePlayerViewPublic {
+	employees: string[];
+	employeeTreeStr: string;
+}
 
 export interface MarketingCampaignView extends Position {
 	priority: number;

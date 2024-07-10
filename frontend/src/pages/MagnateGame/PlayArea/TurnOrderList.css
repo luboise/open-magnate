@@ -1,0 +1,18 @@
+.game-turn-order-list {
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+}
+
+.game-turn-order-list > * {
+	flex: 1 1 0px;
+	/* aspect-ratio: 1; */
+	display: flex;
+	height: 3em;
+
+	padding: 0.1em;
+}
+
+.game-turn-order-list img {
+	object-fit: contain;
+}
