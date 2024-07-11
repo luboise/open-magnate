@@ -118,177 +118,21 @@ function Resizable(
 		startPanning: startScaling
 	} = usePanning(id + "-scaling", "LEFT");
 
-	// const [state, dispatch] = useReducer(
-	// 	(
-	// 		state: ResizableState,
-	// 		action: ResizableAction
-	// 	): ResizableState => {
-	// 		// if (action.type !== "MOVE_MOUSE")
-	// 		// 	console.debug("Received action:", action);
+	function fetchAspectRatio() {
+		const element = document.getElementById(id);
+		if (!element)
+			throw new Error(
+				`Unable to find resizable element by id ${id}.`
+			);
 
-	// 		if (action.type === "SET_DIV_DETAILS") {
-	// 			const newState: ResizableState = {
-	// 				...state,
+		const { width, height } =
+			element.getBoundingClientRect();
 
-	// 				details: {
-	// 					width: action.details.width,
-	// 					aspectRatio:
-	// 						action.details.aspectRatio
-	// 				}
-	// 			};
-
-	// 			return newState;
-	// 		}
-
-	// 		switch (state.type) {
-	// 			case "IDLE": {
-	// 				switch (action.type) {
-	// 					case "START_RESIZE": {
-	// 						return {
-	// 							...state,
-	// 							type: "DRAGGING",
-	// 							dragTo: action.pos,
-	// 							dragFrom: action.pos
-	// 						};
-	// 					}
-	// 					case "START_MOVING": {
-	// 						return {
-	// 							...state,
-	// 							type: "MOVING",
-	// 							moveFrom: action.pos,
-	// 							moveTo: action.pos
-	// 						};
-	// 					}
-	// 					default:
-	// 						return { ...state };
-	// 				}
-	// 			}
-	// 			case "DRAGGING": {
-	// 				switch (action.type) {
-	// 					case "MOVE_MOUSE":
-	// 						return {
-	// 							...state,
-	// 							dragTo: {
-	// 								...action.pos
-	// 							}
-	// 						};
-	// 					case "CLICK_RELEASED": {
-	// 						const newScaledWidth = state
-	// 							.details?.aspectRatio
-	// 							? getMinRectangleX(
-	// 									state.pos,
-	// 									state.dragTo,
-	// 									state.details
-	// 										.aspectRatio
-	// 								)
-	// 							: state.details.width;
-
-	// 						return {
-	// 							...state,
-	// 							type: "IDLE",
-	// 							scaledWidth: newScaledWidth
-	// 						};
-	// 					}
-	// 					default:
-	// 						return {
-	// 							...state
-	// 						};
-	// 				}
-	// 			}
-	// 			case "MOVING": {
-	// 				switch (action.type) {
-	// 					case "MOVE_MOUSE":
-	// 						return {
-	// 							...state,
-	// 							moveTo: {
-	// 								...action.pos
-	// 							}
-	// 						};
-	// 					case "CLICK_RELEASED": {
-	// 						const newX =
-	// 							state.moveTo.x -
-	// 							state.moveFrom.x +
-	// 							state.pos.x;
-
-	// 						const newY =
-	// 							state.moveTo.y -
-	// 							state.moveFrom.y +
-	// 							state.pos.y;
-
-	// 						return {
-	// 							...state,
-	// 							type: "IDLE",
-	// 							pos: {
-	// 								x: newX,
-	// 								y: newY
-	// 							}
-	// 						};
-	// 					}
-	// 					default:
-	// 						return {
-	// 							...state
-	// 						};
-	// 				}
-	// 			}
-	// 		}
-	// 	},
-	// 	{
-	// 		type: "IDLE",
-
-	// 		details: {
-	// 			width:
-	// 				localVals?.width ?? defaultWidth ?? 700,
-	// 			aspectRatio: undefined
-	// 		},
-	// 		scaledWidth:
-	// 			localVals?.width ?? defaultWidth ?? 700,
-
-	// 		pos: {
-	// 			x:
-	// 				(localVals &&
-	// 				localVals.x &&
-	// 				localVals.x !== defaultPosition?.x
-	// 					? localVals.x
-	// 					: null) ??
-	// 				localVals?.x ??
-	// 				defaultPosition?.x ??
-	// 				500,
-	// 			y: localVals?.y ?? defaultPosition?.y ?? 0
-	// 		}
-	// 	}
-	// );
-
-	// const id = useRef(
-	// 	props.id ??
-	// 		`resizable-element-${resizableElementId++}`
-	// );
-
-	// function fetchAspectRatio() {
-	// 	if (
-	// 		!state ||
-	// 		state.details.aspectRatio !== undefined
-	// 	)
-	// 		return;
-
-	// 	const element = document.getElementById(id);
-	// 	if (!element)
-	// 		throw new Error(
-	// 			`Unable to find resizable element by id ${id}.`
-	// 		);
-
-	// 	const { width, height } =
-	// 		element.getBoundingClientRect();
-
-	// 	const newDetails = {
-	// 		width,
-	// 		aspectRatio: width / height
-	// 	};
-
-	// 	dispatch({
-	// 		type: "SET_DIV_DETAILS",
-	// 		details: newDetails
-	// 	});
-	// }
+		const newDetails = {
+			width,
+			aspectRatio: width / height
+		};
+	}
 
 	// function addEventListeners() {
 	// 	const div = document.getElementById(id);
@@ -476,4 +320,3 @@ function Resizable(
 	);
 }
 export default Resizable;
-
