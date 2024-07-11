@@ -5,8 +5,8 @@
 .resizable-element {
 	display: inline-flex;
 	position: absolute;
-	top: 0;
-	right: 0;
+	/* top: 0;
+	right: 0; */
 
 	/* height: auto; */
 
@@ -48,3 +48,4 @@
 	top: -1em;
 	z-index: 2;
 }
+

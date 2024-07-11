@@ -183,57 +183,54 @@ function Game() {
 				backgroundColor: "grey"
 			}}
 			onMouseDown={startPanning}
+			// When the user scrolls up, call onScaleUp
+			onWheel={(e) => {
+				if (e.deltaY < 0) mapZoomIn();
+				else mapZoomOut();
+			}}
 		>
-			<div
-				id="game-moving-parts"
-				style={{ ...styleProperties }}
-				onContextMenu={(e) => {
-					e.preventDefault();
-					e.stopPropagation();
-				}}
-				// When the user scrolls up, call onScaleUp
-				onWheel={(e) => {
-					if (e.deltaY < 0) mapZoomIn();
-					else mapZoomOut();
-				}}
+			{state.showMap ? (
+				<MagnateMap
+					id="rz-magnate-map"
+					style={{
+						zIndex: -1,
+						...styleProperties
+					}}
+					onContextMenu={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+					}}
+				>
+					{mapConditional}
+				</MagnateMap>
+			) : (
+				<></>
+			)}
+
+			<Resizable
+				defaultWidth={1200}
+				minimiseIf={state.showEmployeeTree}
 			>
-				{state.showMap ? (
-					<MagnateMap
-						id="rz-magnate-map"
-						style={{
-							zIndex: -1
-						}}
-					>
-						{mapConditional}
-					</MagnateMap>
-				) : (
-					<></>
-				)}
+				<EmployeeTree id="rz-employee-tree" />
+			</Resizable>
 
-				<Resizable
-					defaultWidth={1200}
-					minimiseIf={state.showEmployeeTree}
-				>
-					<EmployeeTree id="rz-employee-tree" />
-				</Resizable>
+			<Resizable
+				defaultWidth={300}
+				minimiseIf={state.showTurnOrder}
+			>
+				<div id="rz-turn-order-list">
+					<TurnOrderList />
+					<TurnProgressIndicator />
+				</div>
+			</Resizable>
 
-				<Resizable
-					defaultWidth={300}
-					minimiseIf={state.showTurnOrder}
-				>
-					<div id="rz-turn-order-list">
-						<TurnOrderList />
-						<TurnProgressIndicator />
-					</div>
-				</Resizable>
+			<Resizable
+				defaultWidth={500}
+				minimiseIf={state.showPlanner}
+			>
+				<TurnPlanner id="rz-turn-planner" />
+			</Resizable>
 
-				<Resizable
-					defaultWidth={500}
-					minimiseIf={state.showPlanner}
-				>
-					<TurnPlanner id="rz-turn-planner" />
-				</Resizable>
-			</div>
 			<TurnHandler />
 			<WindowToolbar
 				onClick={(clicked) =>
