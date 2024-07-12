@@ -4,125 +4,144 @@ import usePanning from "../hooks/usePanning";
 import { Colour, GetReactChildId } from "../utils";
 import "./Resizable.css";
 
-import React, { PropsWithChildren, useMemo } from "react";
+import React, {
+	PropsWithChildren,
+	useEffect,
+	useMemo,
+	useReducer
+} from "react";
 
-interface BaseResizeState {
-	scaledWidth: number;
-	details: {
-		width: number;
-		aspectRatio: number | undefined;
-	};
-	pos: Position;
-}
+interface BaseResizeState {}
 
 interface IdleState extends BaseResizeState {
 	type: "IDLE";
 }
 interface DraggingState extends BaseResizeState {
 	type: "DRAGGING";
-	dragFrom: Position;
-	dragTo: Position;
-}
-interface MovingState extends BaseResizeState {
-	type: "MOVING";
-	moveFrom: Position;
-	moveTo: Position;
+	startWidth: number;
 }
 
-type ResizableState =
-	| IdleState
-	| DraggingState
-	| MovingState;
+type ResizableState = IdleState | DraggingState;
 
 type ResizableAction =
 	| {
 			type: "START_RESIZE";
-			pos: Position;
+			startWidth: number;
+			startPos: Position;
 	  }
-	| { type: "START_MOVING"; pos: Position }
-	| { type: "MOVE_MOUSE"; pos: Position }
-	| { type: "CLICK_RELEASED" }
-	| {
-			type: "SET_DIV_DETAILS";
-			details: {
-				width: number;
-				aspectRatio: number;
-			};
-	  };
+	| { type: "STOP_RESIZE" };
 
 interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
 	defaultWidth?: number;
 	orientation?: "Horizontal" | "Vertical";
 	defaultPosition?: Position;
-	color?: Colour;
+	colour?: Colour;
 	minimiseIf?: boolean;
+	scalingType?: "DIMENSIONS" | "SCALE";
 }
 
-// type MouseCallback = (e: globalThis.MouseEvent) => void;
-
-// const mouseDownCallbacks: Array<MouseCallback> = [];
-// const mouseMoveCallbacks: Array<MouseCallback> = [];
-
-// document.body.addEventListener("mouseup", (event) =>
-// 	mouseMoveCallbacks.forEach((callback) =>
-// 		callback(event)
-// 	)
-// );
-// document.body.addEventListener("mousedown", (event) =>
-// 	mouseMoveCallbacks.forEach((callback) =>
-// 		callback(event)
-// 	)
-// );
-
-function Resizable(
-	props: PropsWithChildren<ResizableProps> = {
-		// defaultHeight: 0,
-		defaultWidth: 700,
-		color: "#000000"
-	}
-) {
-	const {
-		color,
-		defaultWidth,
-		defaultPosition,
-		children,
-		orientation,
-		minimiseIf: minimized,
-		...args
-	} = props;
-
-	const id = useMemo(() => {
+function Resizable({
+	defaultWidth = 700,
+	orientation,
+	defaultPosition,
+	colour = "#000000",
+	minimiseIf: minimised,
+	scalingType = "SCALE",
+	children,
+	...args
+}: PropsWithChildren<ResizableProps>) {
+	const childId = useMemo(() => {
 		return GetReactChildId(children);
 	}, [children]);
 
-	if (!id)
+	if (!childId)
 		throw new Error(
 			"Unable to find an id in the child component of a Resizeable component"
 		);
 
-	const [localVals, setLocalVals] = useLocalVal<{
-		x: number;
-		y: number;
-		width: number;
-	}>(`resizable-${id}`);
+	// console.debug(localVals);
 
-	console.debug(localVals);
+	const parentId = "rz-" + childId;
 
 	const { offset: panOffset, startPanning } = usePanning(
-		id + "-offset",
-		"LEFT"
+		parentId + "-offset",
+		"LEFT",
+		onScaleStop
 	);
+
 	const {
 		offset: scaleOffset,
-		startPanning: startScaling
-	} = usePanning(id + "-scaling", "LEFT");
+		startPanning: startScaling,
+		resetOffset: resetScalingOffset
+	} = usePanning(parentId + "-scaling", "LEFT");
 
-	function fetchAspectRatio() {
-		const element = document.getElementById(id);
+	const [scale, setScale] = useLocalVal<number>(
+		`${parentId}-scale-value`
+	);
+
+	function calculateScale(
+		currentScale: number,
+		currentWidth: number,
+		currentOffset: Position
+	): number {
+		const xDiff = currentOffset.x;
+		const currentWidthScaled =
+			currentWidth * currentScale;
+
+		const newScale =
+			(currentWidthScaled + xDiff) /
+			currentWidthScaled;
+
+		return newScale;
+	}
+
+	const [state, dispatch] = useReducer(
+		(
+			state: ResizableState,
+			action: ResizableAction
+		): ResizableState => {
+			if (
+				state.type === "IDLE" &&
+				action.type === "START_RESIZE"
+			) {
+				return {
+					...state,
+					type: "DRAGGING",
+					startWidth: action.startWidth
+				};
+			} else if (
+				state.type === "DRAGGING" &&
+				action.type === "STOP_RESIZE"
+			) {
+				if (!scale)
+					throw new Error(
+						"Scale is undefined in resizable component."
+					);
+
+				const newScale = calculateScale(
+					scale,
+					state.startWidth,
+					scaleOffset
+				);
+
+				setScale(newScale);
+			}
+			return state;
+			// throw new Error(
+			// 	`Invalid state action combination: State: ${state} Action: ${action}`
+			// );
+		},
+		{
+			type: "IDLE"
+		}
+	);
+
+	function getDivDetails() {
+		const element = document.getElementById(childId);
 		if (!element)
 			throw new Error(
-				`Unable to find resizable element by id ${id}.`
+				`Unable to find child element by id ${childId}.`
 			);
 
 		const { width, height } =
@@ -130,173 +149,92 @@ function Resizable(
 
 		const newDetails = {
 			width,
-			aspectRatio: width / height
+			height
 		};
+
+		return newDetails;
 	}
 
-	// function addEventListeners() {
-	// 	const div = document.getElementById(id);
-
-	// 	if (!div)
-	// 		throw new Error(
-	// 			"Unable to find the div element"
-	// 		);
-
-	// 	div.addEventListener("mousemove", updatePos);
-	// 	div.addEventListener("mouseup", clickReleased);
-	// }
-
-	function removeEventListeners() {
-		// const element = document.getElementById(id);
-		// if (!element)
-		// 	throw new Error(
-		// 		`Unable to find resizable element by id ${id}. This should have already been verified beforehand.`
-		// 	);
-		// element.removeEventListener("mousemove", updatePos);
-		// element.removeEventListener(
-		// 	"mouseup",
-		// 	clickReleased
-		// );
+	function onScaleStart(
+		event: React.MouseEvent<HTMLDivElement, MouseEvent>
+	) {
+		const div = getDivDetails();
+		dispatch({
+			type: "START_RESIZE",
+			startPos: {
+				x: event.clientX,
+				y: event.clientY
+			},
+			startWidth: div.width
+		});
 	}
 
-	// useEffect(() => {
-	// 	addEventListeners();
+	function onScaleStop() {
+		dispatch({ type: "STOP_RESIZE" });
+		resetScalingOffset;
+	}
 
-	// 	return () => removeEventListeners();
-	// }, []);
+	const currentScale: number =
+		state.type === "DRAGGING"
+			? calculateScale(
+					scale ?? 1,
+					state.startWidth,
+					scaleOffset
+				)
+			: scale ?? 1;
 
-	// function startResize(e: MouseEvent) {
-	// 	if (e.button !== 0) return;
+	const styleProperties: React.CSSProperties = {
+		left: panOffset.x,
+		top: panOffset.y,
 
-	// 	e.stopPropagation();
-	// 	e.preventDefault();
+		scale:
+			scalingType === "SCALE"
+				? String(currentScale)
+				: undefined
+		// width:
+		// 	scalingType === "DIMENSIONS"
+		// 		? `${Math.floor(currentScale * 100)}%`
+		// 		: undefined,
+		// height:
+		// 	scalingType === "DIMENSIONS"
+		// 		? `${Math.floor(currentScale * 100)}%`
+		// 		: undefined
+		// transform:
+		// 	scalingType === "DIMENSIONS"
+		// 		? `scaleX(${currentScale}) scaleY(${currentScale})`
+		// 		: undefined
+	};
 
-	// 	if (state.type === "IDLE") {
-	// 		dispatch({
-	// 			type: "START_RESIZE",
-	// 			pos: { x: e.clientX, y: e.clientY }
-	// 		});
-	// 	}
-	// }
+	const div = document.getElementById(childId);
 
-	// function startMoving(e: MouseEvent) {
-	// 	if (e.button !== 0) return;
+	if (scalingType === "DIMENSIONS" && div) {
+		const percentage = `${Math.floor(currentScale * 100)}%`;
 
-	// 	e.stopPropagation();
-	// 	e.preventDefault();
+		console.debug(percentage);
 
-	// 	if (state.type === "IDLE") {
-	// 		dispatch({
-	// 			type: "START_MOVING",
-	// 			pos: { x: e.clientX, y: e.clientY }
-	// 		});
-	// 	}
-	// }
+		div.style.width = percentage;
+		div.style.height = percentage;
+	}
 
-	// function updatePos(e: globalThis.MouseEvent) {
-	// 	// e.preventDefault();
-	// 	// e.stopPropagation();
+	// console.debug(styleProperties);
 
-	// 	dispatch({
-	// 		type: "MOVE_MOUSE",
-	// 		pos: { x: e.clientX, y: e.clientY }
-	// 	});
-	// }
-
-	// function getMinRectangleX(
-	// 	origin: Position,
-	// 	outerPoint: Position,
-	// 	aspectRatio: number,
-	// 	scale: number = 1.05
-	// ): number {
-	// 	// TODO: Fix it so that negative and positive amounts both work
-	// 	const widthFromX = outerPoint.x - origin.x;
-	// 	const yDiff = outerPoint.y - origin.y;
-
-	// 	// Use the y diff to get the x diff at that value
-	// 	const widthFromY = yDiff * aspectRatio;
-
-	// 	// If negative, return the smaller of the 2
-
-	// 	// If positive, return the larger of the 2
-
-	// 	if (widthFromY > widthFromX) {
-	// 		return widthFromY * scale;
-	// 	} else return widthFromX * scale;
-	// }
-
-	// function clickReleased(e: globalThis.MouseEvent) {
-	// 	if (e.button !== 0) return;
-
-	// 	e.preventDefault();
-	// 	e.stopPropagation();
-
-	// 	dispatch({ type: "CLICK_RELEASED" });
-	// }
-
-	// useEffect(() => {
-	// 	setLocalVals({
-	// 		x: state.pos.x,
-	// 		y: state.pos.y,
-	// 		width: state.details.width
-	// 	});
-	// }, [state.pos.x, state.pos.y, state.details.width]);
-
-	// useEffect(fetchAspectRatio, []);
-
-	// const tempWidth =
-	// 	state.type === "DRAGGING" &&
-	// 	state.details.aspectRatio
-	// 		? getMinRectangleX(
-	// 				state.pos,
-	// 				state.dragTo,
-	// 				state.details.aspectRatio
-	// 			)
-	// 		: state.scaledWidth;
-
-	// const scale: number = tempWidth / state.details.width;
-
-	const scale = 1;
-
-	// console.debug("scale: ", scale);
+	useEffect(resetScalingOffset, []);
 
 	return (
 		<>
 			<div
 				{...args}
-				className={`resizable-element ${minimized ? "resizable-minimized" : ""}`}
-				id={id}
-				// onMouseUp={
-				// 	clickReleased as any as MouseEventHandler<HTMLDivElement>
-				// }
-				// onMouseEnter={(e)=>{
-				// 	if ()
-				// }}
-				// onMouseLeave={
-				// 	clickReleased as any as MouseEventHandler<HTMLDivElement>
-				// }
+				className={`resizable-element ${minimised ? "resizable-minimised" : ""}`}
+				id={parentId}
 				style={{
-					// width: state.details.width ?? undefined,
-					// width:
+					borderColor: colour,
 
-					color: color,
-
-					// left: `${state.pos.x + (state.type === "MOVING" ? state.moveTo.x - state.moveFrom.x : 0)}px`,
-					// top: `${state.pos.y + (state.type === "MOVING" ? state.moveTo.y - state.moveFrom.y : 0)}px`,
-
-					left: panOffset.x,
-					top: panOffset.y,
-
-					// aspectRatio: state.details.aspectRatio,
 					flexDirection:
 						orientation === "Horizontal"
 							? "row"
 							: "column",
 
-					// Scale based on the difference between state.details.width, and state.width
-					// transform: state.details
-					// 	? `scale(${scale})`
-					// 	: undefined,
+					...styleProperties,
 
 					transformOrigin: "0 0",
 					display: "inline-flex"
@@ -305,7 +243,11 @@ function Resizable(
 			>
 				<div
 					className="resizable-element-top-tab"
-					onMouseDown={startPanning}
+					onMouseDown={(event) =>
+						startPanning(
+							event as unknown as MouseEvent
+						)
+					}
 				/>
 
 				{children}
@@ -313,10 +255,16 @@ function Resizable(
 				<div
 					className="resizable-element-handle"
 					// Start capturing when the user clicks on the handle
-					// onMouseDown={startResize}
+					onMouseDown={(event) => {
+						startScaling(
+							event as unknown as MouseEvent
+						);
+						onScaleStart(event);
+					}}
 				/>
 			</div>
 		</>
 	);
 }
 export default Resizable;
+

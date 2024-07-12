@@ -191,7 +191,7 @@ function Game() {
 		>
 			{state.showMap ? (
 				<MagnateMap
-					id="rz-magnate-map"
+					id="magnate-map"
 					style={{
 						zIndex: -1,
 						...styleProperties
@@ -211,14 +211,14 @@ function Game() {
 				defaultWidth={1200}
 				minimiseIf={state.showEmployeeTree}
 			>
-				<EmployeeTree id="rz-employee-tree" />
+				<EmployeeTree id="employee-tree" />
 			</Resizable>
 
 			<Resizable
 				defaultWidth={300}
 				minimiseIf={state.showTurnOrder}
 			>
-				<div id="rz-turn-order-list">
+				<div id="turn-order-list">
 					<TurnOrderList />
 					<TurnProgressIndicator />
 				</div>
@@ -228,7 +228,7 @@ function Game() {
 				defaultWidth={500}
 				minimiseIf={state.showPlanner}
 			>
-				<TurnPlanner id="rz-turn-planner" />
+				<TurnPlanner id="turn-planner" />
 			</Resizable>
 
 			<TurnHandler />

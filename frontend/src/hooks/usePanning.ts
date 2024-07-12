@@ -40,7 +40,8 @@ function calculateOffset(
 
 function usePanning(
 	identifier: string,
-	panningType: "LEFT" | "RIGHT"
+	panningType: "LEFT" | "RIGHT",
+	onStopPanning?: () => void
 ) {
 	if (!identifier)
 		throw new Error(
@@ -48,7 +49,7 @@ function usePanning(
 		);
 
 	const panId = useMemo(() => {
-		`panning-options-${identifier}-${panningType}`;
+		return `panning-options-${identifier}-${panningType}`;
 	}, [identifier, panningType]);
 
 	const [panningOptions, setPanningOptions] =
@@ -97,6 +98,11 @@ function usePanning(
 						!state.panCursorStart
 					)
 						return { ...state };
+
+					if (onStopPanning)
+						(async () => {
+							onStopPanning;
+						})();
 
 					return {
 						...state,
@@ -220,10 +226,6 @@ function usePanning(
 	function startPanning(event: MouseEventType) {
 		onMouseEvent(event);
 	}
-
-	useEffect(() => {
-		console.debug("Is down: ", state.buttonIsDown);
-	}, [state.buttonIsDown]);
 
 	return {
 		startPanning,

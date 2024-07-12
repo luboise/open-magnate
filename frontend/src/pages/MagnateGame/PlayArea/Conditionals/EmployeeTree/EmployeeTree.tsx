@@ -65,7 +65,7 @@ function findEmployeeRecursive(
 interface EmployeeTreeProps
 	extends HTMLAttributes<HTMLDivElement> {}
 
-function EmployeeTree(_props: EmployeeTreeProps) {
+function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	const { myEmployees, playerData } = useGameState();
 
 	const { startPanning, offset, resetOffset } =
@@ -298,7 +298,10 @@ function EmployeeTree(_props: EmployeeTreeProps) {
 	};
 
 	return (
-		<div className="game-employee-tree-section">
+		<div
+			className="game-employee-tree-section"
+			{...args}
+		>
 			{treeHasMoved ? (
 				<Button
 					onClick={resetOffset}

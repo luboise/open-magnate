@@ -11,6 +11,7 @@ function useLocalVal<T extends Object>(
 		(newVal: T | null) => {
 			if (newVal === null) {
 				deleteFromLS(localStorageKey);
+
 				setVal(null);
 				return;
 			}
@@ -26,12 +27,18 @@ function useLocalVal<T extends Object>(
 		[localStorageKey]
 	);
 
-	const getter = useCallback((): T | null => {
+	function initialiseState() {
 		const readVal = get(localStorageKey) as T;
-		return readVal || null;
-	}, [localStorageKey]);
 
-	const [val, setVal] = useState<T | null>(getter());
+		if (!readVal && defaultValue) {
+			setVal(defaultValue);
+			return defaultValue;
+		} else if (readVal) return readVal;
+		else return null;
+	}
+
+	const initialValue = initialiseState();
+	const [val, setVal] = useState<T | null>(initialValue);
 
 	return [val, setter];
 }
