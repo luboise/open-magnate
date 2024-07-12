@@ -1,0 +1,35 @@
+/* #game-turn-handler,
+#game-turn-handler * {
+	box-sizing: border-box;
+} */
+
+#root {
+	--game-turn-handler-sep-size: 0.5em;
+}
+
+#game-turn-handler {
+	/* Modifiable settings */
+	gap: var(--game-turn-handler-sep-size);
+	padding: var(--game-turn-handler-sep-size);
+	border: var(--game-turn-handler-sep-size) solid white;
+
+	border-bottom: none;
+	border-right: none;
+	border-radius: 1em 0 0 0;
+
+	/* Non-modifiable settings */
+	display: grid;
+	grid-template-columns: 70% auto;
+
+	position: fixed;
+	bottom: 0;
+	right: 0;
+
+	width: 30%;
+
+	background-color: black;
+}
+
+#game-turn-handler > * {
+	background-color: lightslategrey;
+}

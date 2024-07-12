@@ -1,0 +1,9 @@
+@keyframes bgGlow {
+	0% {
+		background-color: aliceblue;
+	}
+
+	50% {
+		background-color: blue;
+	}
+}

@@ -1,3 +1,4 @@
+import "./Animations.css";
 import "./App.css";
 
 import {
