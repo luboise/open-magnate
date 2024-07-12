@@ -5,7 +5,9 @@ import Button from "../../../components/Button";
 import { useGameState } from "../../../hooks/useGameState";
 
 import { TURN_PROGRESS_VALUES } from "../../../../../backend/src/dataViews";
+import { RESTAURANT_NAMES } from "../../../utils";
 import SpinningStatus from "./SpinningStatus";
+import TurnOrderList from "./TurnOrderList";
 
 function TurnHandler() {
 	const {
@@ -22,9 +24,12 @@ function TurnHandler() {
 		[players]
 	);
 
+	if (!currentPlayer) return <></>;
+
 	return (
 		<div id="game-turn-handler">
 			<h2
+				className={isMyTurn ? "glowing" : undefined}
 				style={{
 					gridRow: "1",
 					gridColumn: "1 / span 2",
@@ -34,7 +39,9 @@ function TurnHandler() {
 					padding: "0.5em 1em"
 				}}
 			>
-				{isMyTurn ? "Your turn" : "Not your turn"}
+				{isMyTurn
+					? "Your turn"
+					: `Waiting for ${RESTAURANT_NAMES[currentPlayer.restaurant]}...`}
 			</h2>
 
 			<SpinningStatus
@@ -46,11 +53,19 @@ function TurnHandler() {
 				}}
 			/>
 
+			{/* 
 			<SpinningStatus
 				orderedOptions={playerList.map((player) =>
 					String(player)
 				)}
 				currentOption={turnProgress}
+				style={{
+					gridRow: "3",
+					gridColumn: "1"
+				}}
+			/> */}
+
+			<TurnOrderList
 				style={{
 					gridRow: "3",
 					gridColumn: "1"

@@ -1,9 +1,23 @@
 @keyframes bgGlow {
-	0% {
-		background-color: aliceblue;
+	/* 0% {
+		background-color: orange;
 	}
 
 	50% {
-		background-color: blue;
+		background-color: unset;
+	}
+
+	100% {
+		background-color: orange;
+	} */
+
+	0%,
+	100% {
+		filter: none; /* Original appearance */
+	}
+
+	50% {
+		filter: brightness(1) sepia(1) hue-rotate(-50deg)
+			saturate(5);
 	}
 }

@@ -1,24 +1,33 @@
 import "./TurnOrderList.css";
 
+import { HTMLAttributes } from "react";
 import RestaurantImage from "../../../components/RestaurantImage";
 import { useGameState } from "../../../hooks/useGameState";
 
-interface TurnOrderListProps {
+interface TurnOrderListProps
+	extends HTMLAttributes<HTMLDivElement> {
 	orientation?: "Horizontal" | "Vertical";
 }
 
-function TurnOrderList(props: TurnOrderListProps) {
+function TurnOrderList({
+	orientation = "Horizontal",
+	style,
+	className,
+	...args
+}: TurnOrderListProps) {
 	const { state, players } = useGameState();
 
 	return (
 		<div
-			className="game-turn-order-list"
+			className={`game-turn-order-list ${className}`}
 			style={{
 				flexDirection:
-					props.orientation === "Vertical"
+					orientation === "Vertical"
 						? "column"
-						: "row"
+						: "row",
+				...style
 			}}
+			{...args}
 		>
 			{...state?.turnOrder?.map(
 				(playerNumber, index) => {

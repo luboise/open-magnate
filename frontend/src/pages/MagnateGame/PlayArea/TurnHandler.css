@@ -33,3 +33,7 @@
 #game-turn-handler > * {
 	background-color: lightslategrey;
 }
+
+#game-turn-handler * {
+	border-radius: 0.5em;
+}

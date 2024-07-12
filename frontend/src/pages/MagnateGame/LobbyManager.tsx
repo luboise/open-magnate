@@ -8,8 +8,8 @@ import {
 	GameStateViewPerPlayer,
 	LobbyViewPerPlayer
 } from "../../utils";
-import MagnateMap from "./MagnateMap";
 import Game from "./PlayArea/Game";
+import MagnateMap from "./PlayArea/Map/MagnateMap";
 import PlayerList from "./PlayerList";
 
 function LobbyManager(props: {
@@ -101,4 +101,3 @@ function LobbyManager(props: {
 }
 
 export default LobbyManager;
-

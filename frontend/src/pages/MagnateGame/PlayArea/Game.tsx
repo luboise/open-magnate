@@ -7,10 +7,10 @@ import useLocalVal from "../../../hooks/useLocalVal";
 import useMap from "../../../hooks/useMap";
 import usePanning from "../../../hooks/usePanning";
 import useScalingValue from "../../../hooks/useScalingValue";
-import MagnateMap from "../MagnateMap";
 import EmployeeTree from "./Conditionals/EmployeeTree/EmployeeTree";
 import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
 import TurnPlanner from "./Conditionals/TurnPlanner";
+import MagnateMap from "./Map/MagnateMap";
 import TurnHandler from "./TurnHandler";
 import TurnOrderList from "./TurnOrderList";
 import TurnProgressIndicator from "./TurnProgressIndicator";
@@ -245,4 +245,3 @@ function Game() {
 }
 
 export default Game;
-

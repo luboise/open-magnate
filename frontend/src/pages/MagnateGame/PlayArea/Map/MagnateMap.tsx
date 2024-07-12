@@ -3,11 +3,12 @@ import {
 	PropsWithChildren,
 	useMemo
 } from "react";
-import MapTile from "../../components/MapTile";
-import RestaurantImage from "../../components/RestaurantImage";
-import { useGameState } from "../../hooks/useGameState";
-import useMap from "../../hooks/useMap";
-import { MapTileData } from "../../utils";
+import MapTile from "../../../../components/MapTile";
+import RestaurantImage from "../../../../components/RestaurantImage";
+import { useGameState } from "../../../../hooks/useGameState";
+import useMap from "../../../../hooks/useMap";
+import { MapTileData } from "../../../../utils";
+import House from "./House";
 import "./MagnateMap.css";
 
 interface MapProps extends HTMLAttributes<HTMLDivElement> {}
@@ -95,29 +96,15 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 
 				{/* Houses */}
 				{...(houses ?? []).map((house) => (
-					<div
-						style={{
-							gridColumn: `${house.x + 1} / span 2`,
-							gridRow: `${house.y + 1} / span 2`,
-							backgroundColor: "pink",
-							color: "white",
-							border: "1px solid black",
-							width: "100%",
-							height: "100%",
-							textAlign: "center",
-							lineHeight: "10px",
-							fontSize: "10px",
-							zIndex: 2
-						}}
+					<House
+						house={house}
 						onClick={() => {
 							mapObjectClicked({
 								type: "HOUSE",
 								data: house
 							});
 						}}
-					>
-						#{house.priority}
-					</div>
+					/>
 				))}
 
 				{/* Restaurant */}
@@ -171,4 +158,3 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 }
 
 export default MagnateMap;
-

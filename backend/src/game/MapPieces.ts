@@ -106,5 +106,3 @@ export function createMapString(
 
 	return outValue;
 }
-
-export const RESTAURANTS = {};
