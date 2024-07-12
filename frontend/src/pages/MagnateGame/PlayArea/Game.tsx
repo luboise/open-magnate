@@ -23,7 +23,7 @@ interface GameInterfaceState {
 	showEmployeeTree: boolean;
 	showPlanner: boolean;
 	showLeaderBoard: boolean;
-	showMiletones: boolean;
+	showMilestones: boolean;
 	showTurnOrder: boolean;
 }
 
@@ -68,7 +68,7 @@ function Game() {
 					case "EMPLOYEE TREE":
 						key = "showEmployeeTree";
 						break;
-					case "PLANNER":
+					case "TURN PLANNER":
 						key = "showPlanner";
 						break;
 
@@ -76,8 +76,8 @@ function Game() {
 						key = "showLeaderBoard";
 						break;
 
-					case "MILETONES":
-						key = "showMiletones";
+					case "MILESTONES":
+						key = "showMilestones";
 						break;
 
 					case "TURN ORDER":
@@ -102,7 +102,7 @@ function Game() {
 			showEmployeeTree: false,
 			showPlanner: false,
 			showLeaderBoard: false,
-			showMiletones: false
+			showMilestones: false
 		}
 	);
 
@@ -153,7 +153,7 @@ function Game() {
 		state.showEmployeeTree,
 		state.showPlanner,
 		state.showLeaderBoard,
-		state.showMiletones
+		state.showMilestones
 	]);
 
 	// TODO: Fix invisible elements to not each click inputs and keyboard inputs

@@ -12,9 +12,9 @@ export type ToolbarType = (typeof ToolbarTypes)[number];
 const ToolbarTypes = [
 	"MAP",
 	"EMPLOYEE TREE",
-	"PLANNER",
+	"TURN PLANNER",
 	"LEADERBOARD",
-	"MILETONES",
+	"MILESTONES",
 	"TURN ORDER"
 ] as const;
 
