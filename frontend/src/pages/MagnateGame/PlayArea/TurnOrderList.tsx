@@ -20,13 +20,13 @@ function TurnOrderList({
 	return (
 		<div
 			className={`game-turn-order-list ${className}`}
-			style={{
-				flexDirection:
-					orientation === "Vertical"
-						? "column"
-						: "row",
-				...style
-			}}
+			// style={{
+			// 	flexDirection:
+			// 		orientation === "Vertical"
+			// 			? "column"
+			// 			: "row",
+			// 	...style
+			// }}
 			{...args}
 		>
 			{...state?.turnOrder?.map(
@@ -39,7 +39,7 @@ function TurnOrderList({
 					if (!player) return <></>;
 
 					return (
-						<span
+						<div
 							style={{
 								backgroundColor:
 									state.currentPlayer ===
@@ -52,8 +52,9 @@ function TurnOrderList({
 								restaurantNumber={
 									player.restaurant
 								}
+								style={{ width: "100%" }}
 							/>
-						</span>
+						</div>
 					);
 				}
 			) ?? []}
