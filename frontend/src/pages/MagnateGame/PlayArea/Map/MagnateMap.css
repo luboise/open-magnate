@@ -1,8 +1,21 @@
 .map-preview-container {
+	/* Variables */
+	--map-gap-width: 0.15em;
+	--map-tile-thick-border-size: calc(
+		2.5 * var(--map-gap-width)
+	);
+	--map-tile-piece-border-colour: red;
+
+	--piece-border-values: var(
+			--map-tile-piece-border-colour
+		)
+		var(--map-tile-thick-border-size) solid;
+
+	/* Styles */
+
 	display: grid;
-	border: var(--map-tile-piece-border-colour)
-		var(--map-tile-border-size) solid;
-	box-sizing: border-box;
+	/* border: var(--piece-border-values); */
+	/* box-sizing: border-box; */
 
 	height: 100%;
 
@@ -10,10 +23,51 @@
 
 	background-color: black;
 
+	gap: var(--map-gap-width);
 	/* GRID TEMPLATE ROWS MUST BE SPECIFIED FROM THE CODE SIDE */
 	/* grid-template-rows: repeat(5, minmax(auto, 1fr)); */
+
+	/* padding: var(--map-gap-width); */
+
+	position: relative;
 }
 
-.map-preview-container > *:not(.map-tile) {
+.map-preview-container > *:not(.map-tile):not(table) {
 	z-index: 2;
+}
+
+.map-preview-container table {
+	margin: 0;
+	/* position: absolute;
+	top: 50%;
+	left: 50%; */
+	/* translate: -50% -50%; */
+	/* width: 100%;
+	height: 100%; */
+	pointer-events: none;
+	/* border-spacing: 0; */
+
+	box-sizing: content-box;
+	border-spacing: 0;
+	z-index: 3;
+}
+
+/* .map-preview-container tbody * {
+	border-collapse: collapse;
+	} */
+
+.map-preview-container td {
+	border: calc(var(--map-gap-width) / 1.4) solid red;
+	padding: 0;
+	margin: 0;
+	/* box-sizing: border-box; */
+}
+
+tbody {
+	border-collapse: collapse;
+}
+
+tbody * {
+	border-collapse: collapse;
+	border-spacing: 0;
 }

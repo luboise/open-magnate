@@ -165,12 +165,6 @@ function Game() {
 				e.stopPropagation();
 			}}
 			style={{
-				gridTemplateColumns: map
-					? `repeat(${map[0].length}, 1fr)`
-					: undefined,
-				aspectRatio: map
-					? `${map[0].length} / ${map.length}`
-					: undefined,
 				position: "fixed",
 
 				width: "100vw",

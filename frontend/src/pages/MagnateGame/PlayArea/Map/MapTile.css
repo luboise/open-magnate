@@ -1,0 +1,71 @@
+.map-tile {
+	position: relative;
+	display: flex;
+
+	/* box-sizing: border-box; */
+	/* flex: 1; */
+
+	/* min-width: 40px; */
+	/* height: %; */
+	/* aspect-ratio: 1; */
+	background-color: aliceblue;
+}
+
+.map-tile > * {
+	position: absolute;
+
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.map-tile {
+	overflow: hidden;
+}
+
+/* .tile-boundary-north {
+	border-top: var(--piece-border-values);
+}
+
+.tile-boundary-south {
+	border-bottom: var(--piece-border-values);
+}
+
+.tile-boundary-east {
+	border-right: var(--piece-border-values);
+}
+
+.tile-boundary-west {
+	border-left: var(--piece-border-values);
+} */
+/* .map-tile-wrapper {
+	display: grid;
+
+	width: 500px;
+	height: 500px;
+	aspect-ratio: 1;
+
+	gap: 0.1em;
+
+	grid-template-columns: repeat(5, 1fr);
+	grid-template-rows: repeat(5, 1fr);
+} */
+
+.mixin-image {
+	mix-blend-mode: hard-light;
+}
+
+.map-tile-road {
+	background-color: #2e2d35;
+}
+
+.map-tile-cola {
+	background-color: red;
+}
+
+.map-tile-beer {
+	background-color: darkgreen;
+}
+
+.map-tile-lemonade {
+	background-color: yellow;
+}

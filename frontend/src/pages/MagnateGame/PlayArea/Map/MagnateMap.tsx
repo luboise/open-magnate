@@ -1,15 +1,20 @@
+import "./MagnateMap.css";
+
 import {
 	HTMLAttributes,
 	PropsWithChildren,
 	useMemo
 } from "react";
-import MapTile from "../../../../components/MapTile";
 import RestaurantImage from "../../../../components/RestaurantImage";
 import { useGameState } from "../../../../hooks/useGameState";
 import useMap from "../../../../hooks/useMap";
-import { MapTileData } from "../../../../utils";
+import {
+	MAP_PIECE_HEIGHT,
+	MAP_PIECE_WIDTH,
+	MapTileData
+} from "../../../../utils";
 import House from "./House";
-import "./MagnateMap.css";
+import MapTile from "./MapTile";
 
 interface MapProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -72,6 +77,52 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 				}}
 				{...args}
 			>
+				{/* TODO: Optimise the table rendering?? It seems a bit sluggish */}
+				<table
+					style={{
+						// Fit the parent grid fully
+						gridColumn: `1 / span ${map[0].length}`,
+						gridRow: `1 / span ${map.length}`
+					}}
+				>
+					<tbody>
+						{...new Array(
+							map[0].length / MAP_PIECE_WIDTH
+						).fill(
+							<tr>
+								{...new Array(
+									map.length /
+										MAP_PIECE_HEIGHT
+								).fill(<td />)}
+							</tr>
+						)}
+					</tbody>
+				</table>
+				{/* <div
+					className="map-preview-piece-overlay"
+					style={{
+						// Fit the parent grid fully
+						gridColumn: `1 / span ${map[0].length}`,
+						gridRow: `1 / span ${map.length}`,
+
+						// Make the
+						gridTemplateColumns: `repeat(${map[0].length / MAP_PIECE_WIDTH}, 100px)`,
+						gridTemplateRows: `repeat(${map.length / MAP_PIECE_HEIGHT}, 100px)`
+					}}
+				>
+					{new Array(
+						((map[0].length / MAP_PIECE_WIDTH) *
+							map.length) /
+							MAP_PIECE_HEIGHT
+					).fill(
+						<div
+							style={{
+								width: "100%",
+								height: "100%"
+							}}
+						/>
+					)}
+				</div> */}
 				{/* Tiles */}
 				{...map
 					.flat(2)
