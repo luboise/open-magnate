@@ -1,25 +1,25 @@
 import { Clamp } from "../../../frontend/src/utils";
 import { PLAYER_DEFAULTS } from "../../../shared";
-import { EMPLOYEE_NAME } from "../../../shared/EmployeeNames";
+import { EMPLOYEE_ID } from "../../../shared/EmployeeIDs";
 
-export type Reserve = Record<EMPLOYEE_NAME, number>;
+export type Reserve = Record<EMPLOYEE_ID, number>;
 
 const ONEOF_VALUE = -1;
 
 export const DEFAULT_RESERVE_BASE_GAME: Reserve = {
-	"Kitchen Trainee": 12,
+	food_basic: 12,
 
-	"Burger Cook": 6,
-	"Pizza Cook": 6,
+	burger_1: 6,
+	pizza_1: 6,
 
-	"Burger Chef": ONEOF_VALUE,
-	"Pizza Chef": ONEOF_VALUE,
+	burger_2: ONEOF_VALUE,
+	pizza_2: ONEOF_VALUE,
 
-	"Management Trainee": 12,
-	"Junior Vice President": 12,
-	"Vice President": 6,
-	"Senior Vice President": 6,
-	"Executive Vice President": ONEOF_VALUE
+	mgmt_1: 12,
+	mgmt_2: 12,
+	mgmt_3: 6,
+	mgmt_4: 6,
+	mgmt_5: ONEOF_VALUE
 } as const;
 
 export function GetNewReserve(

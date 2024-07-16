@@ -35,7 +35,7 @@ function WindowToolbar(props: WindowToolbarProps) {
 						(turnProgress === "RESTRUCTURING" &&
 							tbt === "EMPLOYEE TREE") ||
 						(turnProgress === "USE_EMPLOYEES" &&
-							tbt === "PLANNER")
+							tbt === "TURN PLANNER")
 					)
 						highlighted = true;
 				}

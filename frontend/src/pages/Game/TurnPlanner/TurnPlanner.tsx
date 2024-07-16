@@ -24,13 +24,13 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 			player: playerData.playerNumber,
 			employeeIndex: 0,
 			type: "RECRUIT",
-			recruiting: "Kitchen Trainee"
+			recruiting: "food_basic"
 		},
 		{
 			player: playerData.playerNumber,
 			employeeIndex: 0,
 			type: "RECRUIT",
-			recruiting: "Kitchen Trainee"
+			recruiting: "food_basic"
 		}
 	];
 

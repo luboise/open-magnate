@@ -8,7 +8,7 @@
 // 	turnOrder: Array<number> | null;
 // };
 
-import { EMPLOYEE_NAME } from "./EmployeeNames";
+import { EMPLOYEE_ID } from "./EmployeeIDs";
 
 // export interface GameCreationParams {
 // 	players: Player[];
@@ -24,7 +24,8 @@ interface BaseGameAction {
 interface RecruitAction extends BaseGameAction {
 	type: "RECRUIT";
 	employeeIndex: number;
-	recruiting: EMPLOYEE_NAME;
+	recruiting: EMPLOYEE_ID;
 }
 
 export type GameAction = RecruitAction;
+

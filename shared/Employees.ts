@@ -1,7 +1,8 @@
 import {
-	FOOD_EMPLOYEE_NAME,
-	MGMT_EMPLOYEE_NAME
-} from "./EmployeeNames";
+	EMPLOYEE_ID,
+	FOOD_EMPLOYEE_ID,
+	MGMT_EMPLOYEE_ID
+} from "./EmployeeIDs";
 import {
 	CEOEmployee,
 	Employee,
@@ -23,7 +24,8 @@ function createManagementEmployees(
 }
 
 interface ManagementEmployeeCreationData {
-	name: MGMT_EMPLOYEE_NAME;
+	name: string;
+	id: MGMT_EMPLOYEE_ID;
 	capacity: number;
 	notPaid?: boolean;
 	oneOf?: boolean;
@@ -32,9 +34,9 @@ function createManagementEmployee(
 	data: ManagementEmployeeCreationData
 ): ManagementEmployee {
 	return {
+		id: data.id,
 		name: data.name,
 		type: "MANAGEMENT",
-		id: `mgmt_${data.capacity}`,
 		colour: COLOURS.BLACK,
 		capacity: data.capacity,
 		notPaid: data.notPaid,
@@ -44,7 +46,8 @@ function createManagementEmployee(
 }
 
 interface FoodEmployeeCreationData {
-	name: FOOD_EMPLOYEE_NAME;
+	id: FOOD_EMPLOYEE_ID;
+	name: string;
 	produces: FOOD_TYPE;
 	amountProduced: number;
 }
@@ -53,8 +56,8 @@ function createFoodEmployee(
 ): FoodEmployee {
 	return {
 		name: data.name,
+		id: data.id,
 		type: "FOOD",
-		id: `food_${data.produces}`,
 		colour: COLOURS.DARK_GREEN,
 		produces: data.produces,
 		amountProduced: 0,
@@ -67,11 +70,10 @@ export function createCEOEmployee(
 ): CEOEmployee {
 	return {
 		id: `CEO`,
-		colour: COLOURS.GREY,
-		capacity: capacity,
-		hires: 1,
 		name: "CEO",
 		type: "CEO",
+		colour: COLOURS.GREY,
+		capacity: capacity,
 		buildsInto: []
 	};
 }
@@ -90,61 +92,77 @@ export const CEOEmployeeInitial: CEOEmployee =
 	createCEOEmployee(3);
 
 export const ManagementEmployees: Record<
-	string,
+	MGMT_EMPLOYEE_ID,
 	ManagementEmployee
 > = {
 	mgmt_1: createManagementEmployee({
 		name: "Management Trainee",
+		id: "mgmt_1",
 		capacity: 2,
 		notPaid: true
 	}),
 	mgmt_2: createManagementEmployee({
 		name: "Junior Vice President",
+		id: "mgmt_2",
 		capacity: 3
 	}),
 	mgmt_3: createManagementEmployee({
 		name: "Vice President",
+		id: "mgmt_3",
 		capacity: 4
 	}),
 	mgmt_4: createManagementEmployee({
 		name: "Senior Vice President",
+		id: "mgmt_4",
 		capacity: 6
 	}),
 	mgmt_5: createManagementEmployee({
 		name: "Senior Vice President",
+		id: "mgmt_5",
 		capacity: 10
 	})
 } as const;
 
-export const FoodEmployees: Record<string, FoodEmployee> = {
-	food_1: createFoodEmployee({
+export const FoodEmployees: Record<
+	FOOD_EMPLOYEE_ID,
+	FoodEmployee
+> = {
+	food_basic: createFoodEmployee({
+		id: "food_basic",
 		name: "Kitchen Trainee",
 		produces: "BURGER_AND_PIZZA",
 		amountProduced: 1
 	}),
 	burger_1: createFoodEmployee({
+		id: "burger_1",
 		name: "Burger Cook",
 		produces: "BURGER",
 		amountProduced: 3
 	}),
 	burger_2: createFoodEmployee({
+		id: "burger_2",
 		name: "Burger Chef",
 		produces: "BURGER",
 		amountProduced: 8
 	}),
 	pizza_1: createFoodEmployee({
+		id: "pizza_1",
 		name: "Pizza Cook",
 		produces: "PIZZA",
 		amountProduced: 3
 	}),
 	pizza_2: createFoodEmployee({
+		id: "pizza_2",
 		name: "Pizza Chef",
 		produces: "PIZZA",
 		amountProduced: 8
 	})
 } as const;
 
-export const EmployeesById: Record<string, Employee> = {
+export const EmployeesById: Record<
+	EMPLOYEE_ID | "CEO",
+	Employee
+> = {
 	...ManagementEmployees,
 	...FoodEmployees,
 	CEO: CEOEmployeeInitial
@@ -153,3 +171,4 @@ export const EmployeesById: Record<string, Employee> = {
 export const DEFAULT_EMPLOYEE_ARRAY = ["CEO"];
 export const DEFAULT_SERIALISED_EMPLOYEE_STRING =
 	"0[X,X,X]";
+

@@ -1,16 +1,17 @@
-const MANAGEMENT_NAMES = [
-	"Management Trainee",
-	"Junior Vice President",
-	"Vice President",
-	"Senior Vice President",
-	"Executive Vice President"
+const MGMT_EMPLOYEE_IDS = [
+	"mgmt_1",
+	"mgmt_2",
+	"mgmt_3",
+	"mgmt_4",
+	"mgmt_5"
 ] as const;
-const FOOD_NAMES = [
-	"Kitchen Trainee",
-	"Burger Cook",
-	"Pizza Cook",
-	"Burger Chef",
-	"Pizza Chef"
+
+const FOOD_EMPLOYEE_IDS = [
+	"food_basic",
+	"burger_1",
+	"burger_2",
+	"pizza_1",
+	"pizza_2"
 ] as const;
 // const MARKETING_NAMES = [
 // 	"Marketing Trainee",
@@ -41,10 +42,10 @@ const FOOD_NAMES = [
 // ] as const;
 // const PINK_NAMES = ["Waitress", "CEO"] as const;
 
-export type MGMT_EMPLOYEE_NAME =
-	(typeof MANAGEMENT_NAMES)[number];
-export type FOOD_EMPLOYEE_NAME =
-	(typeof FOOD_NAMES)[number];
+export type MGMT_EMPLOYEE_ID =
+	(typeof MGMT_EMPLOYEE_IDS)[number];
+export type FOOD_EMPLOYEE_ID =
+	(typeof FOOD_EMPLOYEE_IDS)[number];
 // export type MARKETING_NAME =
 // 	(typeof MARKETING_NAMES)[number];
 // export type DRINK_NAME = (typeof DRINK_NAMES)[number];
@@ -56,9 +57,9 @@ export type FOOD_EMPLOYEE_NAME =
 // export type PINK_NAME = (typeof PINK_NAMES)[number];
 
 // TODO: Implement the rest of the employees
-export type EMPLOYEE_NAME =
-	| MGMT_EMPLOYEE_NAME
-	| FOOD_EMPLOYEE_NAME;
+export type EMPLOYEE_ID =
+	| MGMT_EMPLOYEE_ID
+	| FOOD_EMPLOYEE_ID;
 // | MARKETING_NAME
 // | DRINK_NAME
 // | TRAINER_NAME

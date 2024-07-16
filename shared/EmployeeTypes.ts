@@ -1,9 +1,9 @@
 import { Colour } from "../frontend/src/utils";
 import {
-	EMPLOYEE_NAME,
-	FOOD_EMPLOYEE_NAME,
-	MGMT_EMPLOYEE_NAME
-} from "./EmployeeNames";
+	EMPLOYEE_ID,
+	FOOD_EMPLOYEE_ID,
+	MGMT_EMPLOYEE_ID
+} from "./EmployeeIDs";
 import { COLOURS } from "./Employees";
 
 interface BaseEmployee {
@@ -12,17 +12,16 @@ interface BaseEmployee {
 
 	type: unknown;
 	colour: Colour;
-	buildsInto: EMPLOYEE_NAME[];
+	buildsInto: EMPLOYEE_ID[];
 	notPaid?: boolean;
 	oneOf?: boolean;
 }
 
 export interface ManagementEmployee extends BaseEmployee {
 	type: "MANAGEMENT";
-	name: MGMT_EMPLOYEE_NAME;
-	capacity: number;
-	id: `mgmt_${number}`;
+	id: MGMT_EMPLOYEE_ID;
 	colour: COLOURS.BLACK;
+	capacity: number;
 }
 export type FOOD_TYPE =
 	| "BURGER"
@@ -31,7 +30,7 @@ export type FOOD_TYPE =
 
 export interface FoodEmployee extends BaseEmployee {
 	type: "FOOD";
-	name: FOOD_EMPLOYEE_NAME;
+	id: FOOD_EMPLOYEE_ID;
 	colour: COLOURS.DARK_GREEN;
 	produces: FOOD_TYPE;
 	amountProduced: number;
@@ -40,9 +39,9 @@ export interface FoodEmployee extends BaseEmployee {
 export interface CEOEmployee extends BaseEmployee {
 	type: "CEO";
 	name: "CEO";
+	id: "CEO";
 	colour: COLOURS.GREY;
 	capacity: number;
-	hires: 1;
 }
 
 export type Employee =
