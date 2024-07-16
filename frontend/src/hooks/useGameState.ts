@@ -18,12 +18,14 @@ import {
 	TileType
 } from "../../../shared/MapData";
 import {
+	EmployeeNode,
 	EmployeesById,
 	GamePlayerViewPrivate,
 	GamePlayerViewPublic,
 	GameStateViewPerPlayer,
 	Map2D,
 	MapTileData,
+	ParseEmployeeTree,
 	RestaurantView,
 	TURN_PROGRESS,
 	parseMapChar
@@ -203,6 +205,19 @@ const currentPlayerSelector =
 		}
 	});
 
+const currentTreeSelector = selector<EmployeeNode | null>({
+	key: "CURRENT_TREE",
+	get: ({ get }) => {
+		const currentPlayer = get(playerDataSelector);
+		if (!currentPlayer) return null;
+
+		const tree = ParseEmployeeTree(
+			currentPlayer.employeeTreeStr
+		);
+		return tree;
+	}
+});
+
 export function useGameState() {
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
@@ -231,6 +246,8 @@ export function useGameState() {
 		currentPlayerSelector
 	);
 
+	const currentTree = useRecoilValue(currentTreeSelector);
+
 	return {
 		state,
 		mapColOrder,
@@ -243,7 +260,8 @@ export function useGameState() {
 		isMyTurn,
 		playerData: playerData,
 		myEmployees: myEmployees,
-		currentPlayer
+		currentPlayer,
+		currentTree
 	};
 }
 

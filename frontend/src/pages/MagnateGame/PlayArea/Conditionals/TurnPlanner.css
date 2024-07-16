@@ -1,0 +1,46 @@
+.game-turn-planner {
+	width: 650px;
+	aspect-ratio: 5 / 4;
+	display: grid;
+
+	grid-template-rows: 60% auto;
+
+	gap: 1em;
+	padding: 1em;
+
+	background-color: aquamarine;
+}
+
+.game-turn-planner > * {
+	padding: 1em;
+	border-radius: 1em;
+
+	/* TODO: Remove this later when colours are chosen */
+	background-color: grey;
+}
+
+.game-turn-planner-employee-section {
+	display: grid;
+
+	grid-template-rows: 20% auto;
+
+	background-color: grey;
+}
+
+.game-turn-planner-employees {
+	display: flex;
+	/* 
+	grid-auto-flow: column;
+	grid-template-columns: repeat(auto-fill, 200px); */
+
+	background-color: grey;
+
+	height: 100%;
+
+	overflow-x: auto;
+}
+
+.game-turn-planner-employees > * {
+	height: 100%;
+	/* flex: 1; */
+}

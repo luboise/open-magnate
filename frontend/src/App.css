@@ -62,7 +62,9 @@
 		} */
 
 	50% {
-		filter: brightness(2);
-		/* box-shadow: 0 0 0 0.35em orange; */
+		filter: brightness(1.65);
+		transform: scaleX(1.05) scaleY(1.02);
+		border-radius: 0.3em;
+		color: #aaaaaa;
 	}
 }
