@@ -9,8 +9,8 @@ import {
 } from "react-router-dom";
 // import PageAllMapPieces from "./pages/PageAllMapPieces";
 import { RecoilRoot } from "recoil";
-import PageGame from "./pages/PageGame";
-import PageHomepage from "./pages/PageHomepage";
+import PageHomepage from "./pages/HomePage/PageHomepage";
+import PageLobby from "./pages/Lobby/PageLobby";
 import { FrontendRoutes } from "./utils";
 
 function App() {
@@ -45,7 +45,7 @@ function App() {
 						path={FrontendRoutes.PLAY}
 						element={
 							<RecoilRoot>
-								<PageGame />
+								<PageLobby />
 							</RecoilRoot>
 						}
 					/>

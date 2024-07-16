@@ -1,6 +1,6 @@
 import { useRecoilState } from "recoil";
 import { MoveData } from "../../../shared/Moves";
-import { PageGameAtom } from "../pages/PageGameContext";
+import { PageGameAtom } from "../pages/Lobby/PageGameContext";
 import {
 	LeaveLobbyMessage,
 	StartGameMessage
