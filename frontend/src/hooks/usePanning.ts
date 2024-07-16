@@ -174,12 +174,6 @@ function usePanning(
 				event.stopPropagation();
 				dispatch({ actionType: "PRESSED", pos });
 			} else if (type === "mouseup") {
-				console.debug(
-					"Pan stopped: ",
-					"Current state: ",
-					state
-				);
-
 				event.preventDefault();
 				event.stopPropagation();
 				dispatch({ actionType: "RELEASED" });

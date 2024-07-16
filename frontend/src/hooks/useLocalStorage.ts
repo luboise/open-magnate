@@ -32,10 +32,10 @@ export function useLocalStorage(): {
 		//     return;
 		// }
 		localStorage.setItem(toWrite, JSON.stringify(data));
-		console.debug(
-			`Updated ${toWrite} in localStorage to `,
-			data
-		);
+		// console.debug(
+		// 	`Updated ${toWrite} in localStorage to `,
+		// 	data
+		// );
 	};
 
 	const deleteFunction = (toDelete: string) => {

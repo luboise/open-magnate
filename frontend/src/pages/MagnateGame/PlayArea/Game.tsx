@@ -10,6 +10,7 @@ import useScalingValue from "../../../hooks/useScalingValue";
 import EmployeeTree from "./Conditionals/EmployeeTree/EmployeeTree";
 import RestaurantPlacer from "./Conditionals/RestaurantPlacer";
 import TurnPlanner from "./Conditionals/TurnPlanner";
+import GlobalReserveDisplay from "./GlobalReserveDisplay";
 import MagnateMap from "./Map/MagnateMap";
 import TurnHandler from "./TurnHandler";
 import TurnOrderList from "./TurnOrderList";
@@ -234,8 +235,11 @@ function Game() {
 					})
 				}
 			/>
+
+			<GlobalReserveDisplay />
 		</div>
 	);
 }
 
 export default Game;
+

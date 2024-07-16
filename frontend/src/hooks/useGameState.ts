@@ -4,6 +4,7 @@ import {
 	useRecoilState,
 	useRecoilValue
 } from "recoil";
+import { Reserve } from "../../../backend/src/game/NewGameStructures";
 import {
 	CloneArray,
 	GetTransposed
@@ -48,8 +49,6 @@ const mapColumnOrderSelector = selector<MapSelectorType>({
 		const mapString = get(GameStateAtom)?.map;
 
 		if (!mapString) return null;
-
-		console.log("map: ", get(GameStateAtom)?.map);
 
 		const rowOrderMap =
 			mapString
@@ -218,6 +217,16 @@ const currentTreeSelector = selector<EmployeeNode | null>({
 	}
 });
 
+const reserveSelector = selector<Reserve | null>({
+	key: "RESERVE",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) return null;
+
+		return gameState.reserve;
+	}
+});
+
 export function useGameState() {
 	const [state, _setState] =
 		useRecoilState(GameStateAtom);
@@ -248,6 +257,8 @@ export function useGameState() {
 
 	const currentTree = useRecoilValue(currentTreeSelector);
 
+	const reserve = useRecoilValue(reserveSelector);
+
 	return {
 		state,
 		mapColOrder,
@@ -261,7 +272,8 @@ export function useGameState() {
 		playerData: playerData,
 		myEmployees: myEmployees,
 		currentPlayer,
-		currentTree
+		currentTree,
+		reserve
 	};
 }
 
