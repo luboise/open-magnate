@@ -1,3 +1,11 @@
 .game-action-preview {
+	--border-style: black 1px solid;
 	display: grid;
+
+	grid-template-rows: 20% 20% auto;
+	border: var(--border-style);
+}
+
+.game-action-preview > * {
+	outline: var(--border-style);
 }

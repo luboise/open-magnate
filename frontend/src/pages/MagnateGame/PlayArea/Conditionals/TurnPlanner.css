@@ -27,7 +27,8 @@
 	background-color: grey;
 }
 
-.game-turn-planner-employees {
+.game-turn-planner-employees,
+.game-turn-planner-actions {
 	display: flex;
 	/* 
 	grid-auto-flow: column;
@@ -38,6 +39,8 @@
 	height: 100%;
 
 	overflow-x: auto;
+
+	gap: 1em;
 }
 
 .game-turn-planner-employees > * {
