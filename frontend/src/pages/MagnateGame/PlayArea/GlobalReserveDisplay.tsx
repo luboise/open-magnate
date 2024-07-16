@@ -23,6 +23,8 @@ function GlobalReserveDisplay() {
 					setCollapsed(!collapsed);
 				}}
 				style={{
+					fontWeight: "bold",
+					writingMode: "sideways-lr",
 					position: "absolute",
 					bottom: 0,
 					left: 0,
