@@ -1,16 +1,14 @@
 import { useReducer } from "react";
 import { ENTRANCE_CORNER } from "../../../../../../backend/src/dataViews";
 import { MOVE_TYPE } from "../../../../../../shared/Moves";
+import { Clamp } from "../../../../../../shared/utils";
 import RestaurantImage from "../../../../components/RestaurantImage";
 import { useGameState } from "../../../../hooks/useGameState";
 import useMap, {
 	useBoardInfo
 } from "../../../../hooks/useMap";
 import usePageGame from "../../../../hooks/usePageGame";
-import {
-	Clamp,
-	rotateEntranceCorner
-} from "../../../../utils";
+import { rotateEntranceCorner } from "../../../../utils";
 
 interface RestaurantPlacerState {
 	x: number;
@@ -167,3 +165,4 @@ function RestaurantPlacer() {
 }
 
 export default RestaurantPlacer;
+

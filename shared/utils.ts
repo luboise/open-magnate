@@ -18,3 +18,14 @@ export function toTitleCase(str: string) {
 				text.substring(1).toLowerCase()
 		);
 }
+export function Clamp(
+	val: number,
+	min: number,
+	max: number,
+	floor: boolean = false
+) {
+	const clamped = Math.min(Math.max(val, min), max);
+
+	return floor ? Math.floor(clamped) : clamped;
+}
+

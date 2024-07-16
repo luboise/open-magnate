@@ -9,6 +9,7 @@ import {
 	TURN_PROGRESS
 } from "@prisma/client";
 import { RESTAURANT_NAMES } from "../../shared";
+import { GetNewReserve } from "../src/game/NewGameStructures";
 // import prisma from "../src/datasource";
 
 // const [
@@ -131,7 +132,8 @@ export const seedGameState1: Prisma.GameStateCreateInput = {
 				}
 			]
 		}
-	}
+	},
+	reserve: GetNewReserve(2)
 } as Prisma.GameStateCreateInput;
 
 // TODO: Fix main throwing an error when running without debug mode on GitHub actions
@@ -353,3 +355,4 @@ export async function dropEverything() {
 // }
 
 export const SEED_LOBBIES = [seedLobby1];
+

@@ -4,6 +4,7 @@ import {
 	PLAYER_DEFAULTS
 } from "../../../../shared";
 import GameStateController from "../../database/controller/gamestate.controller";
+import { GetNewReserve } from "../../game/NewGameStructures";
 import { GetTransposed } from "../../utils";
 
 function testNewMap(playerCount: number) {
@@ -57,7 +58,7 @@ function testNewMap(playerCount: number) {
 	expect(houses.length).toBeGreaterThanOrEqual(1);
 }
 
-describe("Gamestate Unit Tests", () => {
+describe("Creating Gamestates", () => {
 	describe("Creating New Gamestates", () => {
 		test("Expect NewMap() to return a valid map and set of houses (2 players)", async () => {
 			testNewMap(2);
@@ -74,7 +75,7 @@ describe("Gamestate Unit Tests", () => {
 	});
 });
 
-describe("Util function tests", () => {
+describe("Testing Arrays", () => {
 	describe("TransposeArray()", () => {
 		test("TransposeArray correctly transposes square matrices", () => {
 			const array: number[][] = [
@@ -107,3 +108,19 @@ describe("Util function tests", () => {
 		});
 	});
 });
+
+describe("Testing GetNewReserve()", () => {
+	test("Expect GetNewReserve() to return a valid reserve", () => {
+		const reserve = GetNewReserve(2);
+		console.log(reserve);
+
+		expect(reserve).toBeTruthy();
+
+		Object.keys(reserve).forEach((key) => {
+			expect(
+				Array.from(key).includes(",")
+			).toBeFalsy();
+		});
+	});
+});
+

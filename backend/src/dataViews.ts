@@ -5,6 +5,7 @@ import {
 	ENTRANCE_CORNER as PrismaEntranceCorner,
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
+import { EMPLOYEE_NAME } from "../../shared/EmployeeNames";
 
 export const TURN_PROGRESS_VALUES: TURN_PROGRESS[] =
 	Object.values(PrismaTurnProgress);
@@ -32,6 +33,8 @@ interface BaseGameStateView {
 
 	houses: HouseView[];
 	gardens: GardenView[];
+
+	reserve: Record<EMPLOYEE_NAME, number>;
 
 	marketingCampaigns: MarketingCampaignView[];
 }
@@ -86,3 +89,4 @@ export interface Position {
 	y: number;
 	orientation?: ORIENTATION;
 }
+

@@ -121,6 +121,8 @@ model GameState {
   
   turnOrder     String @default("1234")
 
+  reserve		Json
+
   // Relations
   houses             House[]
   marketingCampaigns MarketingCampaign[]

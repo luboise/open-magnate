@@ -7,17 +7,6 @@ type HEX = `#${string}`;
 
 export type Colour = RGB | RGBA | HEX;
 
-export function Clamp(
-	val: number,
-	min: number,
-	max: number,
-	floor: boolean = false
-) {
-	const clamped = Math.min(Math.max(val, min), max);
-
-	return floor ? Math.floor(clamped) : clamped;
-}
-
 export function GetReactChildId(
 	children: React.ReactNode
 ): string {

@@ -22,6 +22,7 @@ import {
 	MapStringChar,
 	createMapString
 } from "../../game/MapPieces";
+import { Reserve } from "../../game/NewGameStructures";
 import {
 	GetTransposed,
 	parseJsonArray,
@@ -320,7 +321,8 @@ const GameStateController = {
 						return rv;
 					})
 				)
-				.flat(1)
+				.flat(1),
+			reserve: gameState.reserve as Reserve
 		};
 	},
 

@@ -18,14 +18,12 @@ import MapTile from "./MapTile";
 
 interface MapProps extends HTMLAttributes<HTMLDivElement> {}
 
-function MagnateMap(props: PropsWithChildren<MapProps>) {
+function MagnateMap({
+	children,
+	style,
+	...args
+}: PropsWithChildren<MapProps>) {
 	// console.debug("Rendering magnate map.");
-	const {
-		// onTileClicked,
-		children,
-		style,
-		...args
-	} = props;
 
 	const {
 		sendMapObjectClickEvent: mapObjectClicked,
@@ -209,3 +207,4 @@ function MagnateMap(props: PropsWithChildren<MapProps>) {
 }
 
 export default MagnateMap;
+
