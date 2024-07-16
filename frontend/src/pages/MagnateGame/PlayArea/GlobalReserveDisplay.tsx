@@ -12,24 +12,13 @@ function GlobalReserveDisplay() {
 		<div
 			id="game-global-reserve-display"
 			style={{
-				translate: collapsed
-					? "100% 0%"
-					: undefined,
-				transition: "translate 0.15s linear"
+				translate: collapsed ? "100% 0%" : undefined
 			}}
 		>
 			<Button
+				id="game-global-reserve-collapse-btn"
 				onClick={() => {
 					setCollapsed(!collapsed);
-				}}
-				style={{
-					fontWeight: "bold",
-					writingMode: "sideways-lr",
-					position: "absolute",
-					bottom: 0,
-					left: 0,
-					translate: "-100% 0%",
-					height: "100%"
 				}}
 			>
 				{" "}
