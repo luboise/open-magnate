@@ -3,6 +3,8 @@
 	top: 0;
 	right: 0;
 
+	height: 60%;
+
 	background-color: darkolivegreen;
 	transition: translate 0.15s var(--snappy-bezier);
 	/* cubic-bezier(0.09, 1.58, 0.38, 0.7); */
@@ -23,3 +25,7 @@
 	padding: 3.5em 1em;
 }
 
+#game-global-reserve-display .game-reserve-display {
+	height: 100%;
+	width: 100%;
+}

@@ -29,4 +29,3 @@ function GlobalReserveDisplay() {
 }
 
 export default GlobalReserveDisplay;
-
