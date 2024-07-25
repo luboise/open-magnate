@@ -370,4 +370,3 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 }
 
 export default EmployeeTree;
-

@@ -12,6 +12,8 @@
 
 	box-sizing: border-box;
 
+	background-color: black;
+
 	border: var(--resizable-element-border-size) black solid;
 	border-radius: var(--resizable-element-border-size);
 
@@ -48,4 +50,3 @@
 	top: -1em;
 	z-index: 2;
 }
-

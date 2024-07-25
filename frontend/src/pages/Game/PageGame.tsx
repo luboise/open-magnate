@@ -204,10 +204,14 @@ function PageGame() {
 			)}
 
 			<Resizable
-				defaultWidth={1200}
 				minimiseIf={state.showEmployeeTree}
+				// TODO: Fix dimension scaling for resizable elements
+				scalingType="SCALE"
 			>
-				<EmployeeTree id="employee-tree" />
+				<EmployeeTree
+					id="employee-tree"
+					style={{ width: "800px" }}
+				/>
 			</Resizable>
 
 			<Resizable
@@ -243,4 +247,3 @@ function PageGame() {
 }
 
 export default PageGame;
-
