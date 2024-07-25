@@ -1,7 +1,9 @@
 import { HTMLAttributes } from "react";
-import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
 import { useGameState } from "../../../hooks/useGameState";
-import { EmployeesById } from "../../../utils";
+import {
+	EmployeesById,
+	IsValidEmployeeId
+} from "../../../utils";
 import EmployeeCard from "../EmployeeTree/EmployeeCard";
 
 interface ReserveDisplayProps
@@ -16,12 +18,13 @@ function ReserveDisplay({ ...args }: ReserveDisplayProps) {
 		<div className="game-reserve-display" {...args}>
 			{...Object.entries<number>(reserve).map(
 				([employeeId, quantity]) => {
-					const converted =
-						employeeId as EMPLOYEE_ID;
+					if (!IsValidEmployeeId(employeeId))
+						return <></>;
+
 					return (
 						<EmployeeCard
 							employee={
-								EmployeesById[converted]
+								EmployeesById[employeeId]
 							}
 						/>
 					);

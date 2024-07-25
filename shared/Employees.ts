@@ -168,6 +168,12 @@ export const EmployeesById: Record<
 	CEO: CEOEmployeeInitial
 } as const;
 
+export function IsValidEmployeeId(
+	id: string
+): id is EMPLOYEE_ID {
+	return id in EmployeesById;
+}
+
 export const DEFAULT_EMPLOYEE_ARRAY = ["CEO"];
 export const DEFAULT_SERIALISED_EMPLOYEE_STRING =
 	"0[X,X,X]";
