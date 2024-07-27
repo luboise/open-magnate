@@ -52,14 +52,14 @@ beforeEach(() => {
 		EmployeesById["mgmt_1"],
 		EmployeesById["mgmt_1"],
 		EmployeesById["mgmt_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"],
-		EmployeesById["food_1"]
+		EmployeesById["food_basic"],
+		EmployeesById["food_basic"],
+		EmployeesById["food_basic"],
+		EmployeesById["food_basic"],
+		EmployeesById["food_basic"],
+		EmployeesById["food_basic"],
+		EmployeesById["food_basic"],
+		EmployeesById["food_basic"]
 	];
 });
 
