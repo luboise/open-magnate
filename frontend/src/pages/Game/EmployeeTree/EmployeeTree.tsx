@@ -305,7 +305,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 			{treeHasMoved ? (
 				<Button
 					onClick={resetOffset}
-					className="game-employee-tree-reset-button"
+					className="corner-button"
 				>
 					Reset View
 				</Button>
@@ -370,3 +370,4 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 }
 
 export default EmployeeTree;
+

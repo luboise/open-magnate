@@ -1,7 +1,8 @@
 import "./TurnPlanner.css";
 
-import { HTMLAttributes } from "react";
+import { HTMLAttributes, useState } from "react";
 import { Employee } from "../../../../../shared/EmployeeTypes";
+import ModalPanel from "../../../global_components/ModalPanel";
 import { useGameState } from "../../../hooks/useGameState";
 import { GameAction, GetAllTreeData } from "../../../utils";
 import EmployeeCard from "../EmployeeTree/EmployeeCard";
@@ -13,11 +14,39 @@ interface TurnPlannerProps
 function TurnPlanner({ ...args }: TurnPlannerProps) {
 	const { currentTree, myEmployees, playerData } =
 		useGameState();
+
+	const [
+		selectedEmployeeIndex,
+		setSelectedEmployeeIndex
+	] = useState<number | null>(null);
+
 	if (!currentTree || !playerData) return <></>;
 
 	const employees: Employee[] = GetAllTreeData(
 		currentTree
 	).map((index) => myEmployees[index]);
+
+	// TODO: Clean this up to be more efficient
+	function getEventWindow(
+		selectedEmployeeIndex: number | null
+	) {
+		if (
+			selectedEmployeeIndex === null ||
+			selectedEmployeeIndex < 0 ||
+			selectedEmployeeIndex >= employees.length
+		)
+			return <></>;
+
+		return (
+			<ModalPanel
+				onClose={() =>
+					setSelectedEmployeeIndex(null)
+				}
+			>
+				Employee stuff here
+			</ModalPanel>
+		);
+	}
 
 	const actions: GameAction[] = [
 		{
@@ -40,8 +69,22 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				<h2>Use your employees!</h2>
 
 				<div className="game-turn-planner-employees">
-					{...employees.map((employee) => (
-						<EmployeeCard employee={employee} />
+					{getEventWindow(selectedEmployeeIndex)}
+					{...employees.map((employee, index) => (
+						<EmployeeCard
+							employee={employee}
+							onClick={() =>
+								setSelectedEmployeeIndex(
+									index
+								)
+							}
+							className={
+								selectedEmployeeIndex ===
+								index
+									? "item-highlighted"
+									: undefined
+							}
+						/>
 					))}
 				</div>
 			</div>

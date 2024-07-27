@@ -1,0 +1,5 @@
+.item-highlighted {
+	filter: sepia(100%) hue-rotate(190deg) saturate(500%);
+	transition: filter 0.12s ease;
+}
+

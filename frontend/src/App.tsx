@@ -1,6 +1,9 @@
 import "./Animations.css";
 import "./App.css";
 
+import "./global_styles/corner-button.css";
+import "./global_styles/highlighted.css";
+
 import {
 	BrowserRouter,
 	Link,

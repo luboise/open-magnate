@@ -19,6 +19,7 @@ const Button: React.FC<ButtonProps> = (
 		children,
 		inactive,
 		inactiveHoverText,
+		className,
 		...args
 	} = props;
 
@@ -49,9 +50,10 @@ const Button: React.FC<ButtonProps> = (
 				onMouseEnter={() => setHovering(true)}
 				onMouseLeave={() => setHovering(false)}
 				type="button"
-				className={
-					props.inactive ? "btn-inactive" : ""
-				}
+				className={[
+					props.inactive ? "btn-inactive" : "",
+					className ?? ""
+				].join(" ")}
 				{...args}
 				// disabled={props.inactive}
 			>

@@ -24,6 +24,7 @@ import {
 	GamePlayerViewPrivate,
 	GamePlayerViewPublic,
 	GameStateViewPerPlayer,
+	IsValidEmployeeId,
 	Map2D,
 	MapTileData,
 	ParseEmployeeTree,
@@ -167,7 +168,7 @@ const myEmployeesSelector = selector<Employee[]>({
 		const myEmployees: Employee[] = [];
 
 		playerData.employees.forEach((employeeId) => {
-			if (!(employeeId in EmployeesById)) return;
+			if (!IsValidEmployeeId(employeeId)) return;
 
 			myEmployees.push(EmployeesById[employeeId]);
 		});
