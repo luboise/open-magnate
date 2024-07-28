@@ -1,6 +1,6 @@
-import { HTMLAttributes } from "react";
-import { EmployeeNode } from "../../../../../../../shared/EmployeeStructure";
-import { Employee } from "../../../../../../../shared/EmployeeTypes";
+import { HTMLAttributes, useMemo } from "react";
+import { EmployeeNode } from "../../../../../shared/EmployeeStructure";
+import { Employee } from "../../../../../shared/EmployeeTypes";
 import EmployeeCard from "./EmployeeCard";
 
 export type TreeNodeDropCallback = (
@@ -13,6 +13,10 @@ interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {
 	node: EmployeeNode;
 	employeeList: Employee[];
+	cardMakerCallback?: (
+		employee: Employee,
+		index: number
+	) => JSX.Element;
 	depth?: number;
 	dropCallback?: TreeNodeDropCallback;
 }
@@ -21,14 +25,14 @@ interface EmployeeTreeNodeProps
 const NODE_HORIZONTAL_DISTANCE = 100;
 const NODE_VERTICAL_DISTANCE = 400;
 
-function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
-	const {
-		node: parent,
-		employeeList,
-		depth,
-		dropCallback,
-		...args
-	} = props;
+function EmployeeTreeNode({
+	node: parent,
+	employeeList,
+	depth,
+	dropCallback,
+	cardMakerCallback,
+	...args
+}: EmployeeTreeNodeProps) {
 	const checkedDepth = depth ?? 1;
 
 	const employee = employeeList[parent.data];
@@ -48,6 +52,7 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 					employeeList={employeeList}
 					depth={checkedDepth + 1}
 					dropCallback={dropCallback}
+					cardMakerCallback={cardMakerCallback}
 				/>
 			) : (
 				<div
@@ -90,9 +95,17 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 		3: 200
 	};
 
+	const cardElement = useMemo(() => {
+		return cardMakerCallback ? (
+			cardMakerCallback(employee, parent.data)
+		) : (
+			<EmployeeCard employee={employee} />
+		);
+	}, [cardMakerCallback]);
+
 	return (
 		<div className="game-employee-tree-node" {...args}>
-			<EmployeeCard employee={employee} />
+			{cardElement}
 			<div
 				className="game-employee-tree-node-children"
 				style={{
@@ -111,3 +124,4 @@ function EmployeeTreeNode(props: EmployeeTreeNodeProps) {
 }
 
 export default EmployeeTreeNode;
+

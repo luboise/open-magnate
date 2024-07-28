@@ -14,6 +14,7 @@ import {
 	IsValidEmployeeTree,
 	ParseEmployeeTree
 } from "../../../../../shared/EmployeeStructure";
+import { Employee } from "../../../../../shared/EmployeeTypes";
 import Button from "../../../global_components/Button";
 import { useGameState } from "../../../hooks/useGameState";
 import usePanning from "../../../hooks/usePanning";
@@ -297,11 +298,30 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		console.debug("drag end");
 	};
 
+	const MakeDraggableEmployeeCard = useCallback(
+		(employee: Employee, index: number) => {
+			return (
+				<EmployeeCard
+					employee={employee}
+					draggable={true}
+					onDragStart={(event) => {
+						event.dataTransfer.setData(
+							"number",
+							String(index)
+						);
+						onDragStart(event);
+					}}
+					onDrag={onDrag}
+					onDragEnd={onDragEnd}
+					id={`employee-card-tree-${index}`}
+				/>
+			);
+		},
+		[onDrag, onDragEnd]
+	);
+
 	return (
-		<div
-			className="game-employee-tree-section"
-			{...args}
-		>
+		<div className="game-employee-tree" {...args}>
 			{treeHasMoved ? (
 				<Button
 					onClick={resetOffset}
@@ -325,6 +345,9 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 							transform: `translate(${offset.x}px, ${offset.y}px)`
 						}}
 						dropCallback={onCardDropped}
+						cardMakerCallback={
+							MakeDraggableEmployeeCard
+						}
 					/>
 				) : (
 					<></>
@@ -335,21 +358,9 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 					if (nodesInUse.includes(index))
 						return <></>;
 
-					return (
-						<EmployeeCard
-							employee={employee}
-							draggable={true}
-							onDragStart={(event) => {
-								event.dataTransfer.setData(
-									"number",
-									String(index)
-								);
-								onDragStart(event);
-							}}
-							onDrag={onDrag}
-							onDragEnd={onDragEnd}
-							id={`employee-card-tree-${index}`}
-						/>
+					return MakeDraggableEmployeeCard(
+						employee,
+						index
 					);
 				})}
 			</div>

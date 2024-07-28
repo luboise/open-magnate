@@ -1,4 +1,4 @@
-.game-employee-tree-section {
+.game-employee-tree {
 	display: flex;
 
 	flex-direction: column;
@@ -16,17 +16,13 @@
 	/* width: 100%; */
 }
 
-.game-employee-tree-section > div {
+.game-employee-tree > div {
 	width: 100%;
 	border: 0.1em solid black;
 }
 
-.game-employee-tree-section * {
+.game-employee-tree * {
 	box-sizing: border-box;
-}
-
-.game-employee-tree-section .game-employee-card {
-	width: 100px;
 }
 
 .game-employee-tree-content {
@@ -45,35 +41,16 @@
 	align-items: center;
 	overflow: hidden;
 
-	pointer-events: none;
-}
-
-.game-employee-tree-cards {
-	display: flex;
-
-	overflow: auto;
-	overflow-y: hidden;
-
-	gap: 0.2em;
-	padding: 0.2em;
-}
-
-.game-employee-tree-cards > * {
-	height: 100%;
-}
-
-.game-employee-tree-cards > .game-employee-card * {
 	/* pointer-events: none; */
-	user-select: none;
 }
 
 /* .game-employee-tree-reset-button {
 	position: absolute;
 	z-index: 2;
-
+	
 	top: 0.3em;
 	right: 0.3em;
-} */
+	} */
 
 .game-employee-tree-node {
 	position: relative;
@@ -105,3 +82,23 @@
 	cursor: move;
 }
 
+.game-employee-tree .game-employee-card {
+	width: 100px;
+	user-select: none;
+	cursor: grab;
+}
+
+/* Cards not in tree */
+.game-employee-tree-cards {
+	display: flex;
+
+	overflow: auto;
+	overflow-y: hidden;
+
+	gap: 0.2em;
+	padding: 0.2em;
+}
+
+.game-employee-tree-cards > * {
+	height: 100%;
+}

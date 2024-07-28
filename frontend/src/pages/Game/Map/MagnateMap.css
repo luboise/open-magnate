@@ -30,6 +30,8 @@
 	/* padding: var(--map-gap-width); */
 
 	position: relative;
+
+	user-select: none;
 }
 
 .map-preview-container > *:not(.map-tile):not(table) {
@@ -71,3 +73,4 @@ tbody * {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+
