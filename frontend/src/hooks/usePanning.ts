@@ -231,7 +231,8 @@ function usePanning(
 						state.panCursorCurrentPos
 					)
 				: state.offset,
-		resetOffset
+		resetOffset,
+		currentlyPanning: state.buttonIsDown
 	};
 }
 
