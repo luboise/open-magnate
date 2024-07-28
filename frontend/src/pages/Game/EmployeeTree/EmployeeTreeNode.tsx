@@ -1,7 +1,6 @@
 import { HTMLAttributes, useMemo } from "react";
 import { EmployeeNode } from "../../../../../shared/EmployeeStructure";
 import { Employee } from "../../../../../shared/EmployeeTypes";
-import EmployeeCard from "./EmployeeCard";
 
 export type TreeNodeDropCallback = (
 	parent: number,
@@ -9,16 +8,35 @@ export type TreeNodeDropCallback = (
 	parentIndex: number
 ) => void;
 
+interface BaseProps {
+	dragTarget: boolean;
+	dropTarget: boolean;
+	parentEmployeeIndex: number;
+	employee: Employee | null;
+	indexInParent: number;
+}
+
+interface EmptySlotProps extends BaseProps {
+	employee: null;
+}
+
+interface CardSlotProps extends BaseProps {
+	employee: Employee;
+}
+
+type CardMakerCallbackProps =
+	| EmptySlotProps
+	| CardSlotProps;
+
+export type CardMakerCallbackType =
+	({}: CardMakerCallbackProps) => JSX.Element;
+
 interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {
 	node: EmployeeNode;
 	employeeList: Employee[];
-	cardMakerCallback?: (
-		employee: Employee,
-		index: number
-	) => JSX.Element;
+	cardMakerCallback: CardMakerCallbackType;
 	depth?: number;
-	dropCallback?: TreeNodeDropCallback;
 }
 
 // 400 pixels apart
@@ -28,13 +46,11 @@ const NODE_VERTICAL_DISTANCE = 400;
 function EmployeeTreeNode({
 	node: parent,
 	employeeList,
-	depth,
-	dropCallback,
+	depth = 1,
+	// dropCallback,
 	cardMakerCallback,
 	...args
 }: EmployeeTreeNodeProps) {
-	const checkedDepth = depth ?? 1;
-
 	const employee = employeeList[parent.data];
 
 	// console.debug(
@@ -44,49 +60,57 @@ function EmployeeTreeNode({
 	// 	node.children
 	// );
 
+	// const makeDropProperties = useCallback(
+	// 	(index: number): HTMLAttributes<HTMLDivElement> => {
+	// 		return {
+	// 			onDragEnter: (event) => {
+	// 				event.preventDefault();
+	// 				console.debug("Enter");
+	// 			},
+	// 			onDragOver: (e) => e.preventDefault(),
+	// 			onDrop: (event) => {
+	// 				if (!dropCallback) {
+	// 					console.debug(
+	// 						"No drop callback provided. Ignoring drop event."
+	// 					);
+	// 					return;
+	// 				}
+
+	// 				// event.preventDefault();
+	// 				dropCallback(
+	// 					parent.data,
+	// 					Number(
+	// 						event.dataTransfer.getData(
+	// 							"number"
+	// 						)
+	// 					),
+	// 					index
+	// 				);
+	// 			}
+	// 		};
+	// 	},
+	// 	[]
+	// );
+
 	const childNodes: JSX.Element[] = parent.children.map(
-		(child, index) =>
-			child !== null ? (
+		(child, _childIndex) => {
+			return child !== null ? (
 				<EmployeeTreeNode
 					node={child}
 					employeeList={employeeList}
-					depth={checkedDepth + 1}
-					dropCallback={dropCallback}
+					depth={depth + 1}
 					cardMakerCallback={cardMakerCallback}
 				/>
 			) : (
-				<div
-					style={{
-						width: 100,
-						height: 100,
-						backgroundColor: "red"
-					}}
-					onDragEnter={(event) => {
-						event.preventDefault();
-						console.debug("Enter");
-					}}
-					onDragOver={(e) => e.preventDefault()}
-					onDrop={(event) => {
-						if (!dropCallback) {
-							console.debug(
-								"No drop callback provided. Ignoring drop event."
-							);
-							return;
-						}
-
-						// event.preventDefault();
-						dropCallback(
-							parent.data,
-							Number(
-								event.dataTransfer.getData(
-									"number"
-								)
-							),
-							index
-						);
-					}}
-				/>
-			)
+				cardMakerCallback({
+					employee: null,
+					parentEmployeeIndex: parent.data,
+					indexInParent: _childIndex,
+					dragTarget: false,
+					dropTarget: true
+				})
+			);
+		}
 	);
 
 	const depthMap: Record<number, number> = {
@@ -95,12 +119,15 @@ function EmployeeTreeNode({
 		3: 200
 	};
 
+	// TODO: Double check parent index is correct
 	const cardElement = useMemo(() => {
-		return cardMakerCallback ? (
-			cardMakerCallback(employee, parent.data)
-		) : (
-			<EmployeeCard employee={employee} />
-		);
+		return cardMakerCallback({
+			employee,
+			indexInParent: 0,
+			parentEmployeeIndex: parent.data,
+			dragTarget: depth > 1,
+			dropTarget: true
+		});
 	}, [cardMakerCallback]);
 
 	return (
@@ -113,8 +140,7 @@ function EmployeeTreeNode({
 					translate: "-50% 50%",
 					left: "50%",
 					width:
-						childNodes.length *
-						depthMap[checkedDepth]
+						childNodes.length * depthMap[depth]
 				}}
 			>
 				{...childNodes}

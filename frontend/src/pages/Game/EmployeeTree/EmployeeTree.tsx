@@ -14,13 +14,13 @@ import {
 	IsValidEmployeeTree,
 	ParseEmployeeTree
 } from "../../../../../shared/EmployeeStructure";
-import { Employee } from "../../../../../shared/EmployeeTypes";
 import Button from "../../../global_components/Button";
 import { useGameState } from "../../../hooks/useGameState";
 import usePanning from "../../../hooks/usePanning";
 import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "../../../utils";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeTreeNode, {
+	CardMakerCallbackType,
 	TreeNodeDropCallback
 } from "./EmployeeTreeNode";
 
@@ -89,7 +89,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 
 					if (!state.tree) {
 						console.debug(
-							"Attempted to add node a null tree. Dismissing the action."
+							"Attempted to add node to a null tree. Dismissing the action."
 						);
 
 						return state;
@@ -140,6 +140,19 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 									).fill(null)
 								: []
 						};
+
+						if (node.children[parentIndex]) {
+							console.debug(
+								"Replacing child at index ",
+								parentIndex,
+								" with new child: ",
+								newNode.data
+							);
+
+							delete node.children[
+								parentIndex
+							];
+						}
 
 						// TODO: Add index validation for inserting into the parent
 						node.children[parentIndex] =
@@ -224,10 +237,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	const onCardDropped = useCallback<TreeNodeDropCallback>(
 		(parent, child, index) => {
 			console.debug(
-				"Card dropped on employee tree: ",
-				child,
-				parent,
-				index
+				`Card dropped on employee tree: parent: ${parent}, child: ${child}, index: ${index}`
 			);
 
 			dispatch({
@@ -269,6 +279,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		element.current = div;
 
 		styleDraggee(element.current, true);
+		console.debug("Started dragging: ", div);
 
 		// div.style.position = "fixed";
 	};
@@ -278,7 +289,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	) => {
 		event.preventDefault();
 
-		console.debug("drag", event.screenX, event.screenY);
+		// console.debug("drag", event.screenX, event.screenY);
 
 		// div.style.translate = `${event.clientX}px ${event.clientY}px`;
 		// div.style.position = "fixed";
@@ -288,6 +299,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		_event
 	) => {
 		if (!element.current) {
+			console.debug("Drag end: no element found");
 			return;
 		}
 
@@ -298,27 +310,115 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		console.debug("drag end");
 	};
 
-	const MakeDraggableEmployeeCard = useCallback(
-		(employee: Employee, index: number) => {
-			return (
-				<EmployeeCard
-					employee={employee}
-					draggable={true}
-					onDragStart={(event) => {
-						event.dataTransfer.setData(
-							"number",
-							String(index)
-						);
-						onDragStart(event);
-					}}
-					onDrag={onDrag}
-					onDragEnd={onDragEnd}
-					id={`employee-card-tree-${index}`}
-				/>
-			);
-		},
-		[onDrag, onDragEnd]
-	);
+	// const MakeDraggableEmployeeCard = useCallback(
+	// 	(employee: Employee, index: number) => {
+	// 		return (
+	// 			<EmployeeCard
+	// 				employee={employee}
+	// 				draggable={true}
+	// 				onDragStart={(event) => {
+	// 					event.dataTransfer.setData(
+	// 						"number",
+	// 						String(index)
+	// 					);
+	// 					onDragStart(event);
+	// 				}}
+	// 				onDrag={onDrag}
+	// 				onDragEnd={onDragEnd}
+	// 				id={`employee-card-tree-${index}`}
+	// 			/>
+	// 		);
+	// 	},
+	// 	[onDrag, onDragEnd]
+	// );
+
+	const MakeDraggableEmployeeCard =
+		useCallback<CardMakerCallbackType>(
+			({
+				employee,
+				parentEmployeeIndex,
+				dropTarget,
+				dragTarget,
+				indexInParent: index
+			}) => {
+				if (!employee)
+					return (
+						<div
+							style={{
+								width: 100,
+								height: 100,
+								backgroundColor: "red"
+							}}
+							{...(dropTarget
+								? DropTargetProperties(
+										parentEmployeeIndex,
+										index
+									)
+								: {})}
+						/>
+					);
+
+				return (
+					<EmployeeCard
+						employee={employee}
+						{...(dragTarget
+							? DragTargetProperties(index)
+							: {})}
+						{...(dropTarget
+							? DropTargetProperties(
+									parentEmployeeIndex,
+									index
+								)
+							: {})}
+					/>
+				);
+			},
+			[onDrag, onDragEnd]
+		);
+
+	const DragTargetProperties = (
+		index: number
+	): HTMLAttributes<HTMLDivElement> => {
+		return {
+			draggable: true,
+			onDragStart: (event) => {
+				event.dataTransfer.setData(
+					"number",
+					String(index)
+				);
+				onDragStart(event);
+			},
+			onDrag: onDrag,
+
+			onDragEnd: onDragEnd
+		};
+	};
+
+	const DropTargetProperties = (
+		parentIndex: number,
+		childIndex: number
+	): HTMLAttributes<HTMLDivElement> => {
+		return {
+			onDragEnter: (event) => {
+				event.preventDefault();
+				console.debug("Enter");
+			},
+			onDragOver: (e) => e.preventDefault(),
+			onDrop: (event) => {
+				// event.preventDefault();
+				console.debug(
+					`Card was dropped with parentIndex ${parentIndex} and childIndex ${childIndex}`
+				);
+				onCardDropped(
+					parentIndex,
+					Number(
+						event.dataTransfer.getData("number")
+					),
+					childIndex
+				);
+			}
+		};
+	};
 
 	return (
 		<div className="game-employee-tree" {...args}>
@@ -344,7 +444,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 						style={{
 							transform: `translate(${offset.x}px, ${offset.y}px)`
 						}}
-						dropCallback={onCardDropped}
+						// dropCallback={onCardDropped}
 						cardMakerCallback={
 							MakeDraggableEmployeeCard
 						}
@@ -354,15 +454,21 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				)}
 			</div>
 			<div className="game-employee-tree-cards">
-				{...myEmployees.map((employee, index) => {
-					if (nodesInUse.includes(index))
-						return <></>;
+				{...myEmployees.map(
+					(employee, index): JSX.Element => {
+						if (nodesInUse.includes(index))
+							return <></>;
 
-					return MakeDraggableEmployeeCard(
-						employee,
-						index
-					);
-				})}
+						// TODO: Fix parent index
+						return MakeDraggableEmployeeCard({
+							employee,
+							parentEmployeeIndex: -1,
+							indexInParent: index,
+							dragTarget: true,
+							dropTarget: true
+						});
+					}
+				)}
 			</div>
 		</div>
 	);
