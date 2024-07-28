@@ -101,7 +101,7 @@ function usePanning(
 
 					if (onStopPanning)
 						(async () => {
-							onStopPanning;
+							onStopPanning();
 						})();
 
 					return {

@@ -1,5 +1,7 @@
 #root {
 	--resizable-element-border-size: 1.5em;
+
+	--resizable-element-grab-tab-size: 1em;
 }
 
 .resizable-element {
@@ -21,6 +23,11 @@
 }
 
 .resizable-element-handle {
+	/* Modifiable */
+	cursor: nwse-resize;
+
+	/* Set in stone */
+
 	position: absolute;
 	bottom: calc(
 		-1 / 1.15 * var(--resizable-element-border-size)
@@ -43,10 +50,29 @@
 }
 
 .resizable-element-top-tab {
-	width: 100%;
-	height: 1em;
-	background-color: white;
-	position: absolute;
-	top: -1em;
+	/* aspect-ratio: 1; */
+	user-select: none;
+	cursor: move;
+
+	color: black;
+
+	translate: 0 -100%;
+
+	height: var(--resizable-element-border-size);
 	z-index: 2;
+
+	background-color: dimgray;
+	position: absolute;
+
+	width: 100%;
+	opacity: 0;
+
+	font-weight: bold;
+	border-radius: var(--resizable-element-border-size);
+	transition: opacity 0.15s linear;
 }
+
+.resizable-element-top-tab:hover {
+	opacity: 1;
+}
+

@@ -23,9 +23,10 @@ function GlobalReserveDisplay() {
 				{" "}
 				Reserve
 			</Button>
-			<ReserveDisplay />
+			<ReserveDisplay id="global-reserve-display" />
 		</div>
 	);
 }
 
 export default GlobalReserveDisplay;
+

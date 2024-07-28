@@ -29,7 +29,7 @@ type ResizableAction =
 			startWidth: number;
 			startPos: Position;
 	  }
-	| { type: "STOP_RESIZE" };
+	| { type: "STOP_RESIZE"; newScale: number };
 
 interface ResizableProps
 	extends React.HTMLAttributes<HTMLDivElement> {
@@ -39,6 +39,20 @@ interface ResizableProps
 	colour?: Colour;
 	minimiseIf?: boolean;
 	scalingType?: "DIMENSIONS" | "SCALE";
+}
+
+function calculateScale(
+	currentScale: number,
+	currentWidth: number,
+	currentOffset: Position
+): number {
+	const xDiff = currentOffset.x;
+	const currentWidthScaled = currentWidth * currentScale;
+
+	const newScale =
+		(currentWidthScaled + xDiff) / currentWidthScaled;
+
+	return newScale * currentScale;
 }
 
 function Resizable({
@@ -66,35 +80,12 @@ function Resizable({
 
 	const { offset: panOffset, startPanning } = usePanning(
 		parentId + "-offset",
-		"LEFT",
-		onScaleStop
+		"LEFT"
 	);
-
-	const {
-		offset: scaleOffset,
-		startPanning: startScaling,
-		resetOffset: resetScalingOffset
-	} = usePanning(parentId + "-scaling", "LEFT");
 
 	const [scale, setScale] = useLocalVal<number>(
 		`${parentId}-scale-value`
 	);
-
-	function calculateScale(
-		currentScale: number,
-		currentWidth: number,
-		currentOffset: Position
-	): number {
-		const xDiff = currentOffset.x;
-		const currentWidthScaled =
-			currentWidth * currentScale;
-
-		const newScale =
-			(currentWidthScaled + xDiff) /
-			currentWidthScaled;
-
-		return newScale;
-	}
 
 	const [state, dispatch] = useReducer(
 		(
@@ -119,13 +110,14 @@ function Resizable({
 						"Scale is undefined in resizable component."
 					);
 
-				const newScale = calculateScale(
-					scale,
-					state.startWidth,
-					scaleOffset
+				console.debug(
+					`Changing scale of ${parentId} to ${action.newScale}`
 				);
-
-				setScale(newScale);
+				setScale(action.newScale);
+				return {
+					...state,
+					type: "IDLE"
+				};
 			}
 			return state;
 			// throw new Error(
@@ -136,6 +128,13 @@ function Resizable({
 			type: "IDLE"
 		}
 	);
+
+	const {
+		offset: scaleOffset,
+		startPanning: startScaling,
+		resetOffset: resetScalingOffset,
+		currentlyPanning: currentlyScaling
+	} = usePanning(parentId + "-scaling", "LEFT");
 
 	function getDivDetails() {
 		const element = document.getElementById(childId);
@@ -169,11 +168,6 @@ function Resizable({
 		});
 	}
 
-	function onScaleStop() {
-		dispatch({ type: "STOP_RESIZE" });
-		resetScalingOffset;
-	}
-
 	const currentScale: number =
 		state.type === "DRAGGING"
 			? calculateScale(
@@ -183,14 +177,23 @@ function Resizable({
 				)
 			: scale ?? 1;
 
+	function onScaleStop() {
+		if (state.type === "IDLE") return;
+
+		const newScale = calculateScale(
+			scale ?? 1,
+			state.startWidth,
+			scaleOffset
+		);
+		dispatch({ type: "STOP_RESIZE", newScale });
+		resetScalingOffset();
+	}
+
 	const styleProperties: React.CSSProperties = {
 		left: panOffset.x,
 		top: panOffset.y,
 
-		scale:
-			scalingType === "SCALE"
-				? String(currentScale)
-				: undefined
+		scale: String(currentScale)
 		// width:
 		// 	scalingType === "DIMENSIONS"
 		// 		? `${Math.floor(currentScale * 100)}%`
@@ -210,15 +213,17 @@ function Resizable({
 	if (scalingType === "DIMENSIONS" && div) {
 		const percentage = `${Math.floor(currentScale * 100)}%`;
 
-		console.debug(percentage);
-
 		div.style.width = percentage;
 		div.style.height = percentage;
 	}
 
-	// console.debug(styleProperties);
-
 	useEffect(resetScalingOffset, []);
+	useEffect(() => {
+		if (currentlyScaling) return;
+
+		onScaleStop();
+		resetScalingOffset();
+	}, [currentlyScaling]);
 
 	return (
 		<>
