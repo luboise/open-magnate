@@ -4,6 +4,7 @@ import {
 	HTMLAttributes,
 	useCallback,
 	useEffect,
+	useMemo,
 	useReducer
 } from "react";
 import {
@@ -265,7 +266,8 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				dispatch({
 					type: "ADD_NODE",
 					parentEmployeeIndex: parent.data,
-					newNodeEmployeeIndex: employeeDropped,
+					newNodeEmployeeIndex:
+						Number(employeeDropped),
 					indexInNewParent: index
 				});
 			},
@@ -287,9 +289,12 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		});
 	}
 
-	const nodesInUse = employeeTree.tree
-		? GetAllTreeData(employeeTree.tree)
-		: [];
+	const nodesInUse = useMemo(() => {
+		console.debug("Calculating nodes in use");
+		return employeeTree && employeeTree.tree
+			? GetAllTreeData(employeeTree.tree)
+			: [];
+	}, [employeeTree, employeeTree.tree]);
 
 	const treeHasMoved = offset.x !== 0 || offset.y !== 0;
 

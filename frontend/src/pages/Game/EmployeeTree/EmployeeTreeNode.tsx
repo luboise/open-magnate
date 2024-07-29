@@ -107,7 +107,8 @@ function EmployeeTreeNode({
 					translate: "-50% 50%",
 					left: "50%",
 					width:
-						childNodes.length * depthMap[depth]
+						childNodes.length *
+							depthMap[depth] ?? undefined
 				}}
 			>
 				{...childNodes}
