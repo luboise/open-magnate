@@ -30,52 +30,60 @@ function useDragDrop<DraggerData, ReceiverData>({
 
 	const spreadIfDrag = useCallback<
 		SpreadIfDragFunction<DraggerData>
-	>((data) => {
-		return {
-			draggable: true,
-			onDragStart: (event) => {
-				const div = event.target as HTMLDivElement;
+	>(
+		(data) => {
+			return {
+				draggable: true,
+				onDragStart: (event) => {
+					// event.preventDefault();
 
-				event.dataTransfer.setDragImage(
-					div,
-					div.clientWidth / 2,
-					div.clientHeight / 2
-				);
+					const div =
+						event.target as HTMLDivElement;
 
-				element.current = div;
-
-				console.debug("Started dragging: ", div);
-
-				event.dataTransfer.setData(
-					"string",
-					String(data)
-				);
-
-				if (dragStartCallback)
-					dragStartCallback(data);
-			},
-			onDragEnd: (_event) => {
-				if (!element.current) {
-					console.debug(
-						"Drag end: no element found"
+					event.dataTransfer.setDragImage(
+						div,
+						div.clientWidth / 2,
+						div.clientHeight / 2
 					);
-					return;
+
+					element.current = div;
+
+					console.debug(
+						"Started dragging: ",
+						div
+					);
+
+					event.dataTransfer.setData(
+						"string",
+						String(data)
+					);
+
+					if (dragStartCallback)
+						dragStartCallback(data);
+				},
+				onDragEnd: (_event) => {
+					if (!element.current) {
+						console.debug(
+							"Drag end: no element found"
+						);
+						return;
+					}
+
+					// styleDraggee(element.current, true);
+
+					element.current = null;
+
+					console.debug("drag end");
+				},
+				onDrag: (event) => {
+					event.preventDefault();
+					// div.style.translate = `${event.clientX}px ${event.clientY}px`;
+					// div.style.position = "fixed";
 				}
-
-				// styleDraggee(element.current, true);
-
-				element.current = null;
-
-				console.debug("drag end");
-			},
-			onDrag: (event) => {
-				event.preventDefault();
-
-				// div.style.translate = `${event.clientX}px ${event.clientY}px`;
-				// div.style.position = "fixed";
-			}
-		};
-	}, []);
+			};
+		},
+		[dragStartCallback]
+	);
 
 	// if (employeeDragged !== 0 && !employeeDragged)
 	// 	throw new Error(
@@ -84,36 +92,39 @@ function useDragDrop<DraggerData, ReceiverData>({
 
 	const spreadIfDrop = useCallback<
 		SpreadIfDropFunction<ReceiverData>
-	>((receiverData) => {
-		return {
-			onDragEnter: (event) => {
-				event.preventDefault();
-				console.debug("I HAVE BEEN ENTERED");
-			},
-			onDragOver: (e) => {
-				e.preventDefault();
-				console.debug("I HAVE BEEN OVER");
-			},
-			onDrop: (event) => {
-				// event.preventDefault();
-				console.debug(
-					`Drop event received: ${event}`
-				);
+	>(
+		(receiverData) => {
+			return {
+				onDragEnter: (event) => {
+					event.preventDefault();
+				},
+				onDragOver: (e) => {
+					e.preventDefault();
+					e.dataTransfer.dropEffect = "move";
+				},
+				onDrop: (event) => {
+					event.preventDefault();
+					console.debug(
+						`Drop event received: ${event}`
+					);
 
-				const dragData = event.dataTransfer.getData(
-					"number"
-				) as DraggerData;
+					const dragData =
+						event.dataTransfer.getData(
+							"string"
+						) as DraggerData;
 
-				console.debug(
-					"Calling after drop function with drag data: ",
-					dragData,
-					" and receiver data: ",
-					receiverData
-				);
-				afterDrop(dragData, receiverData);
-			}
-		};
-	}, []);
+					console.debug(
+						"Calling after drop function with drag data: ",
+						dragData,
+						" and receiver data: ",
+						receiverData
+					);
+					afterDrop(dragData, receiverData);
+				}
+			};
+		},
+		[afterDrop]
+	);
 
 	return { spreadIfDrag, spreadIfDrop };
 }
