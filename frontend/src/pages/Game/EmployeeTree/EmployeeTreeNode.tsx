@@ -8,20 +8,26 @@ export type TreeNodeDropCallback = (
 	parentIndex: number
 ) => void;
 
-interface BaseProps {
-	dragTarget: boolean;
-	dropTarget: boolean;
-	parentEmployeeIndex: number;
-	employee: Employee | null;
+export interface ParentDetailsInterface {
+	parentNode: EmployeeNode;
 	indexInParent: number;
 }
 
+interface BaseProps {
+	dragTarget: boolean;
+	dropTarget: boolean;
+	employeeDetails: Employee | null;
+	employeeIndex: number;
+	parentEmployeeIndex: number;
+	parentDetails: ParentDetailsInterface;
+}
+
 interface EmptySlotProps extends BaseProps {
-	employee: null;
+	employeeDetails: null;
 }
 
 interface CardSlotProps extends BaseProps {
-	employee: Employee;
+	employeeDetails: Employee;
 }
 
 type CardMakerCallbackProps =
@@ -37,6 +43,7 @@ interface EmployeeTreeNodeProps
 	employeeList: Employee[];
 	cardMakerCallback: CardMakerCallbackType;
 	depth?: number;
+	parentDetails?: ParentDetailsInterface | undefined;
 }
 
 // 400 pixels apart
@@ -44,70 +51,45 @@ const NODE_HORIZONTAL_DISTANCE = 100;
 const NODE_VERTICAL_DISTANCE = 400;
 
 function EmployeeTreeNode({
-	node: parent,
+	node,
 	employeeList,
 	depth = 1,
 	// dropCallback,
 	cardMakerCallback,
+	parentDetails,
 	...args
 }: EmployeeTreeNodeProps) {
-	const employee = employeeList[parent.data];
+	const employee = employeeList[node.data];
 
-	// console.debug(
-	// 	"Children of node ",
-	// 	node,
-	// 	": ",
-	// 	node.children
-	// );
+	const { parentNode, indexInParent } =
+		parentDetails || {};
 
-	// const makeDropProperties = useCallback(
-	// 	(index: number): HTMLAttributes<HTMLDivElement> => {
-	// 		return {
-	// 			onDragEnter: (event) => {
-	// 				event.preventDefault();
-	// 				console.debug("Enter");
-	// 			},
-	// 			onDragOver: (e) => e.preventDefault(),
-	// 			onDrop: (event) => {
-	// 				if (!dropCallback) {
-	// 					console.debug(
-	// 						"No drop callback provided. Ignoring drop event."
-	// 					);
-	// 					return;
-	// 				}
-
-	// 				// event.preventDefault();
-	// 				dropCallback(
-	// 					parent.data,
-	// 					Number(
-	// 						event.dataTransfer.getData(
-	// 							"number"
-	// 						)
-	// 					),
-	// 					index
-	// 				);
-	// 			}
-	// 		};
-	// 	},
-	// 	[]
-	// );
-
-	const childNodes: JSX.Element[] = parent.children.map(
-		(child, _childIndex) => {
+	const childNodes: JSX.Element[] = node.children.map(
+		(child, indexInParent) => {
 			return child !== null ? (
 				<EmployeeTreeNode
 					node={child}
 					employeeList={employeeList}
 					depth={depth + 1}
 					cardMakerCallback={cardMakerCallback}
+					parentDetails={{
+						parentNode: node,
+						indexInParent: indexInParent
+					}}
 				/>
 			) : (
 				cardMakerCallback({
-					employee: null,
-					parentEmployeeIndex: parent.data,
-					indexInParent: _childIndex,
+					employeeDetails: null,
+					parentEmployeeIndex: node.data,
+
 					dragTarget: false,
-					dropTarget: true
+					dropTarget: true,
+					employeeIndex: -1,
+
+					parentDetails: {
+						parentNode: node,
+						indexInParent: indexInParent
+					}
 				})
 			);
 		}
@@ -121,12 +103,20 @@ function EmployeeTreeNode({
 
 	// TODO: Double check parent index is correct
 	const cardElement = useMemo(() => {
+		if (
+			parentNode &&
+			!parentNode.children.includes(node)
+		) {
+			throw new Error("");
+		}
+
 		return cardMakerCallback({
-			employee,
-			indexInParent: 0,
-			parentEmployeeIndex: parent.data,
+			employeeDetails: employee,
+			parentDetails: parentDetails,
+			parentEmployeeIndex: parentNode?.data ?? 0,
 			dragTarget: depth > 1,
-			dropTarget: true
+			dropTarget: true,
+			employeeIndex: node.data
 		});
 	}, [cardMakerCallback]);
 

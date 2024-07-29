@@ -21,6 +21,7 @@ import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "../../../utils";
 import EmployeeCard from "./EmployeeCard";
 import EmployeeTreeNode, {
 	CardMakerCallbackType,
+	ParentDetailsInterface,
 	TreeNodeDropCallback
 } from "./EmployeeTreeNode";
 
@@ -31,9 +32,9 @@ type EmployeeTreeState = {
 type EmployeeTreeAction =
 	| {
 			type: "ADD_NODE";
-			parent: number;
-			newChild: number;
-			parentIndex: number;
+			parentEmployeeIndex: number;
+			newNodeEmployeeIndex: number;
+			indexInNewParent: number;
 	  }
 	| {
 			type: "SET_TREE";
@@ -63,6 +64,24 @@ function findEmployeeRecursive(
 	return null;
 }
 
+function findParentNode(
+	root: EmployeeNode,
+	toFind: number
+): [EmployeeNode, number] | null {
+	for (let i = 0; i < root.children.length; i++) {
+		const child = root.children[i];
+
+		if (!child) continue;
+
+		if (child.data === toFind) return [root, i];
+
+		const foundParent = findParentNode(child, toFind);
+		if (foundParent !== null) return foundParent;
+	}
+
+	return null;
+}
+
 interface EmployeeTreeProps
 	extends HTMLAttributes<HTMLDivElement> {}
 
@@ -77,14 +96,15 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 			state: EmployeeTreeState,
 			action: EmployeeTreeAction
 		): EmployeeTreeState => {
+			console.debug("ACTION: ", action);
 			switch (action.type) {
 				case "SET_TREE":
 					return { ...state, tree: action.tree };
 				case "ADD_NODE":
 					const {
-						parent,
-						newChild: childEmployeeIndex,
-						parentIndex
+						parentEmployeeIndex,
+						newNodeEmployeeIndex,
+						indexInNewParent
 					} = action;
 
 					if (!state.tree) {
@@ -96,30 +116,28 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 					}
 
 					try {
-						// Find the parent node
-						const node = findEmployeeRecursive(
-							state.tree,
-							parent
-						);
+						// Find the new parent node
+						const newParentNode =
+							findEmployeeRecursive(
+								state.tree,
+								parentEmployeeIndex
+							);
 
-						if (!node)
+						if (!newParentNode)
 							throw new Error(
 								"Attempting to add from invalid node."
 							);
 
 						// Check valid index
 						if (
-							parentIndex >=
-								node.children.length ||
-							parentIndex < 0
+							indexInNewParent >=
+								newParentNode.children
+									.length ||
+							indexInNewParent < 0
 						)
 							throw new Error(
 								"Invalid index provided for updating the tree."
 							);
-
-						// Check that there isn't already a child at that index
-						if (node.children[parentIndex])
-							return state;
 
 						const newState: EmployeeTreeState =
 							{
@@ -127,13 +145,16 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 							};
 
 						const newEmployee =
-							myEmployees[childEmployeeIndex];
+							myEmployees[
+								newNodeEmployeeIndex
+							];
+
 						const hasCapacity =
 							newEmployee.type ===
 							"MANAGEMENT";
 
 						const newNode: EmployeeNode = {
-							data: childEmployeeIndex,
+							data: newNodeEmployeeIndex,
 							children: hasCapacity
 								? new Array(
 										newEmployee.capacity
@@ -141,22 +162,42 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 								: []
 						};
 
-						if (node.children[parentIndex]) {
+						if (
+							newParentNode.children[
+								indexInNewParent
+							]
+						) {
 							console.debug(
 								"Replacing child at index ",
-								parentIndex,
+								indexInNewParent,
 								" with new child: ",
 								newNode.data
 							);
+						}
 
-							delete node.children[
-								parentIndex
-							];
+						// See if the child already exists in the tree
+						const oldParentData =
+							findParentNode(
+								state.tree,
+								newNodeEmployeeIndex
+							);
+
+						// Remove it if its already in the tree
+						if (oldParentData) {
+							const [
+								oldParentNode,
+								indexInOldParent
+							] = oldParentData;
+
+							oldParentNode.children[
+								indexInOldParent
+							] = null;
 						}
 
 						// TODO: Add index validation for inserting into the parent
-						node.children[parentIndex] =
-							newNode;
+						newParentNode.children[
+							indexInNewParent
+						] = newNode;
 
 						console.debug(
 							"NEW EMPLOYEE: ",
@@ -235,16 +276,16 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	}, [playerData?.employeeTreeStr]);
 
 	const onCardDropped = useCallback<TreeNodeDropCallback>(
-		(parent, child, index) => {
+		(parentIndex, newEmployee, indexInParent) => {
 			console.debug(
-				`Card dropped on employee tree: parent: ${parent}, child: ${child}, index: ${index}`
+				`Card dropped on employee tree: parent: ${parentIndex}, child: ${newEmployee}, index: ${indexInParent}`
 			);
 
 			dispatch({
 				type: "ADD_NODE",
-				parent: parent,
-				newChild: child,
-				parentIndex: index
+				parentEmployeeIndex: parentIndex,
+				newNodeEmployeeIndex: newEmployee,
+				indexInNewParent: indexInParent
 			});
 		},
 		[]
@@ -332,16 +373,26 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	// 	[onDrag, onDragEnd]
 	// );
 
+	// Always need to know
+	// Who is the parent
+	// What index am i in the parent
+	// Which employee am i
+
 	const MakeDraggableEmployeeCard =
 		useCallback<CardMakerCallbackType>(
 			({
-				employee,
-				parentEmployeeIndex,
+				employeeDetails,
+
 				dropTarget,
 				dragTarget,
-				indexInParent: index
+				parentDetails,
+				employeeIndex
 			}) => {
-				if (!employee)
+				if (employeeIndex !== 0 && !employeeIndex) {
+					if (!parentDetails)
+						throw new Error(
+							`No employee provided (${employeeIndex})`
+						);
 					return (
 						<div
 							style={{
@@ -351,23 +402,24 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 							}}
 							{...(dropTarget
 								? DropTargetProperties(
-										parentEmployeeIndex,
-										index
+										parentDetails
 									)
 								: {})}
 						/>
 					);
+				}
 
 				return (
 					<EmployeeCard
-						employee={employee}
+						employee={employeeDetails}
 						{...(dragTarget
-							? DragTargetProperties(index)
+							? DragTargetProperties(
+									employeeIndex
+								)
 							: {})}
-						{...(dropTarget
+						{...(dropTarget && parentDetails
 							? DropTargetProperties(
-									parentEmployeeIndex,
-									index
+									parentDetails
 								)
 							: {})}
 					/>
@@ -376,15 +428,20 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 			[onDrag, onDragEnd]
 		);
 
+	// Want to know who was dragged
 	const DragTargetProperties = (
-		index: number
+		employeeDragged: number
 	): HTMLAttributes<HTMLDivElement> => {
+		if (employeeDragged !== 0 && !employeeDragged)
+			throw new Error(
+				`Invalid employee dragged: ${employeeDragged}`
+			);
 		return {
 			draggable: true,
 			onDragStart: (event) => {
 				event.dataTransfer.setData(
 					"number",
-					String(index)
+					String(employeeDragged)
 				);
 				onDragStart(event);
 			},
@@ -394,10 +451,13 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		};
 	};
 
+	// Want to know the parent of the receiver, and where i am in relation to them
 	const DropTargetProperties = (
-		parentIndex: number,
-		childIndex: number
+		parentDetails: ParentDetailsInterface
 	): HTMLAttributes<HTMLDivElement> => {
+		const { parentNode, indexInParent } = parentDetails;
+		const parentEmployee = parentNode.data;
+
 		return {
 			onDragEnter: (event) => {
 				event.preventDefault();
@@ -407,18 +467,28 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 			onDrop: (event) => {
 				// event.preventDefault();
 				console.debug(
-					`Card was dropped with parentIndex ${parentIndex} and childIndex ${childIndex}`
+					`Parent employee ${parentEmployee} received a drop at child ${indexInParent}`
 				);
+
+				const employeeDragged = Number(
+					event.dataTransfer.getData("number")
+				);
+
+				if (!employeeDragged)
+					throw new Error(
+						`Invalid employee dragged: ${employeeDragged}`
+					);
+
 				onCardDropped(
-					parentIndex,
-					Number(
-						event.dataTransfer.getData("number")
-					),
-					childIndex
+					parentEmployee,
+					employeeDragged,
+					indexInParent
 				);
 			}
 		};
 	};
+
+	if (!myEmployees || !employeeTree.tree) return <></>;
 
 	return (
 		<div className="game-employee-tree" {...args}>
@@ -456,16 +526,23 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 			<div className="game-employee-tree-cards">
 				{...myEmployees.map(
 					(employee, index): JSX.Element => {
-						if (nodesInUse.includes(index))
+						if (
+							!employee ||
+							nodesInUse.includes(index)
+						)
 							return <></>;
 
 						// TODO: Fix parent index
 						return MakeDraggableEmployeeCard({
-							employee,
+							employeeDetails: employee,
 							parentEmployeeIndex: -1,
-							indexInParent: index,
+							parentDetails: {
+								indexInParent: index,
+								parentNode:
+									employeeTree.tree
+							},
 							dragTarget: true,
-							dropTarget: true
+							dropTarget: false
 						});
 					}
 				)}
