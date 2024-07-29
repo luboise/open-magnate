@@ -101,6 +101,7 @@ function useDragDrop<DraggerData, ReceiverData>({
 				onDragOver: (e) => {
 					e.preventDefault();
 					e.dataTransfer.dropEffect = "move";
+					e.dataTransfer.effectAllowed = "move";
 				},
 				onDrop: (event) => {
 					event.preventDefault();
