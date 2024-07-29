@@ -25,35 +25,10 @@ export interface EmployeeTreeNodeDropDetails {
 	indexInParent: number;
 }
 
-interface BaseProps {
-	dragTarget: boolean;
-	dropTarget: boolean;
-	employeeDetails: Employee | null;
-	employeeIndex: number;
-	parentEmployeeIndex: number;
-	parentDetails: ParentDetailsInterface;
-}
-
-interface EmptySlotProps extends BaseProps {
-	employeeDetails: null;
-}
-
-interface CardSlotProps extends BaseProps {
-	employeeDetails: Employee;
-}
-
-type CardMakerCallbackProps =
-	| EmptySlotProps
-	| CardSlotProps;
-
-export type CardMakerCallbackType =
-	({}: CardMakerCallbackProps) => JSX.Element;
-
 interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {
 	node: EmployeeNode;
 	employeeList: Employee[];
-	// cardMakerCallback: CardMakerCallbackType;
 	spreadIfDrag: EmployeeTreeSpreadIfDragCallback;
 	spreadIfDrop: EmployeeTreeSpreadIfDropCallback;
 	depth?: number;
@@ -68,10 +43,9 @@ function EmployeeTreeNode({
 	node,
 	employeeList,
 	depth = 1,
-	// dropCallback,
-	// cardMakerCallback,
 	spreadIfDrag,
 	spreadIfDrop,
+	parentDetails,
 	...args
 }: EmployeeTreeNodeProps) {
 	const employee = employeeList[node.data];
@@ -108,29 +82,23 @@ function EmployeeTreeNode({
 		3: 200
 	};
 
-	// // TODO: Double check parent index is correct
-	// const cardElement = useMemo(() => {
-	// 	if (
-	// 		parentNode &&
-	// 		!parentNode.children.includes(node)
-	// 	) {
-	// 		throw new Error("");
-	// 	}
-
-	// 	return cardMakerCallback({
-	// 		employeeDetails: employee,
-	// 		parentDetails: parentDetails,
-	// 		parentEmployeeIndex: parentNode?.data ?? 0,
-	// 		dragTarget: depth > 1,
-	// 		dropTarget: true,
-	// 		employeeIndex: node.data
-	// 	});
-	// }, [cardMakerCallback]);
-
 	return (
 		<div className="game-employee-tree-node" {...args}>
 			<EmployeeCard
-				employee={employeeList[node.data]}
+				employee={employee}
+				{...(parentDetails
+					? spreadIfDrop({
+							droppedOnto: node.data,
+							parentReceiving:
+								parentDetails.parentNode
+									.data,
+							indexInParent:
+								parentDetails.indexInParent
+						})
+					: {})}
+				{...(depth > 1
+					? spreadIfDrag(node.data)
+					: {})}
 			/>
 			<div
 				className="game-employee-tree-node-children"

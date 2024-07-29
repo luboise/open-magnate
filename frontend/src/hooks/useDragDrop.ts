@@ -1,4 +1,4 @@
-import { HTMLAttributes, useRef } from "react";
+import { HTMLAttributes, useCallback, useRef } from "react";
 
 export type DragCallback<DragData> = (
 	dragData: DragData
@@ -28,33 +28,11 @@ function useDragDrop<DraggerData, ReceiverData>({
 }: DragDropProps<DraggerData, ReceiverData>) {
 	const element = useRef<HTMLDivElement | null>(null);
 
-	const spreadIfDrag: SpreadIfDragFunction<
-		DraggerData
-	> = (data) => {
+	const spreadIfDrag = useCallback<
+		SpreadIfDragFunction<DraggerData>
+	>((data) => {
 		return {
 			draggable: true,
-			onDrag: (event) => {
-				event.preventDefault();
-
-				// console.debug("drag", event.screenX, event.screenY);
-
-				// div.style.translate = `${event.clientX}px ${event.clientY}px`;
-				// div.style.position = "fixed";
-			},
-			onDragEnd: (_event) => {
-				if (!element.current) {
-					console.debug(
-						"Drag end: no element found"
-					);
-					return;
-				}
-
-				// styleDraggee(element.current, true);
-
-				element.current = null;
-
-				console.debug("drag end");
-			},
 			onDragStart: (event) => {
 				const div = event.target as HTMLDivElement;
 
@@ -75,23 +53,47 @@ function useDragDrop<DraggerData, ReceiverData>({
 
 				if (dragStartCallback)
 					dragStartCallback(data);
+			},
+			onDragEnd: (_event) => {
+				if (!element.current) {
+					console.debug(
+						"Drag end: no element found"
+					);
+					return;
+				}
+
+				// styleDraggee(element.current, true);
+
+				element.current = null;
+
+				console.debug("drag end");
+			},
+			onDrag: (event) => {
+				event.preventDefault();
+
+				// div.style.translate = `${event.clientX}px ${event.clientY}px`;
+				// div.style.position = "fixed";
 			}
 		};
-	};
+	}, []);
 
 	// if (employeeDragged !== 0 && !employeeDragged)
 	// 	throw new Error(
 	// 		`Invalid employee dragged: ${employeeDragged}`
 	// 	);
 
-	const spreadIfDrop: SpreadIfDropFunction<
-		ReceiverData
-	> = (receiverData) => {
+	const spreadIfDrop = useCallback<
+		SpreadIfDropFunction<ReceiverData>
+	>((receiverData) => {
 		return {
 			onDragEnter: (event) => {
 				event.preventDefault();
+				console.debug("I HAVE BEEN ENTERED");
 			},
-			onDragOver: (e) => e.preventDefault(),
+			onDragOver: (e) => {
+				e.preventDefault();
+				console.debug("I HAVE BEEN OVER");
+			},
 			onDrop: (event) => {
 				// event.preventDefault();
 				console.debug(
@@ -102,10 +104,16 @@ function useDragDrop<DraggerData, ReceiverData>({
 					"number"
 				) as DraggerData;
 
+				console.debug(
+					"Calling after drop function with drag data: ",
+					dragData,
+					" and receiver data: ",
+					receiverData
+				);
 				afterDrop(dragData, receiverData);
 			}
 		};
-	};
+	}, []);
 
 	return { spreadIfDrag, spreadIfDrop };
 }
