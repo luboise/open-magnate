@@ -84,7 +84,8 @@ function Resizable({
 	);
 
 	const [scale, setScale] = useLocalVal<number>(
-		`${parentId}-scale-value`
+		`${parentId}-scale-value`,
+		1
 	);
 
 	const [state, dispatch] = useReducer(
@@ -272,4 +273,3 @@ function Resizable({
 	);
 }
 export default Resizable;
-
