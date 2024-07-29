@@ -3,9 +3,18 @@ import Button from "../../../global_components/Button";
 import "./GlobalReserveDisplay.css";
 import ReserveDisplay from "./ReserveDisplay";
 
-function GlobalReserveDisplay() {
-	const [collapsed, setCollapsed] =
-		useState<boolean>(false);
+interface GlobalReserveDisplayProps {
+	enabledByDefault: boolean;
+	onToggle?: () => void;
+}
+
+function GlobalReserveDisplay({
+	enabledByDefault,
+	onToggle
+}: GlobalReserveDisplayProps) {
+	const [collapsed, setCollapsed] = useState<boolean>(
+		!enabledByDefault
+	);
 
 	return (
 		<div
@@ -17,7 +26,8 @@ function GlobalReserveDisplay() {
 			<Button
 				id="game-global-reserve-collapse-btn"
 				onClick={() => {
-					setCollapsed(!collapsed);
+					setCollapsed(() => !collapsed);
+					if (onToggle) onToggle();
 				}}
 			>
 				{" "}
@@ -29,4 +39,3 @@ function GlobalReserveDisplay() {
 }
 
 export default GlobalReserveDisplay;
-

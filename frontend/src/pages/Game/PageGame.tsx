@@ -27,11 +27,15 @@ interface GameInterfaceState {
 	showLeaderBoard: boolean;
 	showMilestones: boolean;
 	showTurnOrder: boolean;
+	showGlobalReserve: boolean;
 }
+
+type NonToolbarToggleType = "GLOBAL RESERVE";
 
 type GameInterfaceAction = {
 	type: "TOGGLE";
-	toToggle: ToolbarType;
+
+	toToggle: ToolbarType | NonToolbarToggleType;
 };
 
 function PageGame() {
@@ -59,11 +63,11 @@ function PageGame() {
 	const [state, dispatch] = useReducer(
 		(
 			state: GameInterfaceState,
-			dispatch: GameInterfaceAction
+			action: GameInterfaceAction
 		): GameInterfaceState => {
-			if (dispatch.type === "TOGGLE") {
+			if (action.type === "TOGGLE") {
 				let key: keyof GameInterfaceState;
-				switch (dispatch.toToggle) {
+				switch (action.toToggle) {
 					case "MAP":
 						key = "showMap";
 						break;
@@ -86,6 +90,10 @@ function PageGame() {
 						key = "showTurnOrder";
 						break;
 
+					case "GLOBAL RESERVE":
+						key = "showGlobalReserve";
+						break;
+
 					default:
 						return state;
 				}
@@ -100,11 +108,12 @@ function PageGame() {
 		},
 		toolbarStatus || {
 			showMap: true,
-			showTurnOrder: true,
+			showTurnOrder: false,
 			showEmployeeTree: false,
 			showPlanner: false,
 			showLeaderBoard: false,
-			showMilestones: false
+			showMilestones: false,
+			showGlobalReserve: false
 		}
 	);
 
@@ -150,13 +159,7 @@ function PageGame() {
 
 	useEffect(() => {
 		setToolbarStatus(state);
-	}, [
-		state.showMap,
-		state.showEmployeeTree,
-		state.showPlanner,
-		state.showLeaderBoard,
-		state.showMilestones
-	]);
+	}, [state]);
 
 	// TODO: Fix invisible elements to not each click inputs and keyboard inputs
 	return (
@@ -204,7 +207,7 @@ function PageGame() {
 			)}
 
 			<Resizable
-				minimiseIf={state.showEmployeeTree}
+				minimiseIf={!state.showEmployeeTree}
 				// TODO: Fix dimension scaling for resizable elements
 				scalingType="SCALE"
 			>
@@ -216,7 +219,7 @@ function PageGame() {
 
 			<Resizable
 				defaultWidth={300}
-				minimiseIf={state.showTurnOrder}
+				minimiseIf={!state.showTurnOrder}
 			>
 				<div id="turn-order-list">
 					<TurnOrderList />
@@ -226,7 +229,7 @@ function PageGame() {
 
 			<Resizable
 				defaultWidth={500}
-				minimiseIf={state.showPlanner}
+				minimiseIf={!state.showPlanner}
 			>
 				<TurnPlanner id="turn-planner" />
 			</Resizable>
@@ -241,7 +244,15 @@ function PageGame() {
 				}
 			/>
 
-			<GlobalReserveDisplay />
+			<GlobalReserveDisplay
+				enabledByDefault={state.showGlobalReserve}
+				onToggle={() => {
+					dispatch({
+						type: "TOGGLE",
+						toToggle: "GLOBAL RESERVE"
+					});
+				}}
+			/>
 		</div>
 	);
 }

@@ -109,7 +109,6 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 			state: EmployeeTreeState,
 			action: EmployeeTreeAction
 		): EmployeeTreeState => {
-			console.debug("ACTION: ", action);
 			switch (action.type) {
 				case "SET_TREE":
 					return { ...state, tree: action.tree };
