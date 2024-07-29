@@ -8,7 +8,7 @@ import {
 	EmployeesById,
 	IsValidEmployeeId
 } from "../../../utils";
-import EmployeeCard from "../EmployeeTree/EmployeeCard";
+import EmployeeCard from "../Employees/EmployeeCard";
 
 interface ReserveDisplayProps
 	extends HTMLAttributes<HTMLDivElement> {}

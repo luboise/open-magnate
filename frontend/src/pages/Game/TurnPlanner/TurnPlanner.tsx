@@ -5,7 +5,7 @@ import { Employee } from "../../../../../shared/EmployeeTypes";
 import ModalPanel from "../../../global_components/ModalPanel";
 import { useGameState } from "../../../hooks/useGameState";
 import { GameAction, GetAllTreeData } from "../../../utils";
-import EmployeeCard from "../EmployeeTree/EmployeeCard";
+import EmployeeCard from "../Employees/EmployeeCard";
 import GameActionPreview from "./GameActionPreview";
 
 interface TurnPlannerProps
@@ -102,4 +102,3 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 }
 
 export default TurnPlanner;
-

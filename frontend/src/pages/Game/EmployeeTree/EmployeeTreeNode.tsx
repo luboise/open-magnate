@@ -1,6 +1,12 @@
-import { HTMLAttributes, useMemo } from "react";
+import { HTMLAttributes } from "react";
 import { EmployeeNode } from "../../../../../shared/EmployeeStructure";
 import { Employee } from "../../../../../shared/EmployeeTypes";
+import EmployeeCard from "../Employees/EmployeeCard";
+import {
+	EmployeeTreeSpreadIfDragCallback,
+	EmployeeTreeSpreadIfDropCallback
+} from "./EmployeeTree";
+import EmployeeTreeEmptySlot from "./EmployeeTreeEmptySlot";
 
 export type TreeNodeDropCallback = (
 	parent: number,
@@ -10,6 +16,12 @@ export type TreeNodeDropCallback = (
 
 export interface ParentDetailsInterface {
 	parentNode: EmployeeNode;
+	indexInParent: number;
+}
+
+export interface EmployeeTreeNodeDropDetails {
+	droppedOnto: number | null;
+	parentReceiving: number;
 	indexInParent: number;
 }
 
@@ -41,7 +53,9 @@ interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {
 	node: EmployeeNode;
 	employeeList: Employee[];
-	cardMakerCallback: CardMakerCallbackType;
+	// cardMakerCallback: CardMakerCallbackType;
+	spreadIfDrag: EmployeeTreeSpreadIfDragCallback;
+	spreadIfDrop: EmployeeTreeSpreadIfDropCallback;
 	depth?: number;
 	parentDetails?: ParentDetailsInterface | undefined;
 }
@@ -55,14 +69,12 @@ function EmployeeTreeNode({
 	employeeList,
 	depth = 1,
 	// dropCallback,
-	cardMakerCallback,
-	parentDetails,
+	// cardMakerCallback,
+	spreadIfDrag,
+	spreadIfDrop,
 	...args
 }: EmployeeTreeNodeProps) {
 	const employee = employeeList[node.data];
-
-	const { parentNode, indexInParent } =
-		parentDetails || {};
 
 	const childNodes: JSX.Element[] = node.children.map(
 		(child, indexInParent) => {
@@ -71,26 +83,21 @@ function EmployeeTreeNode({
 					node={child}
 					employeeList={employeeList}
 					depth={depth + 1}
-					cardMakerCallback={cardMakerCallback}
 					parentDetails={{
 						parentNode: node,
 						indexInParent: indexInParent
 					}}
+					spreadIfDrag={spreadIfDrag}
+					spreadIfDrop={spreadIfDrop}
 				/>
 			) : (
-				cardMakerCallback({
-					employeeDetails: null,
-					parentEmployeeIndex: node.data,
-
-					dragTarget: false,
-					dropTarget: true,
-					employeeIndex: -1,
-
-					parentDetails: {
-						parentNode: node,
-						indexInParent: indexInParent
-					}
-				})
+				<EmployeeTreeEmptySlot
+					{...spreadIfDrop({
+						parentReceiving: node.data,
+						indexInParent,
+						droppedOnto: null
+					})}
+				/>
 			);
 		}
 	);
@@ -101,28 +108,30 @@ function EmployeeTreeNode({
 		3: 200
 	};
 
-	// TODO: Double check parent index is correct
-	const cardElement = useMemo(() => {
-		if (
-			parentNode &&
-			!parentNode.children.includes(node)
-		) {
-			throw new Error("");
-		}
+	// // TODO: Double check parent index is correct
+	// const cardElement = useMemo(() => {
+	// 	if (
+	// 		parentNode &&
+	// 		!parentNode.children.includes(node)
+	// 	) {
+	// 		throw new Error("");
+	// 	}
 
-		return cardMakerCallback({
-			employeeDetails: employee,
-			parentDetails: parentDetails,
-			parentEmployeeIndex: parentNode?.data ?? 0,
-			dragTarget: depth > 1,
-			dropTarget: true,
-			employeeIndex: node.data
-		});
-	}, [cardMakerCallback]);
+	// 	return cardMakerCallback({
+	// 		employeeDetails: employee,
+	// 		parentDetails: parentDetails,
+	// 		parentEmployeeIndex: parentNode?.data ?? 0,
+	// 		dragTarget: depth > 1,
+	// 		dropTarget: true,
+	// 		employeeIndex: node.data
+	// 	});
+	// }, [cardMakerCallback]);
 
 	return (
 		<div className="game-employee-tree-node" {...args}>
-			{cardElement}
+			<EmployeeCard
+				employee={employeeList[node.data]}
+			/>
 			<div
 				className="game-employee-tree-node-children"
 				style={{
@@ -140,4 +149,3 @@ function EmployeeTreeNode({
 }
 
 export default EmployeeTreeNode;
-
