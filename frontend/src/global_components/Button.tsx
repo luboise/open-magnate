@@ -11,6 +11,7 @@ interface ButtonProps
 
 let idGen = 0;
 
+// TODO: Add button fizzle text (For example, "Copied" on the copy password button)
 const Button: React.FC<ButtonProps> = (
 	props: ButtonProps
 ) => {
