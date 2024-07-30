@@ -509,6 +509,7 @@ const GameStateController = {
 	},
 
 	// TODO: Add validation for valid recruiting
+	// TODO: Fix employees not updating in database (add unit tests for the backend)
 	ExecuteTurn: async (
 		gameStateId: number,
 		turn: TurnAction[]
