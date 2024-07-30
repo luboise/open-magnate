@@ -17,6 +17,8 @@
 
 	/* TODO: Remove this later when colours are chosen */
 	background-color: grey;
+
+	overflow: auto;
 }
 
 .game-turn-planner-employee-section {

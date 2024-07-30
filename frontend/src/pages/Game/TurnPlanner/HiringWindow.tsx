@@ -1,5 +1,8 @@
 import { useMemo } from "react";
+import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
 import { useGameState } from "../../../hooks/game/useGameState";
+import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
+import { RecruitAction } from "../../../utils";
 import ReserveDisplay from "../Reserve/ReserveDisplay";
 
 type Props = {
@@ -8,6 +11,8 @@ type Props = {
 
 function HiringWindow({ employeeHiringIndex }: Props) {
 	const { myEmployees } = useGameState();
+
+	const { addAction } = useTurnPlanning();
 
 	const employee = useMemo(() => {
 		if (!myEmployees[employeeHiringIndex])
@@ -30,9 +35,20 @@ function HiringWindow({ employeeHiringIndex }: Props) {
 		return employee;
 	}, [employeeHiringIndex, myEmployees]);
 
+	function onHire(employeeId: EMPLOYEE_ID) {
+		const newHire: Omit<RecruitAction, "player"> = {
+			employeeIndex: employeeHiringIndex,
+			recruiting: employeeId,
+			type: "RECRUIT" as const
+		};
+
+		addAction(newHire);
+	}
+
 	return (
 		<ReserveDisplay
 			employeeFilter={(e) => Boolean(e.notPaid)}
+			onEmployeeClicked={onHire}
 		/>
 	);
 }

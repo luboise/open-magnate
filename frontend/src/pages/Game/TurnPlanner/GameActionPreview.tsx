@@ -1,8 +1,8 @@
 import "./GameActionPreview.css";
 
-import { HTMLAttributes } from "react";
+import { HTMLAttributes, useMemo } from "react";
 import { useGameState } from "../../../hooks/game/useGameState";
-import { TurnAction } from "../../../utils";
+import { EmployeesById, TurnAction } from "../../../utils";
 
 interface GameActionPreviewProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -17,6 +17,15 @@ function GameActionPreview({
 
 	const employee = myEmployees[gameAction.employeeIndex];
 
+	const details = useMemo(() => {
+		switch (gameAction.type) {
+			case "RECRUIT":
+				return `Hired ${EmployeesById[gameAction.recruiting].name}`;
+			default:
+				return "";
+		}
+	}, [gameAction, myEmployees]);
+
 	return (
 		<div className="game-action-preview" {...args}>
 			<div
@@ -25,7 +34,7 @@ function GameActionPreview({
 				{employee.name}
 			</div>
 			<div>{gameAction.type}</div>
-			<div>implement specific details here</div>
+			<div>{details}</div>
 		</div>
 	);
 }

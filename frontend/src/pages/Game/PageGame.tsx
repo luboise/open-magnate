@@ -213,7 +213,7 @@ function PageGame() {
 			>
 				<EmployeeTree
 					id="employee-tree"
-					style={{ width: "800px" }}
+					style={{ width: "1200px" }}
 				/>
 			</Resizable>
 

@@ -13,14 +13,18 @@ import EmployeeCard from "../Employees/EmployeeCard";
 interface ReserveDisplayProps
 	extends HTMLAttributes<HTMLDivElement> {
 	employeeFilter?: (employee: Employee) => boolean;
+	onEmployeeClicked?: (
+		employeeClicked: EMPLOYEE_ID
+	) => void;
 }
 
 function ReserveDisplay({
 	employeeFilter,
+	onEmployeeClicked,
 	...args
 }: ReserveDisplayProps) {
 	const { reserve } = useGameState();
-
+	[];
 	if (!reserve) return <></>;
 
 	const employeeEntries = Object.entries(reserve).filter(
@@ -53,7 +57,19 @@ function ReserveDisplay({
 
 		return filteredEmployees.map(
 			([employee, quantity]) => (
-				<EmployeeCard employee={employee!} />
+				<EmployeeCard
+					employee={employee!}
+					onClick={() => {
+						if (
+							!employee ||
+							employee.type === "CEO"
+						)
+							return;
+
+						onEmployeeClicked &&
+							onEmployeeClicked(employee.id);
+					}}
+				/>
 			)
 		);
 	});
