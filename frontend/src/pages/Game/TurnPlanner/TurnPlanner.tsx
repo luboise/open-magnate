@@ -17,7 +17,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 	const { currentTree, myEmployees, playerData } =
 		useGameState();
 
-	const { turnActions } = useTurnPlanning();
+	const { turnActions, removeAction } = useTurnPlanning();
 
 	const [
 		selectedEmployeeIndex,
@@ -102,11 +102,16 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				</div>
 				<div className="game-turn-planner-action-section">
 					<div className="game-turn-planner-actions">
-						{...turnActions.map((action) => (
-							<GameActionPreview
-								gameAction={action}
-							/>
-						))}
+						{...turnActions.map(
+							(action, index) => (
+								<GameActionPreview
+									gameAction={action}
+									onDestroy={() => {
+										removeAction(index);
+									}}
+								/>
+							)
+						)}
 					</div>
 				</div>
 			</div>

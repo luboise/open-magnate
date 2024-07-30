@@ -54,7 +54,28 @@ function useTurnPlanning() {
 		});
 	}
 
-	return { turnActions, addAction };
+	function removeAction(index: number) {
+		if (
+			index < 0 ||
+			index >= turnPlanningState.plannedActions.length
+		)
+			throw new Error(
+				"Invalid index to remove: " + index
+			);
+
+		const newPlannedActions = [
+			...turnPlanningState.plannedActions
+		].filter((_, i) => i !== index);
+
+		console.debug("Removed action at index " + index);
+
+		setTurnPlanningState({
+			...turnPlanningState,
+			plannedActions: newPlannedActions
+		});
+	}
+
+	return { turnActions, addAction, removeAction };
 }
 
 export default useTurnPlanning;

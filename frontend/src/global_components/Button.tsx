@@ -20,6 +20,7 @@ const Button: React.FC<ButtonProps> = (
 		inactive,
 		inactiveHoverText,
 		className,
+		style,
 		...args
 	} = props;
 
@@ -54,6 +55,7 @@ const Button: React.FC<ButtonProps> = (
 					props.inactive ? "btn-inactive" : "",
 					className ?? ""
 				].join(" ")}
+				style={{ ...style }}
 				{...args}
 				// disabled={props.inactive}
 			>

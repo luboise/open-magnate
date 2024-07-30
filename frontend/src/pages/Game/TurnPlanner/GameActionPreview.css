@@ -2,6 +2,8 @@
 	--border-style: black 1px solid;
 	display: grid;
 
+	position: relative;
+
 	grid-template-rows: 20% 20% auto;
 	border: var(--border-style);
 }
