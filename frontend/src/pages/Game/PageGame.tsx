@@ -235,6 +235,7 @@ function PageGame() {
 			</Resizable>
 
 			<TurnHandler />
+
 			<WindowToolbar
 				onClick={(clicked) =>
 					dispatch({

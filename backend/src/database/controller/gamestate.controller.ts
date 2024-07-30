@@ -8,8 +8,10 @@ import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS,
-	RestaurantView
+	RestaurantView,
+	TurnAction
 } from "../../../../shared";
+import { EMPLOYEE_ID } from "../../../../shared/EmployeeIDs";
 import {
 	GamePlayerViewPrivate,
 	GameStateView,
@@ -407,7 +409,9 @@ const GameStateController = {
 		return false;
 	},
 
-	AdvanceGameState: async (gameStateId: number) => {
+	AdvanceGameState: async (
+		gameStateId: number
+	): Promise<boolean> => {
 		const gameState =
 			await GameStateRepository.findFirst({
 				where: {
@@ -501,6 +505,66 @@ const GameStateController = {
 		console.log(
 			`Successfully advanced turn in game ${gameState.id}`
 		);
+		return true;
+	},
+
+	// TODO: Add validation for valid recruiting
+	ExecuteTurn: async (
+		gameStateId: number,
+		turn: TurnAction[]
+	): Promise<boolean> => {
+		try {
+			const gameState =
+				await GameStateController.Get(gameStateId);
+
+			if (!gameState) {
+				throw new Error(
+					"Unable to find gamestate. A backend error has occured."
+				);
+			}
+
+			const gamePlayer = gameState.players.find(
+				(player) =>
+					player.number ===
+					gameState.currentPlayer
+			);
+
+			if (!gamePlayer)
+				throw new Error(
+					"Unable to find current player in game players."
+				);
+
+			const newRecruits: EMPLOYEE_ID[] = [];
+
+			for (const turnAction of turn) {
+				if (turnAction.type === "RECRUIT") {
+					newRecruits.push(turnAction.recruiting);
+				}
+			}
+
+			prisma.gamePlayer.update({
+				where: {
+					gamePlayerId: {
+						gameId: gameState.id,
+						number: gamePlayer.number
+					}
+				},
+				data: {
+					employees: {
+						toJSON: [
+							...parseJsonArray(
+								gamePlayer.employees
+							),
+							...newRecruits
+						]
+					}
+				}
+			});
+		} catch (error) {
+			console.log(`Unable to execute turn: ${error}`);
+			return false;
+		}
+
 		return true;
 	}
 };

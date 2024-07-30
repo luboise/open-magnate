@@ -1,6 +1,8 @@
 import { ENTRANCE_CORNER } from "../backend/src/dataViews";
+import { TurnAction } from "./GameState";
 export enum MOVE_TYPE {
-	PLACE_RESTAURANT = "PLACE_RESTAURANT"
+	PLACE_RESTAURANT = "PLACE_RESTAURANT",
+	TAKE_TURN = "TAKE_TURN"
 }
 
 interface BaseMoveData {
@@ -14,4 +16,9 @@ export interface MovePlaceRestaurant extends BaseMoveData {
 	entrance: ENTRANCE_CORNER;
 }
 
-export type MoveData = MovePlaceRestaurant;
+export interface MoveTakeTurn extends BaseMoveData {
+	MoveType: MOVE_TYPE.TAKE_TURN;
+	actions: TurnAction[];
+}
+
+export type MoveData = MovePlaceRestaurant | MoveTakeTurn;

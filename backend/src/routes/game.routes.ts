@@ -583,6 +583,8 @@ const handleMoveMade: BackendMessageHandler<
 		return;
 	}
 
+	let advance = false;
+
 	const message = params.message.data;
 	if (message.MoveType === MOVE_TYPE.PLACE_RESTAURANT) {
 		const success =
@@ -602,16 +604,29 @@ const handleMoveMade: BackendMessageHandler<
 			return;
 		}
 
-		const updated =
-			await GameStateController.AdvanceGameState(
-				lobby.id
+		advance = true;
+	} else if (message.MoveType === MOVE_TYPE.TAKE_TURN) {
+		const success =
+			await GameStateController.ExecuteTurn(
+				lobby.id,
+				message.actions
 			);
-		if (!updated) {
-			const msg = "Unable to advance the game state";
-			console.error(msg);
-			params.ws.send(msg);
-			return;
+
+		if (success) {
 		}
+
+		advance = true;
+	}
+
+	const updated =
+		await GameStateController.AdvanceGameState(
+			lobby.id
+		);
+	if (!updated) {
+		const msg = "Unable to advance the game state";
+		console.error(msg);
+		params.ws.send(msg);
+		return;
 	}
 
 	updateAllPlayers(

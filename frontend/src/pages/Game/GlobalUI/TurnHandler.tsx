@@ -1,9 +1,12 @@
 import "./TurnHandler.css";
 
 import { useMemo } from "react";
+import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
 import { useGameState } from "../../../hooks/game/useGameState";
+import usePageGame from "../../../hooks/game/usePageGame";
+import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import {
 	RESTAURANT_NAMES,
 	TURN_PROGRESS_VALUES
@@ -20,12 +23,33 @@ function TurnHandler() {
 		currentPlayer
 	} = useGameState();
 
+	const { makeMove } = usePageGame();
+
+	const { turnActions } = useTurnPlanning();
+
 	const playerList = useMemo(
 		() =>
 			players?.map((player) => player.playerNumber) ||
 			[],
 		[players]
 	);
+
+	function onSubmitMove() {
+		if (!isMyTurn) {
+			alert(
+				"It is not your turn. Unable to submit turn."
+			);
+
+			return;
+		}
+
+		if (turnProgress === "USE_EMPLOYEES") {
+			makeMove({
+				MoveType: MOVE_TYPE.TAKE_TURN,
+				actions: turnActions
+			});
+		}
+	}
 
 	if (!currentPlayer) return <></>;
 
@@ -81,7 +105,7 @@ function TurnHandler() {
 			</div>
 
 			<Button
-				onClick={alert}
+				onClick={onSubmitMove}
 				style={{
 					gridColumn: "2",
 					gridRow: "2 / span 2"
