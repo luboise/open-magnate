@@ -3,11 +3,11 @@ import { ENTRANCE_CORNER } from "../../../../../backend/src/dataViews";
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import { Clamp } from "../../../../../shared/utils";
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useGameState } from "../../../hooks/useGameState";
+import { useGameState } from "../../../hooks/game/useGameState";
 import useMap, {
 	useBoardInfo
-} from "../../../hooks/useMap";
-import usePageGame from "../../../hooks/usePageGame";
+} from "../../../hooks/game/useMap";
+import usePageGame from "../../../hooks/game/usePageGame";
 import { rotateEntranceCorner } from "../../../utils";
 
 interface RestaurantPlacerState {
@@ -165,4 +165,3 @@ function RestaurantPlacer() {
 }
 
 export default RestaurantPlacer;
-

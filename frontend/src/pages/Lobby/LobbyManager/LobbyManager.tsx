@@ -1,9 +1,9 @@
 import "./LobbyManager.css";
 
 import Button from "../../../global_components/Button";
+import usePageGame from "../../../hooks/game/usePageGame";
 import useClipboard from "../../../hooks/useClipboard";
 import useNotification from "../../../hooks/useNotification";
-import usePageGame from "../../../hooks/usePageGame";
 import {
 	GameStateViewPerPlayer,
 	LobbyViewPerPlayer
@@ -101,4 +101,3 @@ function LobbyManager(props: {
 }
 
 export default LobbyManager;
-

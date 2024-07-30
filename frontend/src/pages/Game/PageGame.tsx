@@ -3,9 +3,9 @@ import "./PageGame.css";
 import { useEffect, useMemo, useReducer } from "react";
 
 import Resizable from "../../global_components/Resizable";
-import { useGameState } from "../../hooks/useGameState";
+import { useGameState } from "../../hooks/game/useGameState";
+import useMap from "../../hooks/game/useMap";
 import useLocalVal from "../../hooks/useLocalVal";
-import useMap from "../../hooks/useMap";
 import usePanning from "../../hooks/usePanning";
 import useScalingValue from "../../hooks/useScalingValue";
 import EmployeeTree from "./EmployeeTree/EmployeeTree";
@@ -160,7 +160,7 @@ function PageGame() {
 	useEffect(() => {
 		setToolbarStatus(state);
 	}, [state]);
-
+	if (isMyTurn === null) return <></>;
 	// TODO: Fix invisible elements to not each click inputs and keyboard inputs
 	return (
 		<div

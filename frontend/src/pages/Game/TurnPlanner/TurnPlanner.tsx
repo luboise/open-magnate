@@ -3,10 +3,12 @@ import "./TurnPlanner.css";
 import { HTMLAttributes, useState } from "react";
 import { Employee } from "../../../../../shared/EmployeeTypes";
 import ModalPanel from "../../../global_components/ModalPanel";
-import { useGameState } from "../../../hooks/useGameState";
-import { GameAction, GetAllTreeData } from "../../../utils";
+import { useGameState } from "../../../hooks/game/useGameState";
+import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
+import { GetAllTreeData } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 import GameActionPreview from "./GameActionPreview";
+import HiringWindow from "./HiringWindow";
 
 interface TurnPlannerProps
 	extends HTMLAttributes<HTMLDivElement> {}
@@ -14,6 +16,8 @@ interface TurnPlannerProps
 function TurnPlanner({ ...args }: TurnPlannerProps) {
 	const { currentTree, myEmployees, playerData } =
 		useGameState();
+
+	const { turnActions } = useTurnPlanning();
 
 	const [
 		selectedEmployeeIndex,
@@ -36,68 +40,77 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 			selectedEmployeeIndex >= employees.length
 		)
 			return <></>;
-
 		return (
 			<ModalPanel
+				className="event-window-hiring"
 				onClose={() =>
 					setSelectedEmployeeIndex(null)
 				}
 			>
-				Employee stuff here
+				<HiringWindow
+					employeeHiringIndex={
+						selectedEmployeeIndex
+					}
+				/>
 			</ModalPanel>
 		);
 	}
 
-	const actions: GameAction[] = [
-		{
-			player: playerData.playerNumber,
-			employeeIndex: 0,
-			type: "RECRUIT",
-			recruiting: "food_basic"
-		},
-		{
-			player: playerData.playerNumber,
-			employeeIndex: 0,
-			type: "RECRUIT",
-			recruiting: "food_basic"
-		}
-	];
+	// const turnActions: TurnAction[] = [
+	// 	{
+	// 		player: playerData.playerNumber,
+	// 		employeeIndex: 0,
+	// 		type: "RECRUIT",
+	// 		recruiting: "food_basic"
+	// 	},
+	// 	{
+	// 		player: playerData.playerNumber,
+	// 		employeeIndex: 0,
+	// 		type: "RECRUIT",
+	// 		recruiting: "food_basic"
+	// 	}
+	// ];
 
 	return (
-		<div className="game-turn-planner" {...args}>
-			<div className="game-turn-planner-employee-section">
-				<h2>Use your employees!</h2>
+		<>
+			<div className="game-turn-planner" {...args}>
+				{getEventWindow(selectedEmployeeIndex)}
 
-				<div className="game-turn-planner-employees">
-					{getEventWindow(selectedEmployeeIndex)}
-					{...employees.map((employee, index) => (
-						<EmployeeCard
-							employee={employee}
-							onClick={() =>
-								setSelectedEmployeeIndex(
-									index
-								)
-							}
-							className={
-								selectedEmployeeIndex ===
-								index
-									? "item-highlighted"
-									: undefined
-							}
-						/>
-					))}
+				<div className="game-turn-planner-employee-section">
+					<h2>Use your employees!</h2>
+
+					<div className="game-turn-planner-employees">
+						{...employees.map(
+							(employee, index) => (
+								<EmployeeCard
+									employee={employee}
+									onClick={() =>
+										setSelectedEmployeeIndex(
+											index
+										)
+									}
+									className={
+										selectedEmployeeIndex ===
+										index
+											? "item-highlighted"
+											: undefined
+									}
+								/>
+							)
+						)}
+					</div>
+				</div>
+				<div className="game-turn-planner-action-section">
+					<div className="game-turn-planner-actions">
+						{...turnActions.map((action) => (
+							<GameActionPreview
+								gameAction={action}
+							/>
+						))}
+					</div>
 				</div>
 			</div>
-			<div className="game-turn-planner-action-section">
-				<div className="game-turn-planner-actions">
-					{...actions.map((action) => (
-						<GameActionPreview
-							gameAction={action}
-						/>
-					))}
-				</div>
-			</div>
-		</div>
+		</>
 	);
 }
 

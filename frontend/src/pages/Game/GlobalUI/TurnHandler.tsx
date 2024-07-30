@@ -3,7 +3,7 @@ import "./TurnHandler.css";
 import { useMemo } from "react";
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
-import { useGameState } from "../../../hooks/useGameState";
+import { useGameState } from "../../../hooks/game/useGameState";
 import {
 	RESTAURANT_NAMES,
 	TURN_PROGRESS_VALUES
@@ -96,4 +96,3 @@ function TurnHandler() {
 }
 
 export default TurnHandler;
-

@@ -1,4 +1,4 @@
-import { useGameState } from "../../../hooks/useGameState";
+import { useGameState } from "../../../hooks/game/useGameState";
 import "./TurnProgressIndicator.css";
 
 function TurnProgressIndicator() {
@@ -37,4 +37,3 @@ function TurnProgressIndicator() {
 }
 
 export default TurnProgressIndicator;
-

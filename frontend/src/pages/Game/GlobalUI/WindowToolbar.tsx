@@ -1,7 +1,7 @@
 import "./WindowToolbar.css";
 
 import Button from "../../../global_components/Button";
-import { useGameState } from "../../../hooks/useGameState";
+import { useGameState } from "../../../hooks/game/useGameState";
 
 interface WindowToolbarProps {
 	onClick: (clicked: ToolbarType) => void;
@@ -60,4 +60,3 @@ function WindowToolbar(props: WindowToolbarProps) {
 }
 
 export default WindowToolbar;
-

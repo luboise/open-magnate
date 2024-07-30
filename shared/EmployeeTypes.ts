@@ -42,10 +42,10 @@ export interface CEOEmployee extends BaseEmployee {
 	id: "CEO";
 	colour: COLOURS.GREY;
 	capacity: number;
+	notPaid: true;
 }
 
 export type Employee =
 	| ManagementEmployee
 	| FoodEmployee
 	| CEOEmployee;
-

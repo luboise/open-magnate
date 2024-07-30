@@ -7,8 +7,8 @@ import {
 } from "react";
 
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useGameState } from "../../../hooks/useGameState";
-import useMap from "../../../hooks/useMap";
+import { useGameState } from "../../../hooks/game/useGameState";
+import useMap from "../../../hooks/game/useMap";
 import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
@@ -208,4 +208,3 @@ function MagnateMap({
 }
 
 export default MagnateMap;
-

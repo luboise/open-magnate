@@ -13,10 +13,14 @@ interface ModalPanelProps
 function ModalPanel({
 	children,
 	onClose,
+	className,
 	...args
 }: ModalPanelProps) {
 	return (
-		<div className="modal-panel" {...args}>
+		<div
+			className={"modal-panel " + className ?? ""}
+			{...args}
+		>
 			<Button
 				className="corner-button"
 				onClick={onClose}
@@ -29,4 +33,3 @@ function ModalPanel({
 }
 
 export default ModalPanel;
-

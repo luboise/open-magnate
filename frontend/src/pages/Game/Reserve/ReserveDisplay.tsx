@@ -3,7 +3,7 @@ import "./ReserveDisplay.css";
 import { HTMLAttributes } from "react";
 import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
 import { Employee } from "../../../../../shared/EmployeeTypes";
-import { useGameState } from "../../../hooks/useGameState";
+import { useGameState } from "../../../hooks/game/useGameState";
 import {
 	EmployeesById,
 	IsValidEmployeeId
@@ -11,14 +11,25 @@ import {
 import EmployeeCard from "../Employees/EmployeeCard";
 
 interface ReserveDisplayProps
-	extends HTMLAttributes<HTMLDivElement> {}
+	extends HTMLAttributes<HTMLDivElement> {
+	employeeFilter?: (employee: Employee) => boolean;
+}
 
-function ReserveDisplay({ ...args }: ReserveDisplayProps) {
+function ReserveDisplay({
+	employeeFilter,
+	...args
+}: ReserveDisplayProps) {
 	const { reserve } = useGameState();
 
 	if (!reserve) return <></>;
 
-	const employeeEntries = Object.entries(reserve);
+	const employeeEntries = Object.entries(reserve).filter(
+		([employeeId]) =>
+			IsValidEmployeeId(employeeId) &&
+			(!employeeFilter ||
+				employeeFilter(EmployeesById[employeeId]))
+	);
+
 	const employeeList: Array<
 		[Employee | undefined, number]
 	> = employeeEntries.map(([employeeId, quantity]) => {

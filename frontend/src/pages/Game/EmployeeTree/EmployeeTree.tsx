@@ -14,12 +14,12 @@ import {
 	ParseEmployeeTree
 } from "../../../../../shared/EmployeeStructure";
 import Button from "../../../global_components/Button";
+import { useGameState } from "../../../hooks/game/useGameState";
 import useDragDrop, {
 	AfterDropCallback,
 	SpreadIfDragFunction,
 	SpreadIfDropFunction
 } from "../../../hooks/useDragDrop";
-import { useGameState } from "../../../hooks/useGameState";
 import usePanning from "../../../hooks/usePanning";
 import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
@@ -270,7 +270,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 					indexInNewParent: index
 				});
 			},
-			[]
+			[employeeTree]
 		);
 
 	const { spreadIfDrag, spreadIfDrop } = useDragDrop({

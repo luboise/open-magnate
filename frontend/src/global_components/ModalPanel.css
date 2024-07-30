@@ -1,6 +1,5 @@
 .modal-panel {
 	background-color: blue;
-	position: fixed;
+	position: absolute;
 	z-index: 20;
 }
-

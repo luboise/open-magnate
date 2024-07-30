@@ -28,13 +28,18 @@ function EmployeeCard(props: EmployeeCardProps) {
 			</span>
 
 			<div className="game-employee-card-description">
-				<p></p>
+				<p>{"EMPLOYEE DESCRIPTION PLACEHOLDER"}</p>
 				{/* TODO: Implement employee descriptions */}
-				{"EMPLOYEE DESCRIPTION PLACEHOLDER"}
+				{employee.notPaid ? (
+					<></>
+				) : (
+					<div className="game-employee-card-salary-div">
+						$
+					</div>
+				)}
 			</div>
 		</div>
 	);
 }
 
 export default EmployeeCard;
-

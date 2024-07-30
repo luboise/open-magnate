@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
-import { HouseView, MapTileData } from "../utils";
+import { HouseView, MapTileData } from "../../utils";
 import { useGameState } from "./useGameState";
 
 type MapRenderListType = Record<string, JSX.Element[]>;
@@ -197,4 +197,3 @@ function useMap() {
 }
 
 export default useMap;
-

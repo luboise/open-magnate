@@ -1,12 +1,12 @@
 import "./GameActionPreview.css";
 
 import { HTMLAttributes } from "react";
-import { useGameState } from "../../../hooks/useGameState";
-import { GameAction } from "../../../utils";
+import { useGameState } from "../../../hooks/game/useGameState";
+import { TurnAction } from "../../../utils";
 
 interface GameActionPreviewProps
 	extends HTMLAttributes<HTMLDivElement> {
-	gameAction: GameAction;
+	gameAction: TurnAction;
 }
 
 function GameActionPreview({
@@ -31,4 +31,3 @@ function GameActionPreview({
 }
 
 export default GameActionPreview;
-

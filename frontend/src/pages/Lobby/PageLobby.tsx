@@ -7,8 +7,8 @@ import Button from "../../global_components/Button";
 import Form from "../../global_components/Form/Form";
 import FormInput from "../../global_components/Form/FormInput";
 import SelectionButtonList from "../../global_components/Form/SelectionButtonList";
+import { useGameState } from "../../hooks/game/useGameState";
 import { WEB_SOCKET_BASE_URL } from "../../hooks/useAPI";
-import { useGameState } from "../../hooks/useGameState";
 import useLocalVal from "../../hooks/useLocalVal";
 import {
 	APIRoutes,

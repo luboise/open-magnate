@@ -17,12 +17,6 @@ export enum COLOURS {
 	GREY = "#808080"
 }
 
-function createManagementEmployees(
-	inData: ManagementEmployeeCreationData[]
-): ManagementEmployee[] {
-	return inData.map(createManagementEmployee);
-}
-
 interface ManagementEmployeeCreationData {
 	name: string;
 	id: MGMT_EMPLOYEE_ID;
@@ -50,6 +44,7 @@ interface FoodEmployeeCreationData {
 	name: string;
 	produces: FOOD_TYPE;
 	amountProduced: number;
+	notPaid?: boolean;
 }
 function createFoodEmployee(
 	data: FoodEmployeeCreationData
@@ -61,7 +56,8 @@ function createFoodEmployee(
 		colour: COLOURS.DARK_GREEN,
 		produces: data.produces,
 		amountProduced: 0,
-		buildsInto: []
+		buildsInto: [],
+		notPaid: Boolean(data.notPaid)
 	};
 }
 
@@ -74,7 +70,8 @@ export function createCEOEmployee(
 		type: "CEO",
 		colour: COLOURS.GREY,
 		capacity: capacity,
-		buildsInto: []
+		buildsInto: [],
+		notPaid: true
 	};
 }
 
@@ -131,7 +128,8 @@ export const FoodEmployees: Record<
 		id: "food_basic",
 		name: "Kitchen Trainee",
 		produces: "BURGER_AND_PIZZA",
-		amountProduced: 1
+		amountProduced: 1,
+		notPaid: true
 	}),
 	burger_1: createFoodEmployee({
 		id: "burger_1",
@@ -178,3 +176,9 @@ export const DEFAULT_EMPLOYEE_ARRAY = ["CEO"];
 export const DEFAULT_SERIALISED_EMPLOYEE_STRING =
 	"0[X,X,X]";
 
+export function EmployeeCanHire(employee: Employee) {
+	return (
+		employee.type === "MANAGEMENT" ||
+		employee.type === "CEO"
+	);
+}

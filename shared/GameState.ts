@@ -21,11 +21,10 @@ interface BaseGameAction {
 	type: string;
 }
 
-interface RecruitAction extends BaseGameAction {
+export interface RecruitAction extends BaseGameAction {
 	type: "RECRUIT";
 	employeeIndex: number;
 	recruiting: EMPLOYEE_ID;
 }
 
-export type GameAction = RecruitAction;
-
+export type TurnAction = RecruitAction;

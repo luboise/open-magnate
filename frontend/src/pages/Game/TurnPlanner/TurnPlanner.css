@@ -43,11 +43,16 @@
 	gap: 1em;
 }
 
-.game-turn-planner-employees > * {
-	height: 100%;
-	/* flex: 1; */
-}
+/* .game-turn-planner-employees > * {
+	/* height: 100%; */
+/* flex: 1; */
+/* }  */
 
 .game-turn-planner-employees .game-employee-card * {
 	pointer-events: none;
+}
+
+.event-window-hiring {
+	width: px;
+	height: 600px;
 }
