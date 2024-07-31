@@ -511,16 +511,17 @@ const GameStateController = {
 			unreadyPlayers = true;
 		}
 
-		await prisma.$transaction(async (ctx) => {
-			ctx.gamePlayer.updateMany({
-				where: {
-					gameId: gameState.id
-				},
-				data: {
-					ready: READY_STATUS.NOT_READY
-				}
+		if (unreadyPlayers)
+			await prisma.$transaction(async (ctx) => {
+				ctx.gamePlayer.updateMany({
+					where: {
+						gameId: gameState.id
+					},
+					data: {
+						ready: READY_STATUS.NOT_READY
+					}
+				});
 			});
-		});
 
 		const updated = await GameStateRepository.update({
 			where: {
@@ -601,6 +602,92 @@ const GameStateController = {
 		}
 
 		return true;
+	},
+
+	NegotiateSalaries: async (
+		gameId: number,
+		playerNumber: number,
+		employeesToFire: number[]
+	): Promise<boolean> => {
+		try {
+			await prisma.$transaction(async (ctx) => {
+				const existingPlayer =
+					await ctx.gamePlayer.findUnique({
+						where: {
+							gamePlayerId: {
+								gameId: gameId,
+								number: playerNumber
+							}
+						}
+					});
+
+				if (!existingPlayer)
+					throw new Error(
+						"Unable to find player in game."
+					);
+
+				const gamePlayer =
+					await ctx.gamePlayer.update({
+						where: {
+							gamePlayerId: {
+								gameId: gameId,
+								number: playerNumber
+							}
+						},
+						data: {
+							ready: READY_STATUS.READY,
+							employees: [
+								...parseJsonArray(
+									existingPlayer.employees
+								).filter(
+									(_, index) =>
+										!employeesToFire.includes(
+											index
+										)
+								)
+							]
+						}
+					});
+
+				if (!gamePlayer)
+					throw new Error(
+						"No game player was able to be updated."
+					);
+			});
+		} catch (error) {
+			console.debug(error);
+			return false;
+		}
+
+		return true;
+	},
+
+	AllPlayersReady: async (
+		gameId: number
+	): Promise<boolean> => {
+		try {
+			const players =
+				await prisma.gamePlayer.findMany({
+					where: {
+						gameId: gameId
+					}
+				});
+
+			return (
+				players.every(
+					(player) =>
+						player.ready === READY_STATUS.READY
+				) ||
+				players.every(
+					(player) =>
+						player.ready ===
+						READY_STATUS.NOT_APPLICABLE
+				)
+			);
+		} catch (error) {
+			console.debug(error);
+			return false;
+		}
 	}
 };
 

@@ -1,8 +1,10 @@
 import "./SalaryHandler.css";
 
 import { HTMLAttributes, useMemo, useReducer } from "react";
+import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
 import { useGameState } from "../../../hooks/game/useGameState";
+import usePageGame from "../../../hooks/game/usePageGame";
 import { BASE_SALARY } from "../../../utils";
 
 interface State {
@@ -16,7 +18,9 @@ interface Action {
 
 interface Props extends HTMLAttributes<HTMLDivElement> {}
 function SalaryHandler({ ...args }: Props) {
-	const { myEmployees } = useGameState();
+	const { myEmployees, playerData } = useGameState();
+
+	const { makeMove } = usePageGame();
 
 	const [state, dispatch] = useReducer(
 		(state: State, action: Action): State => {
@@ -59,6 +63,12 @@ function SalaryHandler({ ...args }: Props) {
 			);
 	}, [myEmployees, state.employeesToRemove]);
 
+	if (!playerData) return <></>;
+
+	const finalBalance: number =
+		playerData.money - salaryOwed;
+	const payable: boolean = finalBalance >= 0;
+
 	return (
 		<div className={`game-salary-handler`} {...args}>
 			<div className="game-salary-handler-main"></div>
@@ -66,7 +76,18 @@ function SalaryHandler({ ...args }: Props) {
 				receipt top
 			</div>
 			<div className="game-salary-handler-receipt-total">
-				<Button onClick={alert}>
+				<Button
+					onClick={() => {
+						makeMove({
+							MoveType:
+								MOVE_TYPE.NEGOTIATE_SALARIES,
+							employeesToFire:
+								state.employeesToRemove
+						});
+					}}
+					inactive={!payable}
+					inactiveHoverText={`This would result in a balance of -$${Math.abs(finalBalance)}. You must fire some employees to continue.`}
+				>
 					${salaryOwed}
 				</Button>
 			</div>
@@ -75,3 +96,4 @@ function SalaryHandler({ ...args }: Props) {
 }
 
 export default SalaryHandler;
+

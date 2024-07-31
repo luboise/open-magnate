@@ -45,6 +45,8 @@ type ParamBundle<MessageType extends BaseMessage> = {
 	ws: WebSocket;
 	userBrowserId: string | null;
 	userSession: UserSession | null;
+	lobbyId: number | null;
+	playerNumber: number | null;
 };
 
 type BackendMessageHandler<T extends BaseMessage> = (
@@ -59,15 +61,33 @@ const routeHandler: RouteHandler = (express, app) => {
 
 		ws.on("message", async (msg: string) => {
 			const userBrowserId = GetUserIdentifier(req);
+
+			const userSession =
+				await UserSessionController.GetBySessionKey(
+					req.query.sessionKey as string
+				);
+
+			const lobby = userSession
+				? await LobbyController.GetFromSessionKey(
+						userSession.sessionKey
+					)
+				: null;
+
+			const playerNumber: number | null =
+				lobby?.gameState?.players.find(
+					(player) =>
+						player.lobbyPlayer?.userId ===
+						userSession?.sessionKey
+				)?.number ?? null;
+
 			const params: ParamBundle<any> = {
 				message: JSON.parse(msg) as BackendMessage,
 				req: req,
 				userBrowserId: userBrowserId,
 				ws: ws,
-				userSession:
-					await UserSessionController.GetBySessionKey(
-						req.query.sessionKey as string
-					)
+				userSession: userSession,
+				lobbyId: lobby?.id || null,
+				playerNumber: playerNumber
 			};
 
 			console.log(
@@ -616,7 +636,33 @@ const handleMoveMade: BackendMessageHandler<
 		}
 
 		advance = true;
+	} else if (
+		message.MoveType === MOVE_TYPE.NEGOTIATE_SALARIES
+	) {
+		if (!params.playerNumber) {
+			console.debug(
+				`No player number provided for negotiating salaries in lobby #${lobby.id}`
+			);
+			return;
+		}
+
+		const success =
+			await GameStateController.NegotiateSalaries(
+				lobby.id,
+				params.playerNumber,
+				message.employeesToFire
+			);
+
+		if (!success) {
+			console.debug(
+				`Failed to negotiate salaries for player ${params.playerNumber} in lobby #${lobby.id}`
+			);
+			return;
+		}
 	}
+
+	if (await GameStateController.AllPlayersReady(lobby.id))
+		advance = true;
 
 	if (advance) {
 		const updated =
