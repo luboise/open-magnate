@@ -1,0 +1,37 @@
+.game-salary-handler {
+	display: grid;
+
+	width: 800px;
+	aspect-ratio: 800/700;
+
+	grid-template-columns: [leftedge] 60% [divider] 40% [rightedge];
+	grid-template-rows: [topedge] 70% [receiptdivider] 30% [bottomedge];
+
+	grid-template-areas:
+		"main receipt-summary"
+		"main receipt-total";
+}
+
+.game-salary-handler-main {
+	grid-area: main;
+	background-color: lightgray;
+}
+
+.game-salary-handler-receipt-summary {
+	grid-area: receipt-summary;
+}
+
+.game-salary-handler-receipt-total {
+	grid-area: receipt-total;
+}
+
+.game-salary-handler-receipt-summary,
+.game-salary-handler-receipt-total {
+	background-color: white;
+	color: grey;
+}
+
+.game-salary-handler-receipt-total > button {
+	width: 100%;
+	height: 100%;
+}

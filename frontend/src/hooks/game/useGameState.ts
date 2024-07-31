@@ -173,14 +173,6 @@ const myEmployeesSelector = selector<Employee[]>({
 			myEmployees.push(EmployeesById[employeeId]);
 		});
 
-		// TODO: Remove temporary employee for testing purposes
-		myEmployees.push(EmployeesById["mgmt_1"]);
-		myEmployees.push(EmployeesById["mgmt_1"]);
-		myEmployees.push(EmployeesById["mgmt_2"]);
-		myEmployees.push(EmployeesById["mgmt_3"]);
-		myEmployees.push(EmployeesById["food_basic"]);
-		myEmployees.push(EmployeesById["burger_1"]);
-
 		return myEmployees;
 	}
 });

@@ -16,6 +16,23 @@ import PageHomepage from "./pages/HomePage/PageHomepage";
 import PageLobby from "./pages/Lobby/PageLobby";
 import { FrontendRoutes } from "./utils";
 
+// const flexFont = function () {
+// 	var divs = document.getElementsByClassName(
+// 		"flex-font"
+// 	) as HTMLCollectionOf<HTMLDivElement>;
+// 	for (var i = 0; i < divs.length; i++) {
+// 		var relFontsize = divs[i].offsetWidth * 0.05;
+// 		divs[i].style.fontSize = relFontsize + "px";
+// 	}
+// };
+
+// window.onload = function (_event) {
+// 	flexFont();
+// };
+// window.onresize = function (_event) {
+// 	flexFont();
+// };
+
 function App() {
 	// const { localSession } = createLocalSession();
 

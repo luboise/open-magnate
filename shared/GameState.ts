@@ -28,3 +28,5 @@ export interface RecruitAction extends BaseGameAction {
 }
 
 export type TurnAction = RecruitAction;
+
+export const BASE_SALARY = 5;

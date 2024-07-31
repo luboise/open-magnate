@@ -268,4 +268,3 @@ function PageGame() {
 }
 
 export default PageGame;
-
