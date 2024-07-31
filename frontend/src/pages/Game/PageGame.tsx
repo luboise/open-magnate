@@ -17,6 +17,7 @@ import WindowToolbar, {
 import MagnateMap from "./Map/MagnateMap";
 import RestaurantPlacer from "./Map/RestaurantPlacer";
 import GlobalReserveDisplay from "./Reserve/GlobalReserveDisplay";
+import SalaryHandler from "./SalaryHandler/SalaryHandler";
 import TurnPlanner from "./TurnPlanner/TurnPlanner";
 import TurnProgressIndicator from "./TurnProgressIndicator/TurnProgressIndicator";
 
@@ -218,6 +219,14 @@ function PageGame() {
 			</Resizable>
 
 			<Resizable
+				minimiseIf={
+					turnProgress !== "SALARY_PAYOUTS"
+				}
+			>
+				<SalaryHandler id="game-salary-handler" />
+			</Resizable>
+
+			<Resizable
 				defaultWidth={300}
 				minimiseIf={!state.showTurnOrder}
 			>
@@ -259,3 +268,4 @@ function PageGame() {
 }
 
 export default PageGame;
+

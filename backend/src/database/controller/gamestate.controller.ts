@@ -2,6 +2,7 @@ import {
 	ENTRANCE_CORNER,
 	GamePlayer,
 	Prisma,
+	READY_STATUS,
 	TURN_PROGRESS
 } from "@prisma/client";
 import {
@@ -47,6 +48,19 @@ function copyArray<T>(
 	}
 
 	// return outArray;
+}
+
+function ReadyStatusToBoolean(
+	status: READY_STATUS
+): boolean | null {
+	switch (status) {
+		case "READY":
+			return true;
+		case "NOT_READY":
+			return false;
+		default:
+			return null;
+	}
 }
 
 export const FullGameStateInclude = {
@@ -307,7 +321,10 @@ const GameStateController = {
 					employees: parseJsonArray(
 						player.employees
 					),
-					employeeTreeStr: player.employeeTree
+					employeeTreeStr: player.employeeTree,
+					ready: ReadyStatusToBoolean(
+						player.ready
+					)
 				})
 			),
 			restaurants: gameState.players
@@ -487,6 +504,23 @@ const GameStateController = {
 			nextPlayer =
 				currentOrder[currentPlayerIndex + 1];
 		}
+
+		let unreadyPlayers: boolean = false;
+
+		if (nextTurnProgress === "SALARY_PAYOUTS") {
+			unreadyPlayers = true;
+		}
+
+		await prisma.$transaction(async (ctx) => {
+			ctx.gamePlayer.updateMany({
+				where: {
+					gameId: gameState.id
+				},
+				data: {
+					ready: READY_STATUS.NOT_READY
+				}
+			});
+		});
 
 		const updated = await GameStateRepository.update({
 			where: {

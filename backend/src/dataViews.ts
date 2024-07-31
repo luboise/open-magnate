@@ -56,6 +56,7 @@ export interface GamePlayerViewPublic {
 	milestones: number[];
 	restaurant: number;
 	money: number;
+	ready: boolean | null;
 }
 
 export interface GamePlayerViewPrivate

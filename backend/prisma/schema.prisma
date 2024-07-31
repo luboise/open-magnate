@@ -70,6 +70,7 @@ model GamePlayer {
   game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   number Int @map("player_number")
+  ready  READY_STATUS @map("is_ready")	@default(NOT_APPLICABLE)
 
   money      Int  @default(0)
   milestones Json
@@ -245,4 +246,10 @@ enum ENTRANCE_CORNER {
 	TOPRIGHT
 	BOTTOMLEFT
 	BOTTOMRIGHT
+}
+
+enum READY_STATUS {
+	NOT_READY
+    READY
+	NOT_APPLICABLE
 }
