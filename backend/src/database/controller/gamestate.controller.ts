@@ -1,6 +1,4 @@
 import {
-	ENTRANCE_CORNER,
-	GamePlayer,
 	Prisma,
 	READY_STATUS,
 	TURN_PROGRESS
@@ -33,6 +31,40 @@ import {
 } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
 import { FullLobby } from "./lobby.controller";
+
+function GetNextTurnPhase(
+	currentTurnPhase: TURN_PROGRESS
+): TURN_PROGRESS {
+	switch (currentTurnPhase) {
+		case "RESTRUCTURING": {
+			return "TURN_ORDER_SELECTION";
+		}
+		case "TURN_ORDER_SELECTION": {
+			return "USE_EMPLOYEES";
+		}
+		case "USE_EMPLOYEES": {
+			return "SALARY_PAYOUTS";
+		}
+		case "SALARY_PAYOUTS": {
+			return "CLEAN_UP";
+		}
+		case "MARKETING_CAMPAIGNS": {
+			return "CLEAN_UP";
+		}
+		case "CLEAN_UP": {
+			return "RESTRUCTURING";
+		}
+		case "RESTAURANT_PLACEMENT": {
+			return "USE_EMPLOYEES";
+		}
+		default: {
+			throw new Error(
+				`Invalid turn phase: ${currentTurnPhase}`
+			);
+		}
+	}
+}
+
 function copyArray<T>(
 	data: T[][],
 	mainArray: T[][],
@@ -92,14 +124,10 @@ export type FullGameState = Prisma.GameStateGetPayload<{
 	include: typeof FullGameStateInclude;
 }>;
 
-interface NewRestaurantDetails {
-	x: number;
-	y: number;
-	entrance: ENTRANCE_CORNER;
-}
-
 const GameStateController = {
-	Get: async (id: number) => {
+	Get: async (
+		id: number
+	): Promise<FullGameState | null> => {
 		try {
 			return await GameStateRepository.findFirst({
 				where: {
@@ -400,32 +428,6 @@ const GameStateController = {
 		return Boolean(updated);
 	},
 
-	AddNewRestaurant: async (
-		player: GamePlayer,
-		details: NewRestaurantDetails
-	): Promise<boolean> => {
-		try {
-			// TODO: Add validation
-			console.log(details);
-			const updated =
-				await prisma.gamePlayerRestaurant.create({
-					data: {
-						gameId: player.gameId,
-						playerNumber: player.number,
-
-						x: details.x,
-						y: details.y,
-						entrance: details.entrance
-					}
-				});
-
-			return Boolean(updated);
-		} catch (error) {
-			console.error(error);
-		}
-		return false;
-	},
-
 	AdvanceGameState: async (
 		gameStateId: number
 	): Promise<boolean> => {
@@ -469,37 +471,9 @@ const GameStateController = {
 			gameState.playerCount - 1
 		) {
 			nextPlayer = currentOrder[0];
-			switch (gameState.turnProgress) {
-				case "RESTRUCTURING": {
-					nextTurnProgress =
-						"TURN_ORDER_SELECTION";
-					break;
-				}
-				case "TURN_ORDER_SELECTION": {
-					nextTurnProgress = "USE_EMPLOYEES";
-					break;
-				}
-				case "USE_EMPLOYEES": {
-					nextTurnProgress = "SALARY_PAYOUTS";
-					break;
-				}
-				case "SALARY_PAYOUTS": {
-					nextTurnProgress = "CLEAN_UP";
-					break;
-				}
-				case "MARKETING_CAMPAIGNS": {
-					nextTurnProgress = "CLEAN_UP";
-					break;
-				}
-				case "CLEAN_UP": {
-					nextTurnProgress = "RESTRUCTURING";
-					break;
-				}
-				case "RESTAURANT_PLACEMENT": {
-					nextTurnProgress = "USE_EMPLOYEES";
-					break;
-				}
-			}
+			nextTurnProgress = GetNextTurnPhase(
+				gameState.turnProgress
+			);
 		} else {
 			nextPlayer =
 				currentOrder[currentPlayerIndex + 1];
@@ -688,6 +662,42 @@ const GameStateController = {
 			console.debug(error);
 			return false;
 		}
+	},
+
+	HandleEndOfRound: async (
+		gameState: FullGameState
+	): Promise<boolean> => {
+		try {
+			const updatedGame = await prisma.$transaction(
+				async (ctx) => {
+					if (
+						gameState.turnProgress !==
+						"SALARY_PAYOUTS"
+					)
+						throw new Error(
+							`Attempted to handle end of round for a game that is not in the salary stage in lobby #${gameState.id}`
+						);
+
+					// TODO: Add logic here for marketing campaigns and other post round actions
+					return await ctx.gameState.update({
+						where: {
+							id: gameState.id
+						},
+						data: {
+							currentTurn:
+								gameState.currentTurn + 1
+						}
+					});
+				}
+			);
+
+			return Boolean(updatedGame);
+		} catch (error) {
+			console.debug(error);
+			return false;
+		}
+
+		return true;
 	}
 };
 

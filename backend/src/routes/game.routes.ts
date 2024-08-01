@@ -20,8 +20,8 @@ import {
 	MakeMoveMessage,
 	StartGameMessage
 } from "../../../shared";
-import { MOVE_TYPE } from "../../../shared/Moves";
 import GameStateController from "../database/controller/gamestate.controller";
+import { CalculateMove } from "../game/HandleMove";
 import { connectionsToWebsocket } from "./connections";
 
 // Helpers
@@ -605,61 +605,18 @@ const handleMoveMade: BackendMessageHandler<
 
 	let advance = false;
 
-	const message = params.message.data;
-	if (message.MoveType === MOVE_TYPE.PLACE_RESTAURANT) {
-		const success =
-			await GameStateController.AddNewRestaurant(
-				gamePlayer,
-				{
-					x: message.x,
-					y: message.y,
-					entrance: message.entrance
-				}
-			);
-
-		if (!success) {
-			console.error(
-				"Unable to create new restaurant."
-			);
-			return;
-		}
-
-		advance = true;
-	} else if (message.MoveType === MOVE_TYPE.TAKE_TURN) {
-		const success =
-			await GameStateController.ExecuteTurn(
-				lobby.id,
-				message.actions
-			);
-
-		if (!success) {
-		}
-
-		advance = true;
-	} else if (
-		message.MoveType === MOVE_TYPE.NEGOTIATE_SALARIES
-	) {
-		if (!params.playerNumber) {
-			console.debug(
-				`No player number provided for negotiating salaries in lobby #${lobby.id}`
-			);
-			return;
-		}
-
-		const success =
-			await GameStateController.NegotiateSalaries(
-				lobby.id,
-				params.playerNumber,
-				message.employeesToFire
-			);
-
-		if (!success) {
-			console.debug(
-				`Failed to negotiate salaries for player ${params.playerNumber} in lobby #${lobby.id}`
-			);
-			return;
-		}
+	const moveData = params.message.data;
+	const gameState = await GameStateController.Get(
+		lobby.id
+	);
+	if (!gameState) {
+		const msg = "Unable to retrieve game state";
+		console.log(msg);
+		params.ws.send(msg);
+		return;
 	}
+
+	const updateStatus = CalculateMove(gameState, moveData);
 
 	if (await GameStateController.AllPlayersReady(lobby.id))
 		advance = true;
