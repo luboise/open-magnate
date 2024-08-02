@@ -21,7 +21,7 @@ import {
 	StartGameMessage
 } from "../../../shared";
 import GameStateController from "../database/controller/gamestate.controller";
-import { CalculateMove } from "../game/HandleMove";
+import { GameClass } from "../game/GameClass";
 import { connectionsToWebsocket } from "./connections";
 
 // Helpers
@@ -616,28 +616,44 @@ const handleMoveMade: BackendMessageHandler<
 		return;
 	}
 
-	const updateStatus = CalculateMove(gameState, moveData);
-
-	if (await GameStateController.AllPlayersReady(lobby.id))
-		advance = true;
-
-	if (advance) {
-		const updated =
-			await GameStateController.AdvanceGameState(
-				lobby.id
+	const game = new GameClass(gameState);
+	try {
+		game.executeMove(gamePlayer.number, moveData);
+		const moves = game.getMovesMade();
+		const madeMoves =
+			await GameStateController.NewMakeMoves(
+				lobby.id,
+				gamePlayer.number,
+				moves
 			);
-		if (!updated) {
-			const msg = "Unable to advance the game state";
-			console.error(msg);
-			params.ws.send(msg);
-			return;
-		}
+
+		if (madeMoves)
+			updateAllPlayers(
+				await LobbyController.refresh(lobby),
+				"GAMESTATE"
+			);
+	} catch {
+		console.error("Invalid move made");
+		params.ws.send("Invalid move made");
+		return;
 	}
 
-	updateAllPlayers(
-		await LobbyController.refresh(lobby),
-		"GAMESTATE"
-	);
+	// TODO: Move the handling of ready checks to NewMakeMoves
+	// if (await GameStateController.AllPlayersReady(lobby.id))
+	// 	advance = true;
+
+	// if (advance) {
+	// 	const updated =
+	// 		await GameStateController.AdvanceGameState(
+	// 			lobby.id
+	// 		);
+	// 	if (!updated) {
+	// 		const msg = "Unable to advance the game state";
+	// 		console.error(msg);
+	// 		params.ws.send(msg);
+	// 		return;
+	// 	}
+	// }
 };
 
 module.exports = routeHandler;

@@ -7,10 +7,9 @@ import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS,
-	RestaurantView,
-	TurnAction
+	RestaurantView
 } from "../../../../shared";
-import { EMPLOYEE_ID } from "../../../../shared/EmployeeIDs";
+import { MoveData } from "../../../../shared/Moves";
 import {
 	GamePlayerViewPrivate,
 	GameStateView,
@@ -18,6 +17,7 @@ import {
 	GardenView
 } from "../../dataViews";
 import prisma from "../../datasource";
+import { TransactMove as TransactMoves } from "../../game/HandleMove";
 import {
 	MAP_PIECES,
 	MapStringChar,
@@ -31,39 +31,6 @@ import {
 } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
 import { FullLobby } from "./lobby.controller";
-
-function GetNextTurnPhase(
-	currentTurnPhase: TURN_PROGRESS
-): TURN_PROGRESS {
-	switch (currentTurnPhase) {
-		case "RESTRUCTURING": {
-			return "TURN_ORDER_SELECTION";
-		}
-		case "TURN_ORDER_SELECTION": {
-			return "USE_EMPLOYEES";
-		}
-		case "USE_EMPLOYEES": {
-			return "SALARY_PAYOUTS";
-		}
-		case "SALARY_PAYOUTS": {
-			return "CLEAN_UP";
-		}
-		case "MARKETING_CAMPAIGNS": {
-			return "CLEAN_UP";
-		}
-		case "CLEAN_UP": {
-			return "RESTRUCTURING";
-		}
-		case "RESTAURANT_PLACEMENT": {
-			return "USE_EMPLOYEES";
-		}
-		default: {
-			throw new Error(
-				`Invalid turn phase: ${currentTurnPhase}`
-			);
-		}
-	}
-}
 
 function copyArray<T>(
 	data: T[][],
@@ -428,214 +395,6 @@ const GameStateController = {
 		return Boolean(updated);
 	},
 
-	AdvanceGameState: async (
-		gameStateId: number
-	): Promise<boolean> => {
-		const gameState =
-			await GameStateRepository.findFirst({
-				where: {
-					id: gameStateId
-				}
-			});
-
-		if (!gameState) {
-			console.error(
-				"Unable to find gamestate. A backend error has occured."
-			);
-			return false;
-		}
-
-		console.log(gameState.turnOrder);
-
-		const currentOrder = gameState.turnOrder
-			.split("")
-			.map((val) => Number(val));
-
-		const currentPlayerIndex = currentOrder.findIndex(
-			(player) => player === gameState.currentPlayer
-		);
-
-		if (currentPlayerIndex === -1) {
-			console.error(
-				"Unable to find current player in turn order."
-			);
-			return false;
-		}
-
-		let nextPlayer = currentPlayerIndex;
-		let nextTurnProgress = gameState.turnProgress;
-
-		// Check if all players have completed their turn this round
-		if (
-			currentPlayerIndex ===
-			gameState.playerCount - 1
-		) {
-			nextPlayer = currentOrder[0];
-			nextTurnProgress = GetNextTurnPhase(
-				gameState.turnProgress
-			);
-		} else {
-			nextPlayer =
-				currentOrder[currentPlayerIndex + 1];
-		}
-
-		let unreadyPlayers: boolean = false;
-
-		if (nextTurnProgress === "SALARY_PAYOUTS") {
-			unreadyPlayers = true;
-		}
-
-		if (unreadyPlayers)
-			await prisma.$transaction(async (ctx) => {
-				ctx.gamePlayer.updateMany({
-					where: {
-						gameId: gameState.id
-					},
-					data: {
-						ready: READY_STATUS.NOT_READY
-					}
-				});
-			});
-
-		const updated = await GameStateRepository.update({
-			where: {
-				id: gameState.id
-			},
-			data: {
-				currentPlayer: nextPlayer,
-				turnProgress: nextTurnProgress
-			}
-		});
-		if (!updated) {
-			console.log("Unable to advance gamestate.");
-			return false;
-		}
-
-		console.log(
-			`Successfully advanced turn in game ${gameState.id}`
-		);
-		return true;
-	},
-
-	// TODO: Add validation for valid recruiting
-	// TODO: Fix employees not updating in database (add unit tests for the backend)
-	ExecuteTurn: async (
-		gameStateId: number,
-		turn: TurnAction[]
-	): Promise<boolean> => {
-		try {
-			const gameState =
-				await GameStateController.Get(gameStateId);
-
-			if (!gameState) {
-				throw new Error(
-					"Unable to find gamestate. A backend error has occured."
-				);
-			}
-
-			const gamePlayer = gameState.players.find(
-				(player) =>
-					player.number ===
-					gameState.currentPlayer
-			);
-
-			if (!gamePlayer)
-				throw new Error(
-					"Unable to find current player in game players."
-				);
-
-			const newRecruits: EMPLOYEE_ID[] = [];
-
-			for (const turnAction of turn) {
-				if (turnAction.type === "RECRUIT") {
-					newRecruits.push(turnAction.recruiting);
-				}
-			}
-
-			prisma.gamePlayer.update({
-				where: {
-					gamePlayerId: {
-						gameId: gameState.id,
-						number: gamePlayer.number
-					}
-				},
-				data: {
-					employees: {
-						toJSON: [
-							...parseJsonArray(
-								gamePlayer.employees
-							),
-							...newRecruits
-						]
-					}
-				}
-			});
-		} catch (error) {
-			console.log(`Unable to execute turn: ${error}`);
-			return false;
-		}
-
-		return true;
-	},
-
-	NegotiateSalaries: async (
-		gameId: number,
-		playerNumber: number,
-		employeesToFire: number[]
-	): Promise<boolean> => {
-		try {
-			await prisma.$transaction(async (ctx) => {
-				const existingPlayer =
-					await ctx.gamePlayer.findUnique({
-						where: {
-							gamePlayerId: {
-								gameId: gameId,
-								number: playerNumber
-							}
-						}
-					});
-
-				if (!existingPlayer)
-					throw new Error(
-						"Unable to find player in game."
-					);
-
-				const gamePlayer =
-					await ctx.gamePlayer.update({
-						where: {
-							gamePlayerId: {
-								gameId: gameId,
-								number: playerNumber
-							}
-						},
-						data: {
-							ready: READY_STATUS.READY,
-							employees: [
-								...parseJsonArray(
-									existingPlayer.employees
-								).filter(
-									(_, index) =>
-										!employeesToFire.includes(
-											index
-										)
-								)
-							]
-						}
-					});
-
-				if (!gamePlayer)
-					throw new Error(
-						"No game player was able to be updated."
-					);
-			});
-		} catch (error) {
-			console.debug(error);
-			return false;
-		}
-
-		return true;
-	},
-
 	AllPlayersReady: async (
 		gameId: number
 	): Promise<boolean> => {
@@ -664,36 +423,53 @@ const GameStateController = {
 		}
 	},
 
-	HandleEndOfRound: async (
-		gameState: FullGameState
+	NewMakeMoves: async (
+		game: number,
+		player: number,
+		moves: MoveData[]
 	): Promise<boolean> => {
 		try {
-			const updatedGame = await prisma.$transaction(
-				async (ctx) => {
-					if (
-						gameState.turnProgress !==
-						"SALARY_PAYOUTS"
-					)
-						throw new Error(
-							`Attempted to handle end of round for a game that is not in the salary stage in lobby #${gameState.id}`
-						);
-
-					// TODO: Add logic here for marketing campaigns and other post round actions
-					return await ctx.gameState.update({
+			await prisma.$transaction(async (ctx) => {
+				// Check that the game exists by ID
+				const gameState =
+					await ctx.gameState.findUniqueOrThrow({
 						where: {
-							id: gameState.id
+							id: game
 						},
-						data: {
-							currentTurn:
-								gameState.currentTurn + 1
-						}
+						include: FullGameStateInclude
 					});
-				}
-			);
 
-			return Boolean(updatedGame);
+				if (
+					!gameState.players.some(
+						(gamePlayer) =>
+							gamePlayer.number === player
+					)
+				)
+					throw new Error(
+						`Invalid player number (${player}) for game #${game}`
+					);
+
+				// Perform each move inside of the transaction
+				// If any fail, transactmoves will throw an error
+				for (const move of moves) {
+					await TransactMoves(
+						{
+							ctx: ctx,
+							gameId: game,
+							player: player
+						},
+						move
+					);
+				}
+			});
 		} catch (error) {
-			console.debug(error);
+			console.log(
+				"Unable to make moves in lobby #" +
+					game +
+					"."
+			);
+			console.log(error);
+
 			return false;
 		}
 
