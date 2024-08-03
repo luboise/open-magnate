@@ -225,6 +225,16 @@ const reserveSelector = selector<Reserve>({
 	}
 });
 
+const turnOrderSelector = selector<number[] | null>({
+	key: "TURN_ORDER",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
+
+		return gameState.turnOrder;
+	}
+});
+
 export function useGameStateView() {
 	const mapColOrder = useRecoilValue(
 		mapColumnOrderSelector
@@ -255,6 +265,8 @@ export function useGameStateView() {
 
 	const reserve = useRecoilValue(reserveSelector);
 
+	const turnOrder = useRecoilValue(turnOrderSelector);
+
 	return {
 		mapColOrder,
 		mapRowOrder,
@@ -267,7 +279,8 @@ export function useGameStateView() {
 		myEmployees: myEmployees,
 		currentPlayer,
 		currentTree,
-		reserve
+		reserve,
+		turnOrder
 	};
 }
 

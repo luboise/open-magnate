@@ -15,7 +15,7 @@ function TurnOrderList({
 	className,
 	...args
 }: TurnOrderListProps) {
-	const { gamestate: state, players } =
+	const { currentPlayer, turnOrder, players } =
 		useGameStateView();
 
 	return (
@@ -30,35 +30,32 @@ function TurnOrderList({
 			// }}
 			{...args}
 		>
-			{...state?.turnOrder?.map(
-				(playerNumber, index) => {
-					const player = players?.find(
-						(player) =>
-							player.playerNumber ===
-							playerNumber
-					);
-					if (!player) return <></>;
+			{...turnOrder?.map((playerNumber, index) => {
+				const player = players?.find(
+					(player) =>
+						player.playerNumber === playerNumber
+				);
+				if (!player) return <></>;
 
-					return (
-						<div
-							style={{
-								backgroundColor:
-									state.currentPlayer ===
-									playerNumber
-										? "red"
-										: undefined
-							}}
-						>
-							<RestaurantImage
-								restaurantNumber={
-									player.restaurant
-								}
-								style={{ width: "100%" }}
-							/>
-						</div>
-					);
-				}
-			) ?? []}
+				return (
+					<div
+						style={{
+							backgroundColor:
+								currentPlayer?.playerNumber ===
+								playerNumber
+									? "red"
+									: undefined
+						}}
+					>
+						<RestaurantImage
+							restaurantNumber={
+								player.restaurant
+							}
+							style={{ width: "100%" }}
+						/>
+					</div>
+				);
+			}) ?? []}
 		</div>
 	);
 }

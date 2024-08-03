@@ -203,6 +203,8 @@ async function setTurnProgress(
 		}
 	});
 
+	await UnreadyPlayers(bundle);
+
 	if (!updatedPlayers)
 		throw new Error(
 			"Unable to update the ready status of the players in the lobby"
