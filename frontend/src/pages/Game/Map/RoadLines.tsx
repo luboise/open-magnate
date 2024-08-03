@@ -14,8 +14,8 @@ function RoadLines({ rotation = "NORTH" }: RoadLinesProps) {
 			: rotation === "EAST"
 				? "90deg"
 				: rotation === "SOUTH"
-					? "180de)"
-					: "270de)";
+					? "180deg"
+					: "270deg";
 
 	return (
 		<img
@@ -27,3 +27,4 @@ function RoadLines({ rotation = "NORTH" }: RoadLinesProps) {
 }
 
 export default RoadLines;
+
