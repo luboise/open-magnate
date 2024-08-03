@@ -1,8 +1,8 @@
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import "./TurnProgressIndicator.css";
 
 function TurnProgressIndicator() {
-	const { turnProgress } = useGameState();
+	const { turnProgress } = useGameStateView();
 
 	const topRow = [
 		"Restructure",
@@ -37,3 +37,4 @@ function TurnProgressIndicator() {
 }
 
 export default TurnProgressIndicator;
+

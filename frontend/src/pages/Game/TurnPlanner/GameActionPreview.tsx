@@ -2,7 +2,7 @@ import "./GameActionPreview.css";
 
 import { HTMLAttributes, useMemo } from "react";
 import Button from "../../../global_components/Button";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import { EmployeesById, TurnAction } from "../../../utils";
 
 interface GameActionPreviewProps
@@ -16,7 +16,7 @@ function GameActionPreview({
 	onDestroy,
 	...args
 }: GameActionPreviewProps) {
-	const { myEmployees } = useGameState();
+	const { myEmployees } = useGameStateView();
 
 	const employee = myEmployees[gameAction.employeeIndex];
 
@@ -62,3 +62,4 @@ function GameActionPreview({
 }
 
 export default GameActionPreview;
+

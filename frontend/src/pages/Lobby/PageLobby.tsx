@@ -7,7 +7,6 @@ import Button from "../../global_components/Button";
 import Form from "../../global_components/Form/Form";
 import FormInput from "../../global_components/Form/FormInput";
 import SelectionButtonList from "../../global_components/Form/SelectionButtonList";
-import { useGameState } from "../../hooks/game/useGameState";
 import { WEB_SOCKET_BASE_URL } from "../../hooks/useAPI";
 import useLocalVal from "../../hooks/useLocalVal";
 import {
@@ -21,6 +20,7 @@ import {
 	LobbyViewPerPlayer
 } from "../../utils";
 
+import useFullGameState from "../../hooks/game/useFullGameState";
 import LobbyManager from "./LobbyManager/LobbyManager";
 import { PageGameAtom } from "./PageGameContext";
 
@@ -55,7 +55,7 @@ function PageLobby() {
 		LOCAL_STORAGE_INVITE_CODE_NAME
 	);
 
-	const { setState: setGameState } = useGameState();
+	const { gamestate, setGamestate } = useFullGameState();
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -215,7 +215,7 @@ function PageLobby() {
 					pageState: "VERIFIED",
 					lobbyState: null
 				};
-				setGameState(null);
+				setGamestate(null);
 				return newState;
 			}
 			default:
@@ -245,7 +245,7 @@ function PageLobby() {
 
 	// Update the gamestate when it changes
 	useEffect(() => {
-		setGameState(state.gameState);
+		setGamestate(state.gameState);
 	}, [state.gameState]);
 
 	// Check for bad ready states
@@ -354,6 +354,11 @@ function PageLobby() {
 		state.lobbyState !== null &&
 		state.gameState !== null
 	) {
+		if (!gamestate) {
+			return (
+				<div>Waiting to load the game state...</div>
+			);
+		}
 		return (
 			<LobbyManager
 				lobby={state.lobbyState}

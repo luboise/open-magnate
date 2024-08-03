@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import { RecruitAction } from "../../../utils";
 import ReserveDisplay from "../Reserve/ReserveDisplay";
@@ -10,7 +10,7 @@ type Props = {
 };
 
 function HiringWindow({ employeeHiringIndex }: Props) {
-	const { myEmployees } = useGameState();
+	const { myEmployees } = useGameStateView();
 
 	const { addAction } = useTurnPlanning();
 
@@ -54,3 +54,4 @@ function HiringWindow({ employeeHiringIndex }: Props) {
 }
 
 export default HiringWindow;
+

@@ -3,7 +3,7 @@ import { ENTRANCE_CORNER } from "../../../../../backend/src/dataViews";
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import { Clamp } from "../../../../../shared/utils";
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import useMap, {
 	useBoardInfo
 } from "../../../hooks/game/useMap";
@@ -33,7 +33,7 @@ type RestaurantPlacerAction =
 function RestaurantPlacer() {
 	const { makeMove } = usePageGame();
 	const boardInfo = useBoardInfo();
-	const { state: gameState } = useGameState();
+	const { gamestate: gameState } = useGameStateView();
 
 	const [state, dispatch] = useReducer(
 		(
@@ -165,3 +165,4 @@ function RestaurantPlacer() {
 }
 
 export default RestaurantPlacer;
+

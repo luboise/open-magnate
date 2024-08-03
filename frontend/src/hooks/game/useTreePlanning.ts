@@ -8,7 +8,7 @@ import {
 	EmployeeNode,
 	IsValidEmployeeTree
 } from "../../utils";
-import { useGameState } from "./useGameState";
+import { useGameStateView } from "./useGameState";
 
 const treePlanningAtom = atom<EmployeeNode>({
 	key: "treePlanningAtom",
@@ -20,13 +20,13 @@ const treePlanningAtom = atom<EmployeeNode>({
 });
 
 function useTreePlanning() {
-	const { myEmployees } = useGameState();
+	const { myEmployees } = useGameStateView();
 
 	const [plannedTree, setPlannedTree] = useRecoilState(
 		treePlanningAtom
 	);
 
-	const { playerData } = useGameState();
+	const { playerData } = useGameStateView();
 	if (!playerData)
 		throw new Error("No player data available");
 

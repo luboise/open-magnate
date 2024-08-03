@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
 import { HouseView, MapTileData } from "../../utils";
-import { useGameState } from "./useGameState";
+import { useGameStateView } from "./useGameState";
 
 type MapRenderListType = Record<string, JSX.Element[]>;
 
@@ -48,7 +48,7 @@ type MouseEvent =
 // 	|
 
 export function useBoardInfo() {
-	const { mapRowOrder } = useGameState();
+	const { mapRowOrder } = useGameStateView();
 
 	const width = mapRowOrder?.length || 0;
 	const height = mapRowOrder?.[0]?.length || 0;
@@ -197,3 +197,4 @@ function useMap() {
 }
 
 export default useMap;
+

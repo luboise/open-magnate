@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
@@ -22,7 +22,7 @@ function TurnHandler() {
 		turnProgress,
 		players,
 		currentPlayer
-	} = useGameState();
+	} = useGameStateView();
 
 	const { makeMove } = usePageGame();
 
@@ -59,8 +59,6 @@ function TurnHandler() {
 		}
 	}
 
-	if (!currentPlayer) return <></>;
-
 	return (
 		<div id="game-turn-handler">
 			<h2
@@ -76,7 +74,10 @@ function TurnHandler() {
 			>
 				{isMyTurn
 					? "Your turn"
-					: `Waiting for ${RESTAURANT_NAMES[currentPlayer.restaurant]}...`}
+					: "Waiting for " +
+						(currentPlayer === null
+							? "others to ready up."
+							: `${RESTAURANT_NAMES[currentPlayer.restaurant]}...`)}
 			</h2>
 
 			<SpinningStatus

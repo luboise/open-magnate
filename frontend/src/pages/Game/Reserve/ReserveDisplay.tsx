@@ -3,7 +3,7 @@ import "./ReserveDisplay.css";
 import { HTMLAttributes } from "react";
 import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
 import { Employee } from "../../../../../shared/EmployeeTypes";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import {
 	EmployeesById,
 	IsValidEmployeeId
@@ -23,7 +23,7 @@ function ReserveDisplay({
 	onEmployeeClicked,
 	...args
 }: ReserveDisplayProps) {
-	const { reserve } = useGameState();
+	const { reserve } = useGameStateView();
 	[];
 	if (!reserve) return <></>;
 
@@ -86,3 +86,4 @@ function ReserveDisplay({
 }
 
 export default ReserveDisplay;
+

@@ -1,9 +1,4 @@
-import {
-	atom,
-	selector,
-	useRecoilState,
-	useRecoilValue
-} from "recoil";
+import { selector, useRecoilValue } from "recoil";
 import { Reserve } from "../../../../backend/src/game/NewGameStructures";
 import {
 	CloneArray,
@@ -23,7 +18,7 @@ import {
 	EmployeesById,
 	GamePlayerViewPrivate,
 	GamePlayerViewPublic,
-	GameStateViewPerPlayer,
+	HouseView,
 	IsValidEmployeeId,
 	Map2D,
 	MapTileData,
@@ -32,24 +27,25 @@ import {
 	TURN_PROGRESS,
 	parseMapChar
 } from "../../utils";
-
-const RECOIL_GAMESTATE_KEY = "GameState";
-type GameStateAtomType = GameStateViewPerPlayer | null;
-const GameStateAtom = atom<GameStateAtomType>({
-	key: RECOIL_GAMESTATE_KEY, // unique ID (with respect to other atoms/selectors)
-	default: null
-});
+import { GameStateAtom } from "./useFullGameState";
 
 const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
 const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
 
-type MapSelectorType = MapTileData[][] | null;
+const NullGamestateMsg =
+	"Null gamestate. Make sure the selectors can only be called after the atom.";
+
+type MapSelectorType = MapTileData[][];
 const mapColumnOrderSelector = selector<MapSelectorType>({
 	key: RECOIL_MAP_COL_ORDER_KEY,
 	get: ({ get }) => {
-		const mapString = get(GameStateAtom)?.map;
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
 
-		if (!mapString) return null;
+		const mapString = gameState.map;
+
+		if (!mapString)
+			throw new Error("No map foudn on gamestate");
 
 		const rowOrderMap =
 			mapString
@@ -61,7 +57,11 @@ const mapColumnOrderSelector = selector<MapSelectorType>({
 							parseMapChar(char, x, y)
 						)
 				) ?? null;
-		if (!rowOrderMap) return null;
+
+		if (rowOrderMap === null)
+			throw new Error(
+				"Unable to create rowOrderMap from mapString"
+			);
 
 		return addMapDetails(GetTransposed(rowOrderMap));
 	}
@@ -71,40 +71,43 @@ const mapRowOrderSelector = selector<MapSelectorType>({
 	key: RECOIL_MAP_ROW_ORDER_KEY,
 	get: ({ get }) => {
 		const colOrder = get(mapColumnOrderSelector);
-		if (!colOrder) return null;
+		if (!colOrder)
+			throw new Error(
+				"Unable to fetch column order selector."
+			);
 
 		return GetTransposed(colOrder);
 	}
 });
 
 const RECOIL_MAP_HOUSE_KEY = "PARSED_MAP_HOUSES";
-const mapHouseSelector = selector({
+const mapHouseSelector = selector<HouseView[]>({
 	key: RECOIL_MAP_HOUSE_KEY,
 	get: ({ get }) => {
-		return get(GameStateAtom)?.houses ?? null;
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
+
+		return gameState.houses;
 	}
 });
 
 const RECOIL_TURN_PROGRESS_KEY = "TURN_PROGRESS";
-const turnProgressSelector = selector<TURN_PROGRESS | null>(
-	{
-		key: RECOIL_TURN_PROGRESS_KEY,
-		get: ({ get }) => {
-			const turnProgress =
-				get(GameStateAtom)?.turnProgress;
+const turnProgressSelector = selector<TURN_PROGRESS>({
+	key: RECOIL_TURN_PROGRESS_KEY,
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
 
-			return turnProgress ?? null;
-		}
+		return gameState.turnProgress;
 	}
-);
+});
 
 const RECOIL_IS_MY_TURN_KEY = "IS_MY_TURN";
 const isMyTurnSelector = selector<boolean | null>({
 	key: RECOIL_IS_MY_TURN_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
-
-		if (!gameState) return null;
+		if (!gameState) throw new Error(NullGamestateMsg);
 
 		if (
 			gameState.turnProgress === "RESTRUCTURING" ||
@@ -124,14 +127,11 @@ const isMyTurnSelector = selector<boolean | null>({
 // }
 
 const RECOIL_PLAYERS_KEY = "PLAYERS";
-const playersSelector = selector<
-	GamePlayerViewPublic[] | null
->({
+const playersSelector = selector<GamePlayerViewPublic[]>({
 	key: RECOIL_PLAYERS_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
-
-		if (!gameState) return null;
+		if (!gameState) throw new Error(NullGamestateMsg);
 
 		return gameState.players;
 	}
@@ -144,32 +144,31 @@ const restaurantsSelector = selector<RestaurantView[]>({
 	key: "RESTAURANTS",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
-
-		if (!gameState) return [];
+		if (!gameState) throw new Error(NullGamestateMsg);
 
 		return gameState.restaurants;
 	}
 });
 
-const playerDataSelector =
-	selector<GamePlayerViewPrivate | null>({
-		key: "PLAYER_DATA",
-		get: ({ get }) => {
-			const gameState = get(GameStateAtom);
+const playerDataSelector = selector<GamePlayerViewPrivate>({
+	key: "PLAYER_DATA",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
 
-			if (!gameState) return null;
-
-			return gameState.privateData;
-		}
-	});
+		return gameState.privateData;
+	}
+});
 
 const myEmployeesSelector = selector<Employee[]>({
 	key: "MY_EMPLOYEES",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
+
 		const playerData = get(playerDataSelector);
 
-		if (!gameState || !playerData) return [];
+		if (!playerData) return [];
 
 		const myEmployees: Employee[] = [];
 
@@ -188,8 +187,8 @@ const currentPlayerSelector =
 		key: "CURRENT_PLAYER",
 		get: ({ get }) => {
 			const gameState = get(GameStateAtom);
-
-			if (!gameState) return null;
+			if (!gameState)
+				throw new Error(NullGamestateMsg);
 
 			const currentPlayer = gameState.players.find(
 				(player) =>
@@ -216,19 +215,17 @@ const currentTreeSelector = selector<EmployeeNode | null>({
 	}
 });
 
-const reserveSelector = selector<Reserve | null>({
+const reserveSelector = selector<Reserve>({
 	key: "RESERVE",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
-		if (!gameState) return null;
+		if (!gameState) throw new Error(NullGamestateMsg);
 
 		return gameState.reserve;
 	}
 });
 
-export function useGameState() {
-	const [state, _setState] =
-		useRecoilState(GameStateAtom);
+export function useGameStateView() {
 	const mapColOrder = useRecoilValue(
 		mapColumnOrderSelector
 	);
@@ -259,11 +256,9 @@ export function useGameState() {
 	const reserve = useRecoilValue(reserveSelector);
 
 	return {
-		state,
 		mapColOrder,
 		mapRowOrder,
 		houses,
-		setState: _setState,
 		turnProgress,
 		players: players,
 		restaurants: restaurants,

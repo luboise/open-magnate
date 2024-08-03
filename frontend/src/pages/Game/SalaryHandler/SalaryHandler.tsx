@@ -3,7 +3,7 @@ import "./SalaryHandler.css";
 import { HTMLAttributes, useMemo, useReducer } from "react";
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import { BASE_SALARY } from "../../../utils";
 
@@ -18,7 +18,7 @@ interface Action {
 
 interface Props extends HTMLAttributes<HTMLDivElement> {}
 function SalaryHandler({ ...args }: Props) {
-	const { myEmployees, playerData } = useGameState();
+	const { myEmployees, playerData } = useGameStateView();
 
 	const { makeMove } = usePageGame();
 

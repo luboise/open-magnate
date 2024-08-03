@@ -5,7 +5,7 @@ import {
 	useRecoilValue
 } from "recoil";
 import { TurnAction } from "../../utils";
-import { useGameState } from "./useGameState";
+import { useGameStateView } from "./useGameState";
 
 interface GamePlanningState {
 	plannedActions: TurnAction[];
@@ -32,7 +32,7 @@ function useTurnPlanning() {
 
 	const turnActions = useRecoilValue(turnActionsSelector);
 
-	const { playerData } = useGameState();
+	const { playerData } = useGameStateView();
 	if (!playerData)
 		throw new Error("No player data available");
 

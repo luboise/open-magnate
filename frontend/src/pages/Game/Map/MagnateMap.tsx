@@ -7,7 +7,7 @@ import {
 } from "react";
 
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import useMap from "../../../hooks/game/useMap";
 import {
 	MAP_PIECE_HEIGHT,
@@ -37,7 +37,7 @@ function MagnateMap({
 		houses,
 		restaurants,
 		players
-	} = useGameState();
+	} = useGameStateView();
 
 	// console.debug(
 	// "Rendering magnate map.",
@@ -208,3 +208,4 @@ function MagnateMap({
 }
 
 export default MagnateMap;
+

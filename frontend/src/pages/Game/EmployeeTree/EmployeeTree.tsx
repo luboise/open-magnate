@@ -13,7 +13,7 @@ import {
 	ParseEmployeeTree
 } from "../../../../../shared/EmployeeStructure";
 import Button from "../../../global_components/Button";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useDragDrop, {
 	AfterDropCallback,
@@ -83,7 +83,7 @@ export type EmployeeTreeSpreadIfDropCallback =
 	SpreadIfDropFunction<rd>;
 
 function EmployeeTree({ ...args }: EmployeeTreeProps) {
-	const { myEmployees, playerData } = useGameState();
+	const { myEmployees, playerData } = useGameStateView();
 
 	const { startPanning, offset, resetOffset } =
 		usePanning("employee-tree", "RIGHT");

@@ -3,7 +3,7 @@ import "./TurnPlanner.css";
 import { HTMLAttributes, useState } from "react";
 import { Employee } from "../../../../../shared/EmployeeTypes";
 import ModalPanel from "../../../global_components/ModalPanel";
-import { useGameState } from "../../../hooks/game/useGameState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import { GetAllTreeData } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
@@ -15,7 +15,7 @@ interface TurnPlannerProps
 
 function TurnPlanner({ ...args }: TurnPlannerProps) {
 	const { currentTree, myEmployees, playerData } =
-		useGameState();
+		useGameStateView();
 
 	const { turnActions, removeAction } = useTurnPlanning();
 
@@ -120,3 +120,4 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 }
 
 export default TurnPlanner;
+

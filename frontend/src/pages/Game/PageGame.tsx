@@ -3,7 +3,7 @@ import "./PageGame.css";
 import { useEffect, useMemo, useReducer } from "react";
 
 import Resizable from "../../global_components/Resizable";
-import { useGameState } from "../../hooks/game/useGameState";
+import { useGameStateView } from "../../hooks/game/useGameState";
 import useMap from "../../hooks/game/useMap";
 import useLocalVal from "../../hooks/useLocalVal";
 import usePanning from "../../hooks/usePanning";
@@ -40,11 +40,7 @@ type GameInterfaceAction = {
 };
 
 function PageGame() {
-	const {
-		turnProgress,
-		isMyTurn,
-		mapRowOrder: map
-	} = useGameState();
+	const { turnProgress, isMyTurn } = useGameStateView();
 	const { onMapObjectClicked } = useMap();
 
 	const {
@@ -268,3 +264,4 @@ function PageGame() {
 }
 
 export default PageGame;
+
