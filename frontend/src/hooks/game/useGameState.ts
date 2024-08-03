@@ -106,6 +106,12 @@ const isMyTurnSelector = selector<boolean | null>({
 
 		if (!gameState) return null;
 
+		if (
+			gameState.turnProgress === "RESTRUCTURING" ||
+			gameState.turnProgress === "SALARY_PAYOUTS"
+		)
+			return !gameState.privateData.ready;
+
 		return (
 			gameState.privateData.playerNumber ===
 			gameState.currentPlayer
@@ -324,3 +330,4 @@ function addMapDetails(baseMap: Map2D): Map2D {
 
 	return newMap;
 }
+

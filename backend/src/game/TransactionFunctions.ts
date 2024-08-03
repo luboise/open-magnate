@@ -1,7 +1,18 @@
-import { Prisma, READY_STATUS } from "@prisma/client";
-import { TurnAction } from "../../../shared";
+import {
+	Prisma,
+	READY_STATUS,
+	TURN_PROGRESS
+} from "@prisma/client";
+import {
+	EmployeeNode,
+	EmployeesById,
+	IsValidEmployeeTree,
+	SerialiseEmployeeTree,
+	TurnAction
+} from "../../../shared";
 import { EMPLOYEE_ID } from "../../../shared/EmployeeIDs";
 import { MovePlaceRestaurant } from "../../../shared/Moves";
+import { FullGameStateInclude } from "../database/controller/gamestate.controller";
 import { parseJsonArray } from "../utils";
 import { GetNextTurnPhase } from "./HandleMove";
 
@@ -161,16 +172,70 @@ const UnreadyPlayers: MoveTransactionFunctionUntyped =
 			throw new Error("Unable to unready players.");
 	};
 
+async function setTurnProgress(
+	bundle: TransactionBundle,
+
+	nextTurnProgress: TURN_PROGRESS,
+	nextPlayer?: number
+) {
+	const { ctx, gameId } = bundle;
+	const updatedTurnProgress = await ctx.gameState.update({
+		where: {
+			id: gameId
+		},
+		data: {
+			currentPlayer: nextPlayer,
+			turnProgress: nextTurnProgress
+		}
+	});
+	if (!updatedTurnProgress)
+		throw new Error(
+			"Unable to update nextTurnProgress"
+		);
+
+	const updatedPlayers = await ctx.gamePlayer.updateMany({
+		where: {
+			gameId: gameId
+		},
+		data: {
+			ready: READY_STATUS.NOT_READY
+		}
+	});
+
+	if (!updatedPlayers)
+		throw new Error(
+			"Unable to update the ready status of the players in the lobby"
+		);
+}
+
 const AdvanceGamestate: MoveTransactionFunctionUntyped =
-	async (bundle): Promise<boolean> => {
+	async (bundle) => {
 		const { ctx, gameId } = bundle;
 
 		const gameState =
 			await ctx.gameState.findFirstOrThrow({
 				where: {
 					id: gameId
-				}
+				},
+				include: FullGameStateInclude
 			});
+
+		if (
+			gameState.turnProgress === "RESTRUCTURING" ||
+			gameState.turnProgress === "SALARY_PAYOUTS"
+		) {
+			if (
+				Array.from(gameState.players).every(
+					(player) => player.ready === "READY"
+				)
+			) {
+				await setTurnProgress(
+					bundle,
+					GetNextTurnPhase(gameState.turnProgress)
+				);
+				return;
+			}
+		}
 
 		const currentOrder = gameState.turnOrder
 			.split("")
@@ -205,19 +270,11 @@ const AdvanceGamestate: MoveTransactionFunctionUntyped =
 			await UnreadyPlayers(bundle);
 		}
 
-		const updated = await ctx.gameState.update({
-			where: {
-				id: gameState.id
-			},
-			data: {
-				currentPlayer: nextPlayer,
-				turnProgress: nextTurnProgress
-			}
-		});
-		if (!updated) {
-			console.log("Unable to advance gamestate.");
-			return false;
-		}
+		await setTurnProgress(
+			bundle,
+			nextTurnProgress,
+			nextPlayer
+		);
 
 		console.log(
 			`Successfully advanced turn in game ${gameState.id}`
@@ -241,6 +298,52 @@ const AllPlayersReady: MoveTransactionFunctionUntyped =
 			(player) => player.ready === READY_STATUS.READY
 		);
 	};
+
+const Restructure: MoveTransactionFunctionTyped<
+	EmployeeNode
+> = async (bundle, newTree) => {
+	const { ctx, gameId, player } = bundle;
+	const gamePlayer =
+		await ctx.gamePlayer.findUniqueOrThrow({
+			where: {
+				gamePlayerId: {
+					gameId: gameId,
+					number: player
+				}
+			}
+		});
+
+	const employeeList = parseJsonArray(
+		gamePlayer.employees
+	) as EMPLOYEE_ID[];
+
+	if (
+		!IsValidEmployeeTree(
+			newTree,
+			employeeList.map((emp) => EmployeesById[emp])
+		)
+	)
+		throw new Error(
+			BuildErrorMessage(bundle, "set an invalid tree")
+		);
+
+	const updated = await ctx.gamePlayer.update({
+		where: {
+			gamePlayerId: {
+				gameId: gameId,
+				number: player
+			}
+		},
+		data: {
+			ready: "READY",
+			employeeTree: SerialiseEmployeeTree(newTree)
+		}
+	});
+	if (!updated)
+		throw new Error(
+			`Unable to restructure for player ${player} in lobby #${gameId}`
+		);
+};
 
 type MoveTransactionFunctionUntyped = (
 	bundle: TransactionBundle
@@ -268,6 +371,7 @@ export default {
 	NegotiateSalaries,
 	HandleEndOfRound,
 	UnreadyPlayers,
-	AdvanceGamestate
+	AdvanceGamestate,
+	Restructure
 };
 

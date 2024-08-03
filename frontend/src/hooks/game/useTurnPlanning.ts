@@ -75,7 +75,12 @@ function useTurnPlanning() {
 		});
 	}
 
-	return { turnActions, addAction, removeAction };
+	return {
+		turnActions,
+		addAction,
+		removeAction
+	};
 }
 
 export default useTurnPlanning;
+

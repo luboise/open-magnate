@@ -26,6 +26,8 @@ export async function TransactMove(
 			BuildErrorMessage(bundle, "take their turn")
 		);
 
+	let doReadyCheck = false;
+
 	// TODO: Add logic for each move here
 	switch (move.MoveType) {
 		case MOVE_TYPE.PLACE_RESTAURANT: {
@@ -44,9 +46,7 @@ export async function TransactMove(
 				bundle,
 				move
 			);
-			await TransactionFunctions.AdvanceGamestate(
-				bundle
-			);
+
 			break;
 		}
 		case MOVE_TYPE.TAKE_TURN: {
@@ -62,9 +62,7 @@ export async function TransactMove(
 				bundle,
 				move.actions
 			);
-			await TransactionFunctions.AdvanceGamestate(
-				bundle
-			);
+
 			break;
 		}
 		case MOVE_TYPE.NEGOTIATE_SALARIES: {
@@ -81,15 +79,25 @@ export async function TransactMove(
 				move.employeesToFire
 			);
 
-			const allReady =
-				await TransactionFunctions.AllPlayersReady(
-					bundle
+			doReadyCheck = true;
+
+			break;
+		}
+		case MOVE_TYPE.RESTRUCTURE: {
+			if (gameState.turnProgress !== "RESTRUCTURING")
+				throw new Error(
+					BuildErrorMessage(
+						bundle,
+						`restructure during the ${gameState.turnProgress} stage`
+					)
 				);
 
-			if (allReady)
-				await TransactionFunctions.AdvanceGamestate(
-					bundle
-				);
+			await TransactionFunctions.Restructure(
+				bundle,
+				move.tree
+			);
+
+			doReadyCheck = true;
 
 			break;
 		}
@@ -98,6 +106,16 @@ export async function TransactMove(
 				`Invalid transaction move attempted in lobby #${bundle.gameId}: ${move}`
 			);
 	}
+
+	if (
+		doReadyCheck &&
+		!(await TransactionFunctions.AllPlayersReady(
+			bundle
+		))
+	)
+		return;
+
+	await TransactionFunctions.AdvanceGamestate(bundle);
 }
 
 export function GetNextTurnPhase(

@@ -6,6 +6,7 @@ import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
 import { useGameState } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
+import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import {
 	RESTAURANT_NAMES,
@@ -27,6 +28,8 @@ function TurnHandler() {
 
 	const { turnActions } = useTurnPlanning();
 
+	const { plannedTree } = useTreePlanning();
+
 	const playerList = useMemo(
 		() =>
 			players?.map((player) => player.playerNumber) ||
@@ -47,6 +50,11 @@ function TurnHandler() {
 			makeMove({
 				MoveType: MOVE_TYPE.TAKE_TURN,
 				actions: turnActions
+			});
+		} else if (turnProgress === "RESTRUCTURING") {
+			makeMove({
+				MoveType: MOVE_TYPE.RESTRUCTURE,
+				tree: plannedTree
 			});
 		}
 	}
@@ -120,3 +128,4 @@ function TurnHandler() {
 }
 
 export default TurnHandler;
+

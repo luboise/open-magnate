@@ -4,8 +4,7 @@ import {
 	HTMLAttributes,
 	useCallback,
 	useEffect,
-	useMemo,
-	useReducer
+	useMemo
 } from "react";
 import {
 	EmployeeNode,
@@ -15,6 +14,7 @@ import {
 } from "../../../../../shared/EmployeeStructure";
 import Button from "../../../global_components/Button";
 import { useGameState } from "../../../hooks/game/useGameState";
+import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useDragDrop, {
 	AfterDropCallback,
 	SpreadIfDragFunction,
@@ -27,23 +27,7 @@ import EmployeeTreeNode, {
 	EmployeeTreeNodeDropDetails
 } from "./EmployeeTreeNode";
 
-type EmployeeTreeState = {
-	tree: EmployeeNode | null;
-};
-
-type EmployeeTreeAction =
-	| {
-			type: "ADD_NODE";
-			parentEmployeeIndex: number;
-			newNodeEmployeeIndex: number;
-			indexInNewParent: number;
-	  }
-	| {
-			type: "SET_TREE";
-			tree: EmployeeNode | null;
-	  };
-
-function findEmployeeRecursive(
+export function findEmployeeRecursive(
 	node: EmployeeNode,
 	toFind: number
 ): EmployeeNode | null {
@@ -66,7 +50,7 @@ function findEmployeeRecursive(
 	return null;
 }
 
-function findParentNode(
+export function findParentNode(
 	root: EmployeeNode,
 	toFind: number
 ): [EmployeeNode, number] | null {
@@ -104,142 +88,28 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	const { startPanning, offset, resetOffset } =
 		usePanning("employee-tree", "RIGHT");
 
-	const [employeeTree, dispatch] = useReducer(
-		(
-			state: EmployeeTreeState,
-			action: EmployeeTreeAction
-		): EmployeeTreeState => {
-			switch (action.type) {
-				case "SET_TREE":
-					return { ...state, tree: action.tree };
-				case "ADD_NODE":
-					const {
-						parentEmployeeIndex,
-						newNodeEmployeeIndex,
-						indexInNewParent
-					} = action;
+	const { plannedTree, addNode, setTree } =
+		useTreePlanning();
 
-					if (!state.tree) {
-						console.debug(
-							"Attempted to add node to a null tree. Dismissing the action."
-						);
+	// const {
+	// 	parentEmployeeIndex,
+	// 	newNodeEmployeeIndex,
+	// 	indexInNewParent
+	// } = action;
 
-						return state;
-					}
-
-					try {
-						// Find the new parent node
-						const newParentNode =
-							findEmployeeRecursive(
-								state.tree,
-								parentEmployeeIndex
-							);
-
-						if (!newParentNode)
-							throw new Error(
-								"Attempting to add from invalid node."
-							);
-
-						// Check valid index
-						if (
-							indexInNewParent >=
-								newParentNode.children
-									.length ||
-							indexInNewParent < 0
-						)
-							throw new Error(
-								"Invalid index provided for updating the tree."
-							);
-
-						const newState: EmployeeTreeState =
-							{
-								...state
-							};
-
-						const newEmployee =
-							myEmployees[
-								newNodeEmployeeIndex
-							];
-
-						const hasCapacity =
-							newEmployee.type ===
-							"MANAGEMENT";
-
-						const newNode: EmployeeNode = {
-							data: newNodeEmployeeIndex,
-							children: hasCapacity
-								? new Array(
-										newEmployee.capacity
-									).fill(null)
-								: []
-						};
-
-						if (
-							newParentNode.children[
-								indexInNewParent
-							]
-						) {
-							console.debug(
-								"Replacing child at index ",
-								indexInNewParent,
-								" with new child: ",
-								newNode.data
-							);
-						}
-
-						// See if the child already exists in the tree
-						const oldParentData =
-							findParentNode(
-								state.tree,
-								newNodeEmployeeIndex
-							);
-
-						// Remove it if its already in the tree
-						if (oldParentData) {
-							const [
-								oldParentNode,
-								indexInOldParent
-							] = oldParentData;
-
-							oldParentNode.children[
-								indexInOldParent
-							] = null;
-						}
-
-						// TODO: Add index validation for inserting into the parent
-						newParentNode.children[
-							indexInNewParent
-						] = newNode;
-
-						console.debug(
-							"NEW EMPLOYEE: ",
-							newEmployee,
-							"NEW NODE: ",
-							newNode
-						);
-
-						return {
-							...newState
-						};
-					} catch (error) {
-						console.debug(error);
-					}
-			}
-			return { ...state };
-		},
-		{
-			// Index 0 is the CEO
-			tree: null
-		}
-	);
+	// addNode(
+	// 	parentEmployeeIndex,
+	// 	newNodeEmployeeIndex,
+	// 	indexInNewParent
+	// );
 
 	const onCardDropped =
 		useCallback<EmployeeTreeAfterDropCallback>(
 			(employeeDropped, dropDetails) => {
-				if (!employeeTree.tree) return;
+				if (!plannedTree) return;
 
 				const parent = findEmployeeRecursive(
-					employeeTree.tree,
+					plannedTree,
 					dropDetails.parentReceiving
 				);
 
@@ -262,15 +132,13 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 					`Card dropped on employee tree: parent: ${parent.data}, child: ${employeeDropped}, index: ${index}`
 				);
 
-				dispatch({
-					type: "ADD_NODE",
-					parentEmployeeIndex: parent.data,
-					newNodeEmployeeIndex:
-						Number(employeeDropped),
-					indexInNewParent: index
-				});
+				addNode(
+					parent.data,
+					Number(employeeDropped),
+					index
+				);
 			},
-			[employeeTree]
+			[plannedTree, myEmployees]
 		);
 
 	const { spreadIfDrag, spreadIfDrop } = useDragDrop({
@@ -280,20 +148,22 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	function resetTree() {
 		resetOffset;
 
-		dispatch({
-			type: "SET_TREE",
-			tree: ParseEmployeeTree(
-				DEFAULT_SERIALISED_EMPLOYEE_STRING
-			)
-		});
+		const defaultTree = ParseEmployeeTree(
+			DEFAULT_SERIALISED_EMPLOYEE_STRING
+		);
+
+		if (!defaultTree)
+			throw new Error("Failed to get default tree.");
+
+		setTree(defaultTree);
 	}
 
 	const nodesInUse = useMemo(() => {
 		console.debug("Calculating nodes in use");
-		return employeeTree && employeeTree.tree
-			? GetAllTreeData(employeeTree.tree)
+		return plannedTree
+			? GetAllTreeData(plannedTree)
 			: [];
-	}, [employeeTree, employeeTree.tree]);
+	}, [plannedTree]);
 
 	const treeHasMoved = offset.x !== 0 || offset.y !== 0;
 
@@ -301,38 +171,33 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		if (!playerData) return;
 
 		const treeStr = playerData.employeeTreeStr;
-		if (treeStr === undefined) return;
+		if (!treeStr) return;
 		// else if (treeStr === null)
 		// dispatch({ type: "SET_TREE", tree: null });
 
 		const newTree = ParseEmployeeTree(treeStr);
 
-		if (
-			newTree &&
-			!IsValidEmployeeTree(newTree, myEmployees)
-		) {
-			console.debug(
-				"Invalid employee tree. Resetting player's tree."
-			);
+		if (!newTree || (newTree && !IsValidEmployeeTree)) {
 			resetTree();
 			return;
 		}
 
-		if (employeeTree.tree) {
-			console.debug(
-				"A tree already exists. Not updating.",
-				"Old tree: ",
-				employeeTree.tree,
-				"New tree: ",
-				newTree
-			);
+		// if (plannedTree) {
+		// 	console.debug(
+		// 		"A tree already exists. Not updating.",
+		// 		"Old tree: ",
+		// 		plannedTree,
+		// 		"New tree: ",
+		// 		newTree
+		// 	);
 
-			return;
-		}
-		dispatch({ type: "SET_TREE", tree: newTree });
+		// 	return;
+		// }
+
+		setTree(newTree);
 	}, [playerData?.employeeTreeStr]);
 
-	if (!myEmployees || !employeeTree.tree) return <></>;
+	if (!myEmployees || !plannedTree) return <></>;
 
 	return (
 		<div className="game-employee-tree" {...args}>
@@ -351,9 +216,9 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				className="game-employee-tree-content"
 				onMouseDown={startPanning}
 			>
-				{employeeTree.tree ? (
+				{plannedTree ? (
 					<EmployeeTreeNode
-						node={employeeTree.tree}
+						node={plannedTree}
 						employeeList={myEmployees}
 						style={{
 							transform: `translate(${offset.x}px, ${offset.y}px)`
@@ -401,3 +266,4 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 }
 
 export default EmployeeTree;
+
