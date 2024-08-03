@@ -12,7 +12,10 @@ import {
 } from "../../../shared";
 import { EMPLOYEE_ID } from "../../../shared/EmployeeIDs";
 import { MovePlaceRestaurant } from "../../../shared/Moves";
-import { FullGameStateInclude } from "../database/controller/gamestate.controller";
+import {
+	FullGameStateInclude,
+	getCurrentPlayer
+} from "../database/controller/gamestate.controller";
 import { parseJsonArray } from "../utils";
 import { GetNextTurnPhase } from "./HandleMove";
 
@@ -175,8 +178,7 @@ const UnreadyPlayers: MoveTransactionFunctionUntyped =
 async function setTurnProgress(
 	bundle: TransactionBundle,
 
-	nextTurnProgress: TURN_PROGRESS,
-	nextPlayer?: number
+	nextTurnProgress: TURN_PROGRESS
 ) {
 	const { ctx, gameId } = bundle;
 	const updatedTurnProgress = await ctx.gameState.update({
@@ -184,7 +186,6 @@ async function setTurnProgress(
 			id: gameId
 		},
 		data: {
-			currentPlayer: nextPlayer,
 			turnProgress: nextTurnProgress
 		}
 	});
@@ -208,7 +209,7 @@ async function setTurnProgress(
 		);
 }
 
-const AdvanceGamestate: MoveTransactionFunctionUntyped =
+const ValidateTurnProgress: MoveTransactionFunctionUntyped =
 	async (bundle) => {
 		const { ctx, gameId } = bundle;
 
@@ -220,67 +221,47 @@ const AdvanceGamestate: MoveTransactionFunctionUntyped =
 				include: FullGameStateInclude
 			});
 
+		const currentPlayer = getCurrentPlayer(gameState);
 		if (
-			gameState.turnProgress === "RESTRUCTURING" ||
-			gameState.turnProgress === "SALARY_PAYOUTS"
+			currentPlayer === null &&
+			(await AllPlayersReady(bundle))
 		) {
-			if (
-				Array.from(gameState.players).every(
-					(player) => player.ready === "READY"
-				)
-			) {
-				await setTurnProgress(
-					bundle,
-					GetNextTurnPhase(gameState.turnProgress)
-				);
-				return;
-			}
-		}
-
-		const currentOrder = gameState.turnOrder
-			.split("")
-			.map((val) => Number(val));
-
-		const currentPlayerIndex = currentOrder.findIndex(
-			(player) => player === gameState.currentPlayer
-		);
-
-		if (currentPlayerIndex === -1) {
-			console.error(
-				"Unable to find current player in turn order."
+			await setTurnProgress(
+				bundle,
+				GetNextTurnPhase(gameState.turnProgress)
 			);
-			return false;
+			console.log(
+				`Successfully advanced turn in game ${gameState.id}`
+			);
+			return;
 		}
-
-		const atFinalPlayer =
-			currentPlayerIndex ===
-			gameState.playerCount - 1;
-
-		const nextPlayer = atFinalPlayer
-			? currentOrder[0]
-			: currentOrder[currentPlayerIndex + 1];
-		const nextTurnProgress = atFinalPlayer
-			? GetNextTurnPhase(gameState.turnProgress)
-			: gameState.turnProgress;
-
-		if (
-			nextTurnProgress === "SALARY_PAYOUTS" ||
-			nextTurnProgress === "RESTRUCTURING"
-		) {
-			await UnreadyPlayers(bundle);
-		}
-
-		await setTurnProgress(
-			bundle,
-			nextTurnProgress,
-			nextPlayer
-		);
-
-		console.log(
-			`Successfully advanced turn in game ${gameState.id}`
-		);
-		return true;
 	};
+
+const ReadyPlayer: MoveTransactionFunctionUntyped = async (
+	bundle
+) => {
+	const { ctx, gameId, player } = bundle;
+
+	const updated = await ctx.gamePlayer.update({
+		where: {
+			gamePlayerId: {
+				gameId: gameId,
+				number: player
+			}
+		},
+		data: {
+			ready: READY_STATUS.READY
+		}
+	});
+
+	if (!updated)
+		throw new Error(
+			BuildErrorMessage(
+				bundle,
+				"could not be readied"
+			)
+		);
+};
 
 const AllPlayersReady: MoveTransactionFunctionUntyped =
 	async (bundle): Promise<boolean> => {
@@ -371,7 +352,8 @@ export default {
 	NegotiateSalaries,
 	HandleEndOfRound,
 	UnreadyPlayers,
-	AdvanceGamestate,
-	Restructure
+	ValidateTurnProgress,
+	Restructure,
+	ReadyPlayer
 };
 

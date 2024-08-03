@@ -87,6 +87,43 @@ export const FullGameStateInclude = {
 	}
 };
 
+export function getCurrentPlayer(
+	game: FullGameState
+): number | null {
+	if (
+		game.turnProgress === "RESTRUCTURING" ||
+		game.turnProgress === "SALARY_PAYOUTS"
+	)
+		return null;
+
+	const turnOrder = getTurnOrder(game);
+	for (const playerNumber of turnOrder) {
+		const player = game.players.find(
+			(player) => player.number === playerNumber
+		);
+		if (!player) {
+			throw new Error(
+				`Invalid player index (${playerNumber}) requested in lobby #${game.id}`
+			);
+		}
+		if (player.ready === "READY") continue;
+
+		return player.number;
+	}
+
+	return null;
+}
+
+export function getTurnOrder(
+	game: FullGameState
+): number[] {
+	return (
+		game.turnOrder
+			.split("")
+			.map((str) => Number(str)) ?? null
+	);
+}
+
 export type FullGameState = Prisma.GameStateGetPayload<{
 	include: typeof FullGameStateInclude;
 }>;
@@ -248,15 +285,12 @@ const GameStateController = {
 			);
 
 		return {
-			currentPlayer: gameState.currentPlayer,
+			currentPlayer: getCurrentPlayer(gameState),
 			currentTurn: gameState.currentTurn,
 			turnProgress: gameState.turnProgress,
 			map: gameState.rawMap,
 			playerCount: gameState.playerCount,
-			turnOrder:
-				gameState.turnOrder
-					.split("")
-					.map((str) => Number(str)) ?? null,
+			turnOrder: getTurnOrder(gameState),
 			marketingCampaigns:
 				gameState.marketingCampaigns.map(
 					(campaign) => {
@@ -385,7 +419,6 @@ const GameStateController = {
 			},
 			data: {
 				currentTurn: 1,
-				currentPlayer: playerOrder[0],
 				turnOrder: playerOrder.join(""),
 				turnProgress:
 					TURN_PROGRESS.RESTAURANT_PLACEMENT

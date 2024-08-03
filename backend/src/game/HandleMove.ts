@@ -1,6 +1,10 @@
 import { TURN_PROGRESS } from "@prisma/client";
 import { MOVE_TYPE, MoveData } from "../../../shared/Moves";
 
+import {
+	FullGameStateInclude,
+	getCurrentPlayer
+} from "../database/controller/gamestate.controller";
 import TransactionFunctions, {
 	BuildErrorMessage,
 	TransactionBundle
@@ -14,13 +18,13 @@ export async function TransactMove(
 		await bundle.ctx.gameState.findUniqueOrThrow({
 			where: {
 				id: bundle.gameId
-			}
+			},
+			include: FullGameStateInclude
 		});
-	// TODO: Extract this logic into a separate function
+	const currentPlayer = getCurrentPlayer(gameState);
 	if (
-		gameState.turnProgress !== "SALARY_PAYOUTS" &&
-		gameState.turnProgress !== "RESTRUCTURING" &&
-		gameState.currentPlayer !== bundle.player
+		currentPlayer !== null &&
+		bundle.player !== currentPlayer
 	)
 		throw new Error(
 			BuildErrorMessage(bundle, "take their turn")
@@ -79,8 +83,6 @@ export async function TransactMove(
 				move.employeesToFire
 			);
 
-			doReadyCheck = true;
-
 			break;
 		}
 		case MOVE_TYPE.RESTRUCTURE: {
@@ -97,8 +99,6 @@ export async function TransactMove(
 				move.tree
 			);
 
-			doReadyCheck = true;
-
 			break;
 		}
 		default:
@@ -107,15 +107,8 @@ export async function TransactMove(
 			);
 	}
 
-	if (
-		doReadyCheck &&
-		!(await TransactionFunctions.AllPlayersReady(
-			bundle
-		))
-	)
-		return;
-
-	await TransactionFunctions.AdvanceGamestate(bundle);
+	await TransactionFunctions.ReadyPlayer(bundle);
+	await TransactionFunctions.ValidateTurnProgress(bundle);
 }
 
 export function GetNextTurnPhase(

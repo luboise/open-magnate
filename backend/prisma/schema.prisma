@@ -117,7 +117,7 @@ model GameState {
   rawMap        String @db.VarChar(2048)
   
   currentTurn   Int    @default(1)
-  currentPlayer Int    @default(1)
+//   currentPlayer Int    @default(1)
   playerCount Int
   
   turnOrder     String @default("1234")

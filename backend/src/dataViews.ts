@@ -22,7 +22,7 @@ export interface RestaurantView extends Position {
 interface BaseGameStateView {
 	turnProgress: TURN_PROGRESS;
 	currentTurn: number;
-	currentPlayer: number;
+	currentPlayer: number | null;
 
 	map: string;
 	turnOrder: Array<number> | null;
