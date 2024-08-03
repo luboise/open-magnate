@@ -30,7 +30,7 @@ function TurnOrderList({
 			// }}
 			{...args}
 		>
-			{...turnOrder?.map((playerNumber, index) => {
+			{...turnOrder?.map((playerNumber) => {
 				const player = players?.find(
 					(player) =>
 						player.playerNumber === playerNumber
