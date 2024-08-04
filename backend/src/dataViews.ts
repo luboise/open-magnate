@@ -25,7 +25,7 @@ interface BaseGameStateView {
 	currentPlayer: number | null;
 
 	map: string;
-	turnOrder: Array<number | null>;
+	turnOrder: Array<number>;
 
 	playerCount: number;
 

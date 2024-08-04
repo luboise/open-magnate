@@ -4,11 +4,13 @@ import {
 	TURN_PROGRESS
 } from "@prisma/client";
 import {
+	CountEmptySlots,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS,
 	RestaurantView
 } from "../../../../shared";
+import { GetEmployeeTreeOrThrow } from "../../../../shared/EmployeeStructure";
 import { MoveData } from "../../../../shared/Moves";
 import {
 	GamePlayerViewPrivate,
@@ -62,6 +64,24 @@ function ReadyStatusToBoolean(
 	}
 }
 
+export const FullGamePlayerInclude = {
+	restaurantData: true,
+	lobbyPlayer: {
+		include: {
+			userSession: {
+				select: {
+					name: true
+				}
+			}
+		}
+	},
+	restaurants: true
+};
+
+export type FullGamePlayer = Prisma.GamePlayerGetPayload<{
+	include: typeof FullGamePlayerInclude;
+}>;
+
 export const FullGameStateInclude = {
 	houses: {
 		include: {
@@ -71,21 +91,107 @@ export const FullGameStateInclude = {
 	},
 	marketingCampaigns: true,
 	players: {
-		include: {
-			restaurantData: true,
-			lobbyPlayer: {
-				include: {
-					userSession: {
-						select: {
-							name: true
-						}
-					}
-				}
-			},
-			restaurants: true
-		}
+		include: FullGamePlayerInclude
 	}
 };
+
+export type FullGameState = Prisma.GameStateGetPayload<{
+	include: typeof FullGameStateInclude;
+}>;
+
+export function getTurnOrderPickOrder(
+	game: FullGameState
+): number[] {
+	const sortedPlayers = game.players.sort(
+		(player1, player2) => {
+			const player1Tree =
+				GetEmployeeTreeOrThrow(player1);
+			const player2Tree =
+				GetEmployeeTreeOrThrow(player2);
+
+			// If the number of empty slots is different, return the one with more empty slots
+			const diff =
+				CountEmptySlots(player1Tree) -
+				CountEmptySlots(player2Tree);
+			if (diff !== 0) return diff;
+
+			// Otherwise, return whoever was previously in turn order before the current turn
+			const index1 = parseTurnOrder(
+				game.oldTurnOrder
+			).findIndex((p) => p === player1.number);
+			const index2 = parseTurnOrder(
+				game.oldTurnOrder
+			).findIndex((p) => p === player2.number);
+
+			if (index1 === -1 || index2 === -1)
+				throw new Error(
+					`Invalid turn order for lobby #${game.id}`
+				);
+
+			return index2 - index1;
+		}
+	);
+
+	return sortedPlayers.map((player) => player.number);
+}
+
+function getTurnOrderSelectionCurrentPlayer(
+	game: FullGameState
+): number {
+	const currentTurnOrder = parseTurnOrder(game.turnOrder);
+	const oldTurnOrder = parseTurnOrder(game.oldTurnOrder);
+
+	const playerOrder = getTurnOrderPickOrder(game);
+
+	for (const playerNumber of oldTurnOrder) {
+		if (playerNumber === null)
+			throw new Error(
+				`Null player found in oldTurnOrder #${game.id}`
+			);
+		const player = game.players.find(
+			(player) => player.number === playerNumber
+		);
+		if (!player)
+			throw new Error(
+				`Invalid player number found in turn order for lobby #${game.id}`
+			);
+
+		// If player is ready and they haven't chosen, throw an error
+		if (player.ready === READY_STATUS.READY) {
+			if (!currentTurnOrder.includes(player.number))
+				throw new Error(
+					`Ready player found in turn order for lobby #${game.id}, but they haven't chosen their turn order yet.`
+				);
+
+			continue;
+		}
+
+		// If player is not ready and they have chosen, throw an error
+		if (currentTurnOrder.includes(player.number))
+			throw new Error(
+				`Not-ready player found in turn order for lobby #${game.id}, but they have chosen their turn order already.`
+			);
+		return player.number;
+	}
+
+	throw new Error(
+		`Unable to find the next player to choose turn order in lobby #${game.id}`
+	);
+}
+
+export function getTurnOrder(
+	game: FullGameState
+): number[] {
+	if (game.turnProgress === "TURN_ORDER_SELECTION")
+		return getTurnOrderPickOrder(game);
+
+	const turnOrder = parseTurnOrder(game.oldTurnOrder);
+	if (turnOrder.some((p) => p === null))
+		throw new Error(
+			`Null found in turn order for lobby #${game.id}`
+		);
+	return turnOrder as number[];
+}
 
 export function getCurrentPlayer(
 	game: FullGameState
@@ -96,13 +202,16 @@ export function getCurrentPlayer(
 	)
 		return null;
 
-	const turnOrder = parseTurnOrder(
-		game.turnProgress === "TURN_ORDER_SELECTION"
-			? game.oldTurnOrder
-			: game.turnOrder
-	);
+	if (game.turnProgress === "TURN_ORDER_SELECTION") {
+		return getTurnOrderSelectionCurrentPlayer(game);
+	}
+
+	const turnOrder = parseTurnOrder(game.turnOrder);
 	for (const playerNumber of turnOrder) {
-		if (playerNumber === null) continue;
+		if (playerNumber === null)
+			throw new Error(
+				`Null player found outside of turn order selection in lobby #${game.id}`
+			);
 		const player = game.players.find(
 			(player) => player.number === playerNumber
 		);
@@ -136,10 +245,6 @@ export function serialiseTurnOrder(
 		)
 		.join("");
 }
-
-export type FullGameState = Prisma.GameStateGetPayload<{
-	include: typeof FullGameStateInclude;
-}>;
 
 const GameStateController = {
 	Get: async (
@@ -297,13 +402,17 @@ const GameStateController = {
 				"Unable to fetch GameStateView from lobby, as its GameState is null."
 			);
 
+		// TODO: Fix this to be more efficient
+		const turnOrder = getTurnOrder(gameState);
+		const currentPlayer = getCurrentPlayer(gameState);
+
 		return {
-			currentPlayer: getCurrentPlayer(gameState),
+			currentPlayer: currentPlayer,
 			currentTurn: gameState.currentTurn,
 			turnProgress: gameState.turnProgress,
 			map: gameState.rawMap,
 			playerCount: gameState.playerCount,
-			turnOrder: parseTurnOrder(gameState.turnOrder),
+			turnOrder: turnOrder,
 			marketingCampaigns:
 				gameState.marketingCampaigns.map(
 					(campaign) => {

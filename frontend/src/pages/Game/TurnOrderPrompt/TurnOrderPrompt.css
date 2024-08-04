@@ -1,0 +1,24 @@
+.turn-order-prompt {
+	height: 400px;
+
+	display: grid;
+	grid-template-areas:
+		"title title"
+		"order-label players"
+		"picks picks";
+	grid-template-rows: minmax(10%, max-content) 30% auto;
+	grid-template-columns: minmax(20%, max-content);
+}
+
+.turn-order-prompt h2 {
+	grid-area: title;
+}
+
+.turn-order-prompt h3 {
+	grid-area: order-label;
+}
+
+.turn-order-prompt .players {
+	grid-area: players;
+}
+

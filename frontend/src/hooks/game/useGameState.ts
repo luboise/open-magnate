@@ -225,7 +225,7 @@ const reserveSelector = selector<Reserve>({
 	}
 });
 
-const turnOrderSelector = selector<number[] | null>({
+const turnOrderSelector = selector<number[]>({
 	key: "TURN_ORDER",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);

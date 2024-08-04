@@ -1,4 +1,10 @@
+import { FullGamePlayer } from "../backend/src/database/controller/gamestate.controller";
+import { parseJsonArray } from "../backend/src/utils";
 import { Employee } from "./EmployeeTypes";
+import {
+	EmployeesById,
+	IsValidEmployeeId
+} from "./Employees";
 import { TreeNode } from "./utils";
 
 export type EmployeeNode = TreeNode<number>;
@@ -91,6 +97,37 @@ export function ParseEmployeeTree(
 	return null;
 }
 
+export function GetEmployeeTreeOrThrow(
+	player: FullGamePlayer
+): EmployeeNode {
+	const tree = ParseEmployeeTree(player.employeeTree);
+
+	if (!tree)
+		throw new Error(
+			`Invalid tree found for player #${player.number} in lobby ${player.gameId}`
+		);
+
+	if (
+		!IsValidEmployeeTree(
+			tree,
+			parseJsonArray(player.employees).map(
+				(value) => {
+					if (!IsValidEmployeeId(value))
+						throw new Error(
+							`Invalid employee ID: ${value}`
+						);
+					return EmployeesById[value];
+				}
+			)
+		)
+	)
+		throw new Error(
+			`Invalid tree found for player #${player.number} in lobby ${player.gameId}`
+		);
+
+	return tree;
+}
+
 export function IsValidEmployeeTree(
 	tree: EmployeeNode,
 	employeeList: Employee[]
@@ -99,6 +136,21 @@ export function IsValidEmployeeTree(
 
 	const set = new Set<number>();
 	return checkNode(tree, employeeList, set, 0);
+}
+
+export function CountEmptySlots(
+	root: EmployeeNode
+): number {
+	let count = 0;
+	function traverse(node: EmployeeNode) {
+		for (const child of node.children) {
+			if (child === null) count += 1;
+			else traverse(child);
+		}
+	}
+
+	traverse(root);
+	return count;
 }
 
 function checkNode(
@@ -182,3 +234,4 @@ export function GetAllTreeData<T>(
 
 	return data;
 }
+
