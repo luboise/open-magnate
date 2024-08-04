@@ -96,8 +96,13 @@ export function getCurrentPlayer(
 	)
 		return null;
 
-	const turnOrder = getTurnOrder(game);
+	const turnOrder = parseTurnOrder(
+		game.turnProgress === "TURN_ORDER_SELECTION"
+			? game.oldTurnOrder
+			: game.turnOrder
+	);
 	for (const playerNumber of turnOrder) {
+		if (playerNumber === null) continue;
 		const player = game.players.find(
 			(player) => player.number === playerNumber
 		);
@@ -114,14 +119,22 @@ export function getCurrentPlayer(
 	return null;
 }
 
-export function getTurnOrder(
-	game: FullGameState
-): number[] {
-	return (
-		game.turnOrder
-			.split("")
-			.map((str) => Number(str)) ?? null
-	);
+export function parseTurnOrder(
+	serialisedTurnOrder: string
+): (number | null)[] {
+	return serialisedTurnOrder
+		.split("")
+		.map((str) => (str === "X" ? null : Number(str)));
+}
+
+export function serialiseTurnOrder(
+	turnOrder: (number | null)[]
+): string {
+	return turnOrder
+		.map((player) =>
+			player === null ? "X" : player.toString()
+		)
+		.join("");
 }
 
 export type FullGameState = Prisma.GameStateGetPayload<{
@@ -290,7 +303,7 @@ const GameStateController = {
 			turnProgress: gameState.turnProgress,
 			map: gameState.rawMap,
 			playerCount: gameState.playerCount,
-			turnOrder: getTurnOrder(gameState),
+			turnOrder: parseTurnOrder(gameState.turnOrder),
 			marketingCampaigns:
 				gameState.marketingCampaigns.map(
 					(campaign) => {

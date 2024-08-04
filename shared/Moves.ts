@@ -6,7 +6,8 @@ export enum MOVE_TYPE {
 	PLACE_RESTAURANT = "PLACE_RESTAURANT",
 	TAKE_TURN = "TAKE_TURN",
 	NEGOTIATE_SALARIES = "NEGOTIATE_SALARIES",
-	RESTRUCTURE = "RESTRUCTURE"
+	RESTRUCTURE = "RESTRUCTURE",
+	PICK_TURN_ORDER = "PICK_TURN_ORDER"
 }
 
 interface BaseMoveData {
@@ -36,9 +37,15 @@ export interface MoveRestructure extends BaseMoveData {
 	tree: EmployeeNode;
 }
 
+export interface MovePickTurnOrder extends BaseMoveData {
+	MoveType: MOVE_TYPE.PICK_TURN_ORDER;
+	slot: number;
+}
+
 export type MoveData =
 	| MovePlaceRestaurant
 	| MoveTakeTurn
 	| MoveNegotiateSalaries
-	| MoveRestructure;
+	| MoveRestructure
+	| MovePickTurnOrder;
 

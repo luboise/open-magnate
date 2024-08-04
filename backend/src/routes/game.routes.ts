@@ -632,28 +632,12 @@ const handleMoveMade: BackendMessageHandler<
 				await LobbyController.refresh(lobby),
 				"GAMESTATE"
 			);
-	} catch {
+	} catch (error) {
 		console.error("Invalid move made");
+		console.error(error);
 		params.ws.send("Invalid move made");
 		return;
 	}
-
-	// TODO: Move the handling of ready checks to NewMakeMoves
-	// if (await GameStateController.AllPlayersReady(lobby.id))
-	// 	advance = true;
-
-	// if (advance) {
-	// 	const updated =
-	// 		await GameStateController.AdvanceGameState(
-	// 			lobby.id
-	// 		);
-	// 	if (!updated) {
-	// 		const msg = "Unable to advance the game state";
-	// 		console.error(msg);
-	// 		params.ws.send(msg);
-	// 		return;
-	// 	}
-	// }
 };
 
 module.exports = routeHandler;

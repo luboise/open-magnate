@@ -33,8 +33,8 @@ model LobbyPlayer {
   isHost Boolean @default(false)
 
   // The lobby that the player is in
-  lobby       Lobby       @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
-  lobbyId     Int
+  lobby   Lobby @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  lobbyId Int
 
   // The user session of the player
   userSession UserSession @relation(fields: [userId], references: [sessionKey])
@@ -43,7 +43,7 @@ model LobbyPlayer {
   timeJoined DateTime @default(now())
 
   // Which player they are in the match
-  playerData   GamePlayer  @relation(fields: [gameStateId, playerNumber], references: [gameId, number])
+  playerData   GamePlayer @relation(fields: [gameStateId, playerNumber], references: [gameId, number])
   gameStateId  Int
   playerNumber Int
 
@@ -52,9 +52,9 @@ model LobbyPlayer {
 }
 
 model Lobby {
-  id          Int     @id @default(autoincrement()) @map("lobby_id")
-  name        String
-  password    String?
+  id       Int     @id @default(autoincrement()) @map("lobby_id")
+  name     String
+  password String?
 
   playersInLobby LobbyPlayer[]
 
@@ -69,41 +69,40 @@ model GamePlayer {
   gameId Int
   game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
-  number Int @map("player_number")
-  ready  READY_STATUS @map("is_ready")	@default(NOT_APPLICABLE)
+  number Int          @map("player_number")
+  ready  READY_STATUS @default(NOT_APPLICABLE) @map("is_ready")
 
-  money      Int  @default(0)
-  milestones Json
-  employees	Json
-  employeeTree  String	@db.VarChar(1000)	@default("0[X,X,X]")
+  money        Int    @default(0)
+  milestones   Json
+  employees    Json
+  employeeTree String @default("0[X,X,X]") @db.VarChar(1000)
 
   restaurantData   RestaurantData @relation(fields: [restaurantDataId], references: [id])
   restaurantDataId Int
 
-	restaurants	GamePlayerRestaurant[]
+  restaurants GamePlayerRestaurant[]
 
   lobbyPlayer LobbyPlayer?
 
+  @@id(name: "gamePlayerId", [gameId, number])
   // Each game can only have a restaurant once
   @@unique([gameId, restaurantDataId])
-
   @@map("game_player")
-  @@id(name: "gamePlayerId", [gameId, number])
 }
 
 model GamePlayerRestaurant {
-	id	Int		@id	@map("game_player_restaurant_id")	@default(autoincrement())
+  id Int @id @default(autoincrement()) @map("game_player_restaurant_id")
 
-	gameId	Int
-	playerNumber	Int
-	player	GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number])
+  gameId       Int
+  playerNumber Int
+  player       GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number])
 
-	x	Int
-	y	Int
-	entrance	ENTRANCE_CORNER
+  x        Int
+  y        Int
+  entrance ENTRANCE_CORNER
 
-	@@unique([gameId, playerNumber, x, y])
-	@@map("game_player_restaurant")
+  @@unique([gameId, playerNumber, x, y])
+  @@map("game_player_restaurant")
 }
 
 model GameState {
@@ -114,15 +113,16 @@ model GameState {
   turnProgress TURN_PROGRESS @default(PREGAME)
 
   // Scalar fields
-  rawMap        String @db.VarChar(2048)
-  
-  currentTurn   Int    @default(1)
-//   currentPlayer Int    @default(1)
-  playerCount Int
-  
-  turnOrder     String @default("1234")
+  rawMap String @db.VarChar(2048)
 
-  reserve		Json
+  currentTurn Int @default(1)
+  //   currentPlayer Int    @default(1)
+  playerCount Int
+
+  turnOrder    String  @default("1234")
+  oldTurnOrder String @default("1234")
+
+  reserve Json
 
   // Relations
   houses             House[]
@@ -198,7 +198,7 @@ model RestaurantData {
   id   Int    @id @default(autoincrement()) @map("restaurant_id")
   name String
 
-  GamePlayer   GamePlayer[]
+  GamePlayer GamePlayer[]
 
   @@map("restaurant_data")
 }
@@ -242,14 +242,14 @@ enum TURN_PROGRESS {
 }
 
 enum ENTRANCE_CORNER {
-	TOPLEFT
-	TOPRIGHT
-	BOTTOMLEFT
-	BOTTOMRIGHT
+  TOPLEFT
+  TOPRIGHT
+  BOTTOMLEFT
+  BOTTOMRIGHT
 }
 
 enum READY_STATUS {
-	NOT_READY
-    READY
-	NOT_APPLICABLE
+  NOT_READY
+  READY
+  NOT_APPLICABLE
 }

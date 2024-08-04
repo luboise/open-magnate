@@ -18,6 +18,7 @@ import MagnateMap from "./Map/MagnateMap";
 import RestaurantPlacer from "./Map/RestaurantPlacer";
 import GlobalReserveDisplay from "./Reserve/GlobalReserveDisplay";
 import SalaryHandler from "./SalaryHandler/SalaryHandler";
+import TurnOrderPrompt from "./TurnOrderPrompt/TurnOrderPrompt";
 import TurnPlanner from "./TurnPlanner/TurnPlanner";
 import TurnProgressIndicator from "./TurnProgressIndicator/TurnProgressIndicator";
 
@@ -124,7 +125,7 @@ function PageGame() {
 	// 	return <></>;
 	// })();
 
-	const mapConditional: JSX.Element = (() => {
+	const mapConditional: JSX.Element = useMemo(() => {
 		if (!isMyTurn) return <></>;
 
 		if (turnProgress === "RESTAURANT_PLACEMENT") {
@@ -132,7 +133,7 @@ function PageGame() {
 		}
 
 		return <></>;
-	})();
+	}, [turnProgress, isMyTurn]);
 
 	onMapObjectClicked((event) => {
 		if (
@@ -223,6 +224,14 @@ function PageGame() {
 			</Resizable>
 
 			<Resizable
+				minimiseIf={
+					turnProgress !== "TURN_ORDER_SELECTION"
+				}
+			>
+				<TurnOrderPrompt id="turn-order-prompt" />
+			</Resizable>
+
+			<Resizable
 				defaultWidth={300}
 				minimiseIf={!state.showTurnOrder}
 			>
@@ -239,7 +248,7 @@ function PageGame() {
 				<TurnPlanner id="turn-planner" />
 			</Resizable>
 
-			<TurnHandler />
+			{/* Global elements */}
 
 			<WindowToolbar
 				onClick={(clicked) =>
@@ -259,6 +268,7 @@ function PageGame() {
 					});
 				}}
 			/>
+			<TurnHandler />
 		</div>
 	);
 }

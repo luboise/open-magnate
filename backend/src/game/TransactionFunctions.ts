@@ -14,7 +14,9 @@ import { EMPLOYEE_ID } from "../../../shared/EmployeeIDs";
 import { MovePlaceRestaurant } from "../../../shared/Moves";
 import {
 	FullGameStateInclude,
-	getCurrentPlayer
+	getCurrentPlayer,
+	parseTurnOrder,
+	serialiseTurnOrder
 } from "../database/controller/gamestate.controller";
 import { parseJsonArray } from "../utils";
 import { GetNextTurnPhase } from "./HandleMove";
@@ -175,6 +177,28 @@ const UnreadyPlayers: MoveTransactionFunctionUntyped =
 			throw new Error("Unable to unready players.");
 	};
 
+const BackupTurnOrder: MoveTransactionFunctionUntyped =
+	async (bundle) => {
+		const { ctx, gameId } = bundle;
+
+		const game = await ctx.gameState.findUniqueOrThrow({
+			where: { id: gameId }
+		});
+
+		if (
+			!(await ctx.gameState.update({
+				where: { id: gameId },
+				data: {
+					oldTurnOrder: game.turnOrder,
+					turnOrder: "X".repeat(game.playerCount)
+				}
+			}))
+		)
+			throw new Error(
+				"Unable to update currentTurnOrder"
+			);
+	};
+
 async function setTurnProgress(
 	bundle: TransactionBundle,
 
@@ -193,6 +217,10 @@ async function setTurnProgress(
 		throw new Error(
 			"Unable to update nextTurnProgress"
 		);
+
+	if (nextTurnProgress === "TURN_ORDER_SELECTION") {
+		BackupTurnOrder(bundle);
+	}
 
 	const updatedPlayers = await ctx.gamePlayer.updateMany({
 		where: {
@@ -347,6 +375,71 @@ export const BuildErrorMessage = (
 ) =>
 	`Player ${bundle.player} attempted to ${msg.trim()} in lobby #${bundle.gameId}`;
 
+const PickTurnOrder: MoveTransactionFunctionTyped<
+	number
+> = async (bundle, spot) => {
+	const { ctx, gameId, player } = bundle;
+
+	const gameState = await ctx.gameState.findUniqueOrThrow(
+		{
+			where: { id: gameId },
+			include: FullGameStateInclude
+		}
+	);
+
+	const currentPlayer = getCurrentPlayer(gameState);
+
+	if (currentPlayer === null)
+		throw new Error(
+			"Current player is null during the pick turn order phase"
+		);
+
+	const currentTurnOrder = parseTurnOrder(
+		gameState.turnOrder
+	);
+	if (currentTurnOrder.includes(player)) {
+		throw new Error(
+			BuildErrorMessage(
+				bundle,
+				"enter their turn order when it has already been chosen"
+			)
+		);
+	} else if (
+		spot >= currentTurnOrder.length ||
+		spot < 0
+	) {
+		throw new Error(
+			BuildErrorMessage(
+				bundle,
+				"enter an invalid turn order spot"
+			)
+		);
+	} else if (currentTurnOrder[spot] !== null) {
+		throw new Error(
+			BuildErrorMessage(
+				bundle,
+				"enter a turn order spot that is already taken"
+			)
+		);
+	}
+
+	currentTurnOrder[spot] = player;
+
+	if (
+		!(await ctx.gameState.update({
+			where: { id: gameId },
+			data: {
+				turnOrder: serialiseTurnOrder(
+					currentTurnOrder
+				)
+			}
+		}))
+	)
+		throw new Error(
+			`Unable to update turn order in lobby #${gameId}`
+		);
+};
+
 export default {
 	AddNewRestaurant,
 	AllPlayersReady,
@@ -356,6 +449,7 @@ export default {
 	UnreadyPlayers,
 	ValidateTurnProgress,
 	Restructure,
-	ReadyPlayer
+	ReadyPlayer,
+	PickTurnOrder
 };
 
