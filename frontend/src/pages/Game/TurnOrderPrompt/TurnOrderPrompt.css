@@ -1,5 +1,5 @@
 .turn-order-prompt {
-	height: 400px;
+	/* height: 400px; */
 
 	display: grid;
 	grid-template-areas:
@@ -7,7 +7,7 @@
 		"order-label players"
 		"picks picks";
 	grid-template-rows: minmax(10%, max-content) 30% auto;
-	grid-template-columns: minmax(20%, max-content);
+	/* grid-template-columns: minmax(20%, max-content); */
 }
 
 .turn-order-prompt h2 {
@@ -20,5 +20,36 @@
 
 .turn-order-prompt .players {
 	grid-area: players;
+	display: flex;
+}
+
+.player-piece {
+	aspect-ratio: 400/500;
+	max-width: 150px;
+}
+
+.player-piece * {
+	display: flex;
+	flex: 1;
+	width: 100%;
+	/* max-height: 100%; */
+}
+
+.player-piece img {
+	object-fit: contain;
+	/* width: 150px; */
+}
+
+.player-piece span {
+	width: 100%;
+}
+
+.picks {
+	display: flex;
+}
+
+.picks > * {
+	width: 20%;
+	aspect-ratio: 1;
 }
 

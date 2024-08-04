@@ -235,6 +235,16 @@ const turnOrderSelector = selector<number[]>({
 	}
 });
 
+const playerCountSelector = selector<number>({
+	key: "PLAYER_COUNT",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
+
+		return gameState.playerCount;
+	}
+});
+
 export function useGameStateView() {
 	const mapColOrder = useRecoilValue(
 		mapColumnOrderSelector
@@ -267,6 +277,8 @@ export function useGameStateView() {
 
 	const turnOrder = useRecoilValue(turnOrderSelector);
 
+	const playerCount = useRecoilValue(playerCountSelector);
+
 	return {
 		mapColOrder,
 		mapRowOrder,
@@ -280,7 +292,8 @@ export function useGameStateView() {
 		currentPlayer,
 		currentTree,
 		reserve,
-		turnOrder
+		turnOrder,
+		playerCount
 	};
 }
 

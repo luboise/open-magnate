@@ -251,11 +251,7 @@ const ValidateTurnProgress: MoveTransactionFunctionUntyped =
 				include: FullGameStateInclude
 			});
 
-		const currentPlayer = getCurrentPlayer(gameState);
-		if (
-			currentPlayer === null &&
-			(await AllPlayersReady(bundle))
-		) {
+		if (await AllPlayersReady(bundle)) {
 			await setTurnProgress(
 				bundle,
 				GetNextTurnPhase(gameState.turnProgress)
@@ -263,7 +259,10 @@ const ValidateTurnProgress: MoveTransactionFunctionUntyped =
 			console.log(
 				`Successfully advanced turn in game ${gameState.id}`
 			);
-			return;
+		} else {
+			console.log(
+				`Not all players are ready in game ${gameState.id}`
+			);
 		}
 	};
 
@@ -425,19 +424,21 @@ const PickTurnOrder: MoveTransactionFunctionTyped<
 
 	currentTurnOrder[spot] = player;
 
-	if (
-		!(await ctx.gameState.update({
+	// Will throw an error on failure
+	try {
+		await ctx.gameState.update({
 			where: { id: gameId },
 			data: {
 				turnOrder: serialiseTurnOrder(
 					currentTurnOrder
 				)
 			}
-		}))
-	)
+		});
+	} catch (error) {
 		throw new Error(
-			`Unable to update turn order in lobby #${gameId}`
+			`Committing turn order update to database failed in lobby #${gameState.id}. Error: ${JSON.stringify(error)} `
 		);
+	}
 };
 
 export default {

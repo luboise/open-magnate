@@ -102,22 +102,30 @@ export async function TransactMove(
 			break;
 		}
 		case MOVE_TYPE.PICK_TURN_ORDER: {
+			console.log(
+				`Picking turn order in lobby #${bundle.gameId}`
+			);
+
 			if (
 				gameState.turnProgress !==
 				"TURN_ORDER_SELECTION"
 			)
 				throw new Error(
-					`pick turn order during the ${gameState.turnProgress} stage`
+					BuildErrorMessage(
+						bundle,
+						`pick turn order during the ${gameState.turnProgress} stage`
+					)
 				);
 
 			await TransactionFunctions.PickTurnOrder(
 				bundle,
 				move.slot
 			);
+			break;
 		}
 		default:
 			throw new Error(
-				`Invalid transaction move attempted in lobby #${bundle.gameId}: ${move}`
+				`Move received did not match any valid move types in lobby #${bundle.gameId}: ${JSON.stringify(move)}`
 			);
 	}
 

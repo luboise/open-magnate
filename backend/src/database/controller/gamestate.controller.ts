@@ -618,12 +618,10 @@ const GameStateController = {
 				}
 			});
 		} catch (error) {
-			console.log(
-				"Unable to make moves in lobby #" +
-					game +
-					"."
+			console.error(error);
+			console.error(
+				`GamestateController: Unable to make moves in lobby #${game}. See the error above for details.`
 			);
-			console.log(error);
 
 			return false;
 		}
