@@ -1,6 +1,6 @@
 import "./TurnPlanner.css";
 
-import { HTMLAttributes, useState } from "react";
+import { HTMLAttributes, useMemo, useState } from "react";
 import { Employee } from "../../../../../shared/EmployeeTypes";
 import ModalPanel from "../../../global_components/ModalPanel";
 import { useGameStateView } from "../../../hooks/game/useGameState";
@@ -9,6 +9,7 @@ import { GetAllTreeData } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 import GameActionPreview from "./GameActionPreview";
 import HiringWindow from "./HiringWindow";
+import MarketingWindow from "./MarketingWindow";
 
 interface TurnPlannerProps
 	extends HTMLAttributes<HTMLDivElement> {}
@@ -31,30 +32,41 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 	).map((index) => myEmployees[index]);
 
 	// TODO: Clean this up to be more efficient
-	function getEventWindow(
-		selectedEmployeeIndex: number | null
-	) {
+	const eventWindow = useMemo((): JSX.Element | null => {
 		if (
 			selectedEmployeeIndex === null ||
 			selectedEmployeeIndex < 0 ||
 			selectedEmployeeIndex >= employees.length
 		)
-			return <></>;
-		return (
-			<ModalPanel
-				className="event-window-hiring"
-				onClose={() =>
-					setSelectedEmployeeIndex(null)
-				}
-			>
+			return null;
+
+		const employee = myEmployees[selectedEmployeeIndex];
+
+		if (
+			employee.type === "MANAGEMENT" ||
+			employee.type === "CEO"
+		)
+			return (
 				<HiringWindow
 					employeeHiringIndex={
 						selectedEmployeeIndex
 					}
 				/>
-			</ModalPanel>
-		);
-	}
+			);
+
+		if (employee.type === "MARKETING")
+			return (
+				<MarketingWindow
+					employeeHiringIndex={
+						selectedEmployeeIndex
+					}
+				/>
+			);
+
+		if (employee.type === "FOOD") return <FoodPlacer />;
+
+		return null;
+	}, [selectedEmployeeIndex, myEmployees]);
 
 	// const turnActions: TurnAction[] = [
 	// 	{
@@ -74,7 +86,18 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 	return (
 		<>
 			<div className="game-turn-planner" {...args}>
-				{getEventWindow(selectedEmployeeIndex)}
+				{eventWindow !== null ? (
+					<ModalPanel
+						className="event-window-hiring"
+						onClose={() =>
+							setSelectedEmployeeIndex(null)
+						}
+					>
+						{eventWindow}
+					</ModalPanel>
+				) : (
+					<></>
+				)}
 
 				<div className="game-turn-planner-employee-section">
 					<h2>Use your employees!</h2>

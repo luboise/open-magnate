@@ -15,11 +15,16 @@ export const DEFAULT_RESERVE_BASE_GAME: Reserve = {
 	burger_2: ONEOF_VALUE,
 	pizza_2: ONEOF_VALUE,
 
-	mgmt_1: 12,
+	mgmt_1: 18,
 	mgmt_2: 12,
 	mgmt_3: 6,
 	mgmt_4: 6,
-	mgmt_5: ONEOF_VALUE
+	mgmt_5: ONEOF_VALUE,
+
+	market_1: 12,
+	market_2: 6,
+	market_3: 6,
+	market_4: ONEOF_VALUE
 } as const;
 
 export function GetNewReserve(

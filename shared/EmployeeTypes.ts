@@ -2,6 +2,7 @@ import { Colour } from "../frontend/src/utils";
 import {
 	EMPLOYEE_ID,
 	FOOD_EMPLOYEE_ID,
+	MARKETING_EMPLOYEE_ID,
 	MGMT_EMPLOYEE_ID
 } from "./EmployeeIDs";
 import { COLOURS } from "./Employees";
@@ -45,7 +46,22 @@ export interface CEOEmployee extends BaseEmployee {
 	notPaid: true;
 }
 
+export type MarketingType =
+	| "BILLBOARD"
+	| "MAILBOX"
+	| "PLANE"
+	| "RADIO";
+
+export interface MarketingEmployee extends BaseEmployee {
+	type: "MARKETING";
+	id: MARKETING_EMPLOYEE_ID;
+	colour: COLOURS.LIGHT_BLUE;
+	marketingType: MarketingType;
+}
+
 export type Employee =
 	| ManagementEmployee
 	| FoodEmployee
+	| MarketingEmployee
 	| CEOEmployee;
+

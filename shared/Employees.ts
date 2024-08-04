@@ -1,6 +1,7 @@
 import {
 	EMPLOYEE_ID,
 	FOOD_EMPLOYEE_ID,
+	MARKETING_EMPLOYEE_ID,
 	MGMT_EMPLOYEE_ID
 } from "./EmployeeIDs";
 import {
@@ -8,13 +9,16 @@ import {
 	Employee,
 	FOOD_TYPE,
 	FoodEmployee,
-	ManagementEmployee
+	ManagementEmployee,
+	MarketingEmployee,
+	MarketingType
 } from "./EmployeeTypes";
 
 export enum COLOURS {
 	BLACK = "#000000",
 	DARK_GREEN = "#008000",
-	GREY = "#808080"
+	GREY = "#808080",
+	LIGHT_BLUE = "#9bedff"
 }
 
 interface ManagementEmployeeCreationData {
@@ -72,6 +76,30 @@ export function createCEOEmployee(
 		capacity: capacity,
 		buildsInto: [],
 		notPaid: true
+	};
+}
+
+interface MarketingEmployeeCreationData {
+	name: string;
+	id: MARKETING_EMPLOYEE_ID;
+	marketingType: MarketingType;
+	notPaid?: boolean;
+}
+
+export function createMarketingEmployee({
+	name,
+	id,
+	marketingType,
+	notPaid = false
+}: MarketingEmployeeCreationData): MarketingEmployee {
+	return {
+		id: id,
+		name: name,
+		type: "MARKETING",
+		colour: COLOURS.LIGHT_BLUE,
+		marketingType: marketingType,
+		buildsInto: [],
+		notPaid: notPaid
 	};
 }
 
@@ -157,12 +185,40 @@ export const FoodEmployees: Record<
 	})
 } as const;
 
+export const MarketingEmployees: Record<
+	MARKETING_EMPLOYEE_ID,
+	MarketingEmployee
+> = {
+	market_1: createMarketingEmployee({
+		id: "market_1",
+		marketingType: "BILLBOARD",
+		name: "Marketing Trainee",
+		notPaid: true
+	}),
+	market_2: createMarketingEmployee({
+		id: "market_2",
+		marketingType: "MAILBOX",
+		name: "Campaign Manager"
+	}),
+	market_3: createMarketingEmployee({
+		id: "market_3",
+		marketingType: "PLANE",
+		name: "Brand Manager"
+	}),
+	market_4: createMarketingEmployee({
+		id: "market_4",
+		marketingType: "RADIO",
+		name: "Brand Director"
+	})
+} as const;
+
 export const EmployeesById: Record<
 	EMPLOYEE_ID | "CEO",
 	Employee
 > = {
 	...ManagementEmployees,
 	...FoodEmployees,
+	...MarketingEmployees,
 	CEO: CEOEmployeeInitial
 } as const;
 
@@ -182,3 +238,4 @@ export function EmployeeCanHire(employee: Employee) {
 		employee.type === "CEO"
 	);
 }
+

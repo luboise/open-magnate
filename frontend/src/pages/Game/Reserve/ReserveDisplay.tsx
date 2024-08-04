@@ -47,7 +47,11 @@ function ReserveDisplay({
 		] as [Employee | undefined, number];
 	});
 
-	const employeeTypes = ["MANAGEMENT", "FOOD"];
+	const employeeTypes = [
+		"MANAGEMENT",
+		"FOOD",
+		"MARKETING"
+	];
 
 	const categoryArrays = employeeTypes.map((type) => {
 		const filteredEmployees = employeeList.filter(

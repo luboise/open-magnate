@@ -8,6 +8,7 @@
 // 	turnOrder: Array<number> | null;
 // };
 
+import { Position } from "../backend/src/dataViews";
 import { EMPLOYEE_ID } from "./EmployeeIDs";
 
 // export interface GameCreationParams {
@@ -18,15 +19,23 @@ export const MAX_PLAYER_COUNT = 5;
 
 interface BaseGameAction {
 	player: number;
+	employeeIndex: number;
 	type: string;
 }
 
 export interface RecruitAction extends BaseGameAction {
 	type: "RECRUIT";
-	employeeIndex: number;
 	recruiting: EMPLOYEE_ID;
+}
+
+export interface MarketingAction extends BaseGameAction {
+	type: "Marketing";
+	marketingTilePlaced: number;
+	pos: Position;
+	rotated: boolean;
 }
 
 export type TurnAction = RecruitAction;
 
 export const BASE_SALARY = 5;
+
