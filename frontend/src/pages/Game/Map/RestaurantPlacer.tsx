@@ -33,7 +33,7 @@ type RestaurantPlacerAction =
 function RestaurantPlacer() {
 	const { makeMove } = usePageGame();
 	const boardInfo = useBoardInfo();
-	const { gamestate: gameState } = useGameStateView();
+	const { playerData } = useGameStateView();
 
 	const [state, dispatch] = useReducer(
 		(
@@ -130,9 +130,7 @@ function RestaurantPlacer() {
 
 	return (
 		<RestaurantImage
-			restaurantNumber={
-				gameState?.privateData.restaurant ?? 1
-			}
+			restaurantNumber={playerData.restaurant ?? 1}
 			style={{
 				gridColumn: `${state.x + 1} / span 2`,
 				gridRow: `${state.y + 1} / span 2`,

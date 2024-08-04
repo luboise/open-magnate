@@ -1,0 +1,7 @@
+.marketing-window {
+	width: 800px;
+	height: 600px;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+

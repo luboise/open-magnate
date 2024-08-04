@@ -88,7 +88,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 			<div className="game-turn-planner" {...args}>
 				{eventWindow !== null ? (
 					<ModalPanel
-						className="event-window-hiring"
+						className="event-window"
 						onClose={() =>
 							setSelectedEmployeeIndex(null)
 						}

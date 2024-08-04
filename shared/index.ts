@@ -6,6 +6,7 @@ export * from "./LobbyTypes";
 export * from "./LocalSessionData";
 export * from "./MapData";
 export * from "./MapParsing";
+export * from "./Marketing";
 export * from "./Messages";
 export * from "./Player";
 export * from "./RestaurantNames";
