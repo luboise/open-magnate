@@ -69,3 +69,13 @@
 .map-tile-lemonade {
 	background-color: yellow;
 }
+
+.map-overlay-tile {
+	cursor: pointer;
+}
+
+.map-overlay-tile * {
+	pointer-events: none;
+	user-select: none;
+}
+

@@ -1,7 +1,7 @@
+import { HouseView } from "../../../utils";
 import "./House.css";
 
 import { HTMLAttributes } from "react";
-import { HouseView } from "../../../../utils";
 
 interface HouseProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -16,7 +16,7 @@ function House({
 }: HouseProps) {
 	return (
 		<div
-			className={`game-map-house ${className}`}
+			className={`map-overlay-tile game-map-house ${className ?? ""}`}
 			style={{
 				gridColumn: `${house.x + 1} / span 2`,
 				gridRow: `${house.y + 1} / span 2`
@@ -47,3 +47,4 @@ function House({
 }
 
 export default House;
+

@@ -1,4 +1,8 @@
 import { useMemo } from "react";
+import {
+	MarketingTile,
+	MarketingTilesByNumber
+} from "../../../../../shared/Marketing";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import MapMarketingTile from "../Map/MapMarketingTile";
 import "./MarketingWindow.css";
@@ -24,19 +28,39 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 		<div className="marketing-window">
 			<MarketingColumn
 				title="Billboards"
-				tiles={[11, 12, 13, 14, 15, 16]}
+				tiles={[
+					MarketingTilesByNumber[11],
+					MarketingTilesByNumber[12],
+					MarketingTilesByNumber[13],
+					MarketingTilesByNumber[14],
+					MarketingTilesByNumber[15],
+					MarketingTilesByNumber[16]
+				]}
 			/>
 			<MarketingColumn
 				title="Mailboxes"
-				tiles={[7, 8, 9, 10]}
+				tiles={[
+					MarketingTilesByNumber[7],
+					MarketingTilesByNumber[8],
+					MarketingTilesByNumber[9],
+					MarketingTilesByNumber[10]
+				]}
 			/>
 			<MarketingColumn
 				title="Planes"
-				tiles={[4, 5, 6]}
+				tiles={[
+					MarketingTilesByNumber[4],
+					MarketingTilesByNumber[5],
+					MarketingTilesByNumber[6]
+				]}
 			/>
 			<MarketingColumn
 				title="Radio"
-				tiles={[1, 2, 3]}
+				tiles={[
+					MarketingTilesByNumber[1],
+					MarketingTilesByNumber[2],
+					MarketingTilesByNumber[3]
+				]}
 			/>
 		</div>
 	);
@@ -44,16 +68,21 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 
 interface ColumnProps {
 	title: string;
-	tiles: number[];
+	tiles: MarketingTile[];
 }
 
 function MarketingColumn({ title, tiles }: ColumnProps) {
 	return (
 		<div>
 			<h3>{title}</h3>
-			{tiles.map((tileNumber) => (
-				<MapMarketingTile tileNumber={tileNumber} />
-			))}
+			<div className="marketing-column">
+				{tiles.map((tile) => (
+					<MapMarketingTile
+						onClick={alert}
+						tile={tile}
+					/>
+				))}
+			</div>
 		</div>
 	);
 }
