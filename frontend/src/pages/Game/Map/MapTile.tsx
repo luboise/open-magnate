@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { HTMLAttributes, ReactNode, useMemo } from "react";
 import {
 	DirectionBools,
 	MapTileData,
@@ -8,7 +8,7 @@ import "./MapTile.css";
 import RoadTileElements from "./RoadTileElements";
 
 interface MapTileProps
-	extends React.HTMLAttributes<HTMLDivElement> {
+	extends HTMLAttributes<HTMLDivElement> {
 	tile: MapTileData;
 }
 
@@ -18,7 +18,7 @@ function MapTile(props: MapTileProps) {
 	const tileElements = useMemo((): ReactNode => {
 		if (!tileData) return <p>invalid map tile</p>;
 
-		if (tileData.type === TileType.ROAD)
+		if (tileData.tileType === TileType.ROAD)
 			return (
 				<RoadTileElements
 					roadDirections={
@@ -28,16 +28,16 @@ function MapTile(props: MapTileProps) {
 			);
 
 		// // Check if has valid image
-		// if (tileData.type !== TileType.EMPTY) {
+		// if (tileData.tileType !== TileType.EMPTY) {
 		// 	elements.push(
 		// 		<img
-		// 			src={`/resources/${tileData.type}.png`}
+		// 			src={`/resources/${tileData.tileType}.png`}
 		// 		/>
 		// 	);
 		// }
 
 		return <></>;
-	}, [tileData, tileData.type]);
+	}, [tileData, tileData.tileType]);
 
 	const classes = ["map-tile"];
 	for (const direction of [
@@ -54,25 +54,25 @@ function MapTile(props: MapTileProps) {
 			classes.push(`tile-boundary-${direction}`);
 	}
 
-	if (tileData.type === TileType.EMPTY)
+	if (tileData.tileType === TileType.EMPTY)
 		classes.push("map-tile-empty");
-	else if (tileData.type === TileType.ROAD)
+	else if (tileData.tileType === TileType.ROAD)
 		classes.push("map-tile-road");
-	else if (tileData.type === TileType.HOUSE)
+	else if (tileData.tileType === TileType.HOUSE)
 		classes.push("map-tile-house");
-	else if (tileData.type === TileType.LEMONADE)
+	else if (tileData.tileType === TileType.LEMONADE)
 		classes.push("map-tile-lemonade");
-	else if (tileData.type === TileType.COLA)
+	else if (tileData.tileType === TileType.COLA)
 		classes.push("map-tile-cola");
-	else if (tileData.type === TileType.BEER)
+	else if (tileData.tileType === TileType.BEER)
 		classes.push("map-tile-beer");
 	return (
 		<div
 			{...args}
 			className={classes.join(" ")}
 			style={{
-				gridColumn: `${tileData.x + 1}`,
-				gridRow: `${tileData.y + 1}`
+				gridColumn: `${tileData.pos.x + 1}`,
+				gridRow: `${tileData.pos.y + 1}`
 			}}
 		>
 			{/* <div className="map-tile-content"> */}

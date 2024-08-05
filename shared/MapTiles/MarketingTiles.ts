@@ -1,43 +1,44 @@
 import { MarketingType } from "../EmployeeTypes";
-import {
-	createMarketingTile,
-	createRadioTile
-} from "../Marketing";
 
-interface BaseMarketingTile {
-	type: MarketingType;
-	tileNumber: number;
-	width: number;
-	height: number;
-}
-
-export interface BillBoardMarketingTile
-	extends BaseMarketingTile {
-	type: "BILLBOARD";
-}
-
-export interface MailboxMarketingTile
-	extends BaseMarketingTile {
-	type: "MAILBOX";
-}
-
-export interface PlaneMarketingTile
-	extends BaseMarketingTile {
-	type: "PLANE";
-}
-
-export interface RadioMarketingTile
-	extends BaseMarketingTile {
-	type: "RADIO";
-	width: 1;
-	height: 1;
-}
+import { BaseTile } from "./Tile";
 
 export type MarketingTile =
 	| BillBoardMarketingTile
 	| MailboxMarketingTile
 	| PlaneMarketingTile
 	| RadioMarketingTile;
+
+interface BaseMarketingTile extends BaseTile {
+	tileType: "MARKETING";
+	marketingType: MarketingType;
+	tileNumber: number;
+	rotation: 0 | 90;
+}
+
+export interface BillBoardMarketingTile
+	extends BaseMarketingTile {
+	marketingType: "BILLBOARD";
+}
+
+export interface MailboxMarketingTile
+	extends BaseMarketingTile {
+	marketingType: "MAILBOX";
+	rotation: 0;
+}
+
+export interface PlaneMarketingTile
+	extends BaseMarketingTile {
+	marketingType: "PLANE";
+	rotation: 0 | 90;
+}
+
+export interface RadioMarketingTile
+	extends BaseMarketingTile {
+	marketingType: "RADIO";
+	width: 1;
+	height: 1;
+	rotation: 0;
+}
 
 export const MarketingTilesByNumber: Record<
 	number,
@@ -50,79 +51,120 @@ export const MarketingTilesByNumber: Record<
 		tileNumber: 4,
 		width: 2,
 		height: 1,
-		type: "PLANE"
+		marketingType: "PLANE"
 	}),
 	5: createMarketingTile({
 		tileNumber: 5,
 		width: 3,
 		height: 2,
-		type: "PLANE"
+		marketingType: "PLANE"
 	}),
 	6: createMarketingTile({
 		tileNumber: 6,
 		width: 4,
 		height: 2,
-		type: "PLANE"
+		marketingType: "PLANE"
 	}),
 	7: createMarketingTile({
 		tileNumber: 7,
 		width: 2,
 		height: 2,
-		type: "MAILBOX"
+		marketingType: "MAILBOX"
 	}),
 	8: createMarketingTile({
 		tileNumber: 8,
 		width: 2,
 		height: 2,
-		type: "MAILBOX"
+		marketingType: "MAILBOX"
 	}),
 	9: createMarketingTile({
 		tileNumber: 9,
 		width: 1,
 		height: 1,
-		type: "MAILBOX"
+		marketingType: "MAILBOX"
 	}),
 	10: createMarketingTile({
 		tileNumber: 10,
 		width: 1,
 		height: 1,
-		type: "MAILBOX"
+		marketingType: "MAILBOX"
 	}),
 	11: createMarketingTile({
 		tileNumber: 11,
 		width: 3,
 		height: 2,
-		type: "BILLBOARD"
+		marketingType: "BILLBOARD"
 	}),
 	12: createMarketingTile({
 		tileNumber: 12,
 		width: 2,
 		height: 2,
-		type: "BILLBOARD"
+		marketingType: "BILLBOARD"
 	}),
 	13: createMarketingTile({
 		tileNumber: 13,
 		width: 3,
 		height: 1,
-		type: "BILLBOARD"
+		marketingType: "BILLBOARD"
 	}),
 	14: createMarketingTile({
 		tileNumber: 14,
 		width: 2,
 		height: 1,
-		type: "BILLBOARD"
+		marketingType: "BILLBOARD"
 	}),
 	15: createMarketingTile({
 		tileNumber: 15,
 		width: 1,
 		height: 1,
-		type: "BILLBOARD"
+		marketingType: "BILLBOARD"
 	}),
 	16: createMarketingTile({
 		tileNumber: 16,
 		width: 1,
 		height: 1,
-		type: "BILLBOARD"
+		marketingType: "BILLBOARD"
 	})
 } as const;
+interface MarketingTileCreationProps {
+	marketingType: MarketingType;
+	tileNumber: number;
+	width: number;
+	height: number;
+}
+export function createMarketingTile({
+	marketingType,
+	tileNumber,
+	width,
+	height
+}: MarketingTileCreationProps): MarketingTile {
+	if (marketingType === "RADIO")
+		return createRadioTile(tileNumber);
+
+	const tile: MarketingTile = {
+		tileType: "MARKETING",
+		marketingType: marketingType,
+		tileNumber: tileNumber,
+		width: width,
+		height: height,
+		pos: { x: 0, y: 0 },
+		rotation: 0
+	};
+
+	return tile;
+}
+
+export function createRadioTile(
+	tileNumber: number
+): RadioMarketingTile {
+	return {
+		tileType: "MARKETING",
+		marketingType: "RADIO",
+		tileNumber: tileNumber,
+		rotation: 0,
+		width: 1,
+		height: 1,
+		pos: { x: 0, y: 0 }
+	};
+}
 

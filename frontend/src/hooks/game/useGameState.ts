@@ -6,13 +6,16 @@ import {
 } from "../../../../backend/src/utils";
 import { Employee } from "../../../../shared/EmployeeTypes";
 import {
-	DirectionBools,
 	IsConnecting,
 	IsEdge,
 	IsMaxBound,
 	IsMinBound,
-	TileType
+	PartialMap2D
 } from "../../../../shared/MapData";
+import {
+	DirectionBools,
+	TileType
+} from "../../../../shared/MapTiles/MapPieceTiles";
 import {
 	EmployeeNode,
 	EmployeesById,
@@ -297,8 +300,13 @@ export function useGameStateView() {
 	};
 }
 
-function addMapDetails(baseMap: Map2D): Map2D {
-	const newMap = CloneArray(baseMap);
+function addMapDetails(baseMap: PartialMap2D): Map2D {
+	const newMap = CloneArray(baseMap) as Map2D;
+
+	// const newMap = new2DArray<MapTileData>(
+	// 	baseMap.length,
+	// 	baseMap[0].length
+	// );
 
 	const maxX = baseMap.length - 1;
 
@@ -310,42 +318,71 @@ function addMapDetails(baseMap: Map2D): Map2D {
 
 		for (let y = 0; y <= maxY; y++) {
 			const val = newMap[x][y];
+			const oldDetails = baseMap[x][y];
 
-			val.pieceEdges = {
-				north: IsEdge(val.y - 1) && IsEdge(val.y),
-				south: IsEdge(val.y + 1) && IsEdge(val.y),
-				east: IsEdge(val.x + 1) && IsEdge(val.x),
-				west: IsEdge(val.x - 1) && IsEdge(val.x)
+			const calculated: DirectionBools = {
+				north:
+					IsEdge(val.pos.y - 1) &&
+					IsEdge(val.pos.y),
+				south:
+					IsEdge(val.pos.y + 1) &&
+					IsEdge(val.pos.y),
+				east:
+					IsEdge(val.pos.x + 1) &&
+					IsEdge(val.pos.x),
+				west:
+					IsEdge(val.pos.x - 1) &&
+					IsEdge(val.pos.x)
 			};
 
-			if (val.type === TileType.ROAD) {
-				val.data = {
-					north:
-						(!IsMinBound(y) &&
-							y > 0 &&
-							newMap[x][y - 1].type ===
-								TileType.ROAD) ||
-						IsConnecting(x, y - 1),
-					south:
-						(!IsMaxBound(y) &&
-							y < maxY &&
-							newMap[x][y + 1].type ===
-								TileType.ROAD) ||
-						IsConnecting(x, y + 1),
-					east:
-						(!IsMaxBound(x) &&
-							x < maxX &&
-							newMap[x + 1][y].type ===
-								TileType.ROAD) ||
-						IsConnecting(val.x + 1, val.y),
-					west:
-						(!IsMinBound(x) &&
-							x > 0 &&
-							newMap[x - 1][y].type ===
-								TileType.ROAD) ||
-						IsConnecting(val.x - 1, val.y)
-				} as DirectionBools;
-			}
+			const z = oldDetails.tileType;
+
+			const newVal: MapTileData = {
+				...oldDetails,
+				pieceEdges: calculated,
+				...(z === TileType.ROAD
+					? {
+							adjacentRoads: {
+								north:
+									(!IsMinBound(y) &&
+										y > 0 &&
+										newMap[x][y - 1]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(x, y - 1),
+								south:
+									(!IsMaxBound(y) &&
+										y < maxY &&
+										newMap[x][y + 1]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(x, y + 1),
+								east:
+									(!IsMaxBound(x) &&
+										x < maxX &&
+										newMap[x + 1][y]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(
+										val.pos.x + 1,
+										val.pos.y
+									),
+								west:
+									(!IsMinBound(x) &&
+										x > 0 &&
+										newMap[x - 1][y]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(
+										val.pos.x - 1,
+										val.pos.y
+									)
+							}
+						}
+					: {})
+			};
+
+			newMap[x][y] = newVal;
 		}
 	}
 

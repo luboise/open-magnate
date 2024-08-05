@@ -1,14 +1,10 @@
 import "./MagnateMap.css";
 
-import {
-	HTMLAttributes,
-	PropsWithChildren,
-	useMemo
-} from "react";
+import { HTMLAttributes, PropsWithChildren } from "react";
 
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import useMap from "../../../hooks/game/useMap";
+import useMapTileInteraction from "../../../hooks/game/useMapTileInteraction";
 import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
@@ -26,11 +22,11 @@ function MagnateMap({
 }: PropsWithChildren<MapProps>) {
 	// console.debug("Rendering magnate map.");
 
-	const {
-		sendMapObjectClickEvent: mapObjectClicked,
-		sendMapObjectHoverEvent: mapObjectHovered,
-		getAllRenderables
-	} = useMap();
+	// const {
+	// 	sendMapObjectClickEvent: mapObjectClicked,
+	// 	sendMapObjectHoverEvent: mapObjectHovered,
+	// 	getAllRenderables
+	// } = useMap();
 
 	const {
 		mapRowOrder: map,
@@ -38,6 +34,8 @@ function MagnateMap({
 		restaurants,
 		players
 	} = useGameStateView();
+
+	const { nowHovering } = useMapTileInteraction();
 
 	// console.debug(
 	// "Rendering magnate map.",
@@ -63,41 +61,41 @@ function MagnateMap({
 		return true;
 	}
 
-	const returnDiv = useMemo((): JSX.Element => {
-		return !map ? (
-			<></>
-		) : (
-			<div
-				className="map-preview-container"
+	if (!map) return <></>;
+
+	return (
+		<div
+			className="map-preview-container"
+			style={{
+				gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
+				aspectRatio: `${map[0].length} / ${map.length}`,
+				...style
+			}}
+			{...args}
+			onMouseLeave={() => nowHovering(null)}
+		>
+			{/* TODO: Optimise the table rendering?? It seems a bit sluggish */}
+			<table
 				style={{
-					gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
-					aspectRatio: `${map[0].length} / ${map.length}`,
-					...style
+					// Fit the parent grid fully
+					gridColumn: `1 / span ${map[0].length}`,
+					gridRow: `1 / span ${map.length}`
 				}}
-				{...args}
 			>
-				{/* TODO: Optimise the table rendering?? It seems a bit sluggish */}
-				<table
-					style={{
-						// Fit the parent grid fully
-						gridColumn: `1 / span ${map[0].length}`,
-						gridRow: `1 / span ${map.length}`
-					}}
-				>
-					<tbody>
-						{...new Array(
-							map[0].length / MAP_PIECE_WIDTH
-						).fill(
-							<tr>
-								{...new Array(
-									map.length /
-										MAP_PIECE_HEIGHT
-								).fill(<td />)}
-							</tr>
-						)}
-					</tbody>
-				</table>
-				{/* <div
+				<tbody>
+					{...new Array(
+						map[0].length / MAP_PIECE_WIDTH
+					).fill(
+						<tr>
+							{...new Array(
+								map.length /
+									MAP_PIECE_HEIGHT
+							).fill(<td />)}
+						</tr>
+					)}
+				</tbody>
+			</table>
+			{/* <div
 					className="map-preview-piece-overlay"
 					style={{
 						// Fit the parent grid fully
@@ -122,89 +120,69 @@ function MagnateMap({
 						/>
 					)}
 				</div> */}
-				{/* Tiles */}
-				{...map
-					.flat(2)
-					.filter(FilterPreviewFiles)
-					.map((tile) => (
-						<MapTile
-							onClick={() => {
-								mapObjectClicked({
-									type: "TILE",
-									data: tile
-								});
-							}}
-							onMouseEnter={() => {
-								mapObjectHovered({
-									type: "TILE",
-									data: tile
-								});
-							}}
-							tile={tile}
-						/>
-					))}
-
-				{/* Houses */}
-				{...(houses ?? []).map((house) => (
-					<House
-						house={house}
-						onClick={() => {
-							mapObjectClicked({
-								type: "HOUSE",
-								data: house
-							});
+			{/* Tiles */}
+			{...map
+				.flat(2)
+				.filter(FilterPreviewFiles)
+				.map((tile) => (
+					<MapTile
+						// onClick={() => {
+						// 	nowHovering({
+						// 		type: "TILE",
+						// 		data: tile
+						// 	});
+						// }}
+						onMouseEnter={() => {
+							nowHovering(tile);
 						}}
+						tile={tile}
 					/>
 				))}
 
-				{/* Restaurant */}
-				{...restaurants.map((restaurant) => {
-					const player = players?.find(
-						(player) =>
-							player.playerNumber ===
-							restaurant.player
-					);
+			{/* Houses */}
+			{...(houses ?? []).map((house) => (
+				<House
+					house={house}
+					// onClick={() => {
+					// 	mapObjectClicked({
+					// 		type: "HOUSE",
+					// 		data: house
+					// 	});
+					// }}
+				/>
+			))}
 
-					if (!player) return <></>;
+			{/* Restaurant */}
+			{...restaurants.map((restaurant) => {
+				const player = players?.find(
+					(player) =>
+						player.playerNumber ===
+						restaurant.player
+				);
 
-					return (
-						<RestaurantImage
-							restaurantNumber={
-								player.restaurant
-							}
-							style={{
-								gridColumn: `${restaurant.x + 1} / span 2`,
-								gridRow: `${restaurant.y + 1} / span 2`,
-								width: "100%",
-								height: "100%"
-							}}
-						/>
-					);
-				})}
+				if (!player) return <></>;
 
-				{/* Extras */}
-				{...Array.from(
+				return (
+					<RestaurantImage
+						restaurantNumber={player.restaurant}
+						style={{
+							gridColumn: `${restaurant.x + 1} / span 2`,
+							gridRow: `${restaurant.y + 1} / span 2`,
+							width: "100%",
+							height: "100%"
+						}}
+					/>
+				);
+			})}
+
+			{/* Extras */}
+			{/* {...Array.from(
 					Object.values(getAllRenderables)
-				).flat(2)}
+				).flat(2)} */}
 
-				{children}
-			</div>
-		);
-	}, [
-		map,
-		houses,
-		restaurants,
-		players,
-		getAllRenderables,
-		mapObjectClicked,
-		mapObjectHovered,
-		style,
-		args,
-		children
-	]);
-
-	if (!map) return <></>;
-	return returnDiv;
+			{children}
+		</div>
+	);
 }
 
 export default MagnateMap;

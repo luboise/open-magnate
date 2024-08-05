@@ -1,89 +1,33 @@
 import { new2DArray } from "../backend/src/utils";
 import {
 	CHAR_TO_MAP_TILE_CONVERTER,
-	DirectionBools,
+	PartialMap2D,
+	PartialMapTileData
+} from "./MapData";
+import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_SIZE,
 	MAP_PIECE_WIDTH,
 	MapPieceData,
-	MapTileData
-} from "./MapData";
+	MapTileData,
+	TileType
+} from "./MapTiles/MapPieceTiles";
 
 export function translateMapTile(
 	tile: MapTileData,
 	xPieces: number,
 	yPieces: number
 ) {
-	tile.x += xPieces * MAP_PIECE_WIDTH;
-	tile.y += yPieces * MAP_PIECE_HEIGHT;
+	tile.pos.x += xPieces * MAP_PIECE_WIDTH;
+	tile.pos.y += yPieces * MAP_PIECE_HEIGHT;
 	return tile;
 }
-
-// export function RotateMapPiece(
-// 	piece: MapPieceData,
-// 	degrees: 0 | 90 | 180 | 270
-// ): MapPieceData {
-// 	if (degrees === 0) {
-// 		return piece;
-// 	}
-
-// 	if (degrees === 90) {
-// 		return piece.map((row) =>
-// 			row.map((tile, i) => {
-// 				return {
-// 					x: MAP_PIECE_HEIGHT - 1 - tile.y,
-// 					y: tile.x,
-// 					type: tile.type
-// 				};
-// 			})
-// 		);
-// 	}
-
-// 	if (degrees === 180) {
-// 		return piece.map((row) =>
-// 			row.map((tile, i) => {
-// 				return {
-// 					x: MAP_PIECE_WIDTH - 1 - tile.x,
-// 					y: MAP_PIECE_HEIGHT - 1 - tile.y,
-// 					type: tile.type
-// 				};
-// 			})
-// 		);
-// 	}
-// }
-
-// function isTopMiddle(row: number, col: number): boolean {
-// 	return (
-// 		row === 0 && col === Math.floor(MAP_PIECE_WIDTH / 2)
-// 	);
-// }
-
-// function isBottomMiddle(row: number, col: number): boolean {
-// 	return (
-// 		row === MAP_PIECE_HEIGHT - 1 &&
-// 		col === Math.floor(MAP_PIECE_WIDTH / 2)
-// 	);
-// }
-
-// function isRightMiddle(row: number, col: number): boolean {
-// 	return (
-// 		col === MAP_PIECE_WIDTH - 1 &&
-// 		row === Math.floor(MAP_PIECE_HEIGHT / 2)
-// 	);
-// }
-
-// function isLeftMiddle(row: number, col: number): boolean {
-// 	return (
-// 		col === 0 &&
-// 		row === Math.floor(MAP_PIECE_HEIGHT / 2)
-// 	);
-// }
 
 export function parseMapChar(
 	char: string,
 	x: number,
 	y: number
-): MapTileData {
+): PartialMapTileData {
 	// Handle invalid character
 	if (!(char in CHAR_TO_MAP_TILE_CONVERTER)) {
 		throw new Error(
@@ -91,13 +35,18 @@ export function parseMapChar(
 		);
 	}
 
-	const parsedObject = {
+	const parsedObject: PartialMapTileData = {
 		...CHAR_TO_MAP_TILE_CONVERTER[char],
-		x: x,
-		y: y
+		pos: {
+			x: x,
+			y: y
+		},
+		width: 1,
+		height: 1,
+		rotation: 0
 	};
 
-	if (char === "R") {
+	if (parsedObject.tileType === TileType.ROAD) {
 		parsedObject.data = {
 			// north:
 			// 	isTopMiddle(row, col) ||
@@ -117,14 +66,14 @@ export function parseMapChar(
 			south: true,
 			east: true,
 			west: true
-		} as DirectionBools;
+		};
 	}
 
-	return parsedObject as MapTileData;
+	return parsedObject;
 }
 export function parseMapPiece(
 	mapString: string
-): MapTileData[][] | null {
+): PartialMap2D | null {
 	try {
 		// Remove spaces and check for valid length
 		if (
@@ -140,7 +89,7 @@ export function parseMapPiece(
 			.split(" ")
 			.map((row) => Array.from(row));
 
-		const items: MapTileData[][] = new2DArray(
+		const items: PartialMap2D = new2DArray(
 			MAP_PIECE_HEIGHT,
 			MAP_PIECE_WIDTH
 		);
@@ -159,8 +108,7 @@ export function parseMapPiece(
 					row
 				);
 
-				items[row][col] =
-					parsedObject as MapTileData;
+				items[row][col] = parsedObject;
 			}
 		}
 
@@ -197,3 +145,4 @@ export function parseMap(
 		? []
 		: pieces;
 }
+

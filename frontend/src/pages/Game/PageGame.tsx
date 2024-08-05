@@ -15,6 +15,7 @@ import WindowToolbar, {
 	ToolbarType
 } from "./GlobalUI/WindowToolbar";
 import MagnateMap from "./Map/MagnateMap";
+import Placer from "./Map/Placer";
 import RestaurantPlacer from "./Map/RestaurantPlacer";
 import GlobalReserveDisplay from "./Reserve/GlobalReserveDisplay";
 import SalaryHandler from "./SalaryHandler/SalaryHandler";
@@ -155,9 +156,12 @@ function PageGame() {
 	// 	switch ()
 	// })();
 
+	console.debug("Re-rendered main");
+
 	useEffect(() => {
 		setToolbarStatus(state);
 	}, [state]);
+
 	if (isMyTurn === null) return <></>;
 	// TODO: Fix invisible elements to not each click inputs and keyboard inputs
 	return (
@@ -198,6 +202,7 @@ function PageGame() {
 						e.stopPropagation();
 					}}
 				>
+					<Placer />
 					{mapConditional}
 				</MagnateMap>
 			) : (

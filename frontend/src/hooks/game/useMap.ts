@@ -17,7 +17,7 @@ const RECOIL_MAP_HOVER_CALLBACK_LIST: MapClickCallback[] =
 	[];
 
 type MapClickCallback = (
-	event: MouseEvent
+	event: MapCursorEvent
 ) => void | Promise<void>;
 
 // interface Renderable {
@@ -30,7 +30,7 @@ export enum MAP_RENDER_KEYS {
 	HOUSES = "HOUSES"
 }
 
-type MouseEvent =
+type MapCursorEvent =
 	| {
 			type: "TILE";
 			data: MapTileData;
@@ -126,7 +126,7 @@ function useMap() {
 	}
 
 	async function sendMapObjectClickEvent(
-		event: MouseEvent
+		event: MapCursorEvent
 	) {
 		for (const callback of RECOIL_MAP_CLICK_CALLBACK_LIST) {
 			try {
@@ -141,7 +141,7 @@ function useMap() {
 	}
 
 	async function sendMapObjectHoverEvent(
-		event: MouseEvent
+		event: MapCursorEvent
 	) {
 		for (const callback of RECOIL_MAP_HOVER_CALLBACK_LIST) {
 			try {
@@ -158,7 +158,7 @@ function useMap() {
 	const onMapObjectClicked = useCallback(
 		(
 			callback: (
-				event: MouseEvent
+				event: MapCursorEvent
 			) => void | Promise<void>
 		) => {
 			RECOIL_MAP_CLICK_CALLBACK_LIST.push(callback);
@@ -169,7 +169,7 @@ function useMap() {
 	const onMapObjectHovered = useCallback(
 		(
 			callback: (
-				event: MouseEvent
+				event: MapCursorEvent
 			) => void | Promise<void>
 		) => {
 			RECOIL_MAP_HOVER_CALLBACK_LIST.push(callback);
