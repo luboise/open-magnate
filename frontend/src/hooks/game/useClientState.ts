@@ -160,6 +160,13 @@ function useClientState(
 		});
 	}, [hovering]);
 
+	useEffect(() => {
+		document.addEventListener(
+			"mousedown",
+			(event) => {}
+		);
+	}, []);
+
 	return {
 		currentlyPlacingTile: Boolean(
 			clientState.placementStatus === "PLACING"

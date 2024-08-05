@@ -13,8 +13,8 @@ function Placer({}: Props) {
 	const {
 		currentlyPlacingTile,
 		tileBeingPlaced,
-		updatePlacement,
-		rotatePlacement
+		rotatePlacement,
+		commitPlacement
 	} = useClientState();
 
 	const boardInfo = useBoardInfo();
@@ -81,6 +81,7 @@ function Placer({}: Props) {
 				gridColumn: `${tile.pos.x + 1} / span ${mapWidth}`,
 				gridRow: `${tile.pos.y + 1} / span ${mapHeight}`
 			}}
+			onClick={commitPlacement}
 		>
 			{tile.tileType === "RESTAURANT" ? (
 				<RestaurantImage
