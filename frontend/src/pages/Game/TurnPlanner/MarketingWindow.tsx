@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import {
 	MarketingTile,
 	MarketingTilesByNumber
-} from "../../../../../shared/Marketing";
+} from "../../../../../shared/MapTiles/MarketingTiles";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import MapMarketingTile from "../Map/MapMarketingTile";
 import "./MarketingWindow.css";

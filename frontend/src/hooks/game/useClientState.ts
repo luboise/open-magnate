@@ -37,13 +37,13 @@ const clientStateAtom = atom<ClientState>({
 	}
 });
 
-interface Props {
-	onTilePlaced: (
-		placed: Placable
-	) => void | Promise<void>;
-}
+type OnTilePlacedCallback = (
+	placed: Placable
+) => void | Promise<void>;
 
-function useClientState({ onTilePlaced }: Props) {
+function useClientState(
+	onTilePlaced?: OnTilePlacedCallback
+) {
 	const [clientState, setClientState] =
 		useRecoilState(clientStateAtom);
 
@@ -55,17 +55,37 @@ function useClientState({ onTilePlaced }: Props) {
 		});
 	}
 
-	function placeElement() {
+	function commitPlacement() {
 		// TODO: Put the placement logic here
+		if (
+			clientState.placing === null ||
+			clientState.placementStatus !== "PLACING"
+		) {
+			return;
+		}
+
+		setClientState({
+			...clientState,
+			placementStatus: "SUCCESS",
+			placing: clientState.placing
+		});
 	}
 
 	useEffect(() => {
 		if (clientState.placementStatus === "SUCCESS") {
-			onTilePlaced(clientState.placing);
+			onTilePlaced &&
+				onTilePlaced(clientState.placing);
 		}
 	}, [clientState.placementStatus]);
 
-	return {};
+	return {
+		currentlyPlacingTile: Boolean(
+			clientState.placementStatus === "PLACING"
+		),
+		tileBeingPlaced: clientState.placing,
+		startPlacing,
+		commitPlacement
+	};
 }
 
 export default useClientState;
