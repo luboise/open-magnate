@@ -4,6 +4,7 @@ import RestaurantImage from "../../../global_components/RestaurantImage";
 import useClientState from "../../../hooks/game/useClientState";
 import { useBoardInfo } from "../../../hooks/game/useMap";
 import { MapOverlayTile } from "../../../utils";
+import MapMarketingTile from "./MapMarketingTile";
 
 type Props = {};
 
@@ -62,12 +63,10 @@ function Placer({}: Props) {
 		);
 	};
 
-	console.debug("TILE: ", tile);
-
 	if (!tile) return <></>;
 
 	const rotated: boolean =
-		tile.rotation === 90 || tile.rotation === 270;
+		tile.rotation === 0 || tile.rotation === 180;
 
 	const mapWidth = rotated ? tile.width : tile.height;
 	const mapHeight = rotated ? tile.height : tile.width;
@@ -110,6 +109,8 @@ function Placer({}: Props) {
 					onWheel={onScroll}
 					// onClick={submitRestaurant}
 				/>
+			) : tile.tileType === "MARKETING" ? (
+				<MapMarketingTile tile={tile} />
 			) : (
 				<></>
 			)}

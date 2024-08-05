@@ -21,9 +21,7 @@ function MapTile(props: MapTileProps) {
 		if (tileData.tileType === TileType.ROAD)
 			return (
 				<RoadTileElements
-					roadDirections={
-						tileData.data as DirectionBools
-					}
+					roadDirections={tileData.adjacentRoads}
 				/>
 			);
 

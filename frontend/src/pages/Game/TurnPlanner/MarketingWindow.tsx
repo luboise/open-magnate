@@ -3,6 +3,7 @@ import {
 	MarketingTile,
 	MarketingTilesByNumber
 } from "../../../../../shared/MapTiles/MarketingTiles";
+import useClientState from "../../../hooks/game/useClientState";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import MapMarketingTile from "../Map/MapMarketingTile";
 import "./MarketingWindow.css";
@@ -14,6 +15,8 @@ interface Props {
 function MarketingWindow({ employeeHiringIndex }: Props) {
 	const { myEmployees } = useGameStateView();
 
+	const { startPlacing } = useClientState();
+
 	const employee = useMemo(() => {
 		const e = myEmployees[employeeHiringIndex];
 		if (!e)
@@ -23,6 +26,27 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 
 		return e;
 	}, [employeeHiringIndex, myEmployees]);
+
+	function MarketingColumn({
+		title,
+		tiles
+	}: ColumnProps) {
+		return (
+			<div>
+				<h3>{title}</h3>
+				<div className="marketing-column">
+					{tiles.map((tile) => (
+						<MapMarketingTile
+							onClick={() =>
+								startPlacing(tile)
+							}
+							tile={tile}
+						/>
+					))}
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="marketing-window">
@@ -69,22 +93,6 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 interface ColumnProps {
 	title: string;
 	tiles: MarketingTile[];
-}
-
-function MarketingColumn({ title, tiles }: ColumnProps) {
-	return (
-		<div>
-			<h3>{title}</h3>
-			<div className="marketing-column">
-				{tiles.map((tile) => (
-					<MapMarketingTile
-						onClick={alert}
-						tile={tile}
-					/>
-				))}
-			</div>
-		</div>
-	);
 }
 
 export default MarketingWindow;

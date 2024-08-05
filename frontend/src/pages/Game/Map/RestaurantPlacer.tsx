@@ -41,8 +41,7 @@ function RestaurantPlacer() {
 		[]
 	);
 
-	const { rotatePlacement, startPlacing } =
-		useClientState(onTileDropped);
+	const { startPlacing } = useClientState(onTileDropped);
 
 	// const [state, dispatch] = useReducer(
 	// 	(
