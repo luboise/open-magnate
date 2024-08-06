@@ -18,5 +18,8 @@ export * from "./Routes";
 export * from "./utils";
 
 // Shared types that rely on backend types
-export * from "../backend/src/dataViews";
+
+export * from "../backend/src/shareToFront";
+
+export * from "./views";
 

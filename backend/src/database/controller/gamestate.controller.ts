@@ -7,35 +7,23 @@ import {
 	CountEmptySlots,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
-	MarketingCampaignView,
-	PLAYER_DEFAULTS,
-	RestaurantView
+	PLAYER_DEFAULTS
 } from "../../../../shared";
 import { GetEmployeeTreeOrThrow } from "../../../../shared/EmployeeStructure";
+import { MapStringChar } from "../../../../shared/MapParsing";
 import { MoveData } from "../../../../shared/Moves";
-import {
-	GamePlayerViewPrivate,
-	GameStateView,
-	GameStateViewPerPlayer,
-	GardenView
-} from "../../dataViews";
+import { parseTurnOrder } from "../../../../shared/views/GameStateViews";
 import prisma from "../../datasource";
 import { TransactMove as TransactMoves } from "../../game/HandleMove";
 import {
 	MAP_PIECES,
-	MapStringChar,
 	createMapString
 } from "../../game/MapPieces";
-import { Reserve } from "../../game/NewGameStructures";
-import {
-	GetTransposed,
-	parseJsonArray,
-	readJsonNumberArray as parseJsonNumberArray
-} from "../../utils";
+import { GetTransposed } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
 import { FullLobby } from "./lobby.controller";
 
-function copyArray<T>(
+export function copyArray<T>(
 	data: T[][],
 	mainArray: T[][],
 	xStart: number = 0,
@@ -50,19 +38,6 @@ function copyArray<T>(
 	}
 
 	// return outArray;
-}
-
-function ReadyStatusToBoolean(
-	status: READY_STATUS
-): boolean | null {
-	switch (status) {
-		case "READY":
-			return true;
-		case "NOT_READY":
-			return false;
-		default:
-			return null;
-	}
 }
 
 export const FullGamePlayerInclude: Prisma.GamePlayerInclude =
@@ -137,7 +112,7 @@ export function getTurnOrderPickOrder(
 	return sortedPlayers.map((player) => player.number);
 }
 
-function getTurnOrderSelectionCurrentPlayer(
+export function getTurnOrderSelectionCurrentPlayer(
 	game: FullGameState
 ): number {
 	const currentTurnOrder = parseTurnOrder(game.turnOrder);
@@ -179,73 +154,6 @@ function getTurnOrderSelectionCurrentPlayer(
 	throw new Error(
 		`Unable to find the next player to choose turn order in lobby #${game.id}`
 	);
-}
-
-export function getTurnOrder(
-	game: FullGameState
-): number[] {
-	if (game.turnProgress === "TURN_ORDER_SELECTION")
-		return getTurnOrderPickOrder(game);
-
-	const turnOrder = parseTurnOrder(game.oldTurnOrder);
-	if (turnOrder.some((p) => p === null))
-		throw new Error(
-			`Null found in turn order for lobby #${game.id}`
-		);
-	return turnOrder as number[];
-}
-
-export function getCurrentPlayer(
-	game: FullGameState
-): number | null {
-	if (
-		game.turnProgress === "RESTRUCTURING" ||
-		game.turnProgress === "SALARY_PAYOUTS"
-	)
-		return null;
-
-	if (game.turnProgress === "TURN_ORDER_SELECTION") {
-		return getTurnOrderSelectionCurrentPlayer(game);
-	}
-
-	const turnOrder = parseTurnOrder(game.turnOrder);
-	for (const playerNumber of turnOrder) {
-		if (playerNumber === null)
-			throw new Error(
-				`Null player found outside of turn order selection in lobby #${game.id}`
-			);
-		const player = game.players.find(
-			(player) => player.number === playerNumber
-		);
-		if (!player) {
-			throw new Error(
-				`Invalid player index (${playerNumber}) requested in lobby #${game.id}`
-			);
-		}
-		if (player.ready === "READY") continue;
-
-		return player.number;
-	}
-
-	return null;
-}
-
-export function parseTurnOrder(
-	serialisedTurnOrder: string
-): (number | null)[] {
-	return serialisedTurnOrder
-		.split("")
-		.map((str) => (str === "X" ? null : Number(str)));
-}
-
-export function serialiseTurnOrder(
-	turnOrder: (number | null)[]
-): string {
-	return turnOrder
-		.map((player) =>
-			player === null ? "X" : player.toString()
-		)
-		.join("");
 }
 
 const GameStateController = {
@@ -327,7 +235,6 @@ const GameStateController = {
 				const piece = MAP_PIECES[tileKey];
 
 				// console.log("piece: ", piece);
-
 				if (!piece) {
 					console.log(
 						`Piece ${tileKey} is invalid. Skipping this piece.`
@@ -343,7 +250,6 @@ const GameStateController = {
 				);
 
 				// console.log(mapArray);
-
 				// If there is a house in this tile
 				const houseIndex = piece
 					.flat()
@@ -365,10 +271,8 @@ const GameStateController = {
 		}
 
 		// console.log(mapArray);
-
 		const outString = createMapString(mapArray);
 		// console.log(outString);
-
 		return [outString, houses];
 	},
 
@@ -389,186 +293,12 @@ const GameStateController = {
 	// 					data: houses
 	// 				}
 	// 			}
-
 	// 			// currentTurn: 0,
 	// 			// currentPlayer: null,
 	// 			// turnProgress: TurnProgress.SETTING_UP
 	// 		}
 	// 	});
 	// },
-
-	GetGameStateView: (lobby: FullLobby): GameStateView => {
-		const gameState = lobby.gameState;
-		if (!gameState)
-			throw new Error(
-				"Unable to fetch GameStateView from lobby, as its GameState is null."
-			);
-
-		// TODO: Fix this to be more efficient
-		const turnOrder = getTurnOrder(gameState);
-		const currentPlayer = getCurrentPlayer(gameState);
-
-		// gameState.marketingCampaigns.map(
-		// 	(campaign) => {
-		// 		return {
-		// 			priority: campaign.number,
-		// 			turnsRemaining:
-		// 				campaign.turnsRemaining,
-
-		// 			type: campaign.type,
-		// 			x: campaign.x,
-		// 			y: campaign.y,
-		// 			orientation:
-		// 				campaign.orientation
-		// 		};
-		// 	}
-		// ),
-
-		return {
-			currentPlayer: currentPlayer,
-			currentTurn: gameState.currentTurn,
-			turnProgress: gameState.turnProgress,
-			map: gameState.rawMap,
-			playerCount: gameState.playerCount,
-			turnOrder: turnOrder,
-			marketingCampaigns: gameState.players.reduce<
-				MarketingCampaignView[]
-			>(
-				(acc, curr) => {
-					return acc.concat(
-						curr.marketingCampaigns.map(
-							(campaign) => ({
-								playerNumber:
-									campaign.playerNumber,
-								priority:
-									campaign.marketingNumber,
-								turnsRemaining:
-									campaign.turnsRemaining,
-
-								type: campaign.type,
-								x: campaign.x,
-								y: campaign.y,
-								orientation:
-									campaign.orientation
-							})
-						)
-					);
-				},
-
-				[]
-			),
-
-			gardens: gameState.houses
-				.filter((house) => house.garden)
-				.map((house): GardenView => {
-					// Can safely ignore TypeScript type complaints since we pre-filtered the list
-					return {
-						houseNumber: house.number,
-						x: house.garden!.x,
-						y: house.garden!.y,
-						orientation:
-							house.garden!.orientation
-					};
-				}),
-			houses: gameState.houses.map((house) => ({
-				demand: house.demand.map(
-					(demand) => demand.type
-				),
-				demandLimit: house.demandLimit,
-				priority: house.number,
-				x: house.x,
-				y: house.y,
-				garden: house.garden
-					? {
-							houseNumber:
-								house.garden?.houseId,
-							x: house.garden?.x,
-							y: house.garden?.y,
-							orientation:
-								house.garden?.orientation
-						}
-					: null,
-				orientation: "HORIZONTAL"
-			})),
-			players: gameState.players.map(
-				(player): GamePlayerViewPrivate => ({
-					money: player.money,
-					playerNumber: player.number,
-					restaurant: player.restaurantData.id,
-					milestones: parseJsonNumberArray(
-						player.milestones
-					),
-					employees: parseJsonArray(
-						player.employees
-					),
-					employeeTreeStr: player.employeeTree,
-					ready: ReadyStatusToBoolean(
-						player.ready
-					),
-					marketingCampaigns:
-						player.marketingCampaigns.map(
-							(campaign) => ({
-								playerNumber:
-									campaign.playerNumber,
-								priority:
-									campaign.marketingNumber,
-								turnsRemaining:
-									campaign.turnsRemaining,
-
-								type: campaign.type,
-								x: campaign.x,
-								y: campaign.y,
-								orientation:
-									campaign.orientation,
-								employeeIndex:
-									campaign.employeeIndex
-							})
-						)
-				})
-			),
-			restaurants: gameState.players
-				.map((player) =>
-					player.restaurants.map((res) => {
-						const rv: RestaurantView = {
-							player: player.number,
-							x: res.x,
-							y: res.y,
-							orientation: "HORIZONTAL"
-						};
-
-						return rv;
-					})
-				)
-				.flat(1),
-			reserve: gameState.reserve as Reserve
-		};
-	},
-
-	GetPublicGameStateView: (
-		gsv: GameStateView,
-		playerNumber: number
-	): GameStateViewPerPlayer => {
-		const player = gsv.players.find(
-			(player) => player.playerNumber === playerNumber
-		);
-		if (!player)
-			throw new Error(
-				`Unable to get public game state for invalid player: ${playerNumber}`
-			);
-
-		const newVal: GameStateViewPerPlayer = {
-			...gsv,
-			players: gsv.players.map((eachPlayer) => {
-				const { employees, ...rest } = eachPlayer;
-				return {
-					...rest
-				};
-			}),
-			privateData: player
-		};
-
-		return newVal;
-	},
 
 	StartGame: async (
 		lobby: FullLobby
@@ -679,3 +409,51 @@ const GameStateController = {
 };
 
 export default GameStateController;
+export function getTurnOrder(
+	game: FullGameState
+): number[] {
+	if (game.turnProgress === "TURN_ORDER_SELECTION")
+		return getTurnOrderPickOrder(game);
+
+	const turnOrder = parseTurnOrder(game.oldTurnOrder);
+	if (turnOrder.some((p) => p === null))
+		throw new Error(
+			`Null found in turn order for lobby #${game.id}`
+		);
+	return turnOrder as number[];
+}
+
+export function getCurrentPlayer(
+	game: FullGameState
+): number | null {
+	if (
+		game.turnProgress === "RESTRUCTURING" ||
+		game.turnProgress === "SALARY_PAYOUTS"
+	)
+		return null;
+
+	if (game.turnProgress === "TURN_ORDER_SELECTION") {
+		return getTurnOrderSelectionCurrentPlayer(game);
+	}
+
+	const turnOrder = parseTurnOrder(game.turnOrder);
+	for (const playerNumber of turnOrder) {
+		if (playerNumber === null)
+			throw new Error(
+				`Null player found outside of turn order selection in lobby #${game.id}`
+			);
+		const player = game.players.find(
+			(player) => player.number === playerNumber
+		);
+		if (!player) {
+			throw new Error(
+				`Invalid player index (${playerNumber}) requested in lobby #${game.id}`
+			);
+		}
+		if (player.ready === "READY") continue;
+
+		return player.number;
+	}
+
+	return null;
+}

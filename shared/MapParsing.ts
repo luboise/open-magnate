@@ -1,9 +1,17 @@
-import { new2DArray } from "../backend/src/utils";
 import {
-	CHAR_TO_MAP_TILE_CONVERTER,
+	GardenView,
+	HouseView,
+	MarketingCampaignView,
+	RestaurantView
+} from "../backend/src/dataViews";
+import { new2DArray } from "../backend/src/utils";
+
+import {
 	PartialMap2D,
-	PartialMapTileData
+	PartialMapTileData,
+	UndetailedMap2D
 } from "./MapData";
+import { MarketingTilesByNumber } from "./MapTiles";
 import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_SIZE,
@@ -12,6 +20,43 @@ import {
 	MapTileData
 } from "./MapTiles/MapPieceTiles";
 import { TileType } from "./MapTiles/Tile";
+
+export type MapStringChar =
+	| "X"
+	| "R"
+	| "L"
+	| "C"
+	| "B"
+	| "H"
+	| "X"
+	| "M";
+
+export function IsValidMapStringChar(
+	char: string
+): char is MapStringChar {
+	return (
+		char.length === 1 &&
+		char in CHAR_TO_MAP_TILE_CONVERTER
+	);
+}
+
+export const MAP_PIECE_ROW_SEP = " ";
+export const MAP_PIECE_COL_SEP = ";";
+
+export type ParsableMapChar =
+	| MapStringChar
+	| typeof MAP_PIECE_ROW_SEP
+	| typeof MAP_PIECE_COL_SEP;
+
+export type ParsableMapString = string;
+
+export function IsParsableMapString(
+	str: string
+): str is ParsableMapString {
+	return Array.from(str).every((char) =>
+		IsValidMapStringChar(char)
+	);
+}
 
 export function translateMapTile(
 	tile: MapTileData,
@@ -24,16 +69,11 @@ export function translateMapTile(
 }
 
 export function parseMapChar(
-	char: string,
+	char: MapStringChar,
 	x: number,
 	y: number
 ): PartialMapTileData {
 	// Handle invalid character
-	if (!(char in CHAR_TO_MAP_TILE_CONVERTER)) {
-		throw new Error(
-			`Invalid char found: ${char}. Unable to construct map tile from char '${char}'.`
-		);
-	}
 
 	const parsedObject: PartialMapTileData = {
 		...CHAR_TO_MAP_TILE_CONVERTER[char],
@@ -102,6 +142,11 @@ export function parseMapPiece(
 			) {
 				const char: string = chars[row][col];
 
+				if (!IsValidMapStringChar(char))
+					throw new Error(
+						`Invalid map char: ${char}`
+					);
+
 				const parsedObject = parseMapChar(
 					char,
 					col,
@@ -123,6 +168,9 @@ export function parseMapPiece(
 export function parseMap(
 	mapString: string
 ): MapPieceData[] {
+	if (!IsParsableMapString(mapString))
+		throw new Error("Invalid map string");
+
 	let pieces: MapPieceData[] = [];
 
 	const piecesRows = mapString.split("]");
@@ -145,4 +193,108 @@ export function parseMap(
 		? []
 		: pieces;
 }
+
+export function mapTo2DArray(
+	rawMap: ParsableMapString
+): UndetailedMap2D | null {
+	try {
+		return rawMap.split(";").map((line, y) =>
+			line.split("").map((char, x) => {
+				if (!IsValidMapStringChar(char))
+					throw new Error(
+						"Invalid map character"
+					);
+				return char;
+			})
+		);
+	} catch (error) {
+		console.debug("Unable to parse raw map: ", error);
+		return null;
+	}
+}
+
+// Row order
+export function parseRawMap(
+	map: string
+): PartialMap2D | null {
+	try {
+		const asArray = mapTo2DArray(map);
+		if (!asArray) return null;
+
+		return asArray.map((col, x) =>
+			col.map((tile, y) => parseMapChar(tile, x, y))
+		);
+	} catch (error) {
+		console.debug("Unable to parse raw map: ", error);
+		return null;
+	}
+}
+
+export function createDetailedMapString(
+	rawMap: string,
+	marketingCampaigns: MarketingCampaignView[],
+	restaurants: RestaurantView[],
+	houses: HouseView[],
+	gardens: GardenView[]
+): string {
+	const map = mapTo2DArray(rawMap);
+
+	if (!map) throw new Error("Unable to parse raw map");
+
+	for (const house of houses) {
+		for (let i = 0; i < 2; i++)
+			for (let j = 0; j < 2; j++)
+				map[house.x + i][house.y + j] = "H";
+	}
+
+	for (const restaurant of restaurants) {
+		for (let i = 0; i < 2; i++)
+			for (let j = 0; j < 2; j++)
+				map[restaurant.x + i][restaurant.y + j] =
+					"R";
+	}
+
+	for (const marketingCampaign of marketingCampaigns) {
+		const tile =
+			MarketingTilesByNumber[
+				marketingCampaign.priority
+			];
+		if (!tile)
+			throw new Error(
+				`Error creating detailed map string, no tile found with tile number ${marketingCampaign.priority}`
+			);
+
+		const width =
+			marketingCampaign.orientation === "HORIZONTAL"
+				? tile.width
+				: tile.height;
+		const height =
+			marketingCampaign.orientation === "HORIZONTAL"
+				? tile.height
+				: tile.width;
+
+		for (let i = 0; i < width; i++)
+			for (let j = 0; j < height; j++)
+				map[marketingCampaign.x + i][
+					marketingCampaign.y + j
+				] = "M";
+	}
+
+	return map.map((col) => col.join("")).join(";");
+}
+
+export const CHAR_TO_MAP_TILE_CONVERTER: Record<
+	MapStringChar,
+	{ tileType: TileType }
+> = {
+	X: { tileType: TileType.EMPTY },
+
+	R: { tileType: TileType.ROAD },
+	H: { tileType: TileType.HOUSE },
+
+	L: { tileType: TileType.LEMONADE },
+	C: { tileType: TileType.COLA },
+	B: { tileType: TileType.BEER },
+	M: { tileType: TileType.MARKETING }
+} as const;
 

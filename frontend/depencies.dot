@@ -1,0 +1,19 @@
+strict digraph "dependency-cruiser output"{
+    rankdir="LR" splines="true" overlap="false" nodesep="0.16" ranksep="0.18" fontname="Helvetica-bold" fontsize="9" style="rounded,bold,filled" fillcolor="#ffffff" compound="true"
+    node [shape="box" style="rounded, filled" height="0.2" color="black" fillcolor="#ffffcc" fontcolor="black" fontname="Helvetica" fontsize="9"]
+    edge [arrowhead="normal" arrowsize="0.6" penwidth="2.0" color="#00000033" fontname="Helvetica" fontsize="9"]
+
+    subgraph "cluster_.." {label=".." subgraph "cluster_../backend" {label="backend" subgraph "cluster_../backend/src" {label="src" "../backend/src/dataViews.ts" [label=<dataViews.ts> tooltip="dataViews.ts" URL="../backend/src/dataViews.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_src" {label="src" "src/App.tsx" [label=<App.tsx> tooltip="App.tsx" URL="src/App.tsx" fillcolor="#bbfeff"] }
+    "src/App.tsx" -> "src/pages/Lobby/PageLobby.tsx"
+    subgraph "cluster_src" {label="src" "src/main.tsx" [label=<main.tsx> tooltip="main.tsx" URL="src/main.tsx" fillcolor="#bbfeff"] }
+    "src/main.tsx" -> "src/App.tsx"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/pages" {label="pages" subgraph "cluster_src/pages/Game" {label="Game" subgraph "cluster_src/pages/Game/GlobalUI" {label="GlobalUI" "src/pages/Game/GlobalUI/TurnHandler.tsx" [label=<TurnHandler.tsx> tooltip="TurnHandler.tsx" URL="src/pages/Game/GlobalUI/TurnHandler.tsx" fillcolor="#bbfeff"] } } } }
+    "src/pages/Game/GlobalUI/TurnHandler.tsx" -> "../backend/src/dataViews.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/pages" {label="pages" subgraph "cluster_src/pages/Game" {label="Game" "src/pages/Game/PageGame.tsx" [label=<PageGame.tsx> tooltip="PageGame.tsx" URL="src/pages/Game/PageGame.tsx" fillcolor="#bbfeff"] } } }
+    "src/pages/Game/PageGame.tsx" -> "src/pages/Game/GlobalUI/TurnHandler.tsx"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/pages" {label="pages" subgraph "cluster_src/pages/Lobby" {label="Lobby" subgraph "cluster_src/pages/Lobby/LobbyManager" {label="LobbyManager" "src/pages/Lobby/LobbyManager/LobbyManager.tsx" [label=<LobbyManager.tsx> tooltip="LobbyManager.tsx" URL="src/pages/Lobby/LobbyManager/LobbyManager.tsx" fillcolor="#bbfeff"] } } } }
+    "src/pages/Lobby/LobbyManager/LobbyManager.tsx" -> "src/pages/Game/PageGame.tsx"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/pages" {label="pages" subgraph "cluster_src/pages/Lobby" {label="Lobby" "src/pages/Lobby/PageLobby.tsx" [label=<PageLobby.tsx> tooltip="PageLobby.tsx" URL="src/pages/Lobby/PageLobby.tsx" fillcolor="#bbfeff"] } } }
+    "src/pages/Lobby/PageLobby.tsx" -> "src/pages/Lobby/LobbyManager/LobbyManager.tsx"
+}

@@ -20,6 +20,10 @@ import {
 	MakeMoveMessage,
 	StartGameMessage
 } from "../../../shared";
+import {
+	GetGameStateView,
+	GetPublicGameStateView
+} from "../dataViews";
 import GameStateController from "../database/controller/gamestate.controller";
 import { GameClass } from "../game/GameClass";
 import { connectionsToWebsocket } from "./connections";
@@ -318,8 +322,7 @@ function updateOnePlayer(
 			} as FrontendMessage)
 		);
 	} else if (updateType === "GAMESTATE") {
-		const gameStateView =
-			GameStateController.GetGameStateView(lobby);
+		const gameStateView = GetGameStateView(lobby);
 		if (!gameStateView)
 			throw new Error(
 				"Unable to get game state from lobby."
@@ -339,7 +342,7 @@ function updateOnePlayer(
 		ws.send(
 			JSON.stringify({
 				type: "GAMESTATE_UPDATED",
-				data: GameStateController.GetPublicGameStateView(
+				data: GetPublicGameStateView(
 					gameStateView,
 					playerNumber
 				)
@@ -347,8 +350,7 @@ function updateOnePlayer(
 		);
 	} else if (updateType === "ALL") {
 		// TODO: Refactor this to not be repeated
-		const gameStateView =
-			GameStateController.GetGameStateView(lobby);
+		const gameStateView = GetGameStateView(lobby);
 		if (!gameStateView)
 			throw new Error(
 				"Unable to get game state from lobby."
@@ -373,11 +375,10 @@ function updateOnePlayer(
 							lobby,
 							sessionKey
 						),
-					gameState:
-						GameStateController.GetPublicGameStateView(
-							gameStateView,
-							playerNumber
-						)
+					gameState: GetPublicGameStateView(
+						gameStateView,
+						playerNumber
+					)
 				}
 			} as FrontendMessage)
 		);

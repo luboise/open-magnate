@@ -36,4 +36,3 @@ export interface MarketingAction extends BaseGameAction {
 export type TurnAction = RecruitAction | MarketingAction;
 
 export const BASE_SALARY = 5;
-

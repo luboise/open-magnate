@@ -14,10 +14,12 @@ import { EMPLOYEE_ID } from "../../../shared/EmployeeIDs";
 import { MarketingAction } from "../../../shared/GameState";
 import { MovePlaceRestaurant } from "../../../shared/Moves";
 import {
-	FullGameStateInclude,
-	getCurrentPlayer,
 	parseTurnOrder,
 	serialiseTurnOrder
+} from "../../../shared/views/GameStateViews";
+import {
+	FullGameStateInclude,
+	getCurrentPlayer
 } from "../database/controller/gamestate.controller";
 import { parseJsonArray } from "../utils";
 import { GetNextTurnPhase } from "./HandleMove";

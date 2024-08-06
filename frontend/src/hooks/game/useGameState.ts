@@ -27,7 +27,7 @@ import {
 	ParseEmployeeTree,
 	RestaurantView,
 	TURN_PROGRESS,
-	parseMapChar
+	parseRawMap
 } from "../../utils";
 import { GameStateAtom } from "./useFullGameState";
 
@@ -49,16 +49,7 @@ const mapColumnOrderSelector = selector<MapSelectorType>({
 		if (!mapString)
 			throw new Error("No map foudn on gamestate");
 
-		const rowOrderMap =
-			mapString
-				.split(";")
-				.map((line, y) =>
-					line
-						.split("")
-						.map((char, x) =>
-							parseMapChar(char, x, y)
-						)
-				) ?? null;
+		const rowOrderMap = parseRawMap(mapString) ?? null;
 
 		if (rowOrderMap === null)
 			throw new Error(

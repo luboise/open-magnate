@@ -3,7 +3,7 @@ import {
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
 } from "../../../../shared";
-import GameStateController from "../../database/controller/gamestate.controller";
+import GameStateController from "../../../../shared/views/GameStateViews";
 import { GetNewReserve } from "../../game/NewGameStructures";
 import { GetTransposed } from "../../utils";
 

@@ -1,28 +1,10 @@
 import { ENTRANCE_CORNER } from "../backend/src/dataViews";
-import { TileType } from "./MapTiles";
+import { MapStringChar } from "./MapParsing";
 import {
 	BaseMapTileData,
 	MapTileData
 } from "./MapTiles/MapPieceTiles";
 
-export const CHAR_TO_MAP_TILE_CONVERTER: Record<
-	string,
-	{ tileType: TileType }
-> = {
-	X: { tileType: TileType.EMPTY },
-
-	R: { tileType: TileType.ROAD },
-	H: { tileType: TileType.HOUSE },
-
-	L: { tileType: TileType.LEMONADE },
-	C: { tileType: TileType.COLA },
-	B: { tileType: TileType.BEER }
-} as const;
-
-// export type PartialMapTileData = Omit<
-// 	MapTileData,
-// 	"pieceEdges"
-// >;
 export type PartialMapTileData = Omit<
 	BaseMapTileData,
 	"pieceEdges"
@@ -36,6 +18,7 @@ export type PartialMapTileData = Omit<
 // 	data?: any;
 // };
 
+export type UndetailedMap2D = MapStringChar[][];
 export type PartialMap2D = PartialMapTileData[][];
 export type Map2D = MapTileData[][];
 
