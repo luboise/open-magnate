@@ -1,10 +1,14 @@
-import { MarketingTile } from "../../../utils";
+import {
+	MarketingTile,
+	PartialMarketingTile
+} from "../../../utils";
 import "./MapMarketingTile.css";
 
 import { HTMLAttributes } from "react";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
-	tile: MarketingTile;
+	tile: PartialMarketingTile | MarketingTile;
+	snapToGrid?: boolean;
 }
 
 const BASE_TILE_HEIGHT = 50;
@@ -13,6 +17,7 @@ function MapMarketingTile({
 	tile,
 	className,
 	style,
+	snapToGrid = false,
 	...args
 }: Props) {
 	return (
@@ -21,7 +26,17 @@ function MapMarketingTile({
 			style={{
 				width: `${tile.width * BASE_TILE_HEIGHT}px`,
 				height: `${tile.height * BASE_TILE_HEIGHT}px`,
-				...style
+				...style,
+				...{
+					...(snapToGrid
+						? {
+								gridColumn: `${tile.pos.x + 1} / span ${tile.width}`,
+								gridRow: `${tile.pos.y + 1} / span ${tile.height}`,
+								width: "100%",
+								height: "100%"
+							}
+						: {})
+				}
 			}}
 			{...args}
 		>

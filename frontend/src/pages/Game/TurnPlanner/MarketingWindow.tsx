@@ -14,7 +14,8 @@ interface Props {
 }
 
 function MarketingWindow({ employeeHiringIndex }: Props) {
-	const { myEmployees, playerData } = useGameStateView();
+	const { myEmployees, playerData, marketingCampaigns } =
+		useGameStateView();
 
 	const { startPlacing } = useClientState();
 
@@ -37,6 +38,13 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 				<h3>{title}</h3>
 				<div className="marketing-column">
 					{...tiles.map((partialTile) => {
+						const inUse =
+							marketingCampaigns.some(
+								(campaign) =>
+									campaign.priority ===
+									partialTile.tileNumber
+							);
+
 						const tile: MarketingTile = {
 							...partialTile,
 							placingEmployee:
@@ -46,8 +54,14 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 						return (
 							<MapMarketingTile
 								onClick={() =>
+									!inUse &&
 									startPlacing(tile)
 								}
+								style={{
+									filter: inUse
+										? "grayscale(100%)"
+										: undefined
+								}}
 								tile={tile}
 							/>
 						);

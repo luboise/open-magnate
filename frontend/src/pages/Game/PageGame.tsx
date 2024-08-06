@@ -160,7 +160,7 @@ function PageGame() {
 	// 	switch ()
 	// })();
 
-	console.debug("Re-rendered main");
+	// console.debug("Re-rendered main");
 
 	useEffect(() => {
 		setToolbarStatus(state);

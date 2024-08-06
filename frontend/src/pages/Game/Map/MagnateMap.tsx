@@ -2,6 +2,7 @@ import "./MagnateMap.css";
 
 import { HTMLAttributes, PropsWithChildren } from "react";
 
+import { MarketingTilesByNumber } from "../../../../../shared/MapTiles/MarketingTiles";
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useMapTileInteraction from "../../../hooks/game/useMapTileInteraction";
@@ -11,6 +12,7 @@ import {
 	MapTileData
 } from "../../../utils";
 import House from "./House";
+import MapMarketingTile from "./MapMarketingTile";
 import MapTile from "./MapTile";
 
 interface MapProps extends HTMLAttributes<HTMLDivElement> {}
@@ -32,7 +34,8 @@ function MagnateMap({
 		mapRowOrder: map,
 		houses,
 		restaurants,
-		players
+		players,
+		marketingCampaigns
 	} = useGameStateView();
 
 	const { nowHovering } = useMapTileInteraction();
@@ -95,43 +98,13 @@ function MagnateMap({
 					)}
 				</tbody>
 			</table>
-			{/* <div
-					className="map-preview-piece-overlay"
-					style={{
-						// Fit the parent grid fully
-						gridColumn: `1 / span ${map[0].length}`,
-						gridRow: `1 / span ${map.length}`,
 
-						// Make the
-						gridTemplateColumns: `repeat(${map[0].length / MAP_PIECE_WIDTH}, 100px)`,
-						gridTemplateRows: `repeat(${map.length / MAP_PIECE_HEIGHT}, 100px)`
-					}}
-				>
-					{new Array(
-						((map[0].length / MAP_PIECE_WIDTH) *
-							map.length) /
-							MAP_PIECE_HEIGHT
-					).fill(
-						<div
-							style={{
-								width: "100%",
-								height: "100%"
-							}}
-						/>
-					)}
-				</div> */}
 			{/* Tiles */}
 			{...map
 				.flat(2)
 				.filter(FilterPreviewFiles)
 				.map((tile) => (
 					<MapTile
-						// onClick={() => {
-						// 	nowHovering({
-						// 		type: "TILE",
-						// 		data: tile
-						// 	});
-						// }}
 						onMouseEnter={() => {
 							nowHovering(tile);
 						}}
@@ -141,15 +114,7 @@ function MagnateMap({
 
 			{/* Houses */}
 			{...(houses ?? []).map((house) => (
-				<House
-					house={house}
-					// onClick={() => {
-					// 	mapObjectClicked({
-					// 		type: "HOUSE",
-					// 		data: house
-					// 	});
-					// }}
-				/>
+				<House house={house} />
 			))}
 
 			{/* Restaurant */}
@@ -175,10 +140,20 @@ function MagnateMap({
 				);
 			})}
 
-			{/* Extras */}
-			{/* {...Array.from(
-					Object.values(getAllRenderables)
-				).flat(2)} */}
+			{...marketingCampaigns.map((campaign) => (
+				<MapMarketingTile
+					snapToGrid={true}
+					tile={{
+						...MarketingTilesByNumber[
+							campaign.priority
+						],
+						pos: {
+							x: campaign.x,
+							y: campaign.y
+						}
+					}}
+				/>
+			))}
 
 			{children}
 		</div>

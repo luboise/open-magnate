@@ -1,5 +1,4 @@
-import { MarketingType } from "../EmployeeTypes";
-
+import { MarketingType } from "../../frontend/src/utils";
 import { BaseTile, TileType } from "./Tile";
 
 export type PartialMarketingTile = Omit<

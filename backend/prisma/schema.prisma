@@ -81,6 +81,7 @@ model GamePlayer {
   restaurantDataId Int
 
   restaurants GamePlayerRestaurant[]
+  marketingCampaigns	MarketingCampaign[]
 
   lobbyPlayer LobbyPlayer?
 
@@ -126,7 +127,7 @@ model GameState {
 
   // Relations
   houses             House[]
-  marketingCampaigns MarketingCampaign[]
+//   marketingCampaigns MarketingCampaign[]
 
   players GamePlayer[]
 
@@ -176,10 +177,14 @@ model Demand {
 }
 
 model MarketingCampaign {
-  gameId Int
-  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  marketingNumber Int
 
-  number Int
+  gameId Int
+  playerNumber	Int	@map("player_number")
+  owner	GamePlayer	@relation(fields: [gameId, playerNumber], references: [gameId, number], onDelete: Cascade)
+
+  employeeIndex	Int
+
 
   type MARKETING_TYPE
 
@@ -190,7 +195,11 @@ model MarketingCampaign {
 
   orientation ORIENTATION
 
-  @@unique([gameId, number])
+  // Marketing #1 can only be used once in game 1
+  @@unique([gameId, marketingNumber])
+
+  // Each player can only use a marketing employee once
+  @@unique([gameId, playerNumber, employeeIndex])
   @@map("game_marketing_campaign")
 }
 

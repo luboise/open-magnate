@@ -11,6 +11,7 @@ import {
 	TurnAction
 } from "../../../shared";
 import { EMPLOYEE_ID } from "../../../shared/EmployeeIDs";
+import { MarketingAction } from "../../../shared/GameState";
 import { MovePlaceRestaurant } from "../../../shared/Moves";
 import {
 	FullGameStateInclude,
@@ -68,6 +69,12 @@ const ExecuteTurn: MoveTransactionFunctionTyped<
 	for (const turnAction of turn) {
 		if (turnAction.type === "RECRUIT") {
 			newRecruits.push(turnAction.recruiting);
+		}
+		if (turnAction.type === "MARKETING") {
+			await CreateMarketingCampaign(
+				bundle,
+				turnAction
+			);
 		}
 	}
 
@@ -198,6 +205,36 @@ const BackupTurnOrder: MoveTransactionFunctionUntyped =
 				"Unable to update currentTurnOrder"
 			);
 	};
+
+const CreateMarketingCampaign: MoveTransactionFunctionTyped<
+	MarketingAction
+> = async (bundle, action) => {
+	await bundle.ctx.marketingCampaign.create({
+		data: {
+			owner: {
+				connect: {
+					gamePlayerId: {
+						gameId: bundle.gameId,
+						number: bundle.player
+					}
+				}
+			},
+
+			marketingNumber: action.tile.tileNumber,
+			orientation:
+				action.tile.rotation === 0
+					? "HORIZONTAL"
+					: "VERTICAL",
+
+			// TODO: Add the actual number of turns remaining based on player choice
+			turnsRemaining: 4,
+			x: action.tile.pos.x,
+			y: action.tile.pos.y,
+			type: action.tile.marketingType,
+			employeeIndex: action.tile.placingEmployee
+		}
+	});
+};
 
 async function setTurnProgress(
 	bundle: TransactionBundle,
@@ -451,6 +488,7 @@ export default {
 	ValidateTurnProgress,
 	Restructure,
 	ReadyPlayer,
-	PickTurnOrder
+	PickTurnOrder,
+	CreateMarketingCampaign
 };
 

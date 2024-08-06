@@ -7,6 +7,7 @@ import {
 	CountEmptySlots,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
+	MarketingCampaignView,
 	PLAYER_DEFAULTS,
 	RestaurantView
 } from "../../../../shared";
@@ -64,19 +65,21 @@ function ReadyStatusToBoolean(
 	}
 }
 
-export const FullGamePlayerInclude = {
-	restaurantData: true,
-	lobbyPlayer: {
-		include: {
-			userSession: {
-				select: {
-					name: true
+export const FullGamePlayerInclude: Prisma.GamePlayerInclude =
+	{
+		restaurantData: true,
+		lobbyPlayer: {
+			include: {
+				userSession: {
+					select: {
+						name: true
+					}
 				}
 			}
-		}
-	},
-	restaurants: true
-};
+		},
+		marketingCampaigns: true,
+		restaurants: true
+	};
 
 export type FullGamePlayer = Prisma.GamePlayerGetPayload<{
 	include: typeof FullGamePlayerInclude;
@@ -89,7 +92,6 @@ export const FullGameStateInclude = {
 			garden: true
 		}
 	},
-	marketingCampaigns: true,
 	players: {
 		include: FullGamePlayerInclude
 	}
@@ -406,6 +408,22 @@ const GameStateController = {
 		const turnOrder = getTurnOrder(gameState);
 		const currentPlayer = getCurrentPlayer(gameState);
 
+		// gameState.marketingCampaigns.map(
+		// 	(campaign) => {
+		// 		return {
+		// 			priority: campaign.number,
+		// 			turnsRemaining:
+		// 				campaign.turnsRemaining,
+
+		// 			type: campaign.type,
+		// 			x: campaign.x,
+		// 			y: campaign.y,
+		// 			orientation:
+		// 				campaign.orientation
+		// 		};
+		// 	}
+		// ),
+
 		return {
 			currentPlayer: currentPlayer,
 			currentTurn: gameState.currentTurn,
@@ -413,22 +431,33 @@ const GameStateController = {
 			map: gameState.rawMap,
 			playerCount: gameState.playerCount,
 			turnOrder: turnOrder,
-			marketingCampaigns:
-				gameState.marketingCampaigns.map(
-					(campaign) => {
-						return {
-							priority: campaign.number,
-							turnsRemaining:
-								campaign.turnsRemaining,
+			marketingCampaigns: gameState.players.reduce<
+				MarketingCampaignView[]
+			>(
+				(acc, curr) => {
+					return acc.concat(
+						curr.marketingCampaigns.map(
+							(campaign) => ({
+								playerNumber:
+									campaign.playerNumber,
+								priority:
+									campaign.marketingNumber,
+								turnsRemaining:
+									campaign.turnsRemaining,
 
-							type: campaign.type,
-							x: campaign.x,
-							y: campaign.y,
-							orientation:
-								campaign.orientation
-						};
-					}
-				),
+								type: campaign.type,
+								x: campaign.x,
+								y: campaign.y,
+								orientation:
+									campaign.orientation
+							})
+						)
+					);
+				},
+
+				[]
+			),
+
 			gardens: gameState.houses
 				.filter((house) => house.garden)
 				.map((house): GardenView => {
@@ -475,7 +504,26 @@ const GameStateController = {
 					employeeTreeStr: player.employeeTree,
 					ready: ReadyStatusToBoolean(
 						player.ready
-					)
+					),
+					marketingCampaigns:
+						player.marketingCampaigns.map(
+							(campaign) => ({
+								playerNumber:
+									campaign.playerNumber,
+								priority:
+									campaign.marketingNumber,
+								turnsRemaining:
+									campaign.turnsRemaining,
+
+								type: campaign.type,
+								x: campaign.x,
+								y: campaign.y,
+								orientation:
+									campaign.orientation,
+								employeeIndex:
+									campaign.employeeIndex
+							})
+						)
 				})
 			),
 			restaurants: gameState.players

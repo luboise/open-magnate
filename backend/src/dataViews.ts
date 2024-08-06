@@ -1,8 +1,8 @@
 import {
-	MARKETING_TYPE,
 	ORIENTATION,
 	DEMAND_TYPE as PrismaDemandType,
 	ENTRANCE_CORNER as PrismaEntranceCorner,
+	MARKETING_TYPE as PrismaMarketingType,
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
 import { EMPLOYEE_ID } from "../../shared";
@@ -14,6 +14,8 @@ export type TURN_PROGRESS = PrismaTurnProgress;
 
 export type ENTRANCE_CORNER = PrismaEntranceCorner;
 export type DEMAND_TYPE = PrismaDemandType;
+
+export type MarketingType = PrismaMarketingType;
 
 export interface RestaurantView extends Position {
 	player: number;
@@ -63,14 +65,21 @@ export interface GamePlayerViewPrivate
 	extends GamePlayerViewPublic {
 	employees: string[];
 	employeeTreeStr: string;
+	marketingCampaigns: MarketingCampaignViewPrivate[];
 }
 
 export interface MarketingCampaignView extends Position {
 	priority: number;
+	playerNumber: number;
 
-	type: MARKETING_TYPE;
+	type: MarketingType;
 
 	turnsRemaining: number;
+}
+
+export interface MarketingCampaignViewPrivate
+	extends MarketingCampaignView {
+	employeeIndex: number;
 }
 
 export interface HouseView extends Position {

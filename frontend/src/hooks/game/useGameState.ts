@@ -23,6 +23,7 @@ import {
 	IsValidEmployeeId,
 	Map2D,
 	MapTileData,
+	MarketingCampaignView,
 	ParseEmployeeTree,
 	RestaurantView,
 	TURN_PROGRESS,
@@ -246,6 +247,18 @@ const playerCountSelector = selector<number>({
 	}
 });
 
+const marketingCampaignSelector = selector<
+	MarketingCampaignView[]
+>({
+	key: "MARKETING_CAMPAIGNS",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
+
+		return gameState.marketingCampaigns;
+	}
+});
+
 export function useGameStateView() {
 	const mapColOrder = useRecoilValue(
 		mapColumnOrderSelector
@@ -280,6 +293,10 @@ export function useGameStateView() {
 
 	const playerCount = useRecoilValue(playerCountSelector);
 
+	const marketingCampaigns = useRecoilValue(
+		marketingCampaignSelector
+	);
+
 	return {
 		mapColOrder,
 		mapRowOrder,
@@ -294,7 +311,8 @@ export function useGameStateView() {
 		currentTree,
 		reserve,
 		turnOrder,
-		playerCount
+		playerCount,
+		marketingCampaigns
 	};
 }
 

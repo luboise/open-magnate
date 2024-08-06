@@ -1,4 +1,7 @@
-import { Colour } from "../frontend/src/utils";
+import {
+	Colour,
+	MarketingType
+} from "../frontend/src/utils";
 import {
 	EMPLOYEE_ID,
 	FOOD_EMPLOYEE_ID,
@@ -45,12 +48,6 @@ export interface CEOEmployee extends BaseEmployee {
 	capacity: number;
 	notPaid: true;
 }
-
-export type MarketingType =
-	| "BILLBOARD"
-	| "MAILBOX"
-	| "PLANE"
-	| "RADIO";
 
 export interface MarketingEmployee extends BaseEmployee {
 	type: "MARKETING";

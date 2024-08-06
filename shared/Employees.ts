@@ -1,3 +1,4 @@
+import { MarketingType } from "../frontend/src/utils";
 import {
 	EMPLOYEE_ID,
 	FOOD_EMPLOYEE_ID,
@@ -10,8 +11,7 @@ import {
 	FOOD_TYPE,
 	FoodEmployee,
 	ManagementEmployee,
-	MarketingEmployee,
-	MarketingType
+	MarketingEmployee
 } from "./EmployeeTypes";
 
 export enum COLOURS {
