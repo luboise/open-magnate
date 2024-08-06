@@ -221,8 +221,8 @@ export function parseRawMap(
 		const asArray = mapTo2DArray(map);
 		if (!asArray) return null;
 
-		return asArray.map((col, x) =>
-			col.map((tile, y) => parseMapChar(tile, x, y))
+		return asArray.map((col, y) =>
+			col.map((tile, x) => parseMapChar(tile, x, y))
 		);
 	} catch (error) {
 		console.debug("Unable to parse raw map: ", error);
