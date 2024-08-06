@@ -36,8 +36,8 @@ interface EmployeeTreeNodeProps
 }
 
 // 400 pixels apart
-const NODE_HORIZONTAL_DISTANCE = 100;
-const NODE_VERTICAL_DISTANCE = 400;
+// const NODE_HORIZONTAL_DISTANCE = 100;
+// const NODE_VERTICAL_DISTANCE = 400;
 
 function EmployeeTreeNode({
 	node,

@@ -2,6 +2,11 @@ import { MarketingType } from "../EmployeeTypes";
 
 import { BaseTile, TileType } from "./Tile";
 
+export type PartialMarketingTile = Omit<
+	MarketingTile,
+	"placingEmployee"
+>;
+
 export type MarketingTile =
 	| BillBoardMarketingTile
 	| MailboxMarketingTile
@@ -43,7 +48,7 @@ export interface RadioMarketingTile
 
 export const MarketingTilesByNumber: Record<
 	number,
-	MarketingTile
+	PartialMarketingTile
 > = {
 	1: createRadioTile(1),
 	2: createRadioTile(2),
@@ -138,13 +143,12 @@ export function createMarketingTile({
 	tileNumber,
 	width,
 	height
-}: MarketingTileCreationProps): MarketingTile {
+}: MarketingTileCreationProps): PartialMarketingTile {
 	if (marketingType === "RADIO")
 		return createRadioTile(tileNumber);
 
-	const tile: MarketingTile = {
+	return {
 		tileType: TileType.MARKETING,
-		placingEmployee: -1,
 		marketingType: marketingType,
 		tileNumber: tileNumber,
 		width: width,
@@ -152,8 +156,6 @@ export function createMarketingTile({
 		pos: { x: 0, y: 0 },
 		rotation: 0
 	};
-
-	return tile;
 }
 
 export function createRadioTile(

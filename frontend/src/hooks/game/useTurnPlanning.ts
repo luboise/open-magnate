@@ -1,9 +1,4 @@
-import {
-	atom,
-	selector,
-	useRecoilState,
-	useRecoilValue
-} from "recoil";
+import { atom, useRecoilState } from "recoil";
 import {
 	MarketingAction,
 	RecruitAction,
@@ -22,19 +17,19 @@ const gamePlanningAtom = atom<GamePlanningState>({
 	}
 });
 
-const turnActionsSelector = selector<TurnAction[]>({
-	key: "turnActions",
-	get: ({ get }) => {
-		const state = get(gamePlanningAtom);
-		return state.plannedActions;
-	}
-});
+// const turnActionsSelector = selector<TurnAction[]>({
+// 	key: "turnActions",
+// 	get: ({ get }) => {
+// 		const state = get(gamePlanningAtom);
+// 		return state.plannedActions;
+// 	}
+// });
 
 function useTurnPlanning() {
 	const [turnPlanningState, setTurnPlanningState] =
 		useRecoilState(gamePlanningAtom);
 
-	const turnActions = useRecoilValue(turnActionsSelector);
+	// const turnActions = useRecoilValue(turnActionsSelector);
 
 	const { playerData } = useGameStateView();
 	if (!playerData)
@@ -71,13 +66,22 @@ function useTurnPlanning() {
 			return;
 		}
 
-		setTurnPlanningState({
-			...turnPlanningState,
+		console.debug(
+			"NEW ACTION: ",
+			newAction,
+			"OLD LIST: ",
+			turnPlanningState.plannedActions
+		);
+
+		setTurnPlanningState((oldState) => ({
+			...oldState,
 			plannedActions: [
-				...turnPlanningState.plannedActions,
+				...oldState.plannedActions,
 				newAction
 			]
-		});
+		}));
+
+		// setNewAction({ action: newAction });
 	}
 
 	function removeAction(index: number) {
@@ -89,20 +93,18 @@ function useTurnPlanning() {
 				"Invalid index to remove: " + index
 			);
 
-		const newPlannedActions = [
-			...turnPlanningState.plannedActions
-		].filter((_, i) => i !== index);
+		setTurnPlanningState((oldState) => ({
+			...oldState,
+			plannedActions: [
+				...oldState.plannedActions
+			].filter((_, i) => i !== index)
+		}));
 
 		console.debug("Removed action at index " + index);
-
-		setTurnPlanningState({
-			...turnPlanningState,
-			plannedActions: newPlannedActions
-		});
 	}
 
 	return {
-		turnActions,
+		turnActions: turnPlanningState.plannedActions,
 		addAction,
 		removeAction
 	};

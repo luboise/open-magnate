@@ -9,7 +9,8 @@ import useTurnPlanning from "../../../../hooks/game/useTurnPlanning";
 import {
 	MarketingAction,
 	MarketingTile,
-	RestaurantTile
+	RestaurantTile,
+	TileType
 } from "../../../../utils";
 
 // interface RestaurantPlacerState {
@@ -33,7 +34,7 @@ import {
 // 	  };
 
 interface Props {
-	placementTypes: string[];
+	placementTypes: TileType[];
 }
 
 function PlacementHandler({ placementTypes }: Props) {
@@ -52,8 +53,12 @@ function PlacementHandler({ placementTypes }: Props) {
 		async (tile) => {
 			console.debug("Handling tile drop: ", tile);
 
-			if (!placementTypes.includes(tile.tileType))
+			if (!placementTypes.includes(tile.tileType)) {
+				console.debug(
+					`PlacementHandler can't handle ${tile.tileType}`
+				);
 				return;
+			}
 
 			switch (turnProgress) {
 				case "RESTAURANT_PLACEMENT": {
@@ -68,6 +73,7 @@ function PlacementHandler({ placementTypes }: Props) {
 						return;
 
 					addMarketingAction(tile);
+					break;
 				}
 			}
 		},
@@ -80,6 +86,10 @@ function PlacementHandler({ placementTypes }: Props) {
 	// if (event.type === "TILE" && event.data.type === "EMPTY")
 
 	function submitRestaurant(tile: RestaurantTile) {
+		console.debug(
+			"Submitting restaurant placement: ",
+			tile
+		);
 		makeMove({
 			MoveType: MOVE_TYPE.PLACE_RESTAURANT,
 			x: tile.pos.x,
@@ -90,6 +100,8 @@ function PlacementHandler({ placementTypes }: Props) {
 	}
 
 	function addMarketingAction(tile: MarketingTile) {
+		console.debug("Adding marketing action: ", tile);
+
 		const index = tile.placingEmployee;
 		try {
 			if (index === -1) {
@@ -122,7 +134,10 @@ function PlacementHandler({ placementTypes }: Props) {
 
 			addAction(newAction);
 		} catch (error) {
-			console.debug(error);
+			console.debug(
+				"Unable to create marketing action: ",
+				error
+			);
 		}
 	}
 

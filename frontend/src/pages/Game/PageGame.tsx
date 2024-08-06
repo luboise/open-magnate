@@ -8,6 +8,7 @@ import useMap from "../../hooks/game/useMap";
 import useLocalVal from "../../hooks/useLocalVal";
 import usePanning from "../../hooks/usePanning";
 import useScalingValue from "../../hooks/useScalingValue";
+import { TileType } from "../../utils";
 import EmployeeTree from "./EmployeeTree/EmployeeTree";
 import TurnHandler from "./GlobalUI/TurnHandler";
 import TurnOrderList from "./GlobalUI/TurnOrderList";
@@ -129,7 +130,14 @@ function PageGame() {
 	const mapConditional: JSX.Element = useMemo(() => {
 		if (!isMyTurn) return <></>;
 
-		return <PlacementHandler placementTypes={[""]} />;
+		return (
+			<PlacementHandler
+				placementTypes={[
+					TileType.RESTAURANT,
+					TileType.MARKETING
+				]}
+			/>
+		);
 	}, [turnProgress, isMyTurn]);
 
 	onMapObjectClicked((event) => {
