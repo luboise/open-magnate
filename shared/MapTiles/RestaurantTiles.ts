@@ -1,7 +1,7 @@
-import { BaseTile } from "./Tile";
+import { BaseTile, TileType } from "./Tile";
 
 export interface RestaurantTile extends BaseTile {
-	tileType: "RESTAURANT";
+	tileType: TileType.RESTAURANT;
 	restaurant: number;
 }
 

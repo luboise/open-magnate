@@ -1,10 +1,11 @@
 import "./Placer.css";
 
-import RestaurantImage from "../../../global_components/RestaurantImage";
-import useClientState from "../../../hooks/game/useClientState";
-import { useBoardInfo } from "../../../hooks/game/useMap";
-import { MapOverlayTile } from "../../../utils";
-import MapMarketingTile from "./MapMarketingTile";
+import { useCallback, useMemo } from "react";
+import RestaurantImage from "../../../../global_components/RestaurantImage";
+import useClientState from "../../../../hooks/game/useClientState";
+import { useGameStateView } from "../../../../hooks/game/useGameState";
+import { useBoardInfo } from "../../../../hooks/game/useMap";
+import MapMarketingTile from "../MapMarketingTile";
 
 type Props = {};
 
@@ -17,6 +18,8 @@ function Placer({}: Props) {
 		rotatePlacement,
 		commitPlacement
 	} = useClientState();
+
+	const { mapColOrder: map } = useGameStateView();
 
 	const boardInfo = useBoardInfo();
 	// const { onMapObjectClicked, onMapObjectHovered } =
@@ -49,10 +52,46 @@ function Placer({}: Props) {
 	// 	});
 	// });
 
-	function IsValidPlacement(tile: MapOverlayTile) {
+	const validPlacement = useMemo(() => {
+		if (!tile) return false;
+
+		const width =
+			tile.rotation % 90 === 0
+				? tile.width
+				: tile.height;
+		const height =
+			tile.rotation % 0 ? tile.height : tile.width;
+
+		for (
+			let x = tile.pos.x;
+			x < tile.pos.x + width;
+			x++
+		) {
+			for (
+				let y = tile.pos.y;
+				y < tile.pos.y + height;
+				y++
+			) {
+				if (
+					x >= boardInfo.width ||
+					y >= boardInfo.height
+				)
+					return false;
+
+				if (map[x][y].tileType !== "EMPTY")
+					return false;
+			}
+		}
+
 		// TODO: Implement placement logic
 		return true;
-	}
+	}, [tile, boardInfo.width, boardInfo.height]);
+
+	const attemptPlacement = useCallback(() => {
+		if (!validPlacement) return;
+
+		commitPlacement();
+	}, [tile, validPlacement]);
 
 	const onScroll = (event: any) => {
 		event.preventDefault();
@@ -71,16 +110,24 @@ function Placer({}: Props) {
 	const mapWidth = rotated ? tile.width : tile.height;
 	const mapHeight = rotated ? tile.height : tile.width;
 
-	const valid = IsValidPlacement(tile);
-
 	return (
 		<div
 			className="tile-being-placed"
 			style={{
 				gridColumn: `${tile.pos.x + 1} / span ${mapWidth}`,
-				gridRow: `${tile.pos.y + 1} / span ${mapHeight}`
+				gridRow: `${tile.pos.y + 1} / span ${mapHeight}`,
+				opacity: validPlacement ? 1 : 0.8,
+				// Red filter if invalid
+				filter: validPlacement
+					? undefined
+					: "hue-rotate(0deg) grayscale(100%)"
+				// filter: valid
+				// 	? undefined
+				// 	: "grayscale(100%)"
 			}}
-			onClick={commitPlacement}
+			onClick={attemptPlacement}
+			onScroll={onScroll}
+			onWheel={onScroll}
 		>
 			{tile.tileType === "RESTAURANT" ? (
 				<RestaurantImage
@@ -88,12 +135,9 @@ function Placer({}: Props) {
 					style={{
 						// gridColumn: `${tile.pos.x + 1} / span 2`,
 						// gridRow: `${tile.pos.y + 1} / span 2`,
-						opacity: valid ? 1 : 0.5,
 						// Red if invalid placement
-						backgroundColor: valid
-							? undefined
-							: "red",
-						backgroundBlendMode: "multiply",
+
+						// backgroundBlendMode: "multiply",
 
 						width: "100%",
 						height: "100%",
@@ -104,10 +148,6 @@ function Placer({}: Props) {
 						border: "1px solid black",
 						zIndex: 2
 					}}
-					// onWheel={onScroll}
-					onScroll={onScroll}
-					onWheel={onScroll}
-					// onClick={submitRestaurant}
 				/>
 			) : tile.tileType === "MARKETING" ? (
 				<MapMarketingTile tile={tile} />

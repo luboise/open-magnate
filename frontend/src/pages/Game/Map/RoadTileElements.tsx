@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { DirectionBools, TileType } from "../../../utils";
+import { TileType } from "../../../../../shared/MapTiles/Tile";
+import { DirectionBools } from "../../../utils";
 import RoadLines from "./RoadLines";
 
 interface RoadTileProps {

@@ -1,6 +1,6 @@
 import { HTMLAttributes } from "react";
 import { EmployeeNode } from "../../../../../shared/EmployeeStructure";
-import { Employee } from "../../../../../shared/EmployeeTypes";
+import { Employee } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 import {
 	EmployeeTreeSpreadIfDragCallback,
@@ -118,3 +118,4 @@ function EmployeeTreeNode({
 }
 
 export default EmployeeTreeNode;
+

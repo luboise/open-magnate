@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
-import { RotationAmount } from "../../../../shared/MapTiles/Tile";
 import { Clamp } from "../../../../shared/utils";
-import { MapOverlayTile, Position } from "../../utils";
+import {
+	MapOverlayTile,
+	Position,
+	RotationAmount
+} from "../../utils";
 import { useBoardInfo } from "./useMap";
 import useMapTileInteraction from "./useMapTileInteraction";
 
@@ -159,13 +162,6 @@ function useClientState(
 			}
 		});
 	}, [hovering]);
-
-	useEffect(() => {
-		document.addEventListener(
-			"mousedown",
-			(event) => {}
-		);
-	}, []);
 
 	return {
 		currentlyPlacingTile: Boolean(

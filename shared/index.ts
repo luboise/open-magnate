@@ -1,5 +1,8 @@
+export * from "./EmployeeIDs";
 export * from "./EmployeeStructure";
+export * from "./EmployeeTypes";
 export * from "./Employees";
+
 export * from "./Food";
 export * from "./GameState";
 export * from "./LobbyTypes";

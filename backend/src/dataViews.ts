@@ -5,7 +5,7 @@ import {
 	ENTRANCE_CORNER as PrismaEntranceCorner,
 	TURN_PROGRESS as PrismaTurnProgress
 } from "@prisma/client";
-import { EMPLOYEE_ID } from "../../shared/EmployeeIDs";
+import { EMPLOYEE_ID } from "../../shared";
 
 export const TURN_PROGRESS_VALUES: TURN_PROGRESS[] =
 	Object.values(PrismaTurnProgress);

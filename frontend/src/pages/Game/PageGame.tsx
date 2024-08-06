@@ -15,8 +15,8 @@ import WindowToolbar, {
 	ToolbarType
 } from "./GlobalUI/WindowToolbar";
 import MagnateMap from "./Map/MagnateMap";
-import Placer from "./Map/Placer";
-import RestaurantPlacer from "./Map/RestaurantPlacer";
+import PlacementHandler from "./Map/Placers/PlacementHandler";
+import Placer from "./Map/Placers/Placer";
 import GlobalReserveDisplay from "./Reserve/GlobalReserveDisplay";
 import SalaryHandler from "./SalaryHandler/SalaryHandler";
 import TurnOrderPrompt from "./TurnOrderPrompt/TurnOrderPrompt";
@@ -129,11 +129,7 @@ function PageGame() {
 	const mapConditional: JSX.Element = useMemo(() => {
 		if (!isMyTurn) return <></>;
 
-		if (turnProgress === "RESTAURANT_PLACEMENT") {
-			return <RestaurantPlacer />;
-		}
-
-		return <></>;
+		return <PlacementHandler placementTypes={[""]} />;
 	}, [turnProgress, isMyTurn]);
 
 	onMapObjectClicked((event) => {

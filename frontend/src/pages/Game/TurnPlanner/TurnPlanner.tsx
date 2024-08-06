@@ -1,12 +1,12 @@
 import "./TurnPlanner.css";
 
 import { HTMLAttributes, useMemo, useState } from "react";
-import { Employee } from "../../../../../shared/EmployeeTypes";
 import ModalPanel from "../../../global_components/ModalPanel";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
-import { GetAllTreeData } from "../../../utils";
+import { Employee, GetAllTreeData } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
+import FoodWindow from "./FoodWindow";
 import GameActionPreview from "./GameActionPreview";
 import HiringWindow from "./HiringWindow";
 import MarketingWindow from "./MarketingWindow";
@@ -63,7 +63,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				/>
 			);
 
-		if (employee.type === "FOOD") return <FoodPlacer />;
+		if (employee.type === "FOOD") return <FoodWindow />;
 
 		return null;
 	}, [selectedEmployeeIndex, myEmployees]);

@@ -1,10 +1,10 @@
 import "./ReserveDisplay.css";
 
 import { HTMLAttributes } from "react";
-import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
-import { Employee } from "../../../../../shared/EmployeeTypes";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import {
+	EMPLOYEE_ID,
+	Employee,
 	EmployeesById,
 	IsValidEmployeeId
 } from "../../../utils";

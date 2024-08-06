@@ -1,6 +1,6 @@
 import { MarketingType } from "../EmployeeTypes";
 
-import { BaseTile } from "./Tile";
+import { BaseTile, TileType } from "./Tile";
 
 export type MarketingTile =
 	| BillBoardMarketingTile
@@ -9,7 +9,8 @@ export type MarketingTile =
 	| RadioMarketingTile;
 
 interface BaseMarketingTile extends BaseTile {
-	tileType: "MARKETING";
+	tileType: TileType.MARKETING;
+	placingEmployee: number;
 	marketingType: MarketingType;
 	tileNumber: number;
 	rotation: 0 | 90;
@@ -142,7 +143,8 @@ export function createMarketingTile({
 		return createRadioTile(tileNumber);
 
 	const tile: MarketingTile = {
-		tileType: "MARKETING",
+		tileType: TileType.MARKETING,
+		placingEmployee: -1,
 		marketingType: marketingType,
 		tileNumber: tileNumber,
 		width: width,
@@ -158,7 +160,8 @@ export function createRadioTile(
 	tileNumber: number
 ): RadioMarketingTile {
 	return {
-		tileType: "MARKETING",
+		tileType: TileType.MARKETING,
+		placingEmployee: -1,
 		marketingType: "RADIO",
 		tileNumber: tileNumber,
 		rotation: 0,

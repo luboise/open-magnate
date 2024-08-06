@@ -1,9 +1,9 @@
 import { ENTRANCE_CORNER } from "../backend/src/dataViews";
 import {
 	BaseMapTileData,
-	MapTileData,
-	TileType
+	MapTileData
 } from "./MapTiles/MapPieceTiles";
+import { TileType } from "./MapTiles/Tile";
 
 export const CHAR_TO_MAP_TILE_CONVERTER: Record<
 	string,

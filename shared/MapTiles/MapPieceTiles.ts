@@ -1,5 +1,5 @@
 import { Map2D, PartialMap2D } from "../MapData";
-import { BaseTile } from "./Tile";
+import { BaseTile, TileType } from "./Tile";
 
 export interface BaseMapTileData extends BaseTile {
 	tileType: TileType;
@@ -44,17 +44,6 @@ export const MAP_PIECE_WIDTH = 5;
 export const MAP_PIECE_HEIGHT = 5;
 export const MAP_PIECE_SIZE =
 	MAP_PIECE_WIDTH * MAP_PIECE_HEIGHT;
-
-export enum TileType {
-	EMPTY = "EMPTY",
-	ROAD = "ROAD",
-
-	HOUSE = "HOUSE",
-
-	LEMONADE = "LEMONADE",
-	COLA = "COLA",
-	BEER = "BEER"
-}
 
 export const ROAD_TERMINATORS: TileType[] = [
 	TileType.ROAD,

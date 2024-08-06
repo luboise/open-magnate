@@ -1,8 +1,8 @@
 import { HTMLAttributes, ReactNode, useMemo } from "react";
+import { TileType } from "../../../../../shared/MapTiles/Tile";
 import {
 	DirectionBools,
-	MapTileData,
-	TileType
+	MapTileData
 } from "../../../utils";
 import "./MapTile.css";
 import RoadTileElements from "./RoadTileElements";

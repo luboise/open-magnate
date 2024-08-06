@@ -1,4 +1,4 @@
-import { Employee } from "../../../../../shared/EmployeeTypes";
+import { Employee } from "../../../utils";
 import "./EmployeeCard.css";
 
 import { HTMLAttributes } from "react";
@@ -43,3 +43,4 @@ function EmployeeCard(props: EmployeeCardProps) {
 }
 
 export default EmployeeCard;
+

@@ -35,7 +35,7 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 			<div>
 				<h3>{title}</h3>
 				<div className="marketing-column">
-					{tiles.map((tile) => (
+					{...tiles.map((tile) => (
 						<MapMarketingTile
 							onClick={() =>
 								startPlacing(tile)

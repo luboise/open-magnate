@@ -4,7 +4,11 @@ import {
 	useRecoilState,
 	useRecoilValue
 } from "recoil";
-import { TurnAction } from "../../utils";
+import {
+	MarketingAction,
+	RecruitAction,
+	TurnAction
+} from "../../utils";
 import { useGameStateView } from "./useGameState";
 
 interface GamePlanningState {
@@ -40,10 +44,32 @@ function useTurnPlanning() {
 		if (!playerData)
 			throw new Error("No player data available");
 
-		const newAction: TurnAction = {
-			...action,
-			player: playerData.playerNumber
-		};
+		const newAction = ((): TurnAction | null => {
+			if (action.type === "RECRUIT") {
+				return {
+					...(action as Omit<
+						RecruitAction,
+						"player"
+					>),
+					player: playerData.playerNumber
+				};
+			} else if (action.type === "MARKETING") {
+				return {
+					...(action as Omit<
+						MarketingAction,
+						"player"
+					>),
+					player: playerData.playerNumber
+				};
+			}
+
+			return null;
+		})();
+
+		if (!newAction) {
+			console.debug("Unable to add action: ", action);
+			return;
+		}
 
 		setTurnPlanningState({
 			...turnPlanningState,

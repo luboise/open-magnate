@@ -8,8 +8,8 @@
 // 	turnOrder: Array<number> | null;
 // };
 
-import { Position } from "../backend/src/dataViews";
 import { EMPLOYEE_ID } from "./EmployeeIDs";
+import { MarketingTile } from "./MapTiles";
 
 // export interface GameCreationParams {
 // 	players: Player[];
@@ -18,9 +18,9 @@ import { EMPLOYEE_ID } from "./EmployeeIDs";
 export const MAX_PLAYER_COUNT = 5;
 
 interface BaseGameAction {
-	player: number;
-	employeeIndex: number;
 	type: string;
+	employeeIndex: number;
+	player: number;
 }
 
 export interface RecruitAction extends BaseGameAction {
@@ -29,13 +29,11 @@ export interface RecruitAction extends BaseGameAction {
 }
 
 export interface MarketingAction extends BaseGameAction {
-	type: "Marketing";
-	marketingTilePlaced: number;
-	pos: Position;
-	rotated: boolean;
+	type: "MARKETING";
+	tile: MarketingTile;
 }
 
-export type TurnAction = RecruitAction;
+export type TurnAction = RecruitAction | MarketingAction;
 
 export const BASE_SALARY = 5;
 

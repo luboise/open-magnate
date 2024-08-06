@@ -9,9 +9,9 @@ import {
 	MAP_PIECE_SIZE,
 	MAP_PIECE_WIDTH,
 	MapPieceData,
-	MapTileData,
-	TileType
+	MapTileData
 } from "./MapTiles/MapPieceTiles";
+import { TileType } from "./MapTiles/Tile";
 
 export function translateMapTile(
 	tile: MapTileData,

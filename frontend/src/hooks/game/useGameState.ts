@@ -12,10 +12,8 @@ import {
 	IsMinBound,
 	PartialMap2D
 } from "../../../../shared/MapData";
-import {
-	DirectionBools,
-	TileType
-} from "../../../../shared/MapTiles/MapPieceTiles";
+import { DirectionBools } from "../../../../shared/MapTiles/MapPieceTiles";
+import { TileType } from "../../../../shared/MapTiles/Tile";
 import {
 	EmployeeNode,
 	EmployeesById,

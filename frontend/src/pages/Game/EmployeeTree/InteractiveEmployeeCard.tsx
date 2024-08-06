@@ -1,5 +1,5 @@
 import { HTMLAttributes } from "react";
-import { Employee } from "../../../../../shared/EmployeeTypes";
+import { Employee } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 
 interface InteractiveEmployeeCardBaseProps
@@ -22,3 +22,4 @@ function InteractiveEmployeeCard({
 }
 
 export default InteractiveEmployeeCard;
+
