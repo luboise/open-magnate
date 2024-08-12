@@ -21,7 +21,11 @@ import {
 } from "../../game/MapPieces";
 import { GetTransposed } from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
-import { FullLobby } from "./lobby.controller";
+import {
+	FullGameState,
+	FullGameStateInclude,
+	FullLobby
+} from "./includes";
 
 export function copyArray<T>(
 	data: T[][],
@@ -39,42 +43,6 @@ export function copyArray<T>(
 
 	// return outArray;
 }
-
-export const FullGamePlayerInclude: Prisma.GamePlayerInclude =
-	{
-		restaurantData: true,
-		lobbyPlayer: {
-			include: {
-				userSession: {
-					select: {
-						name: true
-					}
-				}
-			}
-		},
-		marketingCampaigns: true,
-		restaurants: true
-	};
-
-export type FullGamePlayer = Prisma.GamePlayerGetPayload<{
-	include: typeof FullGamePlayerInclude;
-}>;
-
-export const FullGameStateInclude = {
-	houses: {
-		include: {
-			demand: true,
-			garden: true
-		}
-	},
-	players: {
-		include: FullGamePlayerInclude
-	}
-};
-
-export type FullGameState = Prisma.GameStateGetPayload<{
-	include: typeof FullGameStateInclude;
-}>;
 
 export function getTurnOrderPickOrder(
 	game: FullGameState

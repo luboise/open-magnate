@@ -1,12 +1,14 @@
+import { READY_STATUS } from "../../backend/src/dataViews";
+import { TURN_PROGRESS } from "../../frontend/src/utils";
 import {
 	GardenView,
 	HouseView,
-	MarketingCampaignView,
-	MarketingCampaignViewPrivate,
-	READY_STATUS,
 	RestaurantView
-} from "../../backend/src/dataViews";
-import { TURN_PROGRESS } from "../../frontend/src/utils";
+} from "./MapViews";
+import {
+	MarketingCampaignView,
+	MarketingCampaignViewPrivate
+} from "./MarketingViews";
 
 import { EMPLOYEE_ID } from "../EmployeeIDs";
 

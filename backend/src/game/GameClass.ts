@@ -1,6 +1,6 @@
 import { TurnAction } from "../../../shared";
 import { MOVE_TYPE, MoveData } from "../../../shared/Moves";
-import { FullGameState } from "../database/controller/gamestate.controller";
+import { FullGameState } from "../database/controller/includes";
 
 // The game class creates a simulation of the game in memory and throws an error if an invalid move is attempted
 export class GameClass {

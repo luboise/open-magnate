@@ -7,12 +7,14 @@ windows:
       - lazygit
 
 - window_name: backend
+  focus: true
   layout: main-vertical
   options:
     main-pane-width: 70% 
   panes:
     - shell_command:
       - nvim ./backend
+      focus: true
 
     - shell_command:
       - cd ./backend
@@ -28,8 +30,8 @@ windows:
   panes:
     - shell_command:
         - nvim ./frontend
+      focus: true
 
     - shell_command:
         - cd ./frontend
         - npm run dev
-

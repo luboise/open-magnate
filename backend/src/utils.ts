@@ -4,6 +4,8 @@ import {
 } from "@prisma/client/runtime/library";
 import { Response } from "express";
 
+export * from "../../shared/";
+
 export function new2DArray<T>(
 	rows: number,
 	cols: number
@@ -131,8 +133,8 @@ export function readJsonNumberArray(array: JsonValue) {
 
 	const vals: number[] = Array.isArray(array)
 		? array.map((value) =>
-				typeof value === "number" ? value : NaN
-			) // Convert each element to number, defaulting to NaN if not a number
+			typeof value === "number" ? value : NaN
+		) // Convert each element to number, defaulting to NaN if not a number
 		: [];
 
 	// Return the list of numbers with the NaNs filtered out

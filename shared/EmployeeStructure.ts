@@ -1,4 +1,4 @@
-import { FullGamePlayer } from "../backend/src/database/controller/gamestate.controller";
+import { FullGamePlayer } from "../backend/src/database/controller/includes";
 import { parseJsonArray } from "../backend/src/utils";
 import { Employee } from "./EmployeeTypes";
 import {

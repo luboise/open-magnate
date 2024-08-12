@@ -1,10 +1,8 @@
 import { TURN_PROGRESS } from "@prisma/client";
 import { MOVE_TYPE, MoveData } from "../../../shared/Moves";
 
-import {
-	FullGameStateInclude,
-	getCurrentPlayer
-} from "../database/controller/gamestate.controller";
+import { getCurrentPlayer } from "../database/controller/gamestate.controller";
+import { FullGameStateInclude } from "../database/controller/includes";
 import TransactionFunctions, {
 	BuildErrorMessage,
 	TransactionBundle
