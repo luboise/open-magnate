@@ -39,3 +39,15 @@ windows:
           - shell_command:
                 - cd ./frontend
                 - npm run dev
+    - window_name: tests
+      layout: main-vertical
+      options:
+          main-pane-width: 70%
+      panes:
+          - shell_command:
+                - nvim ./backend/src/tests
+            focus: true
+
+          - shell_command:
+                - cd ./backend
+                - npm run test:unit

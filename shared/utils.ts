@@ -29,3 +29,10 @@ export function Clamp(
 	return floor ? Math.floor(clamped) : clamped;
 }
 
+export function IsInRange(
+	val: number,
+	min: number,
+	max: number
+): boolean {
+	return val === Clamp(val, min, max);
+}
