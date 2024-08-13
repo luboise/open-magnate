@@ -168,7 +168,8 @@ model Garden {
 }
 
 model Demand {
-    houseId Int   @id @default(autoincrement())
+	demandId Int @id @default(autoincrement())
+    houseId Int   
     house   House @relation(fields: [houseId], references: [id], onDelete: Cascade)
 
     type DEMAND_TYPE

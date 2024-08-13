@@ -40,7 +40,6 @@ export function IsAdjacent(
 			m2.pos.y,
 			m2.pos.y + m2.height - 1
 		);
-	console.log(m1, m2, m1XInBounds, m1YInBounds);
 
 	const topAligned = m2.pos.y === m1.pos.y + m1.height;
 	const bottomAligned = m2.pos.y === m1.pos.y - m2.height;

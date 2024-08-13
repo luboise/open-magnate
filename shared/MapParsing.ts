@@ -239,8 +239,6 @@ export function createDetailedMapString(
 ): string {
 	const map = mapTo2DArray(rawMap);
 
-	console.debug(map);
-
 	if (!map) throw new Error("Unable to parse raw map");
 
 	for (const house of houses) {

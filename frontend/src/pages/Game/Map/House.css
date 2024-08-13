@@ -18,3 +18,15 @@
 	top: 50%;
 	translate: -50% -50%;
 }
+
+.game-map-house-demand-box {
+	display: flex;
+	margin: 1em;
+	aspect-ratio: 1;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.game-map-house-demand-box div {
+	flex: 1;
+}

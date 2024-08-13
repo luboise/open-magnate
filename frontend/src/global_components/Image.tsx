@@ -11,8 +11,10 @@ if (!FallbackImage)
 		"Unable to load FallbackImage. This must be fixed."
 	);
 
-const Image: React.FC<ImageProps> = (props: ImageProps) => {
-	const { url, ...args } = props;
+const Image: React.FC<ImageProps> = ({
+	url,
+	...args
+}: ImageProps) => {
 	const [validImage, setValidImage] = useState(true);
 
 	return (
@@ -20,6 +22,9 @@ const Image: React.FC<ImageProps> = (props: ImageProps) => {
 			src={validImage ? url : FallbackImage}
 			{...args}
 			onError={() => {
+				console.error(
+					`Failed to load image: ${url}. Using fallback instead.`
+				);
 				setValidImage(false);
 			}}
 		/>

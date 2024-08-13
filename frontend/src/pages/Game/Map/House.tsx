@@ -2,6 +2,7 @@ import { HouseView } from "../../../utils";
 import "./House.css";
 
 import { HTMLAttributes } from "react";
+import Demand from "./Tiles/Demand";
 
 interface HouseProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -41,6 +42,11 @@ function House({
 				}}
 			>
 				{house.priority}
+				<div className="game-map-house-demand-box">
+					{...house.demand.map((d) => (
+						<Demand demand={d} />
+					))}
+				</div>
 			</div>
 		</div>
 	);

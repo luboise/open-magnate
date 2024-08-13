@@ -189,5 +189,15 @@ describe("Testing TileUtils", () => {
 				})
 			).toBeFalsy();
 		});
+		test("Check right border non-adjacent (2x1 with 2x2)", () => {
+			expect(
+				IsAdjacent(testHouse, {
+					...testMarketing,
+					pos: {
+						x: 12,
+						y: 20
+					}
+				})).toBeFalsy()
+		});
 	});
 });
