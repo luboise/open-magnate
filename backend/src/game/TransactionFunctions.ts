@@ -208,22 +208,44 @@ const AddDemand: MoveTransactionFunctionTyped<{
 }> = async (bundle, details): Promise<void> => {
 	const { ctx, gameId } = bundle;
 	const { house, foodType } = details;
-
-	await ctx.house.update({
-		where: {
-			gameId_number: {
-				gameId: gameId,
-				number: house.priority
+	try {
+		const existingHouse = await ctx.house.findUniqueOrThrow({
+			where: {
+				gameId_number: {
+					gameId: gameId,
+					number: house.priority
+				}
+			},
+			include: {
+				demand: true
 			}
-		},
-		data: {
-			demand: {
-				create: {
-					type: foodType
+		});
+
+		if (existingHouse.demand.length >= existingHouse.demandLimit)
+			return;
+
+		await ctx.house.update({
+			where: {
+				gameId_number: {
+					gameId: gameId,
+					number: existingHouse.number
+				}
+			},
+			data: {
+				demand: {
+					create: {
+						type: foodType
+					}
 				}
 			}
-		}
-	});
+		});
+	} catch (error) {
+		console.error(
+			`Error finding house: ${error}`
+		);
+		return;
+	}
+
 };
 
 const UnreadyPlayers: MoveTransactionFunctionUntyped =
