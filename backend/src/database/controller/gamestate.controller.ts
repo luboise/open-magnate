@@ -86,7 +86,7 @@ export function getTurnOrderSelectionCurrentPlayer(
 	const currentTurnOrder = parseTurnOrder(game.turnOrder);
 	const oldTurnOrder = parseTurnOrder(game.oldTurnOrder);
 
-	const playerOrder = getTurnOrderPickOrder(game);
+	// const playerOrder = getTurnOrderPickOrder(game);
 
 	for (const playerNumber of oldTurnOrder) {
 		if (playerNumber === null)

@@ -95,10 +95,6 @@ export const HandleRequest = {
 
 // Override prototype of array
 
-interface Array<T> {
-	clone(): T[];
-}
-
 export function CloneArray<T>(array: T[]): T[] {
 	const newArray = array.map((val) => {
 		if (Array.isArray(val)) return CloneArray(val) as T;
@@ -133,15 +129,15 @@ export function readJsonNumberArray(array: JsonValue) {
 
 	const vals: number[] = Array.isArray(array)
 		? array.map((value) =>
-			typeof value === "number" ? value : NaN
-		) // Convert each element to number, defaulting to NaN if not a number
+				typeof value === "number" ? value : NaN
+			) // Convert each element to number, defaulting to NaN if not a number
 		: [];
 
 	// Return the list of numbers with the NaNs filtered out
 	return vals.filter((val) => !Number.isNaN(val));
 }
 
-export function parseJsonArray<T>(array: JsonValue) {
+export function parseJsonArray(array: JsonValue) {
 	const asArray = array as JsonArray | null;
 	if (asArray === null) return [];
 

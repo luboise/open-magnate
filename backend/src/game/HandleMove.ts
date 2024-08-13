@@ -28,8 +28,6 @@ export async function TransactMove(
 			BuildErrorMessage(bundle, "take their turn")
 		);
 
-	let doReadyCheck = false;
-
 	// TODO: Add logic for each move here
 	switch (move.MoveType) {
 		case MOVE_TYPE.PLACE_RESTAURANT: {
@@ -164,4 +162,3 @@ export function GetNextTurnPhase(
 		}
 	}
 }
-

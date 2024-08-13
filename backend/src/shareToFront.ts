@@ -5,7 +5,10 @@ import {
 	TURN_PROGRESS as PrismaTurnProgressObject
 } from "@prisma/client";
 
-export { House, MarketingCampaign } from "@prisma/client";
+export {
+	type House,
+	type MarketingCampaign
+} from "@prisma/client";
 
 export type TURN_PROGRESS = PrismaTurnProgress;
 export const TURN_PROGRESS_VALUES: TURN_PROGRESS[] =
