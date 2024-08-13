@@ -1,6 +1,5 @@
 import "./TurnHandler.css";
 
-import { useMemo } from "react";
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
@@ -17,12 +16,8 @@ import TurnOrderList from "./TurnOrderList";
 const BLOBBY_CLASS_NAME = "game-turn-handler-blobby";
 
 function TurnHandler() {
-	const {
-		isMyTurn,
-		turnProgress,
-		players,
-		currentPlayer
-	} = useGameStateView();
+	const { isMyTurn, turnProgress, currentPlayer } =
+		useGameStateView();
 
 	const { makeMove } = usePageGame();
 
@@ -30,12 +25,12 @@ function TurnHandler() {
 
 	const { plannedTree } = useTreePlanning();
 
-	const playerList = useMemo(
-		() =>
-			players?.map((player) => player.playerNumber) ||
-			[],
-		[players]
-	);
+	// const playerList = useMemo(
+	// () =>
+	// players?.map((player) => player.playerNumber) ||
+	// [],
+	// [players]
+	// );
 
 	function onSubmitMove() {
 		if (!isMyTurn) {
@@ -129,4 +124,3 @@ function TurnHandler() {
 }
 
 export default TurnHandler;
-

@@ -51,6 +51,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 					employeeHiringIndex={
 						selectedEmployeeIndex
 					}
+					onClose={clearSelectedEmployee}
 				/>
 			);
 
@@ -67,7 +68,9 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 
 		return null;
 	}, [selectedEmployeeIndex, myEmployees]);
-
+	function clearSelectedEmployee() {
+		setSelectedEmployeeIndex(null);
+	}
 	// const turnActions: TurnAction[] = [
 	// 	{
 	// 		player: playerData.playerNumber,
@@ -89,9 +92,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				{eventWindow !== null ? (
 					<ModalPanel
 						className="event-window"
-						onClose={() =>
-							setSelectedEmployeeIndex(null)
-						}
+						onClose={clearSelectedEmployee}
 					>
 						{eventWindow}
 					</ModalPanel>
@@ -143,4 +144,3 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 }
 
 export default TurnPlanner;
-

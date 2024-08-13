@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
+import { Position } from "../../../../backend/src/dataViews";
 import { Clamp } from "../../../../shared/utils";
 import {
 	MapOverlayTile,
-	Position,
 	RotationAmount
 } from "../../utils";
 import { useBoardInfo } from "./useMap";
@@ -176,4 +176,3 @@ function useClientState(
 }
 
 export default useClientState;
-

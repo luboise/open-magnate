@@ -22,7 +22,7 @@ function SalaryHandler({ ...args }: Props) {
 
 	const { makeMove } = usePageGame();
 
-	const [state, dispatch] = useReducer(
+	const [state, _dispatch] = useReducer(
 		(state: State, action: Action): State => {
 			switch (action.type) {
 				case "ADD_EMPLOYEE":
@@ -96,4 +96,3 @@ function SalaryHandler({ ...args }: Props) {
 }
 
 export default SalaryHandler;
-

@@ -34,16 +34,6 @@ import { FrontendRoutes } from "./utils";
 // };
 
 function App() {
-	// const { localSession } = createLocalSession();
-
-	// if (!localSession) {
-	// 	return (
-	// 		<RecoilRoot>
-	// 			<AuthForm />
-	// 		</RecoilRoot>
-	// 	);
-	// }
-
 	return (
 		<>
 			<h1>Open Magnate</h1>

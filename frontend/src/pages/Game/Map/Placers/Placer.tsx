@@ -1,10 +1,11 @@
 import "./Placer.css";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import RestaurantImage from "../../../../global_components/RestaurantImage";
 import useClientState from "../../../../hooks/game/useClientState";
 import { useGameStateView } from "../../../../hooks/game/useGameState";
 import { useBoardInfo } from "../../../../hooks/game/useMap";
+import { GetMyRestaurantTile } from "../../Tiles/RestaurantTileData";
 import MapMarketingTile from "../MapMarketingTile";
 
 type Props = {};
@@ -16,8 +17,11 @@ function Placer({}: Props) {
 		currentlyPlacingTile,
 		tileBeingPlaced,
 		rotatePlacement,
-		commitPlacement
+		commitPlacement,
+		startPlacing
 	} = useClientState();
+
+	const { turnProgress, isMyTurn } = useGameStateView();
 
 	const { mapColOrder: map } = useGameStateView();
 
@@ -28,29 +32,6 @@ function Placer({}: Props) {
 	const tile = currentlyPlacingTile
 		? tileBeingPlaced
 		: null;
-
-	// onMapObjectClicked((event) => {
-	// 	console.log("clicked", event);
-	// });
-
-	// onMapObjectHovered((event) => {
-	// 	updatePlacement({
-	// 		pos: {
-	// 			x: Clamp(
-	// 				event.data.x,
-	// 				0,
-	// 				boardInfo.width - 2,
-	// 				true
-	// 			),
-	// 			y: Clamp(
-	// 				event.data.y,
-	// 				0,
-	// 				boardInfo.height - 2,
-	// 				true
-	// 			)
-	// 		}
-	// 	});
-	// });
 
 	const validPlacement = useMemo(() => {
 		if (!tile) return false;
@@ -101,6 +82,16 @@ function Placer({}: Props) {
 			event.deltaY > 0 ? "BACKWARDS" : "FORWARDS"
 		);
 	};
+
+	useEffect(() => {
+		if (
+			turnProgress === "RESTAURANT_PLACEMENT" &&
+			isMyTurn
+		) {
+			console.debug("Placing restaurant tile");
+			startPlacing(GetMyRestaurantTile());
+		}
+	}, [turnProgress, isMyTurn]);
 
 	if (!tile) return <></>;
 
@@ -159,4 +150,3 @@ function Placer({}: Props) {
 }
 
 export default Placer;
-

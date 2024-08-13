@@ -395,4 +395,3 @@ function addMapDetails(baseMap: PartialMap2D): Map2D {
 
 	return newMap;
 }
-

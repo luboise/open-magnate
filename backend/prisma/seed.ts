@@ -115,6 +115,8 @@ export const seedGameState1: Prisma.GameStateCreateInput = {
 	turnProgress: TURN_PROGRESS.RESTAURANT_PLACEMENT,
 	playerCount: 2,
 	rawMap: "RRRRRRRRRRRRRRR;RRRRRRRRRRRRRRR;RRRRRRRRRRRRRRR",
+	turnOrder: "12",
+	oldTurnOrder: "12",
 	players: {
 		createMany: {
 			data: [
@@ -355,4 +357,3 @@ export async function dropEverything() {
 // }
 
 export const SEED_LOBBIES = [seedLobby1];
-

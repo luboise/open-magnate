@@ -29,6 +29,8 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 		return e;
 	}, [employeeHiringIndex, myEmployees]);
 
+	console.debug(employee);
+
 	function MarketingColumn({
 		title,
 		tiles
@@ -48,7 +50,9 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 						const tile: MarketingTile = {
 							...partialTile,
 							placingEmployee:
-								playerData.playerNumber
+								employeeHiringIndex,
+							//TODO: Fix this to work for all food types
+							demand: "BURGER"
 						};
 
 						return (
@@ -119,4 +123,3 @@ interface ColumnProps {
 }
 
 export default MarketingWindow;
-

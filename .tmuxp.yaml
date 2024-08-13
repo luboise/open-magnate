@@ -1,37 +1,41 @@
 session_name: open-magnate
 
 windows:
-- window_name: Lazy Git
-  panes:
-    - shell_command:
-      - lazygit
+    - window_name: Lazy Git
+      panes:
+          - shell_command:
+                - lazygit
 
-- window_name: backend
-  focus: true
-  layout: main-vertical
-  options:
-    main-pane-width: 70% 
-  panes:
-    - shell_command:
-      - nvim ./backend
+    - window_name: backend
       focus: true
+      layout: main-vertical
+      options:
+          main-pane-width: 70%
+      panes:
+          - shell_command:
+                - nvim ./backend
+            focus: true
 
-    - shell_command:
-      - cd ./backend
-      - npm run dev
+          - shell_command:
+                - cd ./backend
+                - npm run dev
 
-    - shell_command:
-      - mariadb -u prisma --password=password open_magnate_dev
+          - shell_command:
+                - cd ./backend
+                - npm run test:unit
 
-- window_name: frontend
-  layout: main-vertical
-  options:
-    main-pane-width: 70% 
-  panes:
-    - shell_command:
-        - nvim ./frontend
-      focus: true
+          - shell_command:
+                - mariadb -u prisma --password=password open_magnate_dev
 
-    - shell_command:
-        - cd ./frontend
-        - npm run dev
+    - window_name: frontend
+      layout: main-vertical
+      options:
+          main-pane-width: 70%
+      panes:
+          - shell_command:
+                - nvim ./frontend
+            focus: true
+
+          - shell_command:
+                - cd ./frontend
+                - npm run dev

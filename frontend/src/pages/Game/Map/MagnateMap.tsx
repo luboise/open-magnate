@@ -131,8 +131,8 @@ function MagnateMap({
 					<RestaurantImage
 						restaurantNumber={player.restaurant}
 						style={{
-							gridColumn: `${restaurant.x + 1} / span 2`,
-							gridRow: `${restaurant.y + 1} / span 2`,
+							gridColumn: `${restaurant.pos.x + 1} / span 2`,
+							gridRow: `${restaurant.pos.y + 1} / span 2`,
 							width: "100%",
 							height: "100%"
 						}}
@@ -148,8 +148,8 @@ function MagnateMap({
 							campaign.priority
 						],
 						pos: {
-							x: campaign.x,
-							y: campaign.y
+							x: campaign.pos.x,
+							y: campaign.pos.y
 						}
 					}}
 				/>
@@ -161,4 +161,3 @@ function MagnateMap({
 }
 
 export default MagnateMap;
-

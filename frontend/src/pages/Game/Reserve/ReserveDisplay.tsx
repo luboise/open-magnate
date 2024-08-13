@@ -60,7 +60,7 @@ function ReserveDisplay({
 		);
 
 		return filteredEmployees.map(
-			([employee, quantity]) => (
+			([employee, _quantity]) => (
 				<EmployeeCard
 					employee={employee!}
 					onClick={() => {
@@ -90,4 +90,3 @@ function ReserveDisplay({
 }
 
 export default ReserveDisplay;
-

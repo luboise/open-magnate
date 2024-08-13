@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
@@ -7,9 +7,13 @@ import ReserveDisplay from "../Reserve/ReserveDisplay";
 
 type Props = {
 	employeeHiringIndex: number;
+	onClose?: () => void | Promise<void>;
 };
 
-function HiringWindow({ employeeHiringIndex }: Props) {
+function HiringWindow({
+	employeeHiringIndex,
+	onClose
+}: Props) {
 	const { myEmployees } = useGameStateView();
 
 	const { addAction } = useTurnPlanning();
@@ -35,6 +39,12 @@ function HiringWindow({ employeeHiringIndex }: Props) {
 		return employee;
 	}, [employeeHiringIndex, myEmployees]);
 
+	const [hiresRemaining, setHiresRemaining] = useState(
+		employee.type === "MANAGEMENT"
+			? employee.capacity
+			: 1
+	);
+
 	function onHire(employeeId: EMPLOYEE_ID) {
 		const newHire: Omit<RecruitAction, "player"> = {
 			employeeIndex: employeeHiringIndex,
@@ -43,15 +53,24 @@ function HiringWindow({ employeeHiringIndex }: Props) {
 		};
 
 		addAction(newHire);
+		setHiresRemaining(
+			(previousHires) => previousHires - 1
+		);
 	}
 
+	useEffect(() => {
+		if (hiresRemaining <= 0) onClose && onClose();
+	}, [hiresRemaining]);
+
 	return (
-		<ReserveDisplay
-			employeeFilter={(e) => Boolean(e.notPaid)}
-			onEmployeeClicked={onHire}
-		/>
+		<>
+			<ReserveDisplay
+				employeeFilter={(e) => Boolean(e.notPaid)}
+				onEmployeeClicked={onHire}
+			/>
+			Hires Remaining: {hiresRemaining}
+		</>
 	);
 }
 
 export default HiringWindow;
-

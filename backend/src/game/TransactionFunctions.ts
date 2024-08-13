@@ -285,7 +285,7 @@ const CreateMarketingCampaign: MoveTransactionFunctionTyped<
 					? "HORIZONTAL"
 					: "VERTICAL",
 
-			demand: action.tile.foodType,
+			demand: action.tile.demand,
 
 			// TODO: Add the actual number of turns remaining based on player choice
 			turnsRemaining: 4,

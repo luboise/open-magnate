@@ -27,7 +27,7 @@ function TurnOrderPrompt({ ...args }: Props) {
 			<h2>Choose Turn Order</h2>
 			<h3>Pick Order:</h3>
 			<div className="players">
-				{...turnOrder.map((playerNumber, index) => {
+				{...turnOrder.map((playerNumber) => {
 					const player = players.find(
 						(p) =>
 							p.playerNumber === playerNumber
@@ -65,4 +65,3 @@ function TurnOrderPrompt({ ...args }: Props) {
 }
 
 export default TurnOrderPrompt;
-

@@ -4,7 +4,7 @@ import React, {
 	useMemo,
 	useReducer
 } from "react";
-import { Position } from "../utils";
+import { Position } from "../../../backend/src/dataViews";
 import useLocalVal from "./useLocalVal";
 
 interface PanningState {
@@ -237,4 +237,3 @@ function usePanning(
 }
 
 export default usePanning;
-
