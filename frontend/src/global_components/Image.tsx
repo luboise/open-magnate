@@ -1,3 +1,5 @@
+import "./Image.css";
+
 import React, { useState } from "react";
 
 interface ImageProps

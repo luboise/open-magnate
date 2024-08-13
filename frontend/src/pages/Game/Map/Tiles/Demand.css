@@ -1,3 +1,4 @@
 .demand-image {
 	object-fit: fill;
+	max-width: 50%;
 }

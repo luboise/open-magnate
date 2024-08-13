@@ -1,12 +1,10 @@
-import {
-	FoodType,
-	MarketingType
-} from "../../frontend/src/utils";
+import { DEMAND_TYPE } from "../../backend/src/dataViews";
+import { MarketingType } from "../../frontend/src/utils";
 import { BaseTile, TileType } from "./Tile";
 
 export type PartialMarketingTile = Omit<
 	MarketingTile,
-	"placingEmployee" | "demand"
+	"placingEmployee"
 >;
 
 export type MarketingTile =
@@ -21,7 +19,7 @@ interface BaseMarketingTile extends BaseTile {
 	marketingType: MarketingType;
 	tileNumber: number;
 	rotation: 0 | 90;
-	demand: FoodType;
+	demand: DEMAND_TYPE;
 }
 
 export interface BillBoardMarketingTile
@@ -51,7 +49,7 @@ export interface RadioMarketingTile
 
 export const MarketingTilesByNumber: Record<
 	number,
-	PartialMarketingTile
+	Omit<PartialMarketingTile, "demand">
 > = {
 	1: createRadioTile(1),
 	2: createRadioTile(2),
@@ -148,7 +146,10 @@ export function createMarketingTile({
 	tileNumber,
 	width,
 	height
-}: MarketingTileCreationProps): PartialMarketingTile {
+}: MarketingTileCreationProps): Omit<
+	PartialMarketingTile,
+	"demand"
+> {
 	if (marketingType === "RADIO")
 		return createRadioTile(tileNumber);
 
@@ -165,7 +166,7 @@ export function createMarketingTile({
 
 export function createRadioTile(
 	tileNumber: number
-): PartialMarketingTile {
+): Omit<PartialMarketingTile, "demand"> {
 	return {
 		tileType: TileType.MARKETING,
 		marketingType: "RADIO",

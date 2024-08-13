@@ -5,6 +5,7 @@ import {
 import "./MapMarketingTile.css";
 
 import { HTMLAttributes } from "react";
+import Demand from "./Tiles/Demand";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
 	tile: PartialMarketingTile | MarketingTile;
@@ -40,10 +41,10 @@ function MapMarketingTile({
 			}}
 			{...args}
 		>
-			Tile {tile.tileNumber}
+			<span>Tile {tile.tileNumber}</span>
+			<Demand demand={tile.demand} />
 		</div>
 	);
 }
 
 export default MapMarketingTile;
-

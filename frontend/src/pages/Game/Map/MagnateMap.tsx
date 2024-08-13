@@ -2,11 +2,11 @@ import "./MagnateMap.css";
 
 import { HTMLAttributes, PropsWithChildren } from "react";
 
-import { MarketingTilesByNumber } from "../../../../../shared/MapTiles/MarketingTiles";
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useMapTileInteraction from "../../../hooks/game/useMapTileInteraction";
 import {
+	GetMarketingTileFromView,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	MapTileData
@@ -140,20 +140,16 @@ function MagnateMap({
 				);
 			})}
 
-			{...marketingCampaigns.map((campaign) => (
-				<MapMarketingTile
-					snapToGrid={true}
-					tile={{
-						...MarketingTilesByNumber[
-							campaign.priority
-						],
-						pos: {
-							x: campaign.pos.x,
-							y: campaign.pos.y
-						}
-					}}
-				/>
-			))}
+			{...marketingCampaigns.map((campaign) => {
+				const mt =
+					GetMarketingTileFromView(campaign);
+				return (
+					<MapMarketingTile
+						snapToGrid={true}
+						tile={mt}
+					/>
+				);
+			})}
 
 			{children}
 		</div>

@@ -197,7 +197,8 @@ describe("Testing TileUtils", () => {
 						x: 12,
 						y: 20
 					}
-				})).toBeFalsy()
+				})
+			).toBeFalsy();
 		});
 	});
 });

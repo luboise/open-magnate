@@ -1,4 +1,7 @@
-import { new2DArray } from "../backend/src/utils";
+import {
+	GetTransposed,
+	new2DArray
+} from "../backend/src/utils";
 import {
 	GardenView,
 	HouseView,
@@ -237,9 +240,16 @@ export function createDetailedMapString(
 	houses: HouseView[],
 	_gardens: GardenView[]
 ): string {
-	const map = mapTo2DArray(rawMap);
+	const array = mapTo2DArray(rawMap);
+	if (!array)
+		throw new Error(
+			"Unable to parse 2D array from raw map"
+		);
 
+	const map = GetTransposed(array);
 	if (!map) throw new Error("Unable to parse raw map");
+
+	console.debug(map[0]);
 
 	for (const house of houses) {
 		for (let i = 0; i < 2; i++)
@@ -283,7 +293,8 @@ export function createDetailedMapString(
 				] = "M";
 	}
 
-	return map.map((col) => col.join("")).join(";");
+	const finalMap = GetTransposed(map);
+	return finalMap.map((col) => col.join("")).join(";");
 }
 
 export const CHAR_TO_MAP_TILE_CONVERTER: Record<
