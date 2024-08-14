@@ -228,6 +228,19 @@ const turnOrderSelector = selector<number[]>({
 	}
 });
 
+const realTurnOrderSelector = selector<Array<number | "X">>(
+	{
+		key: "REAL_TURN_ORDER",
+		get: ({ get }) => {
+			const gameState = get(GameStateAtom);
+			if (!gameState)
+				throw new Error(NullGamestateMsg);
+
+			return gameState.realTurnOrder;
+		}
+	}
+);
+
 const playerCountSelector = selector<number>({
 	key: "PLAYER_COUNT",
 	get: ({ get }) => {
@@ -288,6 +301,10 @@ export function useGameStateView() {
 		marketingCampaignSelector
 	);
 
+	const realTurnOrder = useRecoilValue(
+		realTurnOrderSelector
+	);
+
 	return {
 		mapColOrder,
 		mapRowOrder,
@@ -302,6 +319,7 @@ export function useGameStateView() {
 		currentTree,
 		reserve,
 		turnOrder,
+		realTurnOrder,
 		playerCount,
 		marketingCampaigns
 	};

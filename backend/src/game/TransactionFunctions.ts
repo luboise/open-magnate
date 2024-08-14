@@ -552,20 +552,6 @@ const PickTurnOrder: MoveTransactionFunctionTyped<
 	}
 };
 
-export default {
-	AddNewRestaurant,
-	AllPlayersReady,
-	ExecuteTurn,
-	NegotiateSalaries,
-	HandleEndOfRound,
-	UnreadyPlayers,
-	ValidateTurnProgress,
-	Restructure,
-	ReadyPlayer,
-	PickTurnOrder,
-	CreateMarketingCampaign
-};
-
 export const HouseIsAffectedByMarketing = (
 	house: FullGameState["houses"][number],
 	campaign: MarketingCampaignView
@@ -608,4 +594,18 @@ export const GetAffectedHouses: MoveTransactionFunctionTyped<
 			HouseIsAffectedByMarketing(house, campaign)
 		)
 		.map((house) => CreateHouseView(house));
+};
+
+export default {
+	AddNewRestaurant,
+	AllPlayersReady,
+	ExecuteTurn,
+	NegotiateSalaries,
+	HandleEndOfRound,
+	UnreadyPlayers,
+	ValidateTurnProgress,
+	Restructure,
+	ReadyPlayer,
+	PickTurnOrder,
+	CreateMarketingCampaign
 };

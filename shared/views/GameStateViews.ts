@@ -19,6 +19,7 @@ interface BaseGameStateView {
 
 	map: string;
 	turnOrder: Array<number>;
+	realTurnOrder: Array<number | "X">;
 
 	playerCount: number;
 
@@ -87,4 +88,3 @@ export function ReadyStatusToBoolean(
 			return null;
 	}
 }
-

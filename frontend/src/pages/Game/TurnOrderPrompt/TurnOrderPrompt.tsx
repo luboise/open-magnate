@@ -9,8 +9,12 @@ import { HTMLAttributes, useCallback } from "react";
 interface Props extends HTMLAttributes<HTMLDivElement> {}
 
 function TurnOrderPrompt({ ...args }: Props) {
-	const { turnOrder, players, playerCount } =
-		useGameStateView();
+	const {
+		turnOrder,
+		realTurnOrder,
+		players,
+		playerCount
+	} = useGameStateView();
 	const { makeMove } = usePageGame();
 
 	const onSlotPicked = useCallback(
@@ -51,8 +55,11 @@ function TurnOrderPrompt({ ...args }: Props) {
 				{...new Array(playerCount)
 					.fill(null)
 					.map((_, index) => {
-						console.debug(turnOrder);
-						if (turnOrder[index] !== -1)
+						console.debug(
+							realTurnOrder,
+							turnOrder
+						);
+						if (realTurnOrder[index] === "X")
 							return (
 								<div
 									onClick={() =>
@@ -67,9 +74,13 @@ function TurnOrderPrompt({ ...args }: Props) {
 							return (
 								<RestaurantImage
 									restaurantNumber={
-										players[
-											turnOrder[index]
-										].restaurant
+										players.find(
+											(p) =>
+												p.playerNumber ===
+												turnOrder[
+													index
+												]
+										)?.restaurant ?? 0
 									}
 								/>
 							);
