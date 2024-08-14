@@ -12,21 +12,55 @@
 	position: relative;
 }
 
-.game-map-house > * {
+/**.game-map-house > * {
 	position: absolute;
 	left: 50%;
 	top: 50%;
 	translate: -50% -50%;
-}
+}**/
 
 .game-map-house-demand-box {
+	position: absolute;
+	bottom: 0;
+
 	display: flex;
-	margin: 1em;
+	justify-content: space-around;
+
 	aspect-ratio: 1;
+	max-height: 50%;
+	width: 100%;
+	flex-wrap: wrap;
+}
+
+.game-map-house-demand-element {
+	display: flex;
+	max-height: 100%;
+	flex: 1;
+	max-width: 25%;
+
+	justify-content: center;
+	align-items: center;
+}
+
+.game-map-house-demand-element img {
+	object-fit: contain;
+	/**	height: 100%;**/
 	max-width: 100%;
 	max-height: 100%;
 }
 
-.game-map-house-demand-box div {
-	flex: 1;
+.house-number-label {
+	position: absolute;
+	width: 30%;
+	aspect-ratio: 1;
+	border: 0.3em solid black;
+	border-radius: 20%;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	color: black;
+	font-size: 1.5em;
+	font-weight: bold;
 }

@@ -209,20 +209,26 @@ const AddDemand: MoveTransactionFunctionTyped<{
 	const { ctx, gameId } = bundle;
 	const { house, foodType } = details;
 	try {
-		const existingHouse = await ctx.house.findUniqueOrThrow({
-			where: {
-				gameId_number: {
-					gameId: gameId,
-					number: house.priority
+		const existingHouse =
+			await ctx.house.findUniqueOrThrow({
+				where: {
+					gameId_number: {
+						gameId: gameId,
+						number: house.priority
+					}
+				},
+				include: {
+					demand: true
 				}
-			},
-			include: {
-				demand: true
-			}
-		});
+			});
 
-		if (existingHouse.demand.length >= existingHouse.demandLimit)
+		if (
+			existingHouse.demand.length >=
+			existingHouse.demandLimit
+		) {
+			console.log("House at demand limit. Skipping");
 			return;
+		}
 
 		await ctx.house.update({
 			where: {
@@ -240,12 +246,9 @@ const AddDemand: MoveTransactionFunctionTyped<{
 			}
 		});
 	} catch (error) {
-		console.error(
-			`Error finding house: ${error}`
-		);
+		console.error(`Error finding house: ${error}`);
 		return;
 	}
-
 };
 
 const UnreadyPlayers: MoveTransactionFunctionUntyped =
@@ -574,7 +577,16 @@ export const HouseIsAffectedByMarketing = (
 				width: 2,
 				height: 2
 			},
-			MarketingTilesByNumber[campaign.priority]
+			{
+				...MarketingTilesByNumber[
+				campaign.priority
+				],
+
+				pos: {
+					x: campaign.pos.x,
+					y: campaign.pos.y
+				}
+			}
 		);
 	}
 	// TODO: Account for the other marketing types

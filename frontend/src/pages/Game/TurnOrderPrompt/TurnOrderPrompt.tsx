@@ -50,15 +50,18 @@ function TurnOrderPrompt({ ...args }: Props) {
 			<div className="picks">
 				{...new Array(playerCount)
 					.fill(null)
-					.map((_, index) => (
-						<div
-							onClick={() =>
-								onSlotPicked(index)
-							}
-						>
-							{index + 1}
-						</div>
-					))}
+					.map((_, index) => {
+						return (
+							<div
+								onClick={() =>
+									onSlotPicked(index)
+								}
+								className="turn-order-pick"
+							>
+								{index + 1}
+							</div>
+						);
+					})}
 			</div>
 		</div>
 	);

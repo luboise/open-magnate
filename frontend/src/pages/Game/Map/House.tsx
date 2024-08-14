@@ -24,29 +24,17 @@ function House({
 			}}
 			{...args}
 		>
-			{/* <Image url=""/> */}
-			<div
-				style={{
-					width: "30%",
-					aspectRatio: 1,
-					border: "0.3em solid black",
-					borderRadius: "20%",
-
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center",
-
-					color: "black",
-					fontSize: "1.5em",
-					fontWeight: "bold"
-				}}
-			>
-				{house.priority}
-				<div className="game-map-house-demand-box">
-					{...house.demand.map((d) => (
+			<div className="game-map-house-demand-box">
+				{...house.demand.map((d) => (
+					<div className="game-map-house-demand-element">
 						<Demand demand={d} />
-					))}
-				</div>
+					</div>
+				))}
+			</div>
+
+			{/* <Image url=""/> */}
+			<div className="house-number-label corner-button">
+				{house.priority}
 			</div>
 		</div>
 	);
