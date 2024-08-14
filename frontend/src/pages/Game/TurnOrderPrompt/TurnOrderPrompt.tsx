@@ -51,16 +51,28 @@ function TurnOrderPrompt({ ...args }: Props) {
 				{...new Array(playerCount)
 					.fill(null)
 					.map((_, index) => {
-						return (
-							<div
-								onClick={() =>
-									onSlotPicked(index)
-								}
-								className="turn-order-pick"
-							>
-								{index + 1}
-							</div>
-						);
+						console.debug(turnOrder);
+						if (turnOrder[index] !== -1)
+							return (
+								<div
+									onClick={() =>
+										onSlotPicked(index)
+									}
+									className="turn-order-pick"
+								>
+									{index + 1}
+								</div>
+							);
+						else
+							return (
+								<RestaurantImage
+									restaurantNumber={
+										players[
+											turnOrder[index]
+										].restaurant
+									}
+								/>
+							);
 					})}
 			</div>
 		</div>
