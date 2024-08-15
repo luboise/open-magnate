@@ -4,21 +4,26 @@ import { HTMLAttributes, useMemo, useState } from "react";
 import ModalPanel from "../../../global_components/ModalPanel";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
-import { Employee, GetAllTreeData } from "../../../utils";
+import {
+	DemandAction,
+	Employee,
+	GetAllTreeData
+} from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
-import FoodWindow from "./FoodWindow";
+import DemandSelector from "./DemandSelector";
 import GameActionPreview from "./GameActionPreview";
 import HiringWindow from "./HiringWindow";
 import MarketingWindow from "./MarketingWindow";
 
 interface TurnPlannerProps
-	extends HTMLAttributes<HTMLDivElement> {}
+	extends HTMLAttributes<HTMLDivElement> { }
 
 function TurnPlanner({ ...args }: TurnPlannerProps) {
 	const { currentTree, myEmployees, playerData } =
 		useGameStateView();
 
-	const { turnActions, removeAction } = useTurnPlanning();
+	const { turnActions, addAction, removeAction } =
+		useTurnPlanning();
 
 	const [
 		selectedEmployeeIndex,
@@ -64,7 +69,31 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				/>
 			);
 
-		if (employee.type === "FOOD") return <FoodWindow />;
+		if (employee.type === "FOOD") {
+			if (employee.id === "food_basic")
+				return (
+					<DemandSelector
+						demands={
+							employee.produces ===
+								"BURGER_AND_PIZZA"
+								? ["BURGER", "PIZZA"]
+								: [employee.produces]
+						}
+						onDemandClicked={(demand) => {
+							const newAction: Omit<DemandAction, "player"> =
+							{
+								type: "GET_DEMAND",
+								employeeIndex:
+									selectedEmployeeIndex,
+								demand: demand,
+								amount: employee.amountProduced,
+							};
+							addAction(newAction);
+							clearSelectedEmployee();
+						}}
+					/>
+				);
+		}
 
 		return null;
 	}, [selectedEmployeeIndex, myEmployees]);
@@ -115,7 +144,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 									}
 									className={
 										selectedEmployeeIndex ===
-										index
+											index
 											? "item-highlighted"
 											: undefined
 									}

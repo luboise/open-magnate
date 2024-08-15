@@ -2,12 +2,12 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 // {
@@ -21,244 +21,257 @@ datasource db {
 // }
 
 model UserSession {
-    sessionKey  String       @id @unique @default(uuid())
-    browserId   String       @unique
-    name        String       @default("")
-    lobbyPlayer LobbyPlayer?
+  sessionKey  String       @id @unique @default(uuid())
+  browserId   String       @unique
+  name        String       @default("")
+  lobbyPlayer LobbyPlayer?
 
-    @@map("user_session")
+  @@map("user_session")
 }
 
 model LobbyPlayer {
-    isHost Boolean @default(false)
+  isHost Boolean @default(false)
 
-    // The lobby that the player is in
-    lobby   Lobby @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
-    lobbyId Int
+  // The lobby that the player is in
+  lobby   Lobby @relation(fields: [lobbyId], references: [id], onDelete: Cascade)
+  lobbyId Int
 
-    // The user session of the player
-    userSession UserSession @relation(fields: [userId], references: [sessionKey])
-    userId      String      @unique
+  // The user session of the player
+  userSession UserSession @relation(fields: [userId], references: [sessionKey])
+  userId      String      @unique
 
-    timeJoined DateTime @default(now())
+  timeJoined DateTime @default(now())
 
-    // Which player they are in the match
-    playerData   GamePlayer @relation(fields: [gameStateId, playerNumber], references: [gameId, number])
-    gameStateId  Int
-    playerNumber Int
+  // Which player they are in the match
+  playerData   GamePlayer @relation(fields: [gameStateId, playerNumber], references: [gameId, number])
+  gameStateId  Int
+  playerNumber Int
 
-    @@unique([gameStateId, playerNumber])
-    @@map("lobby_player")
+  @@unique([gameStateId, playerNumber])
+  @@map("lobby_player")
 }
 
 model Lobby {
-    id       Int     @id @default(autoincrement()) @map("lobby_id")
-    name     String
-    password String?
+  id       Int     @id @default(autoincrement()) @map("lobby_id")
+  name     String
+  password String?
 
-    playersInLobby LobbyPlayer[]
+  playersInLobby LobbyPlayer[]
 
-    inviteCode String
+  inviteCode String
 
-    gameState GameState?
+  gameState GameState?
 
-    @@map("lobby")
+  @@map("lobby")
 }
 
 model GamePlayer {
-    gameId Int
-    game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId Int
+  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
-    number Int          @map("player_number")
-    ready  READY_STATUS @default(NOT_APPLICABLE) @map("is_ready")
+  number Int          @map("player_number")
+  ready  READY_STATUS @default(NOT_APPLICABLE) @map("is_ready")
 
-    money        Int    @default(0)
-    milestones   Json
-    employees    Json
-    employeeTree String @default("0[X,X,X]") @db.VarChar(1000)
+  money        Int    @default(0)
+  milestones   Json
+  employees    Json
+  employeeTree String @default("0[X,X,X]") @db.VarChar(1000)
 
-    restaurantData   RestaurantData @relation(fields: [restaurantDataId], references: [id])
-    restaurantDataId Int
+  restaurantData   RestaurantData @relation(fields: [restaurantDataId], references: [id])
+  restaurantDataId Int
 
-    restaurants        GamePlayerRestaurant[]
-    marketingCampaigns MarketingCampaign[]
+  restaurants        GamePlayerRestaurant[]
+  marketingCampaigns MarketingCampaign[]
+  supply             PlayerDemand[]
 
-    lobbyPlayer LobbyPlayer?
+  lobbyPlayer LobbyPlayer?
 
-    @@id(name: "gamePlayerId", [gameId, number])
-    // Each game can only have a restaurant once
-    @@unique([gameId, restaurantDataId])
-    @@map("game_player")
+  @@id(name: "gamePlayerId", [gameId, number])
+  // Each game can only have a restaurant once
+  @@unique([gameId, restaurantDataId])
+  @@map("game_player")
 }
 
 model GamePlayerRestaurant {
-    id Int @id @default(autoincrement()) @map("game_player_restaurant_id")
+  id Int @id @default(autoincrement()) @map("game_player_restaurant_id")
 
-    gameId       Int
-    playerNumber Int
-    player       GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number])
+  gameId       Int
+  playerNumber Int
+  player       GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number])
 
-    x        Int
-    y        Int
-    entrance ENTRANCE_CORNER
+  x        Int
+  y        Int
+  entrance ENTRANCE_CORNER
 
-    @@unique([gameId, playerNumber, x, y])
-    @@map("game_player_restaurant")
+  @@unique([gameId, playerNumber, x, y])
+  @@map("game_player_restaurant")
 }
 
 model GameState {
-    // ID fields
-    id    Int   @id @map("gamestate_id")
-    lobby Lobby @relation(fields: [id], references: [id], onDelete: Cascade)
+  // ID fields
+  id    Int   @id @map("gamestate_id")
+  lobby Lobby @relation(fields: [id], references: [id], onDelete: Cascade)
 
-    turnProgress TURN_PROGRESS @default(PREGAME)
+  turnProgress TURN_PROGRESS @default(PREGAME)
 
-    // Scalar fields
-    rawMap String @db.VarChar(2048)
+  // Scalar fields
+  rawMap String @db.VarChar(2048)
 
-    currentTurn Int @default(1)
-    //   currentPlayer Int    @default(1)
-    playerCount Int
+  currentTurn Int @default(1)
+  //   currentPlayer Int    @default(1)
+  playerCount Int
 
-    turnOrder    String
-    oldTurnOrder String
+  turnOrder    String
+  oldTurnOrder String
 
-    reserve Json
+  reserve Json
 
-    // Relations
-    houses House[]
-    //   marketingCampaigns MarketingCampaign[]
+  // Relations
+  houses House[]
+  //   marketingCampaigns MarketingCampaign[]
 
-    players GamePlayer[]
+  players GamePlayer[]
 
-    @@map("game_state")
+  @@map("game_state")
 }
 
 model House {
-    // Used only for items whicv reference this house. For example, demand and gardens
-    id Int @id @default(autoincrement()) @map("house_id")
+  // Used only for items whicv reference this house. For example, demand and gardens
+  id Int @id @default(autoincrement()) @map("house_id")
 
-    gameId Int
-    game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  gameId Int
+  game   GameState @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
-    number Int @map("house_number")
+  number Int @map("house_number")
 
-    x           Int
-    y           Int
-    demandLimit Int @default(3)
+  x           Int
+  y           Int
+  demandLimit Int @default(3)
 
-    garden Garden?
-    demand Demand[]
+  garden Garden?
+  demand HouseDemand[]
 
-    // Game 1 can only have a single of house x
-    @@unique([gameId, number])
-    @@map("game_house")
+  // Game 1 can only have a single of house x
+  @@unique([gameId, number])
+  @@map("game_house")
 }
 
 model Garden {
-    houseId Int   @id @default(autoincrement())
-    house   House @relation(fields: [houseId], references: [id], onDelete: Cascade)
+  houseId Int   @id @default(autoincrement())
+  house   House @relation(fields: [houseId], references: [id], onDelete: Cascade)
 
-    x Int
-    y Int
+  x Int
+  y Int
 
-    orientation ORIENTATION @default(HORIZONTAL)
+  orientation ORIENTATION @default(HORIZONTAL)
 
-    @@map("game_house_garden")
+  @@map("game_house_garden")
 }
 
-model Demand {
-	demandId Int @id @default(autoincrement())
-    houseId Int   
-    house   House @relation(fields: [houseId], references: [id], onDelete: Cascade)
+model HouseDemand {
+  demandId Int   @id @default(autoincrement())
+  houseId  Int
+  house    House @relation(fields: [houseId], references: [id], onDelete: Cascade)
 
-    type DEMAND_TYPE
+  type DEMAND_TYPE
 
-    @@map("game_house_demand")
+  @@map("game_house_demand")
+}
+
+model PlayerDemand {
+  demandId Int @id @default(autoincrement())
+
+  gameId       Int
+  playerNumber Int        @map("player_number")
+  owner        GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number], onDelete: Cascade)
+
+  type DEMAND_TYPE
+
+  @@map("game_player_demand")
 }
 
 model MarketingCampaign {
-    priority Int @map("marketingNumber")
+  priority Int @map("marketingNumber")
 
-    gameId       Int
-    playerNumber Int        @map("player_number")
-    owner        GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number], onDelete: Cascade)
+  gameId       Int
+  playerNumber Int        @map("player_number")
+  owner        GamePlayer @relation(fields: [gameId, playerNumber], references: [gameId, number], onDelete: Cascade)
 
-    employeeIndex Int
+  employeeIndex Int
 
-    type MARKETING_TYPE
+  type MARKETING_TYPE
 
-    x Int
-    y Int
+  x Int
+  y Int
 
-    turnsRemaining Int
+  turnsRemaining Int
 
-    orientation ORIENTATION
-    demand      DEMAND_TYPE
+  orientation ORIENTATION
+  demand      DEMAND_TYPE
 
-    // Marketing #1 can only be used once in game 1
-    @@unique([gameId, priority])
-    // Each player can only use a marketing employee once
-    @@unique([gameId, playerNumber, employeeIndex])
-    @@map("game_marketing_campaign")
+  // Marketing #1 can only be used once in game 1
+  @@unique([gameId, priority])
+  // Each player can only use a marketing employee once
+  @@unique([gameId, playerNumber, employeeIndex])
+  @@map("game_marketing_campaign")
 }
 
 model RestaurantData {
-    id   Int    @id @default(autoincrement()) @map("restaurant_id")
-    name String
+  id   Int    @id @default(autoincrement()) @map("restaurant_id")
+  name String
 
-    GamePlayer GamePlayer[]
+  GamePlayer GamePlayer[]
 
-    @@map("restaurant_data")
+  @@map("restaurant_data")
 }
 
 enum ORIENTATION {
-    HORIZONTAL
-    VERTICAL
+  HORIZONTAL
+  VERTICAL
 }
 
 enum DEMAND_TYPE {
-    BURGER
-    PIZZA
-    LEMONADE
-    BEER
-    COLA
+  BURGER
+  PIZZA
+  LEMONADE
+  BEER
+  COLA
 }
 
 enum MARKETING_TYPE {
-    BILLBOARD
-    MAILBOX
-    PLANE
-    RADIO
+  BILLBOARD
+  MAILBOX
+  PLANE
+  RADIO
 }
 
 enum TURN_PROGRESS {
-    // In lobby
-    PREGAME
+  // In lobby
+  PREGAME
 
-    // In a game
-    SETTING_UP
-    RESTAURANT_PLACEMENT
-    RESTRUCTURING
-    TURN_ORDER_SELECTION
-    USE_EMPLOYEES
-    SALARY_PAYOUTS
-    MARKETING_CAMPAIGNS
-    CLEAN_UP
+  // In a game
+  SETTING_UP
+  RESTAURANT_PLACEMENT
+  RESTRUCTURING
+  TURN_ORDER_SELECTION
+  USE_EMPLOYEES
+  SALARY_PAYOUTS
+  MARKETING_CAMPAIGNS
+  CLEAN_UP
 
-    // After lobby
-    POSTGAME
+  // After lobby
+  POSTGAME
 }
 
 enum ENTRANCE_CORNER {
-    TOPLEFT
-    TOPRIGHT
-    BOTTOMLEFT
-    BOTTOMRIGHT
+  TOPLEFT
+  TOPRIGHT
+  BOTTOMLEFT
+  BOTTOMRIGHT
 }
 
 enum READY_STATUS {
-    NOT_READY
-    READY
-    NOT_APPLICABLE
+  NOT_READY
+  READY
+  NOT_APPLICABLE
 }

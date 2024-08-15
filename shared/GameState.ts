@@ -8,6 +8,7 @@
 // 	turnOrder: Array<number> | null;
 // };
 
+import { DEMAND_TYPE } from "../backend/src/dataViews";
 import { EMPLOYEE_ID } from "./EmployeeIDs";
 import { MarketingTile } from "./MapTiles";
 
@@ -33,6 +34,15 @@ export interface MarketingAction extends BaseGameAction {
 	tile: MarketingTile;
 }
 
-export type TurnAction = RecruitAction | MarketingAction;
+export interface DemandAction extends BaseGameAction {
+	type: "GET_DEMAND";
+	demand: DEMAND_TYPE;
+	amount: number;
+}
+
+export type TurnAction =
+	| RecruitAction
+	| MarketingAction
+	| DemandAction;
 
 export const BASE_SALARY = 5;

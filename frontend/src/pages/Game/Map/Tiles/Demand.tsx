@@ -1,17 +1,20 @@
 import "./Demand.css";
 
+import { ImgHTMLAttributes } from "react";
 import { DEMAND_TYPE } from "../../../../../../backend/src/dataViews";
 import Image from "../../../../global_components/Image";
 
-type Props = {
+interface Props
+	extends ImgHTMLAttributes<HTMLImageElement> {
 	demand: DEMAND_TYPE;
-};
+}
 
-function Demand({ demand }: Props) {
+function Demand({ demand, className, ...args }: Props) {
 	return (
 		<Image
-			className="demand-image"
+			className={`demand-image ${className}`}
 			url={`/resources/demand/${demand}.png`}
+			{...args}
 		/>
 	);
 }

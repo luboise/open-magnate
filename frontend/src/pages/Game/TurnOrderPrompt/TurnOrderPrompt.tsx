@@ -55,10 +55,6 @@ function TurnOrderPrompt({ ...args }: Props) {
 				{...new Array(playerCount)
 					.fill(null)
 					.map((_, index) => {
-						console.debug(
-							realTurnOrder,
-							turnOrder
-						);
 						if (realTurnOrder[index] === "X")
 							return (
 								<div

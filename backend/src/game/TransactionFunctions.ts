@@ -1,4 +1,5 @@
 import {
+	DEMAND_TYPE,
 	Prisma,
 	READY_STATUS,
 	TURN_PROGRESS
@@ -21,7 +22,7 @@ import {
 	serialiseTurnOrder
 } from "../../../shared/views/GameStateViews";
 import { MarketingCampaignView } from "../../../shared/views/MarketingViews";
-import { GetGameStateView } from "../dataViews";
+import { CreateGameStateView } from "../dataViews";
 import { getCurrentPlayer } from "../database/controller/gamestate.controller";
 import {
 	FullGameState,
@@ -81,12 +82,15 @@ const ExecuteTurn: MoveTransactionFunctionTyped<
 	for (const turnAction of turn) {
 		if (turnAction.type === "RECRUIT") {
 			newRecruits.push(turnAction.recruiting);
-		}
-		if (turnAction.type === "MARKETING") {
+		} else if (turnAction.type === "MARKETING") {
 			await CreateMarketingCampaign(
 				bundle,
 				turnAction
 			);
+		} else if (turnAction.type === "GET_DEMAND") {
+			await PlayerCreatedDemand(bundle, {
+				demand: turnAction.demand
+			});
 		}
 	}
 
@@ -165,7 +169,7 @@ const HandleEndOfRound: MoveTransactionFunctionUntyped =
 				`Attempted to handle end of round for a game that is not in the salary stage in lobby #${gameState.id}`
 			);
 
-		const gsv = GetGameStateView(gameState);
+		const gsv = CreateGameStateView(gameState);
 
 		for (const campaign of gsv.marketingCampaigns) {
 			await BroadcastMarketing(bundle, campaign);
@@ -579,6 +583,28 @@ export const HouseIsAffectedByMarketing = (
 	return true;
 };
 
+export const PlayerCreatedDemand: MoveTransactionFunctionTyped<{
+	demand: DEMAND_TYPE;
+}> = async (bundle, details) => {
+	const { ctx, gameId, player } = bundle;
+
+	await ctx.gamePlayer.update({
+		where: {
+			gamePlayerId: {
+				gameId: gameId,
+				number: player
+			}
+		},
+		data: {
+			supply: {
+				create: {
+					type: details.demand
+				}
+			}
+		}
+	});
+};
+
 export const GetAffectedHouses: MoveTransactionFunctionTyped<
 	MarketingCampaignView
 > = async (bundle, campaign): Promise<HouseView[]> => {
@@ -607,5 +633,6 @@ export default {
 	Restructure,
 	ReadyPlayer,
 	PickTurnOrder,
-	CreateMarketingCampaign
+	CreateMarketingCampaign,
+	PlayerCreatedDemand
 };

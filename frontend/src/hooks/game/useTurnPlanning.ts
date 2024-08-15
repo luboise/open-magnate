@@ -1,9 +1,5 @@
 import { atom, useRecoilState } from "recoil";
-import {
-	MarketingAction,
-	RecruitAction,
-	TurnAction
-} from "../../utils";
+import { TurnAction } from "../../utils";
 import { useGameStateView } from "./useGameState";
 
 interface GamePlanningState {
@@ -40,25 +36,10 @@ function useTurnPlanning() {
 			throw new Error("No player data available");
 
 		const newAction = ((): TurnAction | null => {
-			if (action.type === "RECRUIT") {
-				return {
-					...(action as Omit<
-						RecruitAction,
-						"player"
-					>),
-					player: playerData.playerNumber
-				};
-			} else if (action.type === "MARKETING") {
-				return {
-					...(action as Omit<
-						MarketingAction,
-						"player"
-					>),
-					player: playerData.playerNumber
-				};
-			}
-
-			return null;
+			return {
+				...action,
+				player: playerData.playerNumber
+			} as TurnAction;
 		})();
 
 		if (!newAction) {
@@ -111,4 +92,3 @@ function useTurnPlanning() {
 }
 
 export default useTurnPlanning;
-

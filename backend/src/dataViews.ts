@@ -8,14 +8,16 @@ import { createDetailedMapString } from "../../shared";
 import {
 	GamePlayerViewPrivate,
 	GameStateView,
-	GameStateViewPerPlayer,
-	ReadyStatusToBoolean
+	GameStateViewPerPlayer
 } from "../../shared/views/GameStateViews";
 import {
 	getCurrentPlayer,
 	getTurnOrder
 } from "./database/controller/gamestate.controller";
-import { FullGameState } from "./database/controller/includes";
+import {
+	CreateGamePlayerView,
+	FullGameState
+} from "./database/controller/includes";
 
 import {
 	GardenView,
@@ -27,12 +29,7 @@ import {
 	MarketingCampaignView
 } from "../../shared/views/MarketingViews";
 import { Reserve } from "./game/NewGameStructures";
-import {
-	CreateHouseView,
-	MarketingCampaignViewPrivate,
-	parseJsonArray,
-	readJsonNumberArray
-} from "./utils";
+import { CreateHouseView } from "./utils";
 
 export type READY_STATUS = PrismaReadyStatus;
 
@@ -45,7 +42,7 @@ export interface Position {
 	orientation?: ORIENTATION;
 }
 
-export const GetGameStateView = (
+export const CreateGameStateView = (
 	gameState: FullGameState
 ): GameStateView => {
 	if (!gameState)
@@ -152,40 +149,8 @@ export const GetGameStateView = (
 		gardens: gardens,
 		houses: houses,
 		players: gameState.players.map(
-			(player): GamePlayerViewPrivate => ({
-				money: player.money,
-				playerNumber: player.number,
-				restaurant: player.restaurantData.id,
-				milestones: readJsonNumberArray(
-					player.milestones
-				),
-				employees: parseJsonArray(player.employees),
-				employeeTreeStr: player.employeeTree,
-				ready: ReadyStatusToBoolean(player.ready),
-				marketingCampaigns:
-					player.marketingCampaigns.map(
-						(
-							campaign
-						): MarketingCampaignViewPrivate => ({
-							playerNumber:
-								campaign.playerNumber,
-							priority: campaign.priority,
-							turnsRemaining:
-								campaign.turnsRemaining,
-
-							type: campaign.type,
-							pos: {
-								x: campaign.x,
-								y: campaign.y,
-								orientation:
-									campaign.orientation
-							},
-							employeeIndex:
-								campaign.employeeIndex,
-							foodType: campaign.demand
-						})
-					)
-			})
+			(player): GamePlayerViewPrivate =>
+				CreateGamePlayerView(player)
 		),
 		restaurants: restaurants,
 		reserve: gameState.reserve as Reserve

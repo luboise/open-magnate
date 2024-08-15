@@ -1,3 +1,4 @@
+import { DEMAND_TYPE } from "../backend/src/dataViews";
 import {
 	Colour,
 	MarketingType
@@ -27,9 +28,9 @@ export interface ManagementEmployee extends BaseEmployee {
 	colour: COLOURS.BLACK;
 	capacity: number;
 }
+
 export type FOOD_TYPE =
-	| "BURGER"
-	| "PIZZA"
+	| Extract<DEMAND_TYPE, "BURGER" | "PIZZA">
 	| "BURGER_AND_PIZZA";
 
 export interface FoodEmployee extends BaseEmployee {
@@ -61,4 +62,3 @@ export type Employee =
 	| FoodEmployee
 	| MarketingEmployee
 	| CEOEmployee;
-

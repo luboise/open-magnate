@@ -1,4 +1,7 @@
-import { READY_STATUS } from "../../backend/src/dataViews";
+import {
+	DEMAND_TYPE,
+	READY_STATUS
+} from "../../backend/src/dataViews";
 import { TURN_PROGRESS } from "../../frontend/src/utils";
 import {
 	GardenView,
@@ -51,6 +54,7 @@ export interface GamePlayerViewPublic {
 	restaurant: number;
 	money: number;
 	ready: boolean | null;
+	supply: DEMAND_TYPE[];
 }
 
 export interface GamePlayerViewPrivate
