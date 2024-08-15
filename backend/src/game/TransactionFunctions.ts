@@ -25,8 +25,10 @@ import { MarketingCampaignView } from "../../../shared/views/MarketingViews";
 import { CreateGameStateView } from "../dataViews";
 import { getCurrentPlayer } from "../database/controller/gamestate.controller";
 import {
+	FullGamePlayer,
 	FullGameState,
-	FullGameStateInclude
+	FullGameStateInclude,
+	FullHouse
 } from "../database/controller/includes";
 import {
 	CreateHouseView,
@@ -151,6 +153,38 @@ const NegotiateSalaries: MoveTransactionFunctionTyped<
 			"No game player was able to be updated."
 		);
 };
+
+const HandleDinnertime: MoveTransactionFunctionUntyped =
+	async (bundle) => {
+		const { ctx, gameId } = bundle;
+
+		const gameState =
+			await ctx.gameState.findUniqueOrThrow({
+				where: {
+					id: gameId
+				},
+				include: FullGameStateInclude
+			});
+
+		const { houses, players } = gameState;
+
+		for (const house of gameState.houses.sort(
+			(h1, h2) => h1.number - h2.number
+		)) {
+		}
+	};
+
+function GetPlayerScore(
+	player: FullGamePlayer,
+	house: FullHouse
+): number | null {
+	// TODO: Implement pathfinding from the house to each restaurant. For now, we will assume every restaurant is the same distance
+
+	const tileDistance = 0;
+	const basePrice = 10;
+
+	return null;
+}
 
 const HandleEndOfRound: MoveTransactionFunctionUntyped =
 	async (bundle) => {
@@ -348,8 +382,9 @@ async function setTurnProgress(
 	if (nextTurnProgress === "TURN_ORDER_SELECTION") {
 		await BackupTurnOrder(bundle);
 	} else if (nextTurnProgress === "SALARY_PAYOUTS") {
+		await HandleDinnertime(bundle);
+	} else if (nextTurnProgress === "CLEAN_UP")
 		await HandleEndOfRound(bundle);
-	}
 
 	await UnreadyPlayers(bundle);
 }
@@ -634,5 +669,6 @@ export default {
 	ReadyPlayer,
 	PickTurnOrder,
 	CreateMarketingCampaign,
-	PlayerCreatedDemand
+	PlayerCreatedDemand,
+	HandleDinnertime
 };
