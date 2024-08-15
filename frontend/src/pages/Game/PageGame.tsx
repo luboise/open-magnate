@@ -10,15 +10,13 @@ import usePanning from "../../hooks/usePanning";
 import useScalingValue from "../../hooks/useScalingValue";
 import { TileType } from "../../utils";
 import EmployeeTree from "./EmployeeTree/EmployeeTree";
-import TurnHandler from "./GlobalUI/TurnHandler";
+import GlobalUI, {
+	ToggleableType
+} from "./GlobalUI/GlobalUI";
 import TurnOrderList from "./GlobalUI/TurnOrderList";
-import WindowToolbar, {
-	ToolbarType
-} from "./GlobalUI/WindowToolbar";
 import MagnateMap from "./Map/MagnateMap";
 import PlacementHandler from "./Map/Placers/PlacementHandler";
 import Placer from "./Map/Placers/Placer";
-import GlobalReserveDisplay from "./Reserve/GlobalReserveDisplay";
 import SalaryHandler from "./SalaryHandler/SalaryHandler";
 import TurnOrderPrompt from "./TurnOrderPrompt/TurnOrderPrompt";
 import TurnPlanner from "./TurnPlanner/TurnPlanner";
@@ -34,12 +32,9 @@ interface GameInterfaceState {
 	showGlobalReserve: boolean;
 }
 
-type NonToolbarToggleType = "GLOBAL RESERVE";
-
 type GameInterfaceAction = {
 	type: "TOGGLE";
-
-	toToggle: ToolbarType | NonToolbarToggleType;
+	toToggle: ToggleableType;
 };
 
 function PageGame() {
@@ -258,29 +253,19 @@ function PageGame() {
 			</Resizable>
 
 			{/* Global elements */}
-
-			<WindowToolbar
-				onClick={(clicked) =>
+			<GlobalUI
+				reserveEnabledOnDefault={
+					state.showGlobalReserve
+				}
+				onToggleableClicked={(clicked) => {
 					dispatch({
 						type: "TOGGLE",
 						toToggle: clicked
-					})
-				}
-			/>
-
-			<GlobalReserveDisplay
-				enabledByDefault={state.showGlobalReserve}
-				onToggle={() => {
-					dispatch({
-						type: "TOGGLE",
-						toToggle: "GLOBAL RESERVE"
 					});
 				}}
 			/>
-			<TurnHandler />
 		</div>
 	);
 }
 
 export default PageGame;
-
