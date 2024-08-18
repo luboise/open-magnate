@@ -1,11 +1,11 @@
-import { FullGamePlayer } from "../backend/src/database/controller/includes";
-import { parseJsonArray } from "../backend/src/utils";
+import { FullGamePlayer } from "../../backend/src/database/controller/includes";
+import { parseJsonArray } from "../../backend/src/utils";
+import { TreeNode } from "../utils";
 import { Employee } from "./EmployeeTypes";
 import {
 	EmployeesById,
 	IsValidEmployeeId
 } from "./Employees";
-import { TreeNode } from "./utils";
 
 export type EmployeeNode = TreeNode<number>;
 
@@ -234,4 +234,3 @@ export function GetAllTreeData<T>(
 
 	return data;
 }
-

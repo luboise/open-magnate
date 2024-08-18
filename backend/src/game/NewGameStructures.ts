@@ -1,6 +1,6 @@
 import { Clamp } from "../../../frontend/src/utils";
 import { PLAYER_DEFAULTS } from "../../../shared";
-import { EMPLOYEE_ID } from "../../../shared/EmployeeIDs";
+import { EMPLOYEE_ID } from "../../../shared/employees/EmployeeIDs";
 
 export type Reserve = Record<EMPLOYEE_ID, number>;
 

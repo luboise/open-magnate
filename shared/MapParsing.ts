@@ -1,5 +1,12 @@
 import {
+	CloneArray,
+	DirectionBools,
 	GetTransposed,
+	IsConnecting,
+	IsEdge,
+	IsMaxBound,
+	IsMinBound,
+	Map2D,
 	new2DArray
 } from "../backend/src/utils";
 import {
@@ -114,6 +121,7 @@ export function parseMapChar(
 
 	return parsedObject;
 }
+
 export function parseMapPiece(
 	mapString: string
 ): PartialMap2D | null {
@@ -311,3 +319,105 @@ export const CHAR_TO_MAP_TILE_CONVERTER: Record<
 	B: { tileType: TileType.BEER },
 	M: { tileType: TileType.MARKETING }
 } as const;
+
+export function ParseMapStringFromGSV(
+	mapString: string
+): Map2D {
+	const rowOrderMap = parseRawMap(mapString) ?? null;
+
+	if (rowOrderMap === null)
+		throw new Error(
+			"Unable to create rowOrderMap from mapString"
+		);
+
+	return addMapDetails(GetTransposed(rowOrderMap));
+}
+
+export function addMapDetails(
+	baseMap: PartialMap2D
+): Map2D {
+	const newMap = CloneArray(baseMap) as Map2D;
+
+	// const newMap = new2DArray<MapTileData>(
+	// 	baseMap.length,
+	// 	baseMap[0].length
+	// );
+	const maxX = baseMap.length - 1;
+
+	// function test(y, maxy, )
+	// Since the data is in column major order, iterate Y first
+	for (let x = 0; x <= maxX; x++) {
+		const maxY = newMap[x].length - 1;
+
+		for (let y = 0; y <= maxY; y++) {
+			const val = newMap[x][y];
+			const oldDetails = baseMap[x][y];
+
+			const calculated: DirectionBools = {
+				north:
+					IsEdge(val.pos.y - 1) &&
+					IsEdge(val.pos.y),
+				south:
+					IsEdge(val.pos.y + 1) &&
+					IsEdge(val.pos.y),
+				east:
+					IsEdge(val.pos.x + 1) &&
+					IsEdge(val.pos.x),
+				west:
+					IsEdge(val.pos.x - 1) &&
+					IsEdge(val.pos.x)
+			};
+
+			const z = oldDetails.tileType;
+
+			const newVal: MapTileData = {
+				...oldDetails,
+				pieceEdges: calculated,
+				...(z === TileType.ROAD
+					? {
+							adjacentRoads: {
+								north:
+									(!IsMinBound(y) &&
+										y > 0 &&
+										newMap[x][y - 1]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(x, y - 1),
+								south:
+									(!IsMaxBound(y) &&
+										y < maxY &&
+										newMap[x][y + 1]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(x, y + 1),
+								east:
+									(!IsMaxBound(x) &&
+										x < maxX &&
+										newMap[x + 1][y]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(
+										val.pos.x + 1,
+										val.pos.y
+									),
+								west:
+									(!IsMinBound(x) &&
+										x > 0 &&
+										newMap[x - 1][y]
+											.tileType ===
+											TileType.ROAD) ||
+									IsConnecting(
+										val.pos.x - 1,
+										val.pos.y
+									)
+							}
+						}
+					: {})
+			};
+
+			newMap[x][y] = newVal;
+		}
+	}
+
+	return newMap;
+}

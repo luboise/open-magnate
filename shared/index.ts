@@ -1,8 +1,3 @@
-export * from "./EmployeeIDs";
-export * from "./EmployeeStructure";
-export * from "./EmployeeTypes";
-export * from "./Employees";
-
 export * from "./Food";
 export * from "./GameState";
 export * from "./LobbyTypes";
@@ -22,3 +17,5 @@ export * from "./views";
 
 // Shared types that rely on backend types
 export * from "../backend/src/shareToFront";
+
+export * from "./employees";

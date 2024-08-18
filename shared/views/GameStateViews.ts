@@ -13,7 +13,7 @@ import {
 	MarketingCampaignViewPrivate
 } from "./MarketingViews";
 
-import { EMPLOYEE_ID } from "../EmployeeIDs";
+import { EMPLOYEE_ID } from "../employees/EmployeeIDs";
 
 interface BaseGameStateView {
 	turnProgress: TURN_PROGRESS;
@@ -59,7 +59,7 @@ export interface GamePlayerViewPublic {
 
 export interface GamePlayerViewPrivate
 	extends GamePlayerViewPublic {
-	employees: string[];
+	employees: EMPLOYEE_ID[];
 	employeeTreeStr: string;
 	marketingCampaigns: MarketingCampaignViewPrivate[];
 }

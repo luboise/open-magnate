@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { EMPLOYEE_ID } from "../../../../../shared/EmployeeIDs";
+import { EMPLOYEE_ID } from "../../../../../shared/employees/EmployeeIDs";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import { RecruitAction } from "../../../utils";

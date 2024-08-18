@@ -1,5 +1,5 @@
 // import prisma from "../src/datasource";
-import { DEFAULT_EMPLOYEE_ARRAY } from "../../shared/Employees";
+import { DEFAULT_EMPLOYEE_ARRAY } from "../../shared/employees/Employees";
 
 import {
 	Prisma,

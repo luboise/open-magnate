@@ -6,7 +6,7 @@ import {
 	SerialiseEmployeeTree,
 	createCEOEmployee
 } from "../../../../shared";
-import { Employee } from "../../../../shared/EmployeeTypes";
+import { Employee } from "../../../../shared/employees/EmployeeTypes";
 
 let testTree: EmployeeNode;
 let list: Employee[] = [];
@@ -273,4 +273,3 @@ describe("Testing Employees", () => {
 		});
 	});
 });
-

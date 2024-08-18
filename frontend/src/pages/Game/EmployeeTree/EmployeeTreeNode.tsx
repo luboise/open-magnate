@@ -1,5 +1,5 @@
 import { HTMLAttributes } from "react";
-import { EmployeeNode } from "../../../../../shared/EmployeeStructure";
+import { EmployeeNode } from "../../../../../shared/employees/EmployeeStructure";
 import { Employee } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 import {

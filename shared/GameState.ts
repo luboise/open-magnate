@@ -9,7 +9,7 @@
 // };
 
 import { DEMAND_TYPE } from "../backend/src/dataViews";
-import { EMPLOYEE_ID } from "./EmployeeIDs";
+import { EMPLOYEE_ID } from "./employees/EmployeeIDs";
 import { MarketingTile } from "./MapTiles";
 
 // export interface GameCreationParams {

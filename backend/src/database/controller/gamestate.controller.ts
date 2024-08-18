@@ -9,7 +9,7 @@ import {
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
 } from "../../../../shared";
-import { GetEmployeeTreeOrThrow } from "../../../../shared/EmployeeStructure";
+import { GetEmployeeTreeOrThrow } from "../../../../shared/employees/EmployeeStructure";
 import { MapStringChar } from "../../../../shared/MapParsing";
 import { MoveData } from "../../../../shared/Moves";
 import { parseTurnOrder } from "../../../../shared/views/GameStateViews";

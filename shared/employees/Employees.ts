@@ -1,4 +1,4 @@
-import { MarketingType } from "../frontend/src/utils";
+import { MarketingType } from "../../frontend/src/utils";
 import {
 	EMPLOYEE_ID,
 	FOOD_EMPLOYEE_ID,
@@ -10,9 +10,9 @@ import {
 	Employee,
 	FOOD_TYPE,
 	FoodEmployee,
-	ManagementEmployee,
-	MarketingEmployee
+	ManagementEmployee
 } from "./EmployeeTypes";
+import { MarketingEmployees } from "./MarketingEmployees";
 
 export enum COLOURS {
 	BLACK = "#000000",
@@ -78,31 +78,6 @@ export function createCEOEmployee(
 		notPaid: true
 	};
 }
-
-interface MarketingEmployeeCreationData {
-	name: string;
-	id: MARKETING_EMPLOYEE_ID;
-	marketingType: MarketingType;
-	notPaid?: boolean;
-}
-
-export function createMarketingEmployee({
-	name,
-	id,
-	marketingType,
-	notPaid = false
-}: MarketingEmployeeCreationData): MarketingEmployee {
-	return {
-		id: id,
-		name: name,
-		type: "MARKETING",
-		colour: COLOURS.LIGHT_BLUE,
-		marketingType: marketingType,
-		buildsInto: [],
-		notPaid: notPaid
-	};
-}
-
 // function getEmployee() {
 // 	if () {
 // 		return MANAGEMENT_NAMES[name];
@@ -185,33 +160,6 @@ export const FoodEmployees: Record<
 	})
 } as const;
 
-export const MarketingEmployees: Record<
-	MARKETING_EMPLOYEE_ID,
-	MarketingEmployee
-> = {
-	market_1: createMarketingEmployee({
-		id: "market_1",
-		marketingType: "BILLBOARD",
-		name: "Marketing Trainee",
-		notPaid: true
-	}),
-	market_2: createMarketingEmployee({
-		id: "market_2",
-		marketingType: "MAILBOX",
-		name: "Campaign Manager"
-	}),
-	market_3: createMarketingEmployee({
-		id: "market_3",
-		marketingType: "PLANE",
-		name: "Brand Manager"
-	}),
-	market_4: createMarketingEmployee({
-		id: "market_4",
-		marketingType: "RADIO",
-		name: "Brand Director"
-	})
-} as const;
-
 export const EmployeesById: Record<
 	EMPLOYEE_ID | "CEO",
 	Employee
@@ -221,6 +169,39 @@ export const EmployeesById: Record<
 	...MarketingEmployees,
 	CEO: CEOEmployeeInitial
 } as const;
+
+interface ManagementEmployeeCreationData {
+	name: string;
+	id: MGMT_EMPLOYEE_ID;
+	capacity: number;
+	notPaid?: boolean;
+	oneOf?: boolean;
+}
+
+interface FoodEmployeeCreationData {
+	id: FOOD_EMPLOYEE_ID;
+	name: string;
+	produces: FOOD_TYPE;
+	amountProduced: number;
+	notPaid?: boolean;
+}
+
+interface MarketingEmployeeCreationData {
+	name: string;
+	id: MARKETING_EMPLOYEE_ID;
+	marketingType: MarketingType;
+	notPaid?: boolean;
+}
+
+// function getEmployee() {
+// 	if () {
+// 		return MANAGEMENT_NAMES[name];
+// 	}
+// 	if (name in FOOD_NAMES) {
+// 		return FOOD_NAMES[name];
+// 	}
+// 	return null;
+// }
 
 export function IsValidEmployeeId(
 	id: string
@@ -238,4 +219,3 @@ export function EmployeeCanHire(employee: Employee) {
 		employee.type === "CEO"
 	);
 }
-

@@ -11,7 +11,7 @@ import {
 	GetAllTreeData,
 	IsValidEmployeeTree,
 	ParseEmployeeTree
-} from "../../../../../shared/EmployeeStructure";
+} from "../../../../../shared/employees/EmployeeStructure";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
@@ -69,7 +69,7 @@ export function findParentNode(
 }
 
 interface EmployeeTreeProps
-	extends HTMLAttributes<HTMLDivElement> {}
+	extends HTMLAttributes<HTMLDivElement> { }
 
 type dd = number;
 type rd = EmployeeTreeNodeDropDetails;
@@ -126,7 +126,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				)
 					throw new Error(
 						"Invalid index provided for updating the tree: " +
-							index
+						index
 					);
 				console.debug(
 					`Card dropped on employee tree: parent: ${parent.data}, child: ${employeeDropped}, index: ${index}`

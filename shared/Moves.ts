@@ -1,5 +1,5 @@
 import { ENTRANCE_CORNER } from "../backend/src/dataViews";
-import { EmployeeNode } from "./EmployeeStructure";
+import { EmployeeNode } from "./employees/EmployeeStructure";
 import { TurnAction } from "./GameState";
 
 export enum MOVE_TYPE {

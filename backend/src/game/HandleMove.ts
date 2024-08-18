@@ -3,10 +3,9 @@ import { MOVE_TYPE, MoveData } from "../../../shared/Moves";
 
 import { getCurrentPlayer } from "../database/controller/gamestate.controller";
 import { FullGameStateInclude } from "../database/controller/includes";
-import TransactionFunctions, {
-	BuildErrorMessage,
-	TransactionBundle
-} from "./TransactionFunctions";
+import { TransactionFunctions } from "./TransactionFunctions";
+import { TransactionBundle } from "./TransactionFunctions/types";
+import { BuildErrorMessage } from "./TransactionFunctions/utils";
 
 export async function TransactMove(
 	bundle: TransactionBundle,
