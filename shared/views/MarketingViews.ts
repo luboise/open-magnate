@@ -1,7 +1,7 @@
 import {
-	DEMAND_TYPE,
 	Position
 } from "../../backend/src/dataViews";
+import { DEMAND_TYPE } from "../../backend/src/shareToFront";
 
 import {
 	MARKETING_TYPE,

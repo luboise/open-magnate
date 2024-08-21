@@ -1,7 +1,7 @@
 import {
-	DEMAND_TYPE,
 	READY_STATUS
 } from "../../backend/src/dataViews";
+import { DEMAND_TYPE } from "../../backend/src/shareToFront";
 import {
 	Map2D,
 	TURN_PROGRESS

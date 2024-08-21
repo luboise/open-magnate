@@ -1,4 +1,4 @@
-import { DEMAND_TYPE } from "../../../../../backend/src/dataViews";
+import { DEMAND_TYPE } from "../../../utils";
 import Demand from "../Map/Tiles/Demand";
 
 type Props = {

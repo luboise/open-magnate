@@ -36,3 +36,17 @@ export function IsInRange(
 ): boolean {
 	return val === Clamp(val, min, max);
 }
+
+export function ReduceTupleArray<
+	T1 extends string | number | symbol,
+	T2
+>(array: Array<[T1, T2]>): Record<T1, T2> {
+	const val = array.reduce<Record<T1, T2>>(
+		(prev, [key, val]) => {
+			prev[key] = val;
+			return prev;
+		},
+		{} as Record<T1, T2>
+	);
+	return val;
+}

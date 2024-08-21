@@ -1,6 +1,5 @@
-import { DEMAND_TYPE } from "../../backend/src/dataViews";
-
-import { EMPLOYEE_ID, EMPLOYEE_ENUM } from "./types";
+import { DEMAND_TYPE } from "../../backend/src/utils";
+import { EMPLOYEE_ENUM, EMPLOYEE_ID } from "./types";
 
 export interface BaseEmployee {
 	id: EMPLOYEE_ID | "CEO";

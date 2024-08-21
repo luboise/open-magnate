@@ -1,9 +1,9 @@
 import {
 	ORIENTATION,
-	DEMAND_TYPE as PrismaDemandType,
 	ENTRANCE_CORNER as PrismaEntranceCorner,
 	READY_STATUS as PrismaReadyStatus
 } from "@prisma/client";
+
 import { createDetailedMapString } from "../../shared";
 import {
 	GamePlayerViewPrivate,
@@ -37,7 +37,6 @@ import {
 export type READY_STATUS = PrismaReadyStatus;
 
 export type ENTRANCE_CORNER = PrismaEntranceCorner;
-export type DEMAND_TYPE = PrismaDemandType;
 
 export interface Position {
 	x: number;

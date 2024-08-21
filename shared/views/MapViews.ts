@@ -1,7 +1,7 @@
 import {
-    DEMAND_TYPE,
     Position
 } from "../../backend/src/dataViews";
+import { DEMAND_TYPE } from "../../backend/src/shareToFront";
 import { FullHouse } from "../../backend/src/database/controller/includes";
 
 export interface RestaurantView {

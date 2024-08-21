@@ -1,8 +1,8 @@
 import "./Demand.css";
 
 import { ImgHTMLAttributes } from "react";
-import { DEMAND_TYPE } from "../../../../../../backend/src/dataViews";
 import Image from "../../../../global_components/Image";
+import { DEMAND_TYPE } from "../../../../utils";
 
 interface Props
 	extends ImgHTMLAttributes<HTMLImageElement> {

@@ -2,13 +2,14 @@ export * from "./Food";
 export * from "./LobbyTypes";
 export * from "./LocalSessionData";
 export * from "./MapData";
-export * from "./map/parsing/MapParsing";
 export * from "./Messages";
 export * from "./Player";
 export * from "./RestaurantNames";
 export * from "./Routes";
+export * from "./demand";
 export * from "./game/actions/types";
 export * from "./map";
+export * from "./map/parsing/MapParsing";
 
 export * from "./utils";
 

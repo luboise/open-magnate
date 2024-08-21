@@ -1,10 +1,13 @@
+import { CreateGameStateView } from "../../dataViews";
 import {
 	FullGamePlayer,
 	FullGameStateInclude,
 	FullHouse
 } from "../../database/controller/includes";
-import { CreateGameStateView } from "../../dataViews";
 import {
+	DEMAND_TYPE,
+	DemandRecord,
+	DemandRecords,
 	Employee,
 	GamePlayerViewPrivate,
 	GameStateView,
@@ -66,10 +69,24 @@ export const HandleDinnertime: MoveTransactionFunctionUntyped =
 
 		function CanSatisfy(
 			player: PlayerDinnertimeDetails,
-			house: FullHouse | HouseView
+			house: HouseView
 		): boolean {
-			// TODO: Implement satisfaction logic (demand)
-			return false;
+			if (player.distances[house.priority] === null)
+				return false;
+
+			const houseDemands = DemandRecords.FromDemands(
+				house.demand
+			);
+
+			// Can safely typecast, as houseDemands uses DEMAND_TYPE as a key
+			for (const demand in houseDemands) {
+				if (
+					player.supply[demand as DEMAND_TYPE] <
+					houseDemands[demand as DEMAND_TYPE]
+				)
+					return false;
+			}
+			return true;
 		}
 
 		for (const house of houses.sort(
@@ -95,6 +112,7 @@ export const HandleDinnertime: MoveTransactionFunctionUntyped =
 
 export interface PlayerDinnertimeDetails {
 	playerNumber: number;
+	supply: DemandRecord;
 	distances: HouseDistances;
 	unitPrice: number;
 	waitresses: number;
@@ -135,6 +153,7 @@ export function GetDinnertimeDetails(
 	): PlayerDinnertimeDetails {
 		return {
 			playerNumber: player.playerNumber,
+			supply: DemandRecords.FromPlayer(player),
 			distances: GetHouseDistances(
 				game,
 				player.playerNumber
