@@ -1,11 +1,11 @@
 import { useMemo } from "react";
+import useClientState from "../../../hooks/game/useClientState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
 import {
 	MarketingTile,
 	MarketingTilesByNumber,
 	PartialMarketingTile
-} from "../../../../../shared/MapTiles/MarketingTiles";
-import useClientState from "../../../hooks/game/useClientState";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+} from "../../../utils";
 import MapMarketingTile from "../Map/MapMarketingTile";
 import "./MarketingWindow.css";
 
@@ -14,7 +14,7 @@ interface Props {
 }
 
 function MarketingWindow({ employeeHiringIndex }: Props) {
-	const { myEmployees, playerData, marketingCampaigns } =
+	const { myEmployees, marketingCampaigns } =
 		useGameStateView();
 
 	const { startPlacing } = useClientState();
@@ -119,7 +119,9 @@ function MarketingWindow({ employeeHiringIndex }: Props) {
 
 interface ColumnProps {
 	title: string;
-	tiles: PartialMarketingTile[];
+	tiles: // | Omit<PartialMarketingTile, "demand">[]
+	// 	| PartialMarketingTile[]
+	PartialMarketingTile[];
 }
 
 export default MarketingWindow;

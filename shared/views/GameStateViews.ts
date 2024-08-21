@@ -2,7 +2,10 @@ import {
 	DEMAND_TYPE,
 	READY_STATUS
 } from "../../backend/src/dataViews";
-import { TURN_PROGRESS } from "../../frontend/src/utils";
+import {
+	Map2D,
+	TURN_PROGRESS
+} from "../../frontend/src/utils";
 import {
 	GardenView,
 	HouseView,
@@ -13,14 +16,14 @@ import {
 	MarketingCampaignViewPrivate
 } from "./MarketingViews";
 
-import { EMPLOYEE_ID } from "../employees/EmployeeIDs";
+import { EMPLOYEE_ID } from "../employees/types";
 
 interface BaseGameStateView {
 	turnProgress: TURN_PROGRESS;
 	currentTurn: number;
 	currentPlayer: number | null;
 
-	map: string;
+	map: Map2D;
 	turnOrder: Array<number>;
 	realTurnOrder: Array<number | "X">;
 

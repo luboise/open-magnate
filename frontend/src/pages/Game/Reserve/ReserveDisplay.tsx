@@ -1,18 +1,17 @@
 import "./ReserveDisplay.css";
 
 import { HTMLAttributes } from "react";
-import { useGameStateView } from "../../../hooks/game/useGameState";
 import {
 	EMPLOYEE_ID,
-	Employee,
-	EmployeesById,
-	IsValidEmployeeId
-} from "../../../utils";
+	EmployeeType
+} from "../../../../../shared/employees/types";
+import { useGameStateView } from "../../../hooks/game/useGameState";
+import { Employee } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 
 interface ReserveDisplayProps
 	extends HTMLAttributes<HTMLDivElement> {
-	employeeFilter?: (employee: Employee) => boolean;
+	employeeFilter?: (employee: EmployeeType) => boolean;
 	onEmployeeClicked?: (
 		employeeClicked: EMPLOYEE_ID
 	) => void;
@@ -29,22 +28,23 @@ function ReserveDisplay({
 
 	const employeeEntries = Object.entries(reserve).filter(
 		([employeeId]) =>
-			IsValidEmployeeId(employeeId) &&
+			Employee.IsValidId(employeeId) &&
 			(!employeeFilter ||
-				employeeFilter(EmployeesById[employeeId]))
+				employeeFilter(Employee.ById(employeeId)))
 	);
 
 	const employeeList: Array<
-		[Employee | undefined, number]
+		[EmployeeType | undefined, number]
 	> = employeeEntries.map(([employeeId, quantity]) => {
-		const valid = IsValidEmployeeId(employeeId);
-		const newemployee =
-			EmployeesById[employeeId as EMPLOYEE_ID];
+		const valid = Employee.IsValidId(employeeId);
+		const newemployee = Employee.ById(
+			employeeId as EMPLOYEE_ID
+		);
 
 		return [
 			valid ? newemployee : undefined,
 			valid ? quantity : NaN
-		] as [Employee | undefined, number];
+		] as [EmployeeType | undefined, number];
 	});
 
 	const employeeTypes = [

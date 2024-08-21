@@ -7,11 +7,12 @@ import {
 } from "@prisma/client";
 
 import {
-	DEFAULT_EMPLOYEE_ARRAY,
+	GameDefaults,
 	LobbySubmissionData,
 	LobbyView,
 	LobbyViewPerPlayer
 } from "../../../../shared";
+
 import prisma from "../../datasource";
 import { GetNewReserve } from "../../game/NewGameStructures";
 import LobbyRepository from "../repository/lobby.repository";
@@ -143,7 +144,7 @@ const LobbyController = {
 												) => ({
 													number: playerNumber,
 													employees:
-														DEFAULT_EMPLOYEE_ARRAY,
+														GameDefaults.DEFAULT_EMPLOYEE_ARRAY,
 													milestones:
 														[],
 													restaurantDataId:
@@ -210,9 +211,9 @@ const LobbyController = {
 			inGame:
 				lobby.gameState !== null &&
 				lobby.gameState.turnProgress !==
-					TURN_PROGRESS.PREGAME &&
+				TURN_PROGRESS.PREGAME &&
 				lobby.gameState.turnProgress !==
-					TURN_PROGRESS.POSTGAME,
+				TURN_PROGRESS.POSTGAME,
 
 			lobbyId: lobby.id,
 			lobbyName: lobby.name,

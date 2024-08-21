@@ -1,11 +1,9 @@
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
 import { Position } from "../../../../backend/src/dataViews";
+import { RotationAmount } from "../../../../shared/map/tiles/types";
 import { Clamp } from "../../../../shared/utils";
-import {
-	MapOverlayTile,
-	RotationAmount
-} from "../../utils";
+import { MapOverlayTile } from "../../utils";
 import { useBoardInfo } from "./useMap";
 import useMapTileInteraction from "./useMapTileInteraction";
 
@@ -98,7 +96,7 @@ function useClientState(
 			pos: pos ?? clientState.placing.pos,
 			rotation:
 				rotation ?? clientState.placing.rotation
-		};
+		} as MapOverlayTile;
 
 		setClientState({
 			...clientState,
@@ -119,14 +117,19 @@ function useClientState(
 			return;
 		}
 
+		const tile = clientState.placing;
+
 		setClientState({
 			...clientState,
 			placing: {
-				...clientState.placing,
-				rotation: ((clientState.placing.rotation +
+				...tile,
+				rotation: ((tile.rotation +
 					(direction === "FORWARDS" ? 90 : -90)) %
-					360) as RotationAmount
-			}
+					(tile.rotationModulo !== undefined
+						? tile.rotationModulo
+						: 360)) as RotationAmount
+			} as MapOverlayTile
+			// TODO: Remove this as and fix the typing
 		});
 	}
 

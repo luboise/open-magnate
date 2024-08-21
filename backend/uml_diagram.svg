@@ -1,0 +1,197 @@
+<svg version="1.1" baseProfile="full" width="1945.0" height="719.0" viewbox="0 0 1945 719" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+<desc >#.interface: fill=lightblue
+#.enumeration: fill=lightgreen
+#.type: fill=lightgray
+[&lt;interface&gt;Position|+x: number;+y: number;+orientation?: ORIENTATION|]
+[GameClass|-gameState: { houses: ({ garden: { houseId: number; x: number; y: number; orientation: ORIENTATION; }; demand: { demandId: number; houseId: number; type: DEMAND_TYPE; }\[\]; } &amp; { id: number; ... 4 more ...; demandLimit: number; })\[\]; players: ({ ...; } &amp; { ...; })\[\]; } &amp; { ...; };-movesMade: MoveData\[\]|+executeMove(): void;-executeAction(): void;+serialise(): { houses: ({ garden: { houseId: number; x: number; y: number; orientation: ORIENTATION; }; demand: { demandId: number; houseId: number; type: DEMAND_TYPE; }\[\]; } &amp; { id: number; ... 4 more ...; demandLimit: number; })\[\]; players: ({ ...; } &amp; { ...; })\[\]; } &amp; { ...; };+getMovesMade(): MoveData\[\]]
+[&lt;type&gt;ParamBundle&lt;MessageType&gt;|+req: Request&lt;ParamsDictionary, any, any, ParsedQs, Record&lt;string, any&gt;&gt;;+message: MessageType;+ws: WebSocket;+userBrowserId: string;+userSession: { sessionKey: string; browserId: string; name: string; };+lobbyId: number;+playerNumber: number|]
+[&lt;interface&gt;PlayerDinnertimeDetails|+playerNumber: number;+distances: HouseDistances;+unitPrice: number;+waitresses: number;+turnOrder: number|]
+[&lt;interface&gt;TransactionBundle|+ctx: TransactionClient;+gameId: number;+player: number|]</desc>
+<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="normal" font-style="normal">
+<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+<g stroke="transparent" fill="transparent">
+<rect x="0.0" y="0.0" height="719.0" width="1945.0" stroke="none"></rect>
+</g>
+<g transform="translate(8, 8)" fill="#33322E">
+<g transform="translate(20, 20)">
+<g data-name="Position">
+<g fill="lightblue" stroke="#33322E" data-name="Position">
+<rect x="0.0" y="281.5" height="100.0" width="244.0" data-name="Position"></rect>
+<path d="M0.0 312.5 L244.0 312.5" fill="none" data-name="Position"></path>
+<path d="M0.0 373.5 L244.0 373.5" fill="none" data-name="Position"></path>
+</g>
+<g transform="translate(0, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Position">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Position">
+<a id="src/dataViews.ts.Position" xlink:href="src/dataViews.ts"><text x="114.0" y="13.5" stroke="none" text-anchor="middle" data-name="Position">Position</text></a>
+
+</g>
+</g>
+<g transform="translate(0, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Position">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Position">
+<text x="0.0" y="13.5" stroke="none" data-name="Position">+x: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Position">+y: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Position">+orientation?: ORIENTATION</text>
+
+</g>
+</g>
+<g transform="translate(0, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Position">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Position">
+
+</g>
+</g>
+</g>
+<g data-name="GameClass">
+<g fill="#eee8d5" stroke="#33322E" data-name="GameClass">
+<rect x="284.0" y="0.0" height="663.0" width="424.0" data-name="GameClass"></rect>
+<path d="M284.0 31.0 L708.0 31.0" fill="none" data-name="GameClass"></path>
+<path d="M284.0 332.0 L708.0 332.0" fill="none" data-name="GameClass"></path>
+</g>
+<g transform="translate(284, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="GameClass">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GameClass">
+<a id="src/game/GameClass.ts.GameClass" xlink:href="src/game/GameClass.ts"><text x="204.0" y="13.5" stroke="none" text-anchor="middle" data-name="GameClass">GameClass</text></a>
+
+</g>
+</g>
+<g transform="translate(284, 31)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameClass">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GameClass">
+<text x="0.0" y="13.5" stroke="none" data-name="GameClass">-gameState: { houses: ({ garden: { houseId: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GameClass">x: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="GameClass">y: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="GameClass">orientation: ORIENTATION</text>
+<text x="0.0" y="73.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="88.5" stroke="none" data-name="GameClass">demand: { demandId: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="GameClass">houseId: number</text>
+<text x="0.0" y="118.5" stroke="none" data-name="GameClass">type: DEMAND_TYPE</text>
+<text x="0.0" y="133.5" stroke="none" data-name="GameClass">}[]</text>
+<text x="0.0" y="148.5" stroke="none" data-name="GameClass">} &amp; { id: number</text>
+<text x="0.0" y="163.5" stroke="none" data-name="GameClass">... 4 more ...</text>
+<text x="0.0" y="178.5" stroke="none" data-name="GameClass">demandLimit: number</text>
+<text x="0.0" y="193.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="208.5" stroke="none" data-name="GameClass">players: ({ ...</text>
+<text x="0.0" y="223.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="238.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="253.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="268.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="283.5" stroke="none" data-name="GameClass">-movesMade: MoveData[]</text>
+
+</g>
+</g>
+<g transform="translate(284, 332)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameClass">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GameClass">
+<text x="0.0" y="13.5" stroke="none" data-name="GameClass">+executeMove(): void</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GameClass">-executeAction(): void</text>
+<text x="0.0" y="43.5" stroke="none" data-name="GameClass">+serialise(): { houses: ({ garden: { houseId: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="GameClass">x: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="GameClass">y: number</text>
+<text x="0.0" y="88.5" stroke="none" data-name="GameClass">orientation: ORIENTATION</text>
+<text x="0.0" y="103.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="118.5" stroke="none" data-name="GameClass">demand: { demandId: number</text>
+<text x="0.0" y="133.5" stroke="none" data-name="GameClass">houseId: number</text>
+<text x="0.0" y="148.5" stroke="none" data-name="GameClass">type: DEMAND_TYPE</text>
+<text x="0.0" y="163.5" stroke="none" data-name="GameClass">}[]</text>
+<text x="0.0" y="178.5" stroke="none" data-name="GameClass">} &amp; { id: number</text>
+<text x="0.0" y="193.5" stroke="none" data-name="GameClass">... 4 more ...</text>
+<text x="0.0" y="208.5" stroke="none" data-name="GameClass">demandLimit: number</text>
+<text x="0.0" y="223.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="238.5" stroke="none" data-name="GameClass">players: ({ ...</text>
+<text x="0.0" y="253.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="268.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="283.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="298.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="313.5" stroke="none" data-name="GameClass">+getMovesMade(): MoveData[]</text>
+
+</g>
+</g>
+</g>
+<g data-name="ParamBundle&lt;MessageType&gt;">
+<g fill="lightgray" stroke="#33322E" data-name="ParamBundle&lt;MessageType&gt;">
+<rect x="748.0" y="229.0" height="205.0" width="623.0" data-name="ParamBundle&lt;MessageType&gt;"></rect>
+<path d="M748.0 260.0 L1371.0 260.0" fill="none" data-name="ParamBundle&lt;MessageType&gt;"></path>
+<path d="M748.0 426.0 L1371.0 426.0" fill="none" data-name="ParamBundle&lt;MessageType&gt;"></path>
+</g>
+<g transform="translate(748, 229)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParamBundle&lt;MessageType&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ParamBundle&lt;MessageType&gt;">
+<a id="src/routes/game.routes.ts.ParamBundle&lt;MessageType&gt;" xlink:href="src/routes/game.routes.ts"><text x="303.5" y="13.5" stroke="none" text-anchor="middle" data-name="ParamBundle&lt;MessageType&gt;">ParamBundle&lt;MessageType&gt;</text></a>
+
+</g>
+</g>
+<g transform="translate(748, 260)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParamBundle&lt;MessageType&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ParamBundle&lt;MessageType&gt;">
+<text x="0.0" y="13.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+req: Request&lt;ParamsDictionary, any, any, ParsedQs, Record&lt;string, any&gt;&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+message: MessageType</text>
+<text x="0.0" y="43.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+ws: WebSocket</text>
+<text x="0.0" y="58.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+userBrowserId: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+userSession: { sessionKey: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">browserId: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">name: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">}</text>
+<text x="0.0" y="133.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+lobbyId: number</text>
+<text x="0.0" y="148.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+playerNumber: number</text>
+
+</g>
+</g>
+<g transform="translate(748, 426)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParamBundle&lt;MessageType&gt;">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ParamBundle&lt;MessageType&gt;">
+
+</g>
+</g>
+</g>
+<g data-name="PlayerDinnertimeDetails">
+<g fill="lightblue" stroke="#33322E" data-name="PlayerDinnertimeDetails">
+<rect x="1411.0" y="266.5" height="130.0" width="241.0" data-name="PlayerDinnertimeDetails"></rect>
+<path d="M1411.0 297.5 L1652.0 297.5" fill="none" data-name="PlayerDinnertimeDetails"></path>
+<path d="M1411.0 388.5 L1652.0 388.5" fill="none" data-name="PlayerDinnertimeDetails"></path>
+</g>
+<g transform="translate(1411, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerDinnertimeDetails">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlayerDinnertimeDetails">
+<a id="src/game/TransactionFunctions/Dinnertime.ts.PlayerDinnertimeDetails" xlink:href="src/game/TransactionFunctions/Dinnertime.ts"><text x="112.5" y="13.5" stroke="none" text-anchor="middle" data-name="PlayerDinnertimeDetails">PlayerDinnertimeDetails</text></a>
+
+</g>
+</g>
+<g transform="translate(1411, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerDinnertimeDetails">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlayerDinnertimeDetails">
+<text x="0.0" y="13.5" stroke="none" data-name="PlayerDinnertimeDetails">+playerNumber: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlayerDinnertimeDetails">+distances: HouseDistances</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PlayerDinnertimeDetails">+unitPrice: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PlayerDinnertimeDetails">+waitresses: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PlayerDinnertimeDetails">+turnOrder: number</text>
+
+</g>
+</g>
+<g transform="translate(1411, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerDinnertimeDetails">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PlayerDinnertimeDetails">
+
+</g>
+</g>
+</g>
+<g data-name="TransactionBundle">
+<g fill="lightblue" stroke="#33322E" data-name="TransactionBundle">
+<rect x="1692.0" y="281.5" height="100.0" width="197.0" data-name="TransactionBundle"></rect>
+<path d="M1692.0 312.5 L1889.0 312.5" fill="none" data-name="TransactionBundle"></path>
+<path d="M1692.0 373.5 L1889.0 373.5" fill="none" data-name="TransactionBundle"></path>
+</g>
+<g transform="translate(1692, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TransactionBundle">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TransactionBundle">
+<a id="src/game/TransactionFunctions/types.ts.TransactionBundle" xlink:href="src/game/TransactionFunctions/types.ts"><text x="90.5" y="13.5" stroke="none" text-anchor="middle" data-name="TransactionBundle">TransactionBundle</text></a>
+
+</g>
+</g>
+<g transform="translate(1692, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TransactionBundle">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TransactionBundle">
+<text x="0.0" y="13.5" stroke="none" data-name="TransactionBundle">+ctx: TransactionClient</text>
+<text x="0.0" y="28.5" stroke="none" data-name="TransactionBundle">+gameId: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="TransactionBundle">+player: number</text>
+
+</g>
+</g>
+<g transform="translate(1692, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TransactionBundle">
+<g transform="translate(8, 8)" fill="#33322E" data-name="TransactionBundle">
+
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

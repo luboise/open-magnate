@@ -5,15 +5,47 @@ import {
 } from "../../database/controller/includes";
 import { CreateGameStateView } from "../../dataViews";
 import {
-	EmployeesById,
-	GamePlayerViewPublic,
+	Employee,
+	GamePlayerViewPrivate,
 	GameStateView,
+	HouseView,
 	Map2D
 } from "../../utils";
 import {
 	HouseDistances,
 	MoveTransactionFunctionUntyped
 } from "./types";
+
+// Gets the dinnertime winner of 2 players. Sorted in ascending order, where lowest position means highest priority
+function CalculateDinnertimeWinner(houseNumber: number) {
+	return (
+		p1: PlayerDinnertimeDetails,
+		p2: PlayerDinnertimeDetails
+	): number => {
+		const p1Score = p1.distances[houseNumber];
+		const p2Score = p2.distances[houseNumber];
+
+		if (p1Score === null && p2Score === null)
+			throw new Error(
+				"Both scores are null. Unable to decide a dinnertime winner."
+			);
+		if (p1Score === null && p2Score !== null) return 1;
+		if (p2Score === null && p1Score !== null) return -1;
+
+		let diff = p1Score! - p2Score!;
+		if (diff !== 0) return diff;
+
+		diff = p1.waitresses - p2.waitresses;
+		if (diff !== 0) return diff;
+
+		diff = p1.turnOrder - p2.turnOrder;
+		if (diff === 0)
+			throw new Error(
+				"Cannot determine a winner in Dinnertime. This is likely a turn order issue."
+			);
+		return diff;
+	};
+}
 
 export const HandleDinnertime: MoveTransactionFunctionUntyped =
 	async (bundle) => {
@@ -28,19 +60,36 @@ export const HandleDinnertime: MoveTransactionFunctionUntyped =
 			});
 		const gsv = CreateGameStateView(gameState);
 
-		const { houses, players } = gsv;
+		const { houses } = gsv;
 
 		const details = GetDinnertimeDetails(gsv);
 
 		function CanSatisfy(
-			player: FullGamePlayer,
-			house: FullHouse,
-			map: Map2D
-		): boolean {}
+			player: PlayerDinnertimeDetails,
+			house: FullHouse | HouseView
+		): boolean {
+			// TODO: Implement satisfaction logic (demand)
+			return false;
+		}
 
-		for (const house of gameState.houses.sort(
-			(h1, h2) => h1.number - h2.number
+		for (const house of houses.sort(
+			(house) => house.priority
 		)) {
+			const players = details
+				.filter((player) =>
+					CanSatisfy(player, house)
+				)
+				.sort(
+					CalculateDinnertimeWinner(
+						house.priority
+					)
+				);
+
+			if (players.length === 0) continue;
+
+			console.debug(
+				`Need to implement selling house ${house.priority} to player ${players[0].playerNumber} in game ${gameId}.`
+			);
 		}
 	};
 
@@ -53,51 +102,79 @@ export interface PlayerDinnertimeDetails {
 }
 
 export function GetHouseDistances(
-	gsv: GameStateView
-): HouseDistances {}
+	game: GameStateView,
+	playerNumber: number
+): HouseDistances {
+	const player = game.players.find(
+		(player) => player.playerNumber === playerNumber
+	);
+
+	if (player === undefined)
+		throw new Error(
+			`Expected to find player by ID ${playerNumber}`
+		);
+
+	return game.houses.reduce<HouseDistances>(
+		(acc, house) => {
+			acc[house.priority] = GetPlayerDistanceToHouse(
+				player,
+				house,
+				game.map
+			);
+			return acc;
+		},
+		{}
+	);
+}
+
 export function GetDinnertimeDetails(
 	game: GameStateView
 ): PlayerDinnertimeDetails[] {
 	function GetDetails(
-		player: GamePlayerViewPublic
+		player: GamePlayerViewPrivate
 	): PlayerDinnertimeDetails {
 		return {
 			playerNumber: player.playerNumber,
-			distances: game.houses.map((house) =>
-				GetPlayerDistanceToHouse(
-					player,
-					house,
-					game.map
-				)
+			distances: GetHouseDistances(
+				game,
+				player.playerNumber
 			),
 			// TODO: Fix this to be based on employee tree
 			unitPrice: 10,
 
 			waitresses: player.employees.filter(
 				(employee) =>
-					EmployeesById[employee].type ===
+					Employee.ById(employee).type ===
 					"WAITRESS"
-			).length
+			).length,
+			turnOrder: game.turnOrder.findIndex(
+				(value) => value === player.playerNumber
+			)
 		};
 	}
+
 	return game.players.map((player) => GetDetails(player));
 }
 
 export function GetPlayerDistanceToHouse(
-	player: FullGamePlayer,
-	house: FullHouse,
-	map: Map2D
+	_player: FullGamePlayer | GamePlayerViewPrivate,
+	_house: FullHouse | HouseView,
+	_map: Map2D
 ): number | null {
 	// TODO: Implement pathfinding from the house to each restaurant. For now, we will assume every restaurant is the same distance
 	return 0;
 }
-
+/**
 export function GetPlayerScore(
 	player: FullGamePlayer,
 	house: FullHouse
 ): number | null {
+
 	const tileDistance = 0;
 	const basePrice = 10;
 
+	const _ignore = tileDistance + basePrice
+
 	return null;
 }
+**/

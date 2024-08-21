@@ -1,15 +1,11 @@
 import { HTMLAttributes, ReactNode, useMemo } from "react";
-import { TileType } from "../../../../../shared/MapTiles/Tile";
-import {
-	DirectionBools,
-	MapTileData
-} from "../../../utils";
+import { MapAnyTile } from "../../../utils";
 import "./MapTile.css";
 import RoadTileElements from "./RoadTileElements";
 
 interface MapTileProps
 	extends HTMLAttributes<HTMLDivElement> {
-	tile: MapTileData;
+	tile: MapAnyTile;
 }
 
 function MapTile(props: MapTileProps) {
@@ -18,7 +14,7 @@ function MapTile(props: MapTileProps) {
 	const tileElements = useMemo((): ReactNode => {
 		if (!tileData) return <p>invalid map tile</p>;
 
-		if (tileData.tileType === TileType.ROAD)
+		if (tileData.tileType === "ROAD")
 			return (
 				<RoadTileElements
 					roadDirections={tileData.adjacentRoads}
@@ -26,7 +22,7 @@ function MapTile(props: MapTileProps) {
 			);
 
 		// // Check if has valid image
-		// if (tileData.tileType !== TileType.EMPTY) {
+		// if (tileData.tileType !== "EMPTY") {
 		// 	elements.push(
 		// 		<img
 		// 			src={`/resources/${tileData.tileType}.png`}
@@ -38,31 +34,28 @@ function MapTile(props: MapTileProps) {
 	}, [tileData, tileData.tileType]);
 
 	const classes = ["map-tile"];
+	/**
 	for (const direction of [
 		"north",
 		"south",
 		"east",
 		"west"
 	]) {
-		if (
-			tileData.pieceEdges[
-				direction as keyof DirectionBools
-			]
-		)
+		if (tileData.pieceEdges[direction])
 			classes.push(`tile-boundary-${direction}`);
 	}
-
-	if (tileData.tileType === TileType.EMPTY)
+**/
+	if (tileData.tileType === "EMPTY")
 		classes.push("map-tile-empty");
-	else if (tileData.tileType === TileType.ROAD)
+	else if (tileData.tileType === "ROAD")
 		classes.push("map-tile-road");
-	else if (tileData.tileType === TileType.HOUSE)
+	else if (tileData.tileType === "HOUSE")
 		classes.push("map-tile-house");
-	else if (tileData.tileType === TileType.LEMONADE)
+	else if (tileData.tileType === "LEMONADE")
 		classes.push("map-tile-lemonade");
-	else if (tileData.tileType === TileType.COLA)
+	else if (tileData.tileType === "COLA")
 		classes.push("map-tile-cola");
-	else if (tileData.tileType === TileType.BEER)
+	else if (tileData.tileType === "BEER")
 		classes.push("map-tile-beer");
 	return (
 		<div
@@ -81,4 +74,3 @@ function MapTile(props: MapTileProps) {
 }
 
 export default MapTile;
-

@@ -1,6 +1,6 @@
 import { Clamp } from "../../../frontend/src/utils";
 import { PLAYER_DEFAULTS } from "../../../shared";
-import { EMPLOYEE_ID } from "../../../shared/employees/EmployeeIDs";
+import { EMPLOYEE_ID } from "../../../shared/employees/types";
 
 export type Reserve = Record<EMPLOYEE_ID, number>;
 
@@ -24,7 +24,9 @@ export const DEFAULT_RESERVE_BASE_GAME: Reserve = {
 	market_1: 12,
 	market_2: 6,
 	market_3: 6,
-	market_4: ONEOF_VALUE
+	market_4: ONEOF_VALUE,
+
+	waitress: 12
 } as const;
 
 export function GetNewReserve(
@@ -46,4 +48,3 @@ export function GetNewReserve(
 
 	return NewReserve;
 }
-

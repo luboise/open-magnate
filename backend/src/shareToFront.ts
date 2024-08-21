@@ -1,19 +1,17 @@
-import {
-	DEMAND_TYPE as PrismaDemandType,
-	MARKETING_TYPE as PrismaMarketingType,
-	TURN_PROGRESS as PrismaTurnProgress,
-	TURN_PROGRESS as PrismaTurnProgressObject
+import { TURN_PROGRESS } from "@prisma/client";
+
+// Enums
+export {
+	type DEMAND_TYPE,
+	type MARKETING_TYPE,
+	type TURN_PROGRESS
 } from "@prisma/client";
 
+// Models
 export {
 	type House,
 	type MarketingCampaign
 } from "@prisma/client";
 
-export type TURN_PROGRESS = PrismaTurnProgress;
 export const TURN_PROGRESS_VALUES: TURN_PROGRESS[] =
-	Object.values(PrismaTurnProgressObject);
-
-export type MarketingType = PrismaMarketingType;
-
-export type FoodType = PrismaDemandType;
+	Object.values(TURN_PROGRESS);

@@ -1,25 +1,29 @@
-import { DEMAND_TYPE } from "../../backend/src/dataViews";
-import { MarketingType } from "../../frontend/src/utils";
-import { BaseTile, TileType } from "./Tile";
+import {
+	DEMAND_TYPE,
+	MARKETING_TYPE
+} from "../../../../backend/src/utils";
+import { MapOverlayTileInterface } from "./types";
 
-export type PartialMarketingTile = Omit<
-	MarketingTile,
-	"placingEmployee"
->;
+export type MarketingTile = PartialMarketingTile & {
+	demand: DEMAND_TYPE;
+	placingEmployee: number;
+};
 
-export type MarketingTile =
+export type PartialMarketingTile =
 	| BillBoardMarketingTile
 	| MailboxMarketingTile
 	| PlaneMarketingTile
 	| RadioMarketingTile;
 
-interface BaseMarketingTile extends BaseTile {
-	tileType: TileType.MARKETING;
-	placingEmployee: number;
-	marketingType: MarketingType;
+export interface BaseMarketingTile
+	extends MapOverlayTileInterface {
+	tileType: "MARKETING";
+
+	marketingType: MARKETING_TYPE;
 	tileNumber: number;
+
 	rotation: 0 | 90;
-	demand: DEMAND_TYPE;
+	rotationModulo: 90;
 }
 
 export interface BillBoardMarketingTile
@@ -30,13 +34,11 @@ export interface BillBoardMarketingTile
 export interface MailboxMarketingTile
 	extends BaseMarketingTile {
 	marketingType: "MAILBOX";
-	rotation: 0;
 }
 
 export interface PlaneMarketingTile
 	extends BaseMarketingTile {
 	marketingType: "PLANE";
-	rotation: 0 | 90;
 }
 
 export interface RadioMarketingTile
@@ -44,12 +46,11 @@ export interface RadioMarketingTile
 	marketingType: "RADIO";
 	width: 1;
 	height: 1;
-	rotation: 0;
 }
 
 export const MarketingTilesByNumber: Record<
 	number,
-	Omit<PartialMarketingTile, "demand">
+	PartialMarketingTile
 > = {
 	1: createRadioTile(1),
 	2: createRadioTile(2),
@@ -135,7 +136,7 @@ export const MarketingTilesByNumber: Record<
 } as const;
 
 interface MarketingTileCreationProps {
-	marketingType: MarketingType;
+	marketingType: MARKETING_TYPE;
 	tileNumber: number;
 	width: number;
 	height: number;
@@ -146,34 +147,36 @@ export function createMarketingTile({
 	tileNumber,
 	width,
 	height
-}: MarketingTileCreationProps): Omit<
-	PartialMarketingTile,
-	"demand"
-> {
+}: MarketingTileCreationProps): PartialMarketingTile {
 	if (marketingType === "RADIO")
 		return createRadioTile(tileNumber);
 
-	return {
-		tileType: TileType.MARKETING,
+	const tile: PartialMarketingTile = {
+		level: "OVERLAY",
+		tileType: "MARKETING",
 		marketingType: marketingType,
 		tileNumber: tileNumber,
 		width: width,
 		height: height,
 		pos: { x: 0, y: 0 },
-		rotation: 0
+		rotation: 0,
+		rotationModulo: 90
 	};
+	return tile;
 }
 
 export function createRadioTile(
 	tileNumber: number
-): Omit<PartialMarketingTile, "demand"> {
+): PartialMarketingTile {
 	return {
-		tileType: TileType.MARKETING,
+		level: "OVERLAY",
+		tileType: "MARKETING",
 		marketingType: "RADIO",
 		tileNumber: tileNumber,
 		rotation: 0,
 		width: 1,
 		height: 1,
-		pos: { x: 0, y: 0 }
+		pos: { x: 0, y: 0 },
+		rotationModulo: 90
 	};
 }

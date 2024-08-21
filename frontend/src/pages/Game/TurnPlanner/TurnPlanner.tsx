@@ -1,12 +1,12 @@
 import "./TurnPlanner.css";
 
 import { HTMLAttributes, useMemo, useState } from "react";
+import { EmployeeType } from "../../../../../shared/employees/types";
 import ModalPanel from "../../../global_components/ModalPanel";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import {
 	DemandAction,
-	Employee,
 	GetAllTreeData
 } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
@@ -32,7 +32,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 
 	if (!currentTree || !playerData) return <></>;
 
-	const employees: Employee[] = GetAllTreeData(
+	const employees: EmployeeType[] = GetAllTreeData(
 		currentTree
 	).map((index) => myEmployees[index]);
 
@@ -80,13 +80,15 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 								: [employee.produces]
 						}
 						onDemandClicked={(demand) => {
-							const newAction: Omit<DemandAction, "player"> =
-							{
+							const newAction: Omit<
+								DemandAction,
+								"player"
+							> = {
 								type: "GET_DEMAND",
 								employeeIndex:
 									selectedEmployeeIndex,
 								demand: demand,
-								amount: employee.amountProduced,
+								amount: employee.amountProduced
 							};
 							addAction(newAction);
 							clearSelectedEmployee();

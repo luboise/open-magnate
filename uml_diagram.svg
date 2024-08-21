@@ -1,0 +1,2887 @@
+<svg version="1.1" baseProfile="full" width="19363.0" height="1059.0" viewbox="0 0 19363 1059" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+<desc >#.interface: fill=lightblue
+#.enumeration: fill=lightgreen
+#.type: fill=lightgray
+[&lt;type&gt;Food|+name: string;+color: string|]
+[&lt;interface&gt;LobbySubmissionData|+name: string;+password?: string;+playerCount: number|]
+[&lt;interface&gt;JoinLobbySubmissionData|+inviteCode: string;+password?: string|]
+[&lt;interface&gt;LobbyPlayerData|+name: string;+playerNumber: number;+isHost: boolean;+restaurant: number|]
+[&lt;interface&gt;LobbyView|+lobbyId: number;+lobbyName: string;+inGame: boolean;+players: LobbyPlayerData\[\];+inviteCode: string|]
+[&lt;interface&gt;LobbyViewPerPlayer|+hosting: boolean;+playerNumber: number|]
+[&lt;type&gt;MagnateLobbyView|+lobbyId: number;+lobbyName: string;+playerCount: number;+hosting: boolean;+lobbyPlayers: LobbyPlayerData\[\];+inGame: boolean;+gameState: GameStateViewPerPlayer;+inviteCode: string|]
+[LobbyView]&lt;:--[LobbyViewPerPlayer]
+[&lt;type&gt;LocalSessionData|+name: string;+authKey: string|]
+[&lt;interface&gt;BaseMessage|+type: string;+data: unknown|]
+[&lt;interface&gt;AllUpdatedMessage|+type: &quot;ALL_UPDATED&quot;;+data: { lobbyState: LobbyViewPerPlayer; gameState: GameStateViewPerPlayer; }|]
+[&lt;interface&gt;LobbyUpdatedMessage|+type: &quot;LOBBY_UPDATED&quot;;+data: LobbyViewPerPlayer|]
+[&lt;interface&gt;GameStateUpdatedMessage|+type: &quot;GAMESTATE_UPDATED&quot;;+data: GameStateViewPerPlayer|]
+[&lt;interface&gt;NewSessionKeyMessage|+type: &quot;NEW_SESSION_KEY&quot;;+data: string|]
+[&lt;interface&gt;ClearLocalDataMessage|+type: &quot;CLEAR_LOCAL_DATA&quot;|]
+[&lt;interface&gt;SuccessfulSessionKeyVerificationMessage|+type: &quot;SESSION_KEY_VERIFIED&quot;|]
+[&lt;interface&gt;CheckSessionKeyMessage|+type: &quot;CHECK_SESSION_KEY&quot;;+data: string|]
+[&lt;interface&gt;NewSessionKeyMessage|+type: &quot;NEW_SESSION_KEY&quot;;+data: string|]
+[&lt;interface&gt;CreateLobbyMessage|+type: &quot;CREATE_LOBBY&quot;;+data: LobbySubmissionData|]
+[&lt;interface&gt;JoinLobbyMessage|+type: &quot;JOIN_LOBBY&quot;;+data: JoinLobbySubmissionData|]
+[&lt;interface&gt;LeaveLobbyMessage|+type: &quot;LEAVE_LOBBY&quot;|]
+[&lt;interface&gt;StartGameMessage|+type: &quot;START_GAME&quot;|]
+[&lt;interface&gt;MakeMoveMessage|+type: &quot;MAKE_MOVE&quot;;+data: MoveData|]
+[BaseMessage]&lt;:--[AllUpdatedMessage]
+[BaseMessage]&lt;:--[LobbyUpdatedMessage]
+[BaseMessage]&lt;:--[GameStateUpdatedMessage]
+[BaseMessage]&lt;:--[NewSessionKeyMessage]
+[BaseMessage]&lt;:--[NewSessionKeyMessage]
+[BaseMessage]&lt;:--[ClearLocalDataMessage]
+[BaseMessage]&lt;:--[SuccessfulSessionKeyVerificationMessage]
+[BaseMessage]&lt;:--[CheckSessionKeyMessage]
+[BaseMessage]&lt;:--[NewSessionKeyMessage]
+[BaseMessage]&lt;:--[NewSessionKeyMessage]
+[BaseMessage]&lt;:--[CreateLobbyMessage]
+[BaseMessage]&lt;:--[JoinLobbyMessage]
+[BaseMessage]&lt;:--[LeaveLobbyMessage]
+[BaseMessage]&lt;:--[StartGameMessage]
+[BaseMessage]&lt;:--[MakeMoveMessage]
+[&lt;interface&gt;BaseMoveData|+MoveType: MOVE_TYPE|]
+[&lt;interface&gt;MovePlaceRestaurant|+MoveType: MOVE_TYPE.PLACE_RESTAURANT;+x: number;+y: number;+entrance: ENTRANCE_CORNER|]
+[&lt;interface&gt;MoveTakeTurn|+MoveType: MOVE_TYPE.TAKE_TURN;+actions: TurnAction\[\]|]
+[&lt;interface&gt;MoveNegotiateSalaries|+MoveType: MOVE_TYPE.NEGOTIATE_SALARIES;+employeesToFire: number\[\]|]
+[&lt;interface&gt;MoveRestructure|+MoveType: MOVE_TYPE.RESTRUCTURE;+tree: EmployeeNode|]
+[&lt;interface&gt;MovePickTurnOrder|+MoveType: MOVE_TYPE.PICK_TURN_ORDER;+slot: number|]
+[&lt;enumeration&gt;MOVE_TYPE|PLACE_RESTAURANT;TAKE_TURN;NEGOTIATE_SALARIES;RESTRUCTURE;PICK_TURN_ORDER]
+[BaseMoveData]&lt;:--[MovePlaceRestaurant]
+[BaseMoveData]&lt;:--[MoveTakeTurn]
+[BaseMoveData]&lt;:--[MoveNegotiateSalaries]
+[BaseMoveData]&lt;:--[MoveRestructure]
+[BaseMoveData]&lt;:--[MovePickTurnOrder]
+[&lt;interface&gt;PlayerNumDefault|+mapWidth: number;+mapHeight: number;+marketingUnused: Set&lt;number&gt;;+limitedEmployeeCards: number|]
+[&lt;enumeration&gt;APIRoutes|NEW_LOBBY;GET_LOBBY;GAME_SOCKET;PLAY]
+[&lt;type&gt;TreeNode&lt;T&gt;|+data: T;+children: TreeNode&lt;T&gt;\[\]|]
+[&lt;interface&gt;Position|+x: number;+y: number;+orientation?: ORIENTATION|]
+[&lt;interface&gt;AreaData|+pos: Position;+width: number;+height: number|]
+[&lt;interface&gt;Measurable|+pos: Position;+width: number;+height: number;+rotation?: RotationAmount|]
+[&lt;interface&gt;BaseEmployee|+id: EMPLOYEE_ID \| &quot;CEO&quot;;+name: string;+type: EMPLOYEE_ENUM;+colour: EMPLOYEE_COLOUR;+buildsInto: EMPLOYEE_ID\[\];+notPaid?: boolean;+oneOf?: boolean|]
+[&lt;enumeration&gt;EMPLOYEE_COLOUR|BLACK;DARK_GREEN;GREY;LIGHT_BLUE;PINK]
+[&lt;interface&gt;BaseGameStateView|+turnProgress: TURN_PROGRESS;+currentTurn: number;+currentPlayer: number;+map: string;+turnOrder: number\[\];+realTurnOrder: (number \| &quot;X&quot;)\[\];+playerCount: number;+restaurants: RestaurantView\[\];+houses: HouseView\[\];+gardens: GardenView\[\];+reserve: Record&lt;EMPLOYEE_ID, number&gt;;+marketingCampaigns: MarketingCampaignView\[\]|]
+[&lt;interface&gt;GameStateView|+players: GamePlayerViewPrivate\[\]|]
+[&lt;interface&gt;GameStateViewPerPlayer|+players: GamePlayerViewPublic\[\];+privateData: GamePlayerViewPrivate|]
+[&lt;interface&gt;GamePlayerViewPublic|+playerNumber: number;+milestones: number\[\];+restaurant: number;+money: number;+ready: boolean;+supply: DEMAND_TYPE\[\]|]
+[&lt;interface&gt;GamePlayerViewPrivate|+employees: EMPLOYEE_ID\[\];+employeeTreeStr: string;+marketingCampaigns: MarketingCampaignViewPrivate\[\]|]
+[BaseGameStateView]&lt;:--[GameStateView]
+[BaseGameStateView]&lt;:--[GameStateViewPerPlayer]
+[GamePlayerViewPublic]&lt;:--[GamePlayerViewPrivate]
+[&lt;interface&gt;RestaurantView|+pos: Position;+player: number|]
+[&lt;interface&gt;HouseView|+priority: number;+demandLimit: number;+pos: Position;+demand: DEMAND_TYPE\[\];+garden: GardenView|]
+[&lt;interface&gt;GardenView|+pos: Position;+houseNumber: number|]
+[&lt;interface&gt;MarketingCampaignView|+priority: number;+playerNumber: number;+type: MARKETING_TYPE;+foodType: DEMAND_TYPE;+pos: Position;+turnsRemaining: number|]
+[&lt;interface&gt;MarketingCampaignViewPrivate|+employeeIndex: number|]
+[MarketingCampaignView]&lt;:--[MarketingCampaignViewPrivate]
+[GameClass|-gameState: { houses: ({ garden: { houseId: number; x: number; y: number; orientation: ORIENTATION; }; demand: { demandId: number; houseId: number; type: DEMAND_TYPE; }\[\]; } &amp; { id: number; ... 4 more ...; demandLimit: number; })\[\]; players: ({ ...; } &amp; { ...; })\[\]; } &amp; { ...; };-movesMade: MoveData\[\]|+executeMove(): void;-executeAction(): void;+serialise(): { houses: ({ garden: { houseId: number; x: number; y: number; orientation: ORIENTATION; }; demand: { demandId: number; houseId: number; type: DEMAND_TYPE; }\[\]; } &amp; { id: number; ... 4 more ...; demandLimit: number; })\[\]; players: ({ ...; } &amp; { ...; })\[\]; } &amp; { ...; };+getMovesMade(): MoveData\[\]]
+[&lt;type&gt;ParamBundle&lt;MessageType&gt;|+req: Request&lt;ParamsDictionary, any, any, ParsedQs, Record&lt;string, any&gt;&gt;;+message: MessageType;+ws: WebSocket;+userBrowserId: string;+userSession: { sessionKey: string; browserId: string; name: string; };+lobbyId: number;+playerNumber: number|]
+[&lt;type&gt;Milestone|+name: string;+description: string;+onGain?: () =&gt; void|]
+[&lt;type&gt;DragDropProps&lt;DD,RD&gt;|+dragStartCallback?: DragCallback&lt;DD&gt;;+afterDrop: AfterDropCallback&lt;DD, RD&gt;|]
+[&lt;interface&gt;PanningState|+buttonIsDown: boolean;+panCursorStart: Position;+offset: Position;+panCursorCurrentPos: Position|]
+[&lt;interface&gt;ConnectionParams|+username: string|]
+[&lt;interface&gt;WebSocketParams|+url: string;+onOpen?: () =&gt; void;+onClose?: () =&gt; void;+onMessage?: (msg: string) =&gt; void;+connectionParams?: ConnectionParams;+validator?: () =&gt; boolean|]
+[Path|-nodes: PathNode\[\]|+addNode(): void;+getLength(): number;+getPath(): PathNode\[\]]
+[&lt;interface&gt;PathSeeker|+pos: Position;+cost: number|]
+[&lt;type&gt;PathNode|+pos: Position|]
+[&lt;interface&gt;CEOEmployee|+type: &quot;CEO&quot;;+name: &quot;CEO&quot;;+id: &quot;CEO&quot;;+colour: EMPLOYEE_COLOUR.GREY;+capacity: number;+notPaid: true|]
+[BaseEmployee]&lt;:--[CEOEmployee]
+[&lt;interface&gt;FoodEmployeeCreationData|+id: &quot;food_basic&quot; \| &quot;burger_1&quot; \| &quot;burger_2&quot; \| &quot;pizza_1&quot; \| &quot;pizza_2&quot;;+name: string;+produces: FOOD_TYPE;+amountProduced: number;+notPaid?: boolean|]
+[&lt;interface&gt;FoodEmployee|+type: &quot;FOOD&quot;;+id: &quot;food_basic&quot; \| &quot;burger_1&quot; \| &quot;burger_2&quot; \| &quot;pizza_1&quot; \| &quot;pizza_2&quot;;+colour: EMPLOYEE_COLOUR.DARK_GREEN;+produces: FOOD_TYPE;+amountProduced: number|]
+[&lt;interface&gt;FoodEmployee|+type: &quot;FOOD&quot;;+id: &quot;food_basic&quot; \| &quot;burger_1&quot; \| &quot;burger_2&quot; \| &quot;pizza_1&quot; \| &quot;pizza_2&quot;;+colour: EMPLOYEE_COLOUR.DARK_GREEN;+produces: FOOD_TYPE;+amountProduced: number|]
+[BaseEmployee]&lt;:--[FoodEmployee]
+[BaseEmployee]&lt;:--[FoodEmployee]
+[BaseEmployee]&lt;:--[FoodEmployee]
+[BaseEmployee]&lt;:--[FoodEmployee]
+[&lt;interface&gt;ManagementEmployee|+type: &quot;MANAGEMENT&quot;;+id: &quot;mgmt_1&quot; \| &quot;mgmt_2&quot; \| &quot;mgmt_3&quot; \| &quot;mgmt_4&quot; \| &quot;mgmt_5&quot;;+colour: EMPLOYEE_COLOUR.BLACK;+capacity: number|]
+[&lt;interface&gt;ManagementEmployeeCreationData|+name: string;+id: &quot;mgmt_1&quot; \| &quot;mgmt_2&quot; \| &quot;mgmt_3&quot; \| &quot;mgmt_4&quot; \| &quot;mgmt_5&quot;;+capacity: number;+notPaid?: boolean;+oneOf?: boolean|]
+[BaseEmployee]&lt;:--[ManagementEmployee]
+[&lt;interface&gt;MarketingEmployee|+type: &quot;MARKETING&quot;;+id: &quot;market_1&quot; \| &quot;market_2&quot; \| &quot;market_3&quot; \| &quot;market_4&quot;;+colour: EMPLOYEE_COLOUR.LIGHT_BLUE;+marketingType: MARKETING_TYPE|]
+[&lt;interface&gt;MarketingEmployeeCreationData|+name: string;+id: &quot;market_1&quot; \| &quot;market_2&quot; \| &quot;market_3&quot; \| &quot;market_4&quot;;+marketingType: MARKETING_TYPE;+notPaid?: boolean|]
+[BaseEmployee]&lt;:--[MarketingEmployee]
+[&lt;interface&gt;WaitressEmployee|+type: &quot;WAITRESS&quot;;+id: &quot;waitress&quot;;+colour: EMPLOYEE_COLOUR.PINK|]
+[BaseEmployee]&lt;:--[WaitressEmployee]
+[&lt;interface&gt;BaseGameAction|+type: string;+employeeIndex: number;+player: number|]
+[&lt;interface&gt;RecruitAction|+type: &quot;RECRUIT&quot;;+recruiting: EMPLOYEE_ID|]
+[&lt;interface&gt;MarketingAction|+type: &quot;MARKETING&quot;;+tile: MarketingTile|]
+[&lt;interface&gt;DemandAction|+type: &quot;GET_DEMAND&quot;;+demand: DEMAND_TYPE;+amount: number|]
+[BaseGameAction]&lt;:--[RecruitAction]
+[BaseGameAction]&lt;:--[MarketingAction]
+[BaseGameAction]&lt;:--[DemandAction]
+[&lt;interface&gt;BaseTile|+tileType: TileType;+pos: Position;+width: number;+height: number;+rotation: RotationAmount|]
+[&lt;interface&gt;BaseMapTileData|+tileType: TileType;+pieceEdges: DirectionBools|]
+[&lt;enumeration&gt;TileType|EMPTY;ROAD;HOUSE;LEMONADE;COLA;BEER;MARKETING;RESTAURANT]
+[&lt;type&gt;DirectionBools|+north: boolean;+south: boolean;+east: boolean;+west: boolean|]
+[&lt;type&gt;MapPieceData|+id: number;+xOffset: number;+yOffset: number;+tiles: PartialMap2D \| Map2D|]
+[BaseTile]&lt;:--[BaseMapTileData]
+[&lt;interface&gt;PlayerDinnertimeDetails|+playerNumber: number;+distances: HouseDistances;+unitPrice: number;+waitresses: number;+turnOrder: number|]
+[&lt;interface&gt;TransactionBundle|+ctx: TransactionClient;+gameId: number;+player: number|]
+[&lt;interface&gt;BaseClientState|+placing: MapOverlayTile;+placementStatus: &quot;PLACING&quot; \| &quot;SUCCESS&quot; \| &quot;FAILED&quot;|]
+[&lt;interface&gt;ClientStateFailed|+placing: MapOverlayTile;+placementStatus: &quot;FAILED&quot;|]
+[&lt;interface&gt;ClientStateSuccessful|+placing: MapOverlayTile;+placementStatus: &quot;SUCCESS&quot;|]
+[&lt;interface&gt;ClientStatePlacing|+placing: MapOverlayTile;+placementStatus: &quot;PLACING&quot;|]
+[BaseClientState]&lt;:--[ClientStateFailed]
+[BaseClientState]&lt;:--[ClientStateSuccessful]
+[BaseClientState]&lt;:--[ClientStatePlacing]
+[&lt;enumeration&gt;MAP_RENDER_KEYS|TILES;HOUSES]
+[&lt;type&gt;MapInteractionState|+hovering: HoveringType|]
+[&lt;interface&gt;GamePlanningState|+plannedActions: TurnAction\[\]|]
+[&lt;type&gt;PageGameAtomObject|+sendMessage: (message: BackendMessage) =&gt; void \| Promise&lt;void&gt;|]
+[&lt;interface&gt;LemonadeTile|+tileType: TileType.LEMONADE|]
+[&lt;interface&gt;BeerTile|+tileType: TileType.BEER|]
+[&lt;interface&gt;ColaTile|+tileType: TileType.COLA|]
+[BaseMapTileData]&lt;:--[LemonadeTile]
+[BaseMapTileData]&lt;:--[BeerTile]
+[BaseMapTileData]&lt;:--[ColaTile]
+[&lt;interface&gt;EmptyTile|+tileType: TileType.EMPTY|]
+[BaseMapTileData]&lt;:--[EmptyTile]
+[&lt;interface&gt;HouseTile|+tileType: TileType.HOUSE|]
+[BaseMapTileData]&lt;:--[HouseTile]
+[&lt;interface&gt;BaseMarketingTile|+tileType: TileType.MARKETING;+placingEmployee: number;+marketingType: MARKETING_TYPE;+tileNumber: number;+rotation: 0 \| 90;+demand: DEMAND_TYPE|]
+[&lt;interface&gt;BillBoardMarketingTile|+marketingType: &quot;BILLBOARD&quot;|]
+[&lt;interface&gt;MailboxMarketingTile|+marketingType: &quot;MAILBOX&quot;;+rotation: 0|]
+[&lt;interface&gt;PlaneMarketingTile|+marketingType: &quot;PLANE&quot;;+rotation: 0 \| 90|]
+[&lt;interface&gt;RadioMarketingTile|+marketingType: &quot;RADIO&quot;;+width: 1;+height: 1;+rotation: 0|]
+[&lt;interface&gt;MarketingTileCreationProps|+marketingType: MARKETING_TYPE;+tileNumber: number;+width: number;+height: number|]
+[BaseTile]&lt;:--[BaseMarketingTile]
+[BaseMarketingTile]&lt;:--[BillBoardMarketingTile]
+[BaseMarketingTile]&lt;:--[MailboxMarketingTile]
+[BaseMarketingTile]&lt;:--[PlaneMarketingTile]
+[BaseMarketingTile]&lt;:--[RadioMarketingTile]
+[&lt;interface&gt;RestaurantTile|+tileType: TileType.RESTAURANT;+restaurant: number;+width: 2;+height: 2|]
+[BaseTile]&lt;:--[RestaurantTile]
+[&lt;interface&gt;RoadTile|+tileType: TileType.ROAD;+adjacentRoads: DirectionBools|]
+[BaseMapTileData]&lt;:--[RoadTile]</desc>
+<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="normal" font-style="normal">
+<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+<g stroke="transparent" fill="transparent">
+<rect x="0.0" y="0.0" height="1059.0" width="19363.0" stroke="none"></rect>
+</g>
+<g transform="translate(8, 8)" fill="#33322E">
+<g transform="translate(20, 20)" fill="#eee8d5" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+<g stroke-dasharray="6 6">
+<path d="M1030.0 409.8 L1030 683 L1030 733 L1030.0 733.0 " fill="none"></path>
+</g>
+<path d="M1035.3 409.8 L1030.0 409.8 L1024.7 409.8 L1030.0 396.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2392.3 357.5 L1343 683 L1343 718 L1343.0 718.0 " fill="none"></path>
+</g>
+<path d="M2393.8 362.6 L2392.3 357.5 L2390.7 352.4 L2405.0 353.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2392.8 367.8 L1669.5 683 L1669.5 733 L1669.5 733.0 " fill="none"></path>
+</g>
+<path d="M2394.9 372.7 L2392.8 367.8 L2390.6 362.9 L2405.0 362.4 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2403.0 381.5 L1963 683 L1963 733 L1963.0 733.0 " fill="none"></path>
+</g>
+<path d="M2406.0 385.9 L2403.0 381.5 L2400.0 377.1 L2414.0 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2425.2 383.5 L2133.25 683 L2203.6554054054054 733 L2203.7 733.0 " fill="none"></path>
+</g>
+<path d="M2429.1 387.3 L2425.2 383.5 L2421.4 379.8 L2434.6 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2440.0 385.1 L2239.75 683 L2252.587837837838 733 L2252.6 733.0 " fill="none"></path>
+</g>
+<path d="M2444.4 388.0 L2440.0 385.1 L2435.6 382.1 L2447.4 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2488.7 387.0 L2556.5 683 L2556.5 740.5 L2556.5 740.5 " fill="none"></path>
+</g>
+<path d="M2493.9 385.8 L2488.7 387.0 L2483.5 388.2 L2485.7 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2537.9 382.5 L2903 683 L2903 740.5 L2903.0 740.5 " fill="none"></path>
+</g>
+<path d="M2541.3 378.4 L2537.9 382.5 L2534.5 386.6 L2527.6 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2559.2 369.1 L3254 683 L3254 733 L3254.0 733.0 " fill="none"></path>
+</g>
+<path d="M2561.3 364.2 L2559.2 369.1 L2557.0 373.9 L2547.0 363.6 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2445.8 385.6 L2279.75 683 L2270.9662162162163 733 L2271.0 733.0 " fill="none"></path>
+</g>
+<path d="M2450.4 388.2 L2445.8 385.6 L2441.1 383.0 L2452.3 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2462.4 387.0 L2390 683 L2321.6216216216217 733 L2321.6 733.0 " fill="none"></path>
+</g>
+<path d="M2467.6 388.2 L2462.4 387.0 L2457.3 385.7 L2465.6 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2559.7 358.8 L3551.5 683 L3551.5 733 L3551.5 733.0 " fill="none"></path>
+</g>
+<path d="M2561.3 353.8 L2559.7 358.8 L2558.0 363.9 L2547.0 354.7 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2559.9 352.9 L3856 683 L3856 733 L3856.0 733.0 " fill="none"></path>
+</g>
+<path d="M2561.2 347.7 L2559.9 352.9 L2558.6 358.0 L2547.0 349.6 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2560.0 349.3 L4137.5 683 L4137.5 740.5 L4137.5 740.5 " fill="none"></path>
+</g>
+<path d="M2561.1 344.1 L2560.0 349.3 L2558.9 354.5 L2547.0 346.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2560.1 347.1 L4376 683 L4376 740.5 L4376.0 740.5 " fill="none"></path>
+</g>
+<path d="M2561.1 341.8 L2560.1 347.1 L2559.1 352.3 L2547.0 344.6 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M2560.2 345.4 L4607.5 683 L4607.5 733 L4607.5 733.0 " fill="none"></path>
+</g>
+<path d="M2561.0 340.1 L2560.2 345.4 L2559.3 350.6 L2547.0 343.2 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M5512.2 372.9 L4942.5 683 L4942.5 718 L4942.5 718.0 " fill="none"></path>
+</g>
+<path d="M5514.8 377.6 L5512.2 372.9 L5509.7 368.2 L5524.0 366.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M5556.5 377.5 L5345.5 683 L5345.5 733 L5345.5 733.0 " fill="none"></path>
+</g>
+<path d="M5560.9 380.5 L5556.5 377.5 L5552.1 374.4 L5564.1 366.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M5610.4 378.6 L5754 683 L5754 733 L5754.0 733.0 " fill="none"></path>
+</g>
+<path d="M5615.3 376.3 L5610.4 378.6 L5605.6 380.8 L5604.8 366.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M5686.7 371.5 L6453.25 683 L6453.25 733 L6453.3 733.0 " fill="none"></path>
+</g>
+<path d="M5688.7 366.6 L5686.7 371.5 L5684.7 376.5 L5674.4 366.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M5711.1 365.4 L6863.25 683 L6863.25 733 L6863.3 733.0 " fill="none"></path>
+</g>
+<path d="M5712.5 360.2 L5711.1 365.4 L5709.7 370.5 L5698.3 361.8 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M7529.5 457.3 L7244.75 683 L7244.75 740.5 L7244.8 740.5 " fill="none"></path>
+</g>
+<path d="M7532.9 461.5 L7529.5 457.3 L7526.2 453.1 L7540.0 449.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M7751.7 461.0 L7860.5 683 L7860.5 733 L7860.5 733.0 " fill="none"></path>
+</g>
+<path d="M7756.5 458.6 L7751.7 461.0 L7746.9 463.3 L7745.8 449.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M8368.0 417.3 L8368 683 L8368 725.5 L8368.0 725.5 " fill="none"></path>
+</g>
+<path d="M8373.3 417.3 L8368.0 417.3 L8362.7 417.3 L8368.0 404.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M8772.5 417.3 L8772.5 683 L8772.5 740.5 L8772.5 740.5 " fill="none"></path>
+</g>
+<path d="M8777.8 417.3 L8772.5 417.3 L8767.2 417.3 L8772.5 404.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9661.8 419.8 L9330.5 683 L9330.5 703 L9330.5 703.0 " fill="none"></path>
+</g>
+<path d="M9665.2 424.0 L9661.8 419.8 L9658.5 415.6 L9672.3 411.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9722.5 423.2 L9579.5 683 L9672.47972972973 710.5 L9672.5 710.5 " fill="none"></path>
+</g>
+<path d="M9727.2 425.8 L9722.5 423.2 L9717.9 420.6 L9729.0 411.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9732.7 423.7 L9619.5 683 L9700.587837837838 710.5 L9700.6 710.5 " fill="none"></path>
+</g>
+<path d="M9737.6 425.9 L9732.7 423.7 L9727.8 421.6 L9738.1 411.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9743.1 424.2 L9659.5 683 L9728.695945945947 710.5 L9728.7 710.5 " fill="none"></path>
+</g>
+<path d="M9748.1 425.8 L9743.1 424.2 L9738.0 422.5 L9747.2 411.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9915.6 358.1 L11658.5 683 L10154.75 761.7526539278132 L10154.8 761.8 " fill="none"></path>
+</g>
+<path d="M9916.6 352.8 L9915.6 358.1 L9914.6 363.3 L9902.5 355.6 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9915.7 354.5 L11951 683 L11951 718 L11951.0 718.0 " fill="none"></path>
+</g>
+<path d="M9916.5 349.3 L9915.7 354.5 L9914.8 359.8 L9902.5 352.4 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9915.7 350.2 L12453 683 L12453 718 L12453.0 718.0 " fill="none"></path>
+</g>
+<path d="M9916.4 344.9 L9915.7 350.2 L9915.0 355.5 L9902.5 348.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M9915.7 347.7 L12864 683 L12864 725.5 L12864.0 725.5 " fill="none"></path>
+</g>
+<path d="M9916.4 342.4 L9915.7 347.7 L9915.1 353.0 L9902.5 346.2 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M14694.5 357.5 L13170 683 L13170 733 L13170.0 733.0 " fill="none"></path>
+</g>
+<path d="M14695.6 362.7 L14694.5 357.5 L14693.3 352.2 L14707.5 354.7 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M14844.2 393.6 L14975.25 683 L14975.25 733 L14975.3 733.0 " fill="none"></path>
+</g>
+<path d="M14849.0 391.4 L14844.2 393.6 L14839.3 395.8 L14838.7 381.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M14883.3 390.3 L15218.25 683 L15218.25 725.5 L15218.3 725.5 " fill="none"></path>
+</g>
+<path d="M14886.8 386.3 L14883.3 390.3 L14879.7 394.3 L14873.2 381.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M17335.9 353.7 L15492.25 683 L15492.25 733 L15492.3 733.0 " fill="none"></path>
+</g>
+<path d="M17336.8 358.9 L17335.9 353.7 L17334.9 348.4 L17349.0 351.3 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15906.0 386.2 L15773.25 683 L15773.25 733 L15773.3 733.0 " fill="none"></path>
+</g>
+<path d="M15910.9 388.3 L15906.0 386.2 L15901.2 384.0 L15911.5 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15951.2 386.5 L16062.75 683 L16062.75 733 L16062.8 733.0 " fill="none"></path>
+</g>
+<path d="M15956.2 384.6 L15951.2 386.5 L15946.2 388.4 L15946.5 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M16050.0 378.9 L16816.25 683 L16816.25 733 L16816.3 733.0 " fill="none"></path>
+</g>
+<path d="M16052.0 374.0 L16050.0 378.9 L16048.0 383.9 L16037.6 374.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15357.5 794.2 L14826.5 868 L14826.5 910.5 L14826.5 910.5 " fill="none"></path>
+</g>
+<path d="M15358.3 799.5 L15357.5 794.2 L15356.8 788.9 L15370.8 792.4 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15357.8 807.7 L15106 868 L15106 910.5 L15106.0 910.5 " fill="none"></path>
+</g>
+<path d="M15359.0 812.9 L15357.8 807.7 L15356.5 802.5 L15370.8 804.6 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15421.3 825.7 L15361.5 868 L15361.5 910.5 L15361.5 910.5 " fill="none"></path>
+</g>
+<path d="M15424.4 830.1 L15421.3 825.7 L15418.2 821.3 L15432.2 818.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15626.8 801.8 L15966.5 868 L15966.5 910.5 L15966.5 910.5 " fill="none"></path>
+</g>
+<path d="M15627.9 796.5 L15626.8 801.8 L15625.8 807.0 L15613.8 799.2 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15627.0 792.3 L16234.5 868 L16234.5 910.5 L16234.5 910.5 " fill="none"></path>
+</g>
+<path d="M15627.6 787.0 L15627.0 792.3 L15626.3 797.6 L15613.8 790.6 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M17489.2 409.0 L17592.25 683 L17592.25 703 L17592.3 703.0 " fill="none"></path>
+</g>
+<path d="M17494.1 407.1 L17489.2 409.0 L17484.2 410.9 L17484.5 396.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M17426.5 795.6 L16828 868 L16828 910.5 L16828.0 910.5 " fill="none"></path>
+</g>
+<path d="M17427.2 800.9 L17426.5 795.6 L17425.9 790.3 L17439.8 794.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M17426.7 807.8 L17118 868 L17118 903 L17118.0 903.0 " fill="none"></path>
+</g>
+<path d="M17427.7 813.0 L17426.7 807.8 L17425.6 802.6 L17439.8 805.2 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M17709.1 855.5 L17727.25 868 L17727.25 903 L17727.3 903.0 " fill="none"></path>
+</g>
+<path d="M17712.1 851.1 L17709.1 855.5 L17706.0 859.9 L17698.1 848.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M17757.7 814.4 L17986.25 868 L17986.25 888 L17986.3 888.0 " fill="none"></path>
+</g>
+<path d="M17758.9 809.2 L17757.7 814.4 L17756.5 819.5 L17744.8 811.3 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M17556.8 404.5 L17925.75 683 L17925.75 718 L17925.8 718.0 " fill="none"></path>
+</g>
+<path d="M17560.0 400.3 L17556.8 404.5 L17553.6 408.8 L17546.1 396.5 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M15627.0 787.6 L16523.5 868 L16523.5 903 L16523.5 903.0 " fill="none"></path>
+</g>
+<path d="M15627.5 782.3 L15627.0 787.6 L15626.6 792.9 L15613.8 786.4 Z"></path>
+<g data-name="Food">
+<g fill="lightgray" stroke="#33322E" data-name="Food">
+<rect x="0.0" y="289.0" height="85.0" width="124.0" data-name="Food"></rect>
+<path d="M0.0 320.0 L124.0 320.0" fill="none" data-name="Food"></path>
+<path d="M0.0 366.0 L124.0 366.0" fill="none" data-name="Food"></path>
+</g>
+<g transform="translate(0, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Food">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Food">
+<a id="shared/Food.ts.Food" xlink:href="shared/Food.ts"><text x="54.0" y="13.5" stroke="none" text-anchor="middle" data-name="Food">Food</text></a>
+
+</g>
+</g>
+<g transform="translate(0, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Food">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Food">
+<text x="0.0" y="13.5" stroke="none" data-name="Food">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Food">+color: string</text>
+
+</g>
+</g>
+<g transform="translate(0, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Food">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Food">
+
+</g>
+</g>
+</g>
+<g data-name="LobbySubmissionData">
+<g fill="lightblue" stroke="#33322E" data-name="LobbySubmissionData">
+<rect x="164.0" y="281.5" height="100.0" width="193.0" data-name="LobbySubmissionData"></rect>
+<path d="M164.0 312.5 L357.0 312.5" fill="none" data-name="LobbySubmissionData"></path>
+<path d="M164.0 373.5 L357.0 373.5" fill="none" data-name="LobbySubmissionData"></path>
+</g>
+<g transform="translate(164, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbySubmissionData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LobbySubmissionData">
+<a id="shared/LobbyTypes.ts.LobbySubmissionData" xlink:href="shared/LobbyTypes.ts"><text x="88.5" y="13.5" stroke="none" text-anchor="middle" data-name="LobbySubmissionData">LobbySubmissionData</text></a>
+
+</g>
+</g>
+<g transform="translate(164, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbySubmissionData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LobbySubmissionData">
+<text x="0.0" y="13.5" stroke="none" data-name="LobbySubmissionData">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="LobbySubmissionData">+password?: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="LobbySubmissionData">+playerCount: number</text>
+
+</g>
+</g>
+<g transform="translate(164, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbySubmissionData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LobbySubmissionData">
+
+</g>
+</g>
+</g>
+<g data-name="JoinLobbySubmissionData">
+<g fill="lightblue" stroke="#33322E" data-name="JoinLobbySubmissionData">
+<rect x="397.0" y="289.0" height="85.0" width="226.0" data-name="JoinLobbySubmissionData"></rect>
+<path d="M397.0 320.0 L623.0 320.0" fill="none" data-name="JoinLobbySubmissionData"></path>
+<path d="M397.0 366.0 L623.0 366.0" fill="none" data-name="JoinLobbySubmissionData"></path>
+</g>
+<g transform="translate(397, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JoinLobbySubmissionData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JoinLobbySubmissionData">
+<a id="shared/LobbyTypes.ts.JoinLobbySubmissionData" xlink:href="shared/LobbyTypes.ts"><text x="105.0" y="13.5" stroke="none" text-anchor="middle" data-name="JoinLobbySubmissionData">JoinLobbySubmissionData</text></a>
+
+</g>
+</g>
+<g transform="translate(397, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JoinLobbySubmissionData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JoinLobbySubmissionData">
+<text x="0.0" y="13.5" stroke="none" data-name="JoinLobbySubmissionData">+inviteCode: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="JoinLobbySubmissionData">+password?: string</text>
+
+</g>
+</g>
+<g transform="translate(397, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JoinLobbySubmissionData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JoinLobbySubmissionData">
+
+</g>
+</g>
+</g>
+<g data-name="LobbyPlayerData">
+<g fill="lightblue" stroke="#33322E" data-name="LobbyPlayerData">
+<rect x="663.0" y="274.0" height="115.0" width="207.0" data-name="LobbyPlayerData"></rect>
+<path d="M663.0 305.0 L870.0 305.0" fill="none" data-name="LobbyPlayerData"></path>
+<path d="M663.0 381.0 L870.0 381.0" fill="none" data-name="LobbyPlayerData"></path>
+</g>
+<g transform="translate(663, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyPlayerData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LobbyPlayerData">
+<a id="shared/LobbyTypes.ts.LobbyPlayerData" xlink:href="shared/LobbyTypes.ts"><text x="95.5" y="13.5" stroke="none" text-anchor="middle" data-name="LobbyPlayerData">LobbyPlayerData</text></a>
+
+</g>
+</g>
+<g transform="translate(663, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyPlayerData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LobbyPlayerData">
+<text x="0.0" y="13.5" stroke="none" data-name="LobbyPlayerData">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="LobbyPlayerData">+playerNumber: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="LobbyPlayerData">+isHost: boolean</text>
+<text x="0.0" y="58.5" stroke="none" data-name="LobbyPlayerData">+restaurant: number</text>
+
+</g>
+</g>
+<g transform="translate(663, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyPlayerData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LobbyPlayerData">
+
+</g>
+</g>
+</g>
+<g data-name="LobbyView">
+<g fill="lightblue" stroke="#33322E" data-name="LobbyView">
+<rect x="910.0" y="266.5" height="130.0" width="240.0" data-name="LobbyView"></rect>
+<path d="M910.0 297.5 L1150.0 297.5" fill="none" data-name="LobbyView"></path>
+<path d="M910.0 388.5 L1150.0 388.5" fill="none" data-name="LobbyView"></path>
+</g>
+<g transform="translate(910, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LobbyView">
+<a id="shared/LobbyTypes.ts.LobbyView" xlink:href="shared/LobbyTypes.ts"><text x="112.0" y="13.5" stroke="none" text-anchor="middle" data-name="LobbyView">LobbyView</text></a>
+
+</g>
+</g>
+<g transform="translate(910, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LobbyView">
+<text x="0.0" y="13.5" stroke="none" data-name="LobbyView">+lobbyId: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="LobbyView">+lobbyName: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="LobbyView">+inGame: boolean</text>
+<text x="0.0" y="58.5" stroke="none" data-name="LobbyView">+players: LobbyPlayerData[]</text>
+<text x="0.0" y="73.5" stroke="none" data-name="LobbyView">+inviteCode: string</text>
+
+</g>
+</g>
+<g transform="translate(910, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LobbyView">
+
+</g>
+</g>
+</g>
+<g data-name="LobbyViewPerPlayer">
+<g fill="lightblue" stroke="#33322E" data-name="LobbyViewPerPlayer">
+<rect x="926.5" y="733.0" height="85.0" width="207.0" data-name="LobbyViewPerPlayer"></rect>
+<path d="M926.5 764.0 L1133.5 764.0" fill="none" data-name="LobbyViewPerPlayer"></path>
+<path d="M926.5 810.0 L1133.5 810.0" fill="none" data-name="LobbyViewPerPlayer"></path>
+</g>
+<g transform="translate(926.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyViewPerPlayer">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LobbyViewPerPlayer">
+<a id="shared/LobbyTypes.ts.LobbyViewPerPlayer" xlink:href="shared/LobbyTypes.ts"><text x="95.5" y="13.5" stroke="none" text-anchor="middle" data-name="LobbyViewPerPlayer">LobbyViewPerPlayer</text></a>
+
+</g>
+</g>
+<g transform="translate(926.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyViewPerPlayer">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LobbyViewPerPlayer">
+<text x="0.0" y="13.5" stroke="none" data-name="LobbyViewPerPlayer">+hosting: boolean</text>
+<text x="0.0" y="28.5" stroke="none" data-name="LobbyViewPerPlayer">+playerNumber: number</text>
+
+</g>
+</g>
+<g transform="translate(926.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyViewPerPlayer">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LobbyViewPerPlayer">
+
+</g>
+</g>
+</g>
+<g data-name="MagnateLobbyView">
+<g fill="lightgray" stroke="#33322E" data-name="MagnateLobbyView">
+<rect x="1190.0" y="244.0" height="175.0" width="323.0" data-name="MagnateLobbyView"></rect>
+<path d="M1190.0 275.0 L1513.0 275.0" fill="none" data-name="MagnateLobbyView"></path>
+<path d="M1190.0 411.0 L1513.0 411.0" fill="none" data-name="MagnateLobbyView"></path>
+</g>
+<g transform="translate(1190, 244)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MagnateLobbyView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MagnateLobbyView">
+<a id="shared/LobbyTypes.ts.MagnateLobbyView" xlink:href="shared/LobbyTypes.ts"><text x="153.5" y="13.5" stroke="none" text-anchor="middle" data-name="MagnateLobbyView">MagnateLobbyView</text></a>
+
+</g>
+</g>
+<g transform="translate(1190, 275)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MagnateLobbyView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MagnateLobbyView">
+<text x="0.0" y="13.5" stroke="none" data-name="MagnateLobbyView">+lobbyId: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MagnateLobbyView">+lobbyName: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MagnateLobbyView">+playerCount: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MagnateLobbyView">+hosting: boolean</text>
+<text x="0.0" y="73.5" stroke="none" data-name="MagnateLobbyView">+lobbyPlayers: LobbyPlayerData[]</text>
+<text x="0.0" y="88.5" stroke="none" data-name="MagnateLobbyView">+inGame: boolean</text>
+<text x="0.0" y="103.5" stroke="none" data-name="MagnateLobbyView">+gameState: GameStateViewPerPlayer</text>
+<text x="0.0" y="118.5" stroke="none" data-name="MagnateLobbyView">+inviteCode: string</text>
+
+</g>
+</g>
+<g transform="translate(1190, 411)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MagnateLobbyView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MagnateLobbyView">
+
+</g>
+</g>
+</g>
+<g data-name="LocalSessionData">
+<g fill="lightgray" stroke="#33322E" data-name="LocalSessionData">
+<rect x="1553.0" y="289.0" height="85.0" width="159.0" data-name="LocalSessionData"></rect>
+<path d="M1553.0 320.0 L1712.0 320.0" fill="none" data-name="LocalSessionData"></path>
+<path d="M1553.0 366.0 L1712.0 366.0" fill="none" data-name="LocalSessionData"></path>
+</g>
+<g transform="translate(1553, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LocalSessionData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LocalSessionData">
+<a id="shared/LocalSessionData.ts.LocalSessionData" xlink:href="shared/LocalSessionData.ts"><text x="71.5" y="13.5" stroke="none" text-anchor="middle" data-name="LocalSessionData">LocalSessionData</text></a>
+
+</g>
+</g>
+<g transform="translate(1553, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LocalSessionData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LocalSessionData">
+<text x="0.0" y="13.5" stroke="none" data-name="LocalSessionData">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="LocalSessionData">+authKey: string</text>
+
+</g>
+</g>
+<g transform="translate(1553, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LocalSessionData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LocalSessionData">
+
+</g>
+</g>
+</g>
+<g data-name="BaseMessage">
+<g fill="lightblue" stroke="#33322E" data-name="BaseMessage">
+<rect x="2405.0" y="289.0" height="85.0" width="142.0" data-name="BaseMessage"></rect>
+<path d="M2405.0 320.0 L2547.0 320.0" fill="none" data-name="BaseMessage"></path>
+<path d="M2405.0 366.0 L2547.0 366.0" fill="none" data-name="BaseMessage"></path>
+</g>
+<g transform="translate(2405, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseMessage">
+<a id="shared/Messages.ts.BaseMessage" xlink:href="shared/Messages.ts"><text x="63.0" y="13.5" stroke="none" text-anchor="middle" data-name="BaseMessage">BaseMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(2405, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseMessage">+type: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseMessage">+data: unknown</text>
+
+</g>
+</g>
+<g transform="translate(2405, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseMessage">
+
+</g>
+</g>
+</g>
+<g data-name="AllUpdatedMessage">
+<g fill="lightblue" stroke="#33322E" data-name="AllUpdatedMessage">
+<rect x="1173.5" y="718.0" height="115.0" width="339.0" data-name="AllUpdatedMessage"></rect>
+<path d="M1173.5 749.0 L1512.5 749.0" fill="none" data-name="AllUpdatedMessage"></path>
+<path d="M1173.5 825.0 L1512.5 825.0" fill="none" data-name="AllUpdatedMessage"></path>
+</g>
+<g transform="translate(1173.5, 718)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AllUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AllUpdatedMessage">
+<a id="shared/Messages.ts.AllUpdatedMessage" xlink:href="shared/Messages.ts"><text x="161.5" y="13.5" stroke="none" text-anchor="middle" data-name="AllUpdatedMessage">AllUpdatedMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(1173.5, 749)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AllUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AllUpdatedMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="AllUpdatedMessage">+type: &quot;ALL_UPDATED&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="AllUpdatedMessage">+data: { lobbyState: LobbyViewPerPlayer</text>
+<text x="0.0" y="43.5" stroke="none" data-name="AllUpdatedMessage">gameState: GameStateViewPerPlayer</text>
+<text x="0.0" y="58.5" stroke="none" data-name="AllUpdatedMessage">}</text>
+
+</g>
+</g>
+<g transform="translate(1173.5, 825)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AllUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AllUpdatedMessage">
+
+</g>
+</g>
+</g>
+<g data-name="LobbyUpdatedMessage">
+<g fill="lightblue" stroke="#33322E" data-name="LobbyUpdatedMessage">
+<rect x="1552.5" y="733.0" height="85.0" width="234.0" data-name="LobbyUpdatedMessage"></rect>
+<path d="M1552.5 764.0 L1786.5 764.0" fill="none" data-name="LobbyUpdatedMessage"></path>
+<path d="M1552.5 810.0 L1786.5 810.0" fill="none" data-name="LobbyUpdatedMessage"></path>
+</g>
+<g transform="translate(1552.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LobbyUpdatedMessage">
+<a id="shared/Messages.ts.LobbyUpdatedMessage" xlink:href="shared/Messages.ts"><text x="109.0" y="13.5" stroke="none" text-anchor="middle" data-name="LobbyUpdatedMessage">LobbyUpdatedMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(1552.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LobbyUpdatedMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="LobbyUpdatedMessage">+type: &quot;LOBBY_UPDATED&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="LobbyUpdatedMessage">+data: LobbyViewPerPlayer</text>
+
+</g>
+</g>
+<g transform="translate(1552.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LobbyUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LobbyUpdatedMessage">
+
+</g>
+</g>
+</g>
+<g data-name="GameStateUpdatedMessage">
+<g fill="lightblue" stroke="#33322E" data-name="GameStateUpdatedMessage">
+<rect x="1826.5" y="733.0" height="85.0" width="273.0" data-name="GameStateUpdatedMessage"></rect>
+<path d="M1826.5 764.0 L2099.5 764.0" fill="none" data-name="GameStateUpdatedMessage"></path>
+<path d="M1826.5 810.0 L2099.5 810.0" fill="none" data-name="GameStateUpdatedMessage"></path>
+</g>
+<g transform="translate(1826.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GameStateUpdatedMessage">
+<a id="shared/Messages.ts.GameStateUpdatedMessage" xlink:href="shared/Messages.ts"><text x="128.5" y="13.5" stroke="none" text-anchor="middle" data-name="GameStateUpdatedMessage">GameStateUpdatedMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(1826.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GameStateUpdatedMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="GameStateUpdatedMessage">+type: &quot;GAMESTATE_UPDATED&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GameStateUpdatedMessage">+data: GameStateViewPerPlayer</text>
+
+</g>
+</g>
+<g transform="translate(1826.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateUpdatedMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GameStateUpdatedMessage">
+
+</g>
+</g>
+</g>
+<g data-name="NewSessionKeyMessage">
+<g fill="lightblue" stroke="#33322E" data-name="NewSessionKeyMessage">
+<rect x="2139.5" y="733.0" height="85.0" width="248.0" data-name="NewSessionKeyMessage"></rect>
+<path d="M2139.5 764.0 L2387.5 764.0" fill="none" data-name="NewSessionKeyMessage"></path>
+<path d="M2139.5 810.0 L2387.5 810.0" fill="none" data-name="NewSessionKeyMessage"></path>
+</g>
+<g transform="translate(2139.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NewSessionKeyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="NewSessionKeyMessage">
+<a id="shared/Messages.ts.NewSessionKeyMessage" xlink:href="shared/Messages.ts"><text x="116.0" y="13.5" stroke="none" text-anchor="middle" data-name="NewSessionKeyMessage">NewSessionKeyMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(2139.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NewSessionKeyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="NewSessionKeyMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="NewSessionKeyMessage">+type: &quot;NEW_SESSION_KEY&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="NewSessionKeyMessage">+data: string</text>
+
+</g>
+</g>
+<g transform="translate(2139.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="NewSessionKeyMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="NewSessionKeyMessage">
+
+</g>
+</g>
+</g>
+<g data-name="ClearLocalDataMessage">
+<g fill="lightblue" stroke="#33322E" data-name="ClearLocalDataMessage">
+<rect x="2427.5" y="740.5" height="70.0" width="258.0" data-name="ClearLocalDataMessage"></rect>
+<path d="M2427.5 771.5 L2685.5 771.5" fill="none" data-name="ClearLocalDataMessage"></path>
+<path d="M2427.5 802.5 L2685.5 802.5" fill="none" data-name="ClearLocalDataMessage"></path>
+</g>
+<g transform="translate(2427.5, 740.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClearLocalDataMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ClearLocalDataMessage">
+<a id="shared/Messages.ts.ClearLocalDataMessage" xlink:href="shared/Messages.ts"><text x="121.0" y="13.5" stroke="none" text-anchor="middle" data-name="ClearLocalDataMessage">ClearLocalDataMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(2427.5, 771.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClearLocalDataMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ClearLocalDataMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="ClearLocalDataMessage">+type: &quot;CLEAR_LOCAL_DATA&quot;</text>
+
+</g>
+</g>
+<g transform="translate(2427.5, 802.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClearLocalDataMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ClearLocalDataMessage">
+
+</g>
+</g>
+</g>
+<g data-name="SuccessfulSessionKeyVerificationMessage">
+<g fill="lightblue" stroke="#33322E" data-name="SuccessfulSessionKeyVerificationMessage">
+<rect x="2725.5" y="740.5" height="70.0" width="355.0" data-name="SuccessfulSessionKeyVerificationMessage"></rect>
+<path d="M2725.5 771.5 L3080.5 771.5" fill="none" data-name="SuccessfulSessionKeyVerificationMessage"></path>
+<path d="M2725.5 802.5 L3080.5 802.5" fill="none" data-name="SuccessfulSessionKeyVerificationMessage"></path>
+</g>
+<g transform="translate(2725.5, 740.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SuccessfulSessionKeyVerificationMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="SuccessfulSessionKeyVerificationMessage">
+<a id="shared/Messages.ts.SuccessfulSessionKeyVerificationMessage" xlink:href="shared/Messages.ts"><text x="169.5" y="13.5" stroke="none" text-anchor="middle" data-name="SuccessfulSessionKeyVerificationMessage">SuccessfulSessionKeyVerificationMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(2725.5, 771.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SuccessfulSessionKeyVerificationMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="SuccessfulSessionKeyVerificationMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="SuccessfulSessionKeyVerificationMessage">+type: &quot;SESSION_KEY_VERIFIED&quot;</text>
+
+</g>
+</g>
+<g transform="translate(2725.5, 802.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="SuccessfulSessionKeyVerificationMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="SuccessfulSessionKeyVerificationMessage">
+
+</g>
+</g>
+</g>
+<g data-name="CheckSessionKeyMessage">
+<g fill="lightblue" stroke="#33322E" data-name="CheckSessionKeyMessage">
+<rect x="3120.5" y="733.0" height="85.0" width="267.0" data-name="CheckSessionKeyMessage"></rect>
+<path d="M3120.5 764.0 L3387.5 764.0" fill="none" data-name="CheckSessionKeyMessage"></path>
+<path d="M3120.5 810.0 L3387.5 810.0" fill="none" data-name="CheckSessionKeyMessage"></path>
+</g>
+<g transform="translate(3120.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CheckSessionKeyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CheckSessionKeyMessage">
+<a id="shared/Messages.ts.CheckSessionKeyMessage" xlink:href="shared/Messages.ts"><text x="125.5" y="13.5" stroke="none" text-anchor="middle" data-name="CheckSessionKeyMessage">CheckSessionKeyMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(3120.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CheckSessionKeyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CheckSessionKeyMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="CheckSessionKeyMessage">+type: &quot;CHECK_SESSION_KEY&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="CheckSessionKeyMessage">+data: string</text>
+
+</g>
+</g>
+<g transform="translate(3120.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CheckSessionKeyMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CheckSessionKeyMessage">
+
+</g>
+</g>
+</g>
+<g data-name="CreateLobbyMessage">
+<g fill="lightblue" stroke="#33322E" data-name="CreateLobbyMessage">
+<rect x="3427.5" y="733.0" height="85.0" width="248.0" data-name="CreateLobbyMessage"></rect>
+<path d="M3427.5 764.0 L3675.5 764.0" fill="none" data-name="CreateLobbyMessage"></path>
+<path d="M3427.5 810.0 L3675.5 810.0" fill="none" data-name="CreateLobbyMessage"></path>
+</g>
+<g transform="translate(3427.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CreateLobbyMessage">
+<a id="shared/Messages.ts.CreateLobbyMessage" xlink:href="shared/Messages.ts"><text x="116.0" y="13.5" stroke="none" text-anchor="middle" data-name="CreateLobbyMessage">CreateLobbyMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(3427.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CreateLobbyMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="CreateLobbyMessage">+type: &quot;CREATE_LOBBY&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="CreateLobbyMessage">+data: LobbySubmissionData</text>
+
+</g>
+</g>
+<g transform="translate(3427.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CreateLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CreateLobbyMessage">
+
+</g>
+</g>
+</g>
+<g data-name="JoinLobbyMessage">
+<g fill="lightblue" stroke="#33322E" data-name="JoinLobbyMessage">
+<rect x="3715.5" y="733.0" height="85.0" width="281.0" data-name="JoinLobbyMessage"></rect>
+<path d="M3715.5 764.0 L3996.5 764.0" fill="none" data-name="JoinLobbyMessage"></path>
+<path d="M3715.5 810.0 L3996.5 810.0" fill="none" data-name="JoinLobbyMessage"></path>
+</g>
+<g transform="translate(3715.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JoinLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="JoinLobbyMessage">
+<a id="shared/Messages.ts.JoinLobbyMessage" xlink:href="shared/Messages.ts"><text x="132.5" y="13.5" stroke="none" text-anchor="middle" data-name="JoinLobbyMessage">JoinLobbyMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(3715.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JoinLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="JoinLobbyMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="JoinLobbyMessage">+type: &quot;JOIN_LOBBY&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="JoinLobbyMessage">+data: JoinLobbySubmissionData</text>
+
+</g>
+</g>
+<g transform="translate(3715.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="JoinLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="JoinLobbyMessage">
+
+</g>
+</g>
+</g>
+<g data-name="LeaveLobbyMessage">
+<g fill="lightblue" stroke="#33322E" data-name="LeaveLobbyMessage">
+<rect x="4036.5" y="740.5" height="70.0" width="202.0" data-name="LeaveLobbyMessage"></rect>
+<path d="M4036.5 771.5 L4238.5 771.5" fill="none" data-name="LeaveLobbyMessage"></path>
+<path d="M4036.5 802.5 L4238.5 802.5" fill="none" data-name="LeaveLobbyMessage"></path>
+</g>
+<g transform="translate(4036.5, 740.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LeaveLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LeaveLobbyMessage">
+<a id="shared/Messages.ts.LeaveLobbyMessage" xlink:href="shared/Messages.ts"><text x="93.0" y="13.5" stroke="none" text-anchor="middle" data-name="LeaveLobbyMessage">LeaveLobbyMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(4036.5, 771.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LeaveLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LeaveLobbyMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="LeaveLobbyMessage">+type: &quot;LEAVE_LOBBY&quot;</text>
+
+</g>
+</g>
+<g transform="translate(4036.5, 802.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LeaveLobbyMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LeaveLobbyMessage">
+
+</g>
+</g>
+</g>
+<g data-name="StartGameMessage">
+<g fill="lightblue" stroke="#33322E" data-name="StartGameMessage">
+<rect x="4278.5" y="740.5" height="70.0" width="195.0" data-name="StartGameMessage"></rect>
+<path d="M4278.5 771.5 L4473.5 771.5" fill="none" data-name="StartGameMessage"></path>
+<path d="M4278.5 802.5 L4473.5 802.5" fill="none" data-name="StartGameMessage"></path>
+</g>
+<g transform="translate(4278.5, 740.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="StartGameMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="StartGameMessage">
+<a id="shared/Messages.ts.StartGameMessage" xlink:href="shared/Messages.ts"><text x="89.5" y="13.5" stroke="none" text-anchor="middle" data-name="StartGameMessage">StartGameMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(4278.5, 771.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="StartGameMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="StartGameMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="StartGameMessage">+type: &quot;START_GAME&quot;</text>
+
+</g>
+</g>
+<g transform="translate(4278.5, 802.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="StartGameMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="StartGameMessage">
+
+</g>
+</g>
+</g>
+<g data-name="MakeMoveMessage">
+<g fill="lightblue" stroke="#33322E" data-name="MakeMoveMessage">
+<rect x="4513.5" y="733.0" height="85.0" width="188.0" data-name="MakeMoveMessage"></rect>
+<path d="M4513.5 764.0 L4701.5 764.0" fill="none" data-name="MakeMoveMessage"></path>
+<path d="M4513.5 810.0 L4701.5 810.0" fill="none" data-name="MakeMoveMessage"></path>
+</g>
+<g transform="translate(4513.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MakeMoveMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MakeMoveMessage">
+<a id="shared/Messages.ts.MakeMoveMessage" xlink:href="shared/Messages.ts"><text x="86.0" y="13.5" stroke="none" text-anchor="middle" data-name="MakeMoveMessage">MakeMoveMessage</text></a>
+
+</g>
+</g>
+<g transform="translate(4513.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MakeMoveMessage">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MakeMoveMessage">
+<text x="0.0" y="13.5" stroke="none" data-name="MakeMoveMessage">+type: &quot;MAKE_MOVE&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MakeMoveMessage">+data: MoveData</text>
+
+</g>
+</g>
+<g transform="translate(4513.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MakeMoveMessage">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MakeMoveMessage">
+
+</g>
+</g>
+</g>
+<g data-name="BaseMoveData">
+<g fill="lightblue" stroke="#33322E" data-name="BaseMoveData">
+<rect x="5478.3" y="296.5" height="70.0" width="220.0" data-name="BaseMoveData"></rect>
+<path d="M5478.3 327.5 L5698.3 327.5" fill="none" data-name="BaseMoveData"></path>
+<path d="M5478.3 358.5 L5698.3 358.5" fill="none" data-name="BaseMoveData"></path>
+</g>
+<g transform="translate(5478.25, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMoveData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseMoveData">
+<a id="shared/Moves.ts.BaseMoveData" xlink:href="shared/Moves.ts"><text x="102.0" y="13.5" stroke="none" text-anchor="middle" data-name="BaseMoveData">BaseMoveData</text></a>
+
+</g>
+</g>
+<g transform="translate(5478.25, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMoveData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseMoveData">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseMoveData">+MoveType: MOVE_TYPE</text>
+
+</g>
+</g>
+<g transform="translate(5478.25, 358.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMoveData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseMoveData">
+
+</g>
+</g>
+</g>
+<g data-name="MovePlaceRestaurant">
+<g fill="lightblue" stroke="#33322E" data-name="MovePlaceRestaurant">
+<rect x="4741.5" y="718.0" height="115.0" width="402.0" data-name="MovePlaceRestaurant"></rect>
+<path d="M4741.5 749.0 L5143.5 749.0" fill="none" data-name="MovePlaceRestaurant"></path>
+<path d="M4741.5 825.0 L5143.5 825.0" fill="none" data-name="MovePlaceRestaurant"></path>
+</g>
+<g transform="translate(4741.5, 718)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MovePlaceRestaurant">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MovePlaceRestaurant">
+<a id="shared/Moves.ts.MovePlaceRestaurant" xlink:href="shared/Moves.ts"><text x="193.0" y="13.5" stroke="none" text-anchor="middle" data-name="MovePlaceRestaurant">MovePlaceRestaurant</text></a>
+
+</g>
+</g>
+<g transform="translate(4741.5, 749)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MovePlaceRestaurant">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MovePlaceRestaurant">
+<text x="0.0" y="13.5" stroke="none" data-name="MovePlaceRestaurant">+MoveType: MOVE_TYPE.PLACE_RESTAURANT</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MovePlaceRestaurant">+x: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MovePlaceRestaurant">+y: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MovePlaceRestaurant">+entrance: ENTRANCE_CORNER</text>
+
+</g>
+</g>
+<g transform="translate(4741.5, 825)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MovePlaceRestaurant">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MovePlaceRestaurant">
+
+</g>
+</g>
+</g>
+<g data-name="MoveTakeTurn">
+<g fill="lightblue" stroke="#33322E" data-name="MoveTakeTurn">
+<rect x="5183.5" y="733.0" height="85.0" width="324.0" data-name="MoveTakeTurn"></rect>
+<path d="M5183.5 764.0 L5507.5 764.0" fill="none" data-name="MoveTakeTurn"></path>
+<path d="M5183.5 810.0 L5507.5 810.0" fill="none" data-name="MoveTakeTurn"></path>
+</g>
+<g transform="translate(5183.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveTakeTurn">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MoveTakeTurn">
+<a id="shared/Moves.ts.MoveTakeTurn" xlink:href="shared/Moves.ts"><text x="154.0" y="13.5" stroke="none" text-anchor="middle" data-name="MoveTakeTurn">MoveTakeTurn</text></a>
+
+</g>
+</g>
+<g transform="translate(5183.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveTakeTurn">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MoveTakeTurn">
+<text x="0.0" y="13.5" stroke="none" data-name="MoveTakeTurn">+MoveType: MOVE_TYPE.TAKE_TURN</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MoveTakeTurn">+actions: TurnAction[]</text>
+
+</g>
+</g>
+<g transform="translate(5183.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveTakeTurn">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MoveTakeTurn">
+
+</g>
+</g>
+</g>
+<g data-name="MoveNegotiateSalaries">
+<g fill="lightblue" stroke="#33322E" data-name="MoveNegotiateSalaries">
+<rect x="5547.5" y="733.0" height="85.0" width="413.0" data-name="MoveNegotiateSalaries"></rect>
+<path d="M5547.5 764.0 L5960.5 764.0" fill="none" data-name="MoveNegotiateSalaries"></path>
+<path d="M5547.5 810.0 L5960.5 810.0" fill="none" data-name="MoveNegotiateSalaries"></path>
+</g>
+<g transform="translate(5547.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveNegotiateSalaries">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MoveNegotiateSalaries">
+<a id="shared/Moves.ts.MoveNegotiateSalaries" xlink:href="shared/Moves.ts"><text x="198.5" y="13.5" stroke="none" text-anchor="middle" data-name="MoveNegotiateSalaries">MoveNegotiateSalaries</text></a>
+
+</g>
+</g>
+<g transform="translate(5547.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveNegotiateSalaries">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MoveNegotiateSalaries">
+<text x="0.0" y="13.5" stroke="none" data-name="MoveNegotiateSalaries">+MoveType: MOVE_TYPE.NEGOTIATE_SALARIES</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MoveNegotiateSalaries">+employeesToFire: number[]</text>
+
+</g>
+</g>
+<g transform="translate(5547.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveNegotiateSalaries">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MoveNegotiateSalaries">
+
+</g>
+</g>
+</g>
+<g data-name="MoveRestructure">
+<g fill="lightblue" stroke="#33322E" data-name="MoveRestructure">
+<rect x="6278.3" y="733.0" height="85.0" width="350.0" data-name="MoveRestructure"></rect>
+<path d="M6278.3 764.0 L6628.3 764.0" fill="none" data-name="MoveRestructure"></path>
+<path d="M6278.3 810.0 L6628.3 810.0" fill="none" data-name="MoveRestructure"></path>
+</g>
+<g transform="translate(6278.25, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveRestructure">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MoveRestructure">
+<a id="shared/Moves.ts.MoveRestructure" xlink:href="shared/Moves.ts"><text x="167.0" y="13.5" stroke="none" text-anchor="middle" data-name="MoveRestructure">MoveRestructure</text></a>
+
+</g>
+</g>
+<g transform="translate(6278.25, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveRestructure">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MoveRestructure">
+<text x="0.0" y="13.5" stroke="none" data-name="MoveRestructure">+MoveType: MOVE_TYPE.RESTRUCTURE</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MoveRestructure">+tree: EmployeeNode</text>
+
+</g>
+</g>
+<g transform="translate(6278.25, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MoveRestructure">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MoveRestructure">
+
+</g>
+</g>
+</g>
+<g data-name="MovePickTurnOrder">
+<g fill="lightblue" stroke="#33322E" data-name="MovePickTurnOrder">
+<rect x="6668.3" y="733.0" height="85.0" width="390.0" data-name="MovePickTurnOrder"></rect>
+<path d="M6668.3 764.0 L7058.3 764.0" fill="none" data-name="MovePickTurnOrder"></path>
+<path d="M6668.3 810.0 L7058.3 810.0" fill="none" data-name="MovePickTurnOrder"></path>
+</g>
+<g transform="translate(6668.25, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MovePickTurnOrder">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MovePickTurnOrder">
+<a id="shared/Moves.ts.MovePickTurnOrder" xlink:href="shared/Moves.ts"><text x="187.0" y="13.5" stroke="none" text-anchor="middle" data-name="MovePickTurnOrder">MovePickTurnOrder</text></a>
+
+</g>
+</g>
+<g transform="translate(6668.25, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MovePickTurnOrder">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MovePickTurnOrder">
+<text x="0.0" y="13.5" stroke="none" data-name="MovePickTurnOrder">+MoveType: MOVE_TYPE.PICK_TURN_ORDER</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MovePickTurnOrder">+slot: number</text>
+
+</g>
+</g>
+<g transform="translate(6668.25, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MovePickTurnOrder">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MovePickTurnOrder">
+
+</g>
+</g>
+</g>
+<g data-name="MOVE_TYPE">
+<g fill="lightgreen" stroke="#33322E" data-name="MOVE_TYPE">
+<rect x="5738.3" y="270.5" height="122.0" width="204.0" data-name="MOVE_TYPE"></rect>
+<path d="M5738.3 301.5 L5942.3 301.5" fill="none" data-name="MOVE_TYPE"></path>
+</g>
+<g transform="translate(5738.25, 270.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MOVE_TYPE">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MOVE_TYPE">
+<a id="shared/Moves.ts.MOVE_TYPE" xlink:href="shared/Moves.ts"><text x="94.0" y="13.5" stroke="none" text-anchor="middle" data-name="MOVE_TYPE">MOVE_TYPE</text></a>
+
+</g>
+</g>
+<g transform="translate(5738.25, 301.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MOVE_TYPE">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MOVE_TYPE">
+<text x="0.0" y="13.5" stroke="none" data-name="MOVE_TYPE">PLACE_RESTAURANT</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MOVE_TYPE">TAKE_TURN</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MOVE_TYPE">NEGOTIATE_SALARIES</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MOVE_TYPE">RESTRUCTURE</text>
+<text x="0.0" y="73.5" stroke="none" data-name="MOVE_TYPE">PICK_TURN_ORDER</text>
+
+</g>
+</g>
+</g>
+<g data-name="PlayerNumDefault">
+<g fill="lightblue" stroke="#33322E" data-name="PlayerNumDefault">
+<rect x="5982.3" y="274.0" height="115.0" width="281.0" data-name="PlayerNumDefault"></rect>
+<path d="M5982.3 305.0 L6263.3 305.0" fill="none" data-name="PlayerNumDefault"></path>
+<path d="M5982.3 381.0 L6263.3 381.0" fill="none" data-name="PlayerNumDefault"></path>
+</g>
+<g transform="translate(5982.25, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerNumDefault">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlayerNumDefault">
+<a id="shared/Player.ts.PlayerNumDefault" xlink:href="shared/Player.ts"><text x="132.5" y="13.5" stroke="none" text-anchor="middle" data-name="PlayerNumDefault">PlayerNumDefault</text></a>
+
+</g>
+</g>
+<g transform="translate(5982.25, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerNumDefault">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlayerNumDefault">
+<text x="0.0" y="13.5" stroke="none" data-name="PlayerNumDefault">+mapWidth: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlayerNumDefault">+mapHeight: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PlayerNumDefault">+marketingUnused: Set&lt;number&gt;</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PlayerNumDefault">+limitedEmployeeCards: number</text>
+
+</g>
+</g>
+<g transform="translate(5982.25, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerNumDefault">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PlayerNumDefault">
+
+</g>
+</g>
+</g>
+<g data-name="APIRoutes">
+<g fill="lightgreen" stroke="#33322E" data-name="APIRoutes">
+<rect x="6303.3" y="278.0" height="107.0" width="143.0" data-name="APIRoutes"></rect>
+<path d="M6303.3 309.0 L6446.3 309.0" fill="none" data-name="APIRoutes"></path>
+</g>
+<g transform="translate(6303.25, 278)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="APIRoutes">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="APIRoutes">
+<a id="shared/Routes.ts.APIRoutes" xlink:href="shared/Routes.ts"><text x="63.5" y="13.5" stroke="none" text-anchor="middle" data-name="APIRoutes">APIRoutes</text></a>
+
+</g>
+</g>
+<g transform="translate(6303.25, 309)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="APIRoutes">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="APIRoutes">
+<text x="0.0" y="13.5" stroke="none" data-name="APIRoutes">NEW_LOBBY</text>
+<text x="0.0" y="28.5" stroke="none" data-name="APIRoutes">GET_LOBBY</text>
+<text x="0.0" y="43.5" stroke="none" data-name="APIRoutes">GAME_SOCKET</text>
+<text x="0.0" y="58.5" stroke="none" data-name="APIRoutes">PLAY</text>
+
+</g>
+</g>
+</g>
+<g data-name="TreeNode&lt;T&gt;">
+<g fill="lightgray" stroke="#33322E" data-name="TreeNode&lt;T&gt;">
+<rect x="6486.3" y="289.0" height="85.0" width="217.0" data-name="TreeNode&lt;T&gt;"></rect>
+<path d="M6486.3 320.0 L6703.3 320.0" fill="none" data-name="TreeNode&lt;T&gt;"></path>
+<path d="M6486.3 366.0 L6703.3 366.0" fill="none" data-name="TreeNode&lt;T&gt;"></path>
+</g>
+<g transform="translate(6486.25, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TreeNode&lt;T&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TreeNode&lt;T&gt;">
+<a id="shared/utils.ts.TreeNode&lt;T&gt;" xlink:href="shared/utils.ts"><text x="100.5" y="13.5" stroke="none" text-anchor="middle" data-name="TreeNode&lt;T&gt;">TreeNode&lt;T&gt;</text></a>
+
+</g>
+</g>
+<g transform="translate(6486.25, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TreeNode&lt;T&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TreeNode&lt;T&gt;">
+<text x="0.0" y="13.5" stroke="none" data-name="TreeNode&lt;T&gt;">+data: T</text>
+<text x="0.0" y="28.5" stroke="none" data-name="TreeNode&lt;T&gt;">+children: TreeNode&lt;T&gt;[]</text>
+
+</g>
+</g>
+<g transform="translate(6486.25, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TreeNode&lt;T&gt;">
+<g transform="translate(8, 8)" fill="#33322E" data-name="TreeNode&lt;T&gt;">
+
+</g>
+</g>
+</g>
+<g data-name="Position">
+<g fill="lightblue" stroke="#33322E" data-name="Position">
+<rect x="6743.3" y="281.5" height="100.0" width="244.0" data-name="Position"></rect>
+<path d="M6743.3 312.5 L6987.3 312.5" fill="none" data-name="Position"></path>
+<path d="M6743.3 373.5 L6987.3 373.5" fill="none" data-name="Position"></path>
+</g>
+<g transform="translate(6743.25, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Position">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Position">
+<a id="backend/src/dataViews.ts.Position" xlink:href="backend/src/dataViews.ts"><text x="114.0" y="13.5" stroke="none" text-anchor="middle" data-name="Position">Position</text></a>
+
+</g>
+</g>
+<g transform="translate(6743.25, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Position">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Position">
+<text x="0.0" y="13.5" stroke="none" data-name="Position">+x: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Position">+y: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Position">+orientation?: ORIENTATION</text>
+
+</g>
+</g>
+<g transform="translate(6743.25, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Position">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Position">
+
+</g>
+</g>
+</g>
+<g data-name="AreaData">
+<g fill="lightblue" stroke="#33322E" data-name="AreaData">
+<rect x="7027.3" y="281.5" height="100.0" width="145.0" data-name="AreaData"></rect>
+<path d="M7027.3 312.5 L7172.3 312.5" fill="none" data-name="AreaData"></path>
+<path d="M7027.3 373.5 L7172.3 373.5" fill="none" data-name="AreaData"></path>
+</g>
+<g transform="translate(7027.25, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AreaData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="AreaData">
+<a id="shared/area/Area.ts.AreaData" xlink:href="shared/area/Area.ts"><text x="64.5" y="13.5" stroke="none" text-anchor="middle" data-name="AreaData">AreaData</text></a>
+
+</g>
+</g>
+<g transform="translate(7027.25, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AreaData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="AreaData">
+<text x="0.0" y="13.5" stroke="none" data-name="AreaData">+pos: Position</text>
+<text x="0.0" y="28.5" stroke="none" data-name="AreaData">+width: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="AreaData">+height: number</text>
+
+</g>
+</g>
+<g transform="translate(7027.25, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="AreaData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="AreaData">
+
+</g>
+</g>
+</g>
+<g data-name="Measurable">
+<g fill="lightblue" stroke="#33322E" data-name="Measurable">
+<rect x="7212.3" y="274.0" height="115.0" width="232.0" data-name="Measurable"></rect>
+<path d="M7212.3 305.0 L7444.3 305.0" fill="none" data-name="Measurable"></path>
+<path d="M7212.3 381.0 L7444.3 381.0" fill="none" data-name="Measurable"></path>
+</g>
+<g transform="translate(7212.25, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Measurable">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Measurable">
+<a id="shared/area/Area.ts.Measurable" xlink:href="shared/area/Area.ts"><text x="108.0" y="13.5" stroke="none" text-anchor="middle" data-name="Measurable">Measurable</text></a>
+
+</g>
+</g>
+<g transform="translate(7212.25, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Measurable">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Measurable">
+<text x="0.0" y="13.5" stroke="none" data-name="Measurable">+pos: Position</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Measurable">+width: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Measurable">+height: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="Measurable">+rotation?: RotationAmount</text>
+
+</g>
+</g>
+<g transform="translate(7212.25, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Measurable">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Measurable">
+
+</g>
+</g>
+</g>
+<g data-name="BaseEmployee">
+<g fill="lightblue" stroke="#33322E" data-name="BaseEmployee">
+<rect x="9643.5" y="251.5" height="160.0" width="259.0" data-name="BaseEmployee"></rect>
+<path d="M9643.5 282.5 L9902.5 282.5" fill="none" data-name="BaseEmployee"></path>
+<path d="M9643.5 403.5 L9902.5 403.5" fill="none" data-name="BaseEmployee"></path>
+</g>
+<g transform="translate(9643.5, 251.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseEmployee">
+<a id="shared/employees/EmployeeTypes.ts.BaseEmployee" xlink:href="shared/employees/EmployeeTypes.ts"><text x="121.5" y="13.5" stroke="none" text-anchor="middle" data-name="BaseEmployee">BaseEmployee</text></a>
+
+</g>
+</g>
+<g transform="translate(9643.5, 282.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseEmployee">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseEmployee">+id: EMPLOYEE_ID | &quot;CEO&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseEmployee">+name: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="BaseEmployee">+type: EMPLOYEE_ENUM</text>
+<text x="0.0" y="58.5" stroke="none" data-name="BaseEmployee">+colour: EMPLOYEE_COLOUR</text>
+<text x="0.0" y="73.5" stroke="none" data-name="BaseEmployee">+buildsInto: EMPLOYEE_ID[]</text>
+<text x="0.0" y="88.5" stroke="none" data-name="BaseEmployee">+notPaid?: boolean</text>
+<text x="0.0" y="103.5" stroke="none" data-name="BaseEmployee">+oneOf?: boolean</text>
+
+</g>
+</g>
+<g transform="translate(9643.5, 403.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseEmployee">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseEmployee">
+
+</g>
+</g>
+</g>
+<g data-name="EMPLOYEE_COLOUR">
+<g fill="lightgreen" stroke="#33322E" data-name="EMPLOYEE_COLOUR">
+<rect x="8026.5" y="270.5" height="122.0" width="190.0" data-name="EMPLOYEE_COLOUR"></rect>
+<path d="M8026.5 301.5 L8216.5 301.5" fill="none" data-name="EMPLOYEE_COLOUR"></path>
+</g>
+<g transform="translate(8026.5, 270.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EMPLOYEE_COLOUR">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EMPLOYEE_COLOUR">
+<a id="shared/employees/EmployeeTypes.ts.EMPLOYEE_COLOUR" xlink:href="shared/employees/EmployeeTypes.ts"><text x="87.0" y="13.5" stroke="none" text-anchor="middle" data-name="EMPLOYEE_COLOUR">EMPLOYEE_COLOUR</text></a>
+
+</g>
+</g>
+<g transform="translate(8026.5, 301.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EMPLOYEE_COLOUR">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EMPLOYEE_COLOUR">
+<text x="0.0" y="13.5" stroke="none" data-name="EMPLOYEE_COLOUR">BLACK</text>
+<text x="0.0" y="28.5" stroke="none" data-name="EMPLOYEE_COLOUR">DARK_GREEN</text>
+<text x="0.0" y="43.5" stroke="none" data-name="EMPLOYEE_COLOUR">GREY</text>
+<text x="0.0" y="58.5" stroke="none" data-name="EMPLOYEE_COLOUR">LIGHT_BLUE</text>
+<text x="0.0" y="73.5" stroke="none" data-name="EMPLOYEE_COLOUR">PINK</text>
+
+</g>
+</g>
+</g>
+<g data-name="BaseGameStateView">
+<g fill="lightblue" stroke="#33322E" data-name="BaseGameStateView">
+<rect x="7484.3" y="214.0" height="235.0" width="408.0" data-name="BaseGameStateView"></rect>
+<path d="M7484.3 245.0 L7892.3 245.0" fill="none" data-name="BaseGameStateView"></path>
+<path d="M7484.3 441.0 L7892.3 441.0" fill="none" data-name="BaseGameStateView"></path>
+</g>
+<g transform="translate(7484.25, 214)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseGameStateView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseGameStateView">
+<a id="shared/views/GameStateViews.ts.BaseGameStateView" xlink:href="shared/views/GameStateViews.ts"><text x="196.0" y="13.5" stroke="none" text-anchor="middle" data-name="BaseGameStateView">BaseGameStateView</text></a>
+
+</g>
+</g>
+<g transform="translate(7484.25, 245)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseGameStateView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseGameStateView">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseGameStateView">+turnProgress: TURN_PROGRESS</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseGameStateView">+currentTurn: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="BaseGameStateView">+currentPlayer: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="BaseGameStateView">+map: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="BaseGameStateView">+turnOrder: number[]</text>
+<text x="0.0" y="88.5" stroke="none" data-name="BaseGameStateView">+realTurnOrder: (number | &quot;X&quot;)[]</text>
+<text x="0.0" y="103.5" stroke="none" data-name="BaseGameStateView">+playerCount: number</text>
+<text x="0.0" y="118.5" stroke="none" data-name="BaseGameStateView">+restaurants: RestaurantView[]</text>
+<text x="0.0" y="133.5" stroke="none" data-name="BaseGameStateView">+houses: HouseView[]</text>
+<text x="0.0" y="148.5" stroke="none" data-name="BaseGameStateView">+gardens: GardenView[]</text>
+<text x="0.0" y="163.5" stroke="none" data-name="BaseGameStateView">+reserve: Record&lt;EMPLOYEE_ID, number&gt;</text>
+<text x="0.0" y="178.5" stroke="none" data-name="BaseGameStateView">+marketingCampaigns: MarketingCampaignView[]</text>
+
+</g>
+</g>
+<g transform="translate(7484.25, 441)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseGameStateView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseGameStateView">
+
+</g>
+</g>
+</g>
+<g data-name="GameStateView">
+<g fill="lightblue" stroke="#33322E" data-name="GameStateView">
+<rect x="7098.3" y="740.5" height="70.0" width="293.0" data-name="GameStateView"></rect>
+<path d="M7098.3 771.5 L7391.3 771.5" fill="none" data-name="GameStateView"></path>
+<path d="M7098.3 802.5 L7391.3 802.5" fill="none" data-name="GameStateView"></path>
+</g>
+<g transform="translate(7098.25, 740.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GameStateView">
+<a id="shared/views/GameStateViews.ts.GameStateView" xlink:href="shared/views/GameStateViews.ts"><text x="138.5" y="13.5" stroke="none" text-anchor="middle" data-name="GameStateView">GameStateView</text></a>
+
+</g>
+</g>
+<g transform="translate(7098.25, 771.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GameStateView">
+<text x="0.0" y="13.5" stroke="none" data-name="GameStateView">+players: GamePlayerViewPrivate[]</text>
+
+</g>
+</g>
+<g transform="translate(7098.25, 802.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GameStateView">
+
+</g>
+</g>
+</g>
+<g data-name="GameStateViewPerPlayer">
+<g fill="lightblue" stroke="#33322E" data-name="GameStateViewPerPlayer">
+<rect x="7702.5" y="733.0" height="85.0" width="316.0" data-name="GameStateViewPerPlayer"></rect>
+<path d="M7702.5 764.0 L8018.5 764.0" fill="none" data-name="GameStateViewPerPlayer"></path>
+<path d="M7702.5 810.0 L8018.5 810.0" fill="none" data-name="GameStateViewPerPlayer"></path>
+</g>
+<g transform="translate(7702.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateViewPerPlayer">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GameStateViewPerPlayer">
+<a id="shared/views/GameStateViews.ts.GameStateViewPerPlayer" xlink:href="shared/views/GameStateViews.ts"><text x="150.0" y="13.5" stroke="none" text-anchor="middle" data-name="GameStateViewPerPlayer">GameStateViewPerPlayer</text></a>
+
+</g>
+</g>
+<g transform="translate(7702.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateViewPerPlayer">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GameStateViewPerPlayer">
+<text x="0.0" y="13.5" stroke="none" data-name="GameStateViewPerPlayer">+players: GamePlayerViewPublic[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GameStateViewPerPlayer">+privateData: GamePlayerViewPrivate</text>
+
+</g>
+</g>
+<g transform="translate(7702.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameStateViewPerPlayer">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GameStateViewPerPlayer">
+
+</g>
+</g>
+</g>
+<g data-name="GamePlayerViewPublic">
+<g fill="lightblue" stroke="#33322E" data-name="GamePlayerViewPublic">
+<rect x="8256.5" y="259.0" height="145.0" width="223.0" data-name="GamePlayerViewPublic"></rect>
+<path d="M8256.5 290.0 L8479.5 290.0" fill="none" data-name="GamePlayerViewPublic"></path>
+<path d="M8256.5 396.0 L8479.5 396.0" fill="none" data-name="GamePlayerViewPublic"></path>
+</g>
+<g transform="translate(8256.5, 259)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlayerViewPublic">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GamePlayerViewPublic">
+<a id="shared/views/GameStateViews.ts.GamePlayerViewPublic" xlink:href="shared/views/GameStateViews.ts"><text x="103.5" y="13.5" stroke="none" text-anchor="middle" data-name="GamePlayerViewPublic">GamePlayerViewPublic</text></a>
+
+</g>
+</g>
+<g transform="translate(8256.5, 290)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlayerViewPublic">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GamePlayerViewPublic">
+<text x="0.0" y="13.5" stroke="none" data-name="GamePlayerViewPublic">+playerNumber: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GamePlayerViewPublic">+milestones: number[]</text>
+<text x="0.0" y="43.5" stroke="none" data-name="GamePlayerViewPublic">+restaurant: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="GamePlayerViewPublic">+money: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="GamePlayerViewPublic">+ready: boolean</text>
+<text x="0.0" y="88.5" stroke="none" data-name="GamePlayerViewPublic">+supply: DEMAND_TYPE[]</text>
+
+</g>
+</g>
+<g transform="translate(8256.5, 396)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlayerViewPublic">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GamePlayerViewPublic">
+
+</g>
+</g>
+</g>
+<g data-name="GamePlayerViewPrivate">
+<g fill="lightblue" stroke="#33322E" data-name="GamePlayerViewPrivate">
+<rect x="8136.5" y="725.5" height="100.0" width="463.0" data-name="GamePlayerViewPrivate"></rect>
+<path d="M8136.5 756.5 L8599.5 756.5" fill="none" data-name="GamePlayerViewPrivate"></path>
+<path d="M8136.5 817.5 L8599.5 817.5" fill="none" data-name="GamePlayerViewPrivate"></path>
+</g>
+<g transform="translate(8136.5, 725.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlayerViewPrivate">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GamePlayerViewPrivate">
+<a id="shared/views/GameStateViews.ts.GamePlayerViewPrivate" xlink:href="shared/views/GameStateViews.ts"><text x="223.5" y="13.5" stroke="none" text-anchor="middle" data-name="GamePlayerViewPrivate">GamePlayerViewPrivate</text></a>
+
+</g>
+</g>
+<g transform="translate(8136.5, 756.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlayerViewPrivate">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GamePlayerViewPrivate">
+<text x="0.0" y="13.5" stroke="none" data-name="GamePlayerViewPrivate">+employees: EMPLOYEE_ID[]</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GamePlayerViewPrivate">+employeeTreeStr: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="GamePlayerViewPrivate">+marketingCampaigns: MarketingCampaignViewPrivate[]</text>
+
+</g>
+</g>
+<g transform="translate(8136.5, 817.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlayerViewPrivate">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GamePlayerViewPrivate">
+
+</g>
+</g>
+</g>
+<g data-name="RestaurantView">
+<g fill="lightblue" stroke="#33322E" data-name="RestaurantView">
+<rect x="8930.0" y="289.0" height="85.0" width="145.0" data-name="RestaurantView"></rect>
+<path d="M8930.0 320.0 L9075.0 320.0" fill="none" data-name="RestaurantView"></path>
+<path d="M8930.0 366.0 L9075.0 366.0" fill="none" data-name="RestaurantView"></path>
+</g>
+<g transform="translate(8930, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RestaurantView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="RestaurantView">
+<a id="shared/views/MapViews.ts.RestaurantView" xlink:href="shared/views/MapViews.ts"><text x="64.5" y="13.5" stroke="none" text-anchor="middle" data-name="RestaurantView">RestaurantView</text></a>
+
+</g>
+</g>
+<g transform="translate(8930, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RestaurantView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RestaurantView">
+<text x="0.0" y="13.5" stroke="none" data-name="RestaurantView">+pos: Position</text>
+<text x="0.0" y="28.5" stroke="none" data-name="RestaurantView">+player: number</text>
+
+</g>
+</g>
+<g transform="translate(8930, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RestaurantView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="RestaurantView">
+
+</g>
+</g>
+</g>
+<g data-name="HouseView">
+<g fill="lightblue" stroke="#33322E" data-name="HouseView">
+<rect x="9115.0" y="266.5" height="130.0" width="235.0" data-name="HouseView"></rect>
+<path d="M9115.0 297.5 L9350.0 297.5" fill="none" data-name="HouseView"></path>
+<path d="M9115.0 388.5 L9350.0 388.5" fill="none" data-name="HouseView"></path>
+</g>
+<g transform="translate(9115, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HouseView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="HouseView">
+<a id="shared/views/MapViews.ts.HouseView" xlink:href="shared/views/MapViews.ts"><text x="109.5" y="13.5" stroke="none" text-anchor="middle" data-name="HouseView">HouseView</text></a>
+
+</g>
+</g>
+<g transform="translate(9115, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HouseView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="HouseView">
+<text x="0.0" y="13.5" stroke="none" data-name="HouseView">+priority: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="HouseView">+demandLimit: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="HouseView">+pos: Position</text>
+<text x="0.0" y="58.5" stroke="none" data-name="HouseView">+demand: DEMAND_TYPE[]</text>
+<text x="0.0" y="73.5" stroke="none" data-name="HouseView">+garden: GardenView</text>
+
+</g>
+</g>
+<g transform="translate(9115, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HouseView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="HouseView">
+
+</g>
+</g>
+</g>
+<g data-name="GardenView">
+<g fill="lightblue" stroke="#33322E" data-name="GardenView">
+<rect x="9390.0" y="289.0" height="85.0" width="207.0" data-name="GardenView"></rect>
+<path d="M9390.0 320.0 L9597.0 320.0" fill="none" data-name="GardenView"></path>
+<path d="M9390.0 366.0 L9597.0 366.0" fill="none" data-name="GardenView"></path>
+</g>
+<g transform="translate(9390, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GardenView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GardenView">
+<a id="shared/views/MapViews.ts.GardenView" xlink:href="shared/views/MapViews.ts"><text x="95.5" y="13.5" stroke="none" text-anchor="middle" data-name="GardenView">GardenView</text></a>
+
+</g>
+</g>
+<g transform="translate(9390, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GardenView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GardenView">
+<text x="0.0" y="13.5" stroke="none" data-name="GardenView">+pos: Position</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GardenView">+houseNumber: number</text>
+
+</g>
+</g>
+<g transform="translate(9390, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GardenView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GardenView">
+
+</g>
+</g>
+</g>
+<g data-name="MarketingCampaignView">
+<g fill="lightblue" stroke="#33322E" data-name="MarketingCampaignView">
+<rect x="8655.0" y="259.0" height="145.0" width="235.0" data-name="MarketingCampaignView"></rect>
+<path d="M8655.0 290.0 L8890.0 290.0" fill="none" data-name="MarketingCampaignView"></path>
+<path d="M8655.0 396.0 L8890.0 396.0" fill="none" data-name="MarketingCampaignView"></path>
+</g>
+<g transform="translate(8655, 259)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingCampaignView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MarketingCampaignView">
+<a id="shared/views/MarketingViews.ts.MarketingCampaignView" xlink:href="shared/views/MarketingViews.ts"><text x="109.5" y="13.5" stroke="none" text-anchor="middle" data-name="MarketingCampaignView">MarketingCampaignView</text></a>
+
+</g>
+</g>
+<g transform="translate(8655, 290)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingCampaignView">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MarketingCampaignView">
+<text x="0.0" y="13.5" stroke="none" data-name="MarketingCampaignView">+priority: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MarketingCampaignView">+playerNumber: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MarketingCampaignView">+type: MARKETING_TYPE</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MarketingCampaignView">+foodType: DEMAND_TYPE</text>
+<text x="0.0" y="73.5" stroke="none" data-name="MarketingCampaignView">+pos: Position</text>
+<text x="0.0" y="88.5" stroke="none" data-name="MarketingCampaignView">+turnsRemaining: number</text>
+
+</g>
+</g>
+<g transform="translate(8655, 396)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingCampaignView">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MarketingCampaignView">
+
+</g>
+</g>
+</g>
+<g data-name="MarketingCampaignViewPrivate">
+<g fill="lightblue" stroke="#33322E" data-name="MarketingCampaignViewPrivate">
+<rect x="8639.5" y="740.5" height="70.0" width="266.0" data-name="MarketingCampaignViewPrivate"></rect>
+<path d="M8639.5 771.5 L8905.5 771.5" fill="none" data-name="MarketingCampaignViewPrivate"></path>
+<path d="M8639.5 802.5 L8905.5 802.5" fill="none" data-name="MarketingCampaignViewPrivate"></path>
+</g>
+<g transform="translate(8639.5, 740.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingCampaignViewPrivate">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MarketingCampaignViewPrivate">
+<a id="shared/views/MarketingViews.ts.MarketingCampaignViewPrivate" xlink:href="shared/views/MarketingViews.ts"><text x="125.0" y="13.5" stroke="none" text-anchor="middle" data-name="MarketingCampaignViewPrivate">MarketingCampaignViewPrivate</text></a>
+
+</g>
+</g>
+<g transform="translate(8639.5, 771.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingCampaignViewPrivate">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MarketingCampaignViewPrivate">
+<text x="0.0" y="13.5" stroke="none" data-name="MarketingCampaignViewPrivate">+employeeIndex: number</text>
+
+</g>
+</g>
+<g transform="translate(8639.5, 802.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingCampaignViewPrivate">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MarketingCampaignViewPrivate">
+
+</g>
+</g>
+</g>
+<g data-name="GameClass">
+<g fill="#eee8d5" stroke="#33322E" data-name="GameClass">
+<rect x="9942.5" y="0.0" height="663.0" width="424.0" data-name="GameClass"></rect>
+<path d="M9942.5 31.0 L10366.5 31.0" fill="none" data-name="GameClass"></path>
+<path d="M9942.5 332.0 L10366.5 332.0" fill="none" data-name="GameClass"></path>
+</g>
+<g transform="translate(9942.5, 0)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="GameClass">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GameClass">
+<a id="backend/src/game/GameClass.ts.GameClass" xlink:href="backend/src/game/GameClass.ts"><text x="204.0" y="13.5" stroke="none" text-anchor="middle" data-name="GameClass">GameClass</text></a>
+
+</g>
+</g>
+<g transform="translate(9942.5, 31)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameClass">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GameClass">
+<text x="0.0" y="13.5" stroke="none" data-name="GameClass">-gameState: { houses: ({ garden: { houseId: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GameClass">x: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="GameClass">y: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="GameClass">orientation: ORIENTATION</text>
+<text x="0.0" y="73.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="88.5" stroke="none" data-name="GameClass">demand: { demandId: number</text>
+<text x="0.0" y="103.5" stroke="none" data-name="GameClass">houseId: number</text>
+<text x="0.0" y="118.5" stroke="none" data-name="GameClass">type: DEMAND_TYPE</text>
+<text x="0.0" y="133.5" stroke="none" data-name="GameClass">}[]</text>
+<text x="0.0" y="148.5" stroke="none" data-name="GameClass">} &amp; { id: number</text>
+<text x="0.0" y="163.5" stroke="none" data-name="GameClass">... 4 more ...</text>
+<text x="0.0" y="178.5" stroke="none" data-name="GameClass">demandLimit: number</text>
+<text x="0.0" y="193.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="208.5" stroke="none" data-name="GameClass">players: ({ ...</text>
+<text x="0.0" y="223.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="238.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="253.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="268.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="283.5" stroke="none" data-name="GameClass">-movesMade: MoveData[]</text>
+
+</g>
+</g>
+<g transform="translate(9942.5, 332)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameClass">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GameClass">
+<text x="0.0" y="13.5" stroke="none" data-name="GameClass">+executeMove(): void</text>
+<text x="0.0" y="28.5" stroke="none" data-name="GameClass">-executeAction(): void</text>
+<text x="0.0" y="43.5" stroke="none" data-name="GameClass">+serialise(): { houses: ({ garden: { houseId: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="GameClass">x: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="GameClass">y: number</text>
+<text x="0.0" y="88.5" stroke="none" data-name="GameClass">orientation: ORIENTATION</text>
+<text x="0.0" y="103.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="118.5" stroke="none" data-name="GameClass">demand: { demandId: number</text>
+<text x="0.0" y="133.5" stroke="none" data-name="GameClass">houseId: number</text>
+<text x="0.0" y="148.5" stroke="none" data-name="GameClass">type: DEMAND_TYPE</text>
+<text x="0.0" y="163.5" stroke="none" data-name="GameClass">}[]</text>
+<text x="0.0" y="178.5" stroke="none" data-name="GameClass">} &amp; { id: number</text>
+<text x="0.0" y="193.5" stroke="none" data-name="GameClass">... 4 more ...</text>
+<text x="0.0" y="208.5" stroke="none" data-name="GameClass">demandLimit: number</text>
+<text x="0.0" y="223.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="238.5" stroke="none" data-name="GameClass">players: ({ ...</text>
+<text x="0.0" y="253.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="268.5" stroke="none" data-name="GameClass">})[]</text>
+<text x="0.0" y="283.5" stroke="none" data-name="GameClass">} &amp; { ...</text>
+<text x="0.0" y="298.5" stroke="none" data-name="GameClass">}</text>
+<text x="0.0" y="313.5" stroke="none" data-name="GameClass">+getMovesMade(): MoveData[]</text>
+
+</g>
+</g>
+</g>
+<g data-name="ParamBundle&lt;MessageType&gt;">
+<g fill="lightgray" stroke="#33322E" data-name="ParamBundle&lt;MessageType&gt;">
+<rect x="10406.5" y="229.0" height="205.0" width="623.0" data-name="ParamBundle&lt;MessageType&gt;"></rect>
+<path d="M10406.5 260.0 L11029.5 260.0" fill="none" data-name="ParamBundle&lt;MessageType&gt;"></path>
+<path d="M10406.5 426.0 L11029.5 426.0" fill="none" data-name="ParamBundle&lt;MessageType&gt;"></path>
+</g>
+<g transform="translate(10406.5, 229)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParamBundle&lt;MessageType&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ParamBundle&lt;MessageType&gt;">
+<a id="backend/src/routes/game.routes.ts.ParamBundle&lt;MessageType&gt;" xlink:href="backend/src/routes/game.routes.ts"><text x="303.5" y="13.5" stroke="none" text-anchor="middle" data-name="ParamBundle&lt;MessageType&gt;">ParamBundle&lt;MessageType&gt;</text></a>
+
+</g>
+</g>
+<g transform="translate(10406.5, 260)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParamBundle&lt;MessageType&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ParamBundle&lt;MessageType&gt;">
+<text x="0.0" y="13.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+req: Request&lt;ParamsDictionary, any, any, ParsedQs, Record&lt;string, any&gt;&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+message: MessageType</text>
+<text x="0.0" y="43.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+ws: WebSocket</text>
+<text x="0.0" y="58.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+userBrowserId: string</text>
+<text x="0.0" y="73.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+userSession: { sessionKey: string</text>
+<text x="0.0" y="88.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">browserId: string</text>
+<text x="0.0" y="103.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">name: string</text>
+<text x="0.0" y="118.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">}</text>
+<text x="0.0" y="133.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+lobbyId: number</text>
+<text x="0.0" y="148.5" stroke="none" data-name="ParamBundle&lt;MessageType&gt;">+playerNumber: number</text>
+
+</g>
+</g>
+<g transform="translate(10406.5, 426)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ParamBundle&lt;MessageType&gt;">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ParamBundle&lt;MessageType&gt;">
+
+</g>
+</g>
+</g>
+<g data-name="Milestone">
+<g fill="lightgray" stroke="#33322E" data-name="Milestone">
+<rect x="11069.5" y="281.5" height="100.0" width="178.0" data-name="Milestone"></rect>
+<path d="M11069.5 312.5 L11247.5 312.5" fill="none" data-name="Milestone"></path>
+<path d="M11069.5 373.5 L11247.5 373.5" fill="none" data-name="Milestone"></path>
+</g>
+<g transform="translate(11069.5, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Milestone">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Milestone">
+<a id="frontend/src/game/Milestone.ts.Milestone" xlink:href="frontend/src/game/Milestone.ts"><text x="81.0" y="13.5" stroke="none" text-anchor="middle" data-name="Milestone">Milestone</text></a>
+
+</g>
+</g>
+<g transform="translate(11069.5, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Milestone">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Milestone">
+<text x="0.0" y="13.5" stroke="none" data-name="Milestone">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Milestone">+description: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Milestone">+onGain?: () =&gt; void</text>
+
+</g>
+</g>
+<g transform="translate(11069.5, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Milestone">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Milestone">
+
+</g>
+</g>
+</g>
+<g data-name="DragDropProps&lt;DD,RD&gt;">
+<g fill="lightgray" stroke="#33322E" data-name="DragDropProps&lt;DD,RD&gt;">
+<rect x="11287.5" y="289.0" height="85.0" width="337.0" data-name="DragDropProps&lt;DD,RD&gt;"></rect>
+<path d="M11287.5 320.0 L11624.5 320.0" fill="none" data-name="DragDropProps&lt;DD,RD&gt;"></path>
+<path d="M11287.5 366.0 L11624.5 366.0" fill="none" data-name="DragDropProps&lt;DD,RD&gt;"></path>
+</g>
+<g transform="translate(11287.5, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DragDropProps&lt;DD,RD&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="DragDropProps&lt;DD,RD&gt;">
+<a id="frontend/src/hooks/useDragDrop.ts.DragDropProps&lt;DD,RD&gt;" xlink:href="frontend/src/hooks/useDragDrop.ts"><text x="160.5" y="13.5" stroke="none" text-anchor="middle" data-name="DragDropProps&lt;DD,RD&gt;">DragDropProps&lt;DD,RD&gt;</text></a>
+
+</g>
+</g>
+<g transform="translate(11287.5, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DragDropProps&lt;DD,RD&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="DragDropProps&lt;DD,RD&gt;">
+<text x="0.0" y="13.5" stroke="none" data-name="DragDropProps&lt;DD,RD&gt;">+dragStartCallback?: DragCallback&lt;DD&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="DragDropProps&lt;DD,RD&gt;">+afterDrop: AfterDropCallback&lt;DD, RD&gt;</text>
+
+</g>
+</g>
+<g transform="translate(11287.5, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DragDropProps&lt;DD,RD&gt;">
+<g transform="translate(8, 8)" fill="#33322E" data-name="DragDropProps&lt;DD,RD&gt;">
+
+</g>
+</g>
+</g>
+<g data-name="PanningState">
+<g fill="lightblue" stroke="#33322E" data-name="PanningState">
+<rect x="11664.5" y="274.0" height="115.0" width="271.0" data-name="PanningState"></rect>
+<path d="M11664.5 305.0 L11935.5 305.0" fill="none" data-name="PanningState"></path>
+<path d="M11664.5 381.0 L11935.5 381.0" fill="none" data-name="PanningState"></path>
+</g>
+<g transform="translate(11664.5, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PanningState">
+<a id="frontend/src/hooks/usePanning.ts.PanningState" xlink:href="frontend/src/hooks/usePanning.ts"><text x="127.5" y="13.5" stroke="none" text-anchor="middle" data-name="PanningState">PanningState</text></a>
+
+</g>
+</g>
+<g transform="translate(11664.5, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PanningState">
+<text x="0.0" y="13.5" stroke="none" data-name="PanningState">+buttonIsDown: boolean</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PanningState">+panCursorStart: Position</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PanningState">+offset: Position</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PanningState">+panCursorCurrentPos: Position</text>
+
+</g>
+</g>
+<g transform="translate(11664.5, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PanningState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PanningState">
+
+</g>
+</g>
+</g>
+<g data-name="ConnectionParams">
+<g fill="lightblue" stroke="#33322E" data-name="ConnectionParams">
+<rect x="11975.5" y="296.5" height="70.0" width="166.0" data-name="ConnectionParams"></rect>
+<path d="M11975.5 327.5 L12141.5 327.5" fill="none" data-name="ConnectionParams"></path>
+<path d="M11975.5 358.5 L12141.5 358.5" fill="none" data-name="ConnectionParams"></path>
+</g>
+<g transform="translate(11975.5, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConnectionParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ConnectionParams">
+<a id="frontend/src/hooks/useWebSocket.ts.ConnectionParams" xlink:href="frontend/src/hooks/useWebSocket.ts"><text x="75.0" y="13.5" stroke="none" text-anchor="middle" data-name="ConnectionParams">ConnectionParams</text></a>
+
+</g>
+</g>
+<g transform="translate(11975.5, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConnectionParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ConnectionParams">
+<text x="0.0" y="13.5" stroke="none" data-name="ConnectionParams">+username: string</text>
+
+</g>
+</g>
+<g transform="translate(11975.5, 358.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConnectionParams">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ConnectionParams">
+
+</g>
+</g>
+</g>
+<g data-name="WebSocketParams">
+<g fill="lightblue" stroke="#33322E" data-name="WebSocketParams">
+<rect x="12181.5" y="259.0" height="145.0" width="343.0" data-name="WebSocketParams"></rect>
+<path d="M12181.5 290.0 L12524.5 290.0" fill="none" data-name="WebSocketParams"></path>
+<path d="M12181.5 396.0 L12524.5 396.0" fill="none" data-name="WebSocketParams"></path>
+</g>
+<g transform="translate(12181.5, 259)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WebSocketParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="WebSocketParams">
+<a id="frontend/src/hooks/useWebSocket.ts.WebSocketParams" xlink:href="frontend/src/hooks/useWebSocket.ts"><text x="163.5" y="13.5" stroke="none" text-anchor="middle" data-name="WebSocketParams">WebSocketParams</text></a>
+
+</g>
+</g>
+<g transform="translate(12181.5, 290)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WebSocketParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="WebSocketParams">
+<text x="0.0" y="13.5" stroke="none" data-name="WebSocketParams">+url: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="WebSocketParams">+onOpen?: () =&gt; void</text>
+<text x="0.0" y="43.5" stroke="none" data-name="WebSocketParams">+onClose?: () =&gt; void</text>
+<text x="0.0" y="58.5" stroke="none" data-name="WebSocketParams">+onMessage?: (msg: string) =&gt; void</text>
+<text x="0.0" y="73.5" stroke="none" data-name="WebSocketParams">+connectionParams?: ConnectionParams</text>
+<text x="0.0" y="88.5" stroke="none" data-name="WebSocketParams">+validator?: () =&gt; boolean</text>
+
+</g>
+</g>
+<g transform="translate(12181.5, 396)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WebSocketParams">
+<g transform="translate(8, 8)" fill="#33322E" data-name="WebSocketParams">
+
+</g>
+</g>
+</g>
+<g data-name="Path">
+<g fill="#eee8d5" stroke="#33322E" data-name="Path">
+<rect x="12564.5" y="270.0" height="123.0" width="197.0" data-name="Path"></rect>
+<path d="M12564.5 301.0 L12761.5 301.0" fill="none" data-name="Path"></path>
+<path d="M12564.5 332.0 L12761.5 332.0" fill="none" data-name="Path"></path>
+</g>
+<g transform="translate(12564.5, 270)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Path">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Path">
+<a id="shared/area/pathfinding/index.ts.Path" xlink:href="shared/area/pathfinding/index.ts"><text x="90.5" y="13.5" stroke="none" text-anchor="middle" data-name="Path">Path</text></a>
+
+</g>
+</g>
+<g transform="translate(12564.5, 301)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Path">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Path">
+<text x="0.0" y="13.5" stroke="none" data-name="Path">-nodes: PathNode[]</text>
+
+</g>
+</g>
+<g transform="translate(12564.5, 332)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Path">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Path">
+<text x="0.0" y="13.5" stroke="none" data-name="Path">+addNode(): void</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Path">+getLength(): number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Path">+getPath(): PathNode[]</text>
+
+</g>
+</g>
+</g>
+<g data-name="PathSeeker">
+<g fill="lightblue" stroke="#33322E" data-name="PathSeeker">
+<rect x="12801.5" y="289.0" height="85.0" width="129.0" data-name="PathSeeker"></rect>
+<path d="M12801.5 320.0 L12930.5 320.0" fill="none" data-name="PathSeeker"></path>
+<path d="M12801.5 366.0 L12930.5 366.0" fill="none" data-name="PathSeeker"></path>
+</g>
+<g transform="translate(12801.5, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PathSeeker">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PathSeeker">
+<a id="shared/area/pathfinding/index.ts.PathSeeker" xlink:href="shared/area/pathfinding/index.ts"><text x="56.5" y="13.5" stroke="none" text-anchor="middle" data-name="PathSeeker">PathSeeker</text></a>
+
+</g>
+</g>
+<g transform="translate(12801.5, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PathSeeker">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PathSeeker">
+<text x="0.0" y="13.5" stroke="none" data-name="PathSeeker">+pos: Position</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PathSeeker">+cost: number</text>
+
+</g>
+</g>
+<g transform="translate(12801.5, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PathSeeker">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PathSeeker">
+
+</g>
+</g>
+</g>
+<g data-name="PathNode">
+<g fill="lightgray" stroke="#33322E" data-name="PathNode">
+<rect x="12970.5" y="296.5" height="70.0" width="128.0" data-name="PathNode"></rect>
+<path d="M12970.5 327.5 L13098.5 327.5" fill="none" data-name="PathNode"></path>
+<path d="M12970.5 358.5 L13098.5 358.5" fill="none" data-name="PathNode"></path>
+</g>
+<g transform="translate(12970.5, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PathNode">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PathNode">
+<a id="shared/area/pathfinding/index.ts.PathNode" xlink:href="shared/area/pathfinding/index.ts"><text x="56.0" y="13.5" stroke="none" text-anchor="middle" data-name="PathNode">PathNode</text></a>
+
+</g>
+</g>
+<g transform="translate(12970.5, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PathNode">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PathNode">
+<text x="0.0" y="13.5" stroke="none" data-name="PathNode">+pos: Position</text>
+
+</g>
+</g>
+<g transform="translate(12970.5, 358.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PathNode">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PathNode">
+
+</g>
+</g>
+</g>
+<g data-name="CEOEmployee">
+<g fill="lightblue" stroke="#33322E" data-name="CEOEmployee">
+<rect x="9175.0" y="703.0" height="145.0" width="311.0" data-name="CEOEmployee"></rect>
+<path d="M9175.0 734.0 L9486.0 734.0" fill="none" data-name="CEOEmployee"></path>
+<path d="M9175.0 840.0 L9486.0 840.0" fill="none" data-name="CEOEmployee"></path>
+</g>
+<g transform="translate(9175, 703)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CEOEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CEOEmployee">
+<a id="shared/employees/employee_types/CEOEmployees.ts.CEOEmployee" xlink:href="shared/employees/employee_types/CEOEmployees.ts"><text x="147.5" y="13.5" stroke="none" text-anchor="middle" data-name="CEOEmployee">CEOEmployee</text></a>
+
+</g>
+</g>
+<g transform="translate(9175, 734)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CEOEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="CEOEmployee">
+<text x="0.0" y="13.5" stroke="none" data-name="CEOEmployee">+type: &quot;CEO&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="CEOEmployee">+name: &quot;CEO&quot;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="CEOEmployee">+id: &quot;CEO&quot;</text>
+<text x="0.0" y="58.5" stroke="none" data-name="CEOEmployee">+colour: EMPLOYEE_COLOUR.GREY</text>
+<text x="0.0" y="73.5" stroke="none" data-name="CEOEmployee">+capacity: number</text>
+<text x="0.0" y="88.5" stroke="none" data-name="CEOEmployee">+notPaid: true</text>
+
+</g>
+</g>
+<g transform="translate(9175, 840)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CEOEmployee">
+<g transform="translate(8, 8)" fill="#33322E" data-name="CEOEmployee">
+
+</g>
+</g>
+</g>
+<g data-name="FoodEmployeeCreationData">
+<g fill="lightblue" stroke="#33322E" data-name="FoodEmployeeCreationData">
+<rect x="13138.5" y="266.5" height="130.0" width="525.0" data-name="FoodEmployeeCreationData"></rect>
+<path d="M13138.5 297.5 L13663.5 297.5" fill="none" data-name="FoodEmployeeCreationData"></path>
+<path d="M13138.5 388.5 L13663.5 388.5" fill="none" data-name="FoodEmployeeCreationData"></path>
+</g>
+<g transform="translate(13138.5, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FoodEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FoodEmployeeCreationData">
+<a id="shared/employees/employee_types/FoodEmployees.ts.FoodEmployeeCreationData" xlink:href="shared/employees/employee_types/FoodEmployees.ts"><text x="254.5" y="13.5" stroke="none" text-anchor="middle" data-name="FoodEmployeeCreationData">FoodEmployeeCreationData</text></a>
+
+</g>
+</g>
+<g transform="translate(13138.5, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FoodEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FoodEmployeeCreationData">
+<text x="0.0" y="13.5" stroke="none" data-name="FoodEmployeeCreationData">+id: &quot;food_basic&quot; | &quot;burger_1&quot; | &quot;burger_2&quot; | &quot;pizza_1&quot; | &quot;pizza_2&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="FoodEmployeeCreationData">+name: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="FoodEmployeeCreationData">+produces: FOOD_TYPE</text>
+<text x="0.0" y="58.5" stroke="none" data-name="FoodEmployeeCreationData">+amountProduced: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="FoodEmployeeCreationData">+notPaid?: boolean</text>
+
+</g>
+</g>
+<g transform="translate(13138.5, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FoodEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FoodEmployeeCreationData">
+
+</g>
+</g>
+</g>
+<g data-name="FoodEmployee">
+<g fill="lightblue" stroke="#33322E" data-name="FoodEmployee">
+<rect x="9629.8" y="710.5" height="130.0" width="525.0" data-name="FoodEmployee"></rect>
+<path d="M9629.8 741.5 L10154.8 741.5" fill="none" data-name="FoodEmployee"></path>
+<path d="M9629.8 832.5 L10154.8 832.5" fill="none" data-name="FoodEmployee"></path>
+</g>
+<g transform="translate(9629.75, 710.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FoodEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="FoodEmployee">
+<a id="shared/employees/employee_types/FoodEmployees.ts.FoodEmployee" xlink:href="shared/employees/employee_types/FoodEmployees.ts"><text x="254.5" y="13.5" stroke="none" text-anchor="middle" data-name="FoodEmployee">FoodEmployee</text></a>
+
+</g>
+</g>
+<g transform="translate(9629.75, 741.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FoodEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="FoodEmployee">
+<text x="0.0" y="13.5" stroke="none" data-name="FoodEmployee">+type: &quot;FOOD&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="FoodEmployee">+id: &quot;food_basic&quot; | &quot;burger_1&quot; | &quot;burger_2&quot; | &quot;pizza_1&quot; | &quot;pizza_2&quot;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="FoodEmployee">+colour: EMPLOYEE_COLOUR.DARK_GREEN</text>
+<text x="0.0" y="58.5" stroke="none" data-name="FoodEmployee">+produces: FOOD_TYPE</text>
+<text x="0.0" y="73.5" stroke="none" data-name="FoodEmployee">+amountProduced: number</text>
+
+</g>
+</g>
+<g transform="translate(9629.75, 832.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="FoodEmployee">
+<g transform="translate(8, 8)" fill="#33322E" data-name="FoodEmployee">
+
+</g>
+</g>
+</g>
+<g data-name="ManagementEmployee">
+<g fill="lightblue" stroke="#33322E" data-name="ManagementEmployee">
+<rect x="11708.5" y="718.0" height="115.0" width="485.0" data-name="ManagementEmployee"></rect>
+<path d="M11708.5 749.0 L12193.5 749.0" fill="none" data-name="ManagementEmployee"></path>
+<path d="M11708.5 825.0 L12193.5 825.0" fill="none" data-name="ManagementEmployee"></path>
+</g>
+<g transform="translate(11708.5, 718)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ManagementEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ManagementEmployee">
+<a id="shared/employees/employee_types/ManagementEmployees.ts.ManagementEmployee" xlink:href="shared/employees/employee_types/ManagementEmployees.ts"><text x="234.5" y="13.5" stroke="none" text-anchor="middle" data-name="ManagementEmployee">ManagementEmployee</text></a>
+
+</g>
+</g>
+<g transform="translate(11708.5, 749)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ManagementEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ManagementEmployee">
+<text x="0.0" y="13.5" stroke="none" data-name="ManagementEmployee">+type: &quot;MANAGEMENT&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ManagementEmployee">+id: &quot;mgmt_1&quot; | &quot;mgmt_2&quot; | &quot;mgmt_3&quot; | &quot;mgmt_4&quot; | &quot;mgmt_5&quot;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="ManagementEmployee">+colour: EMPLOYEE_COLOUR.BLACK</text>
+<text x="0.0" y="58.5" stroke="none" data-name="ManagementEmployee">+capacity: number</text>
+
+</g>
+</g>
+<g transform="translate(11708.5, 825)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ManagementEmployee">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ManagementEmployee">
+
+</g>
+</g>
+</g>
+<g data-name="ManagementEmployeeCreationData">
+<g fill="lightblue" stroke="#33322E" data-name="ManagementEmployeeCreationData">
+<rect x="13703.5" y="266.5" height="130.0" width="485.0" data-name="ManagementEmployeeCreationData"></rect>
+<path d="M13703.5 297.5 L14188.5 297.5" fill="none" data-name="ManagementEmployeeCreationData"></path>
+<path d="M13703.5 388.5 L14188.5 388.5" fill="none" data-name="ManagementEmployeeCreationData"></path>
+</g>
+<g transform="translate(13703.5, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ManagementEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ManagementEmployeeCreationData">
+<a id="shared/employees/employee_types/ManagementEmployees.ts.ManagementEmployeeCreationData" xlink:href="shared/employees/employee_types/ManagementEmployees.ts"><text x="234.5" y="13.5" stroke="none" text-anchor="middle" data-name="ManagementEmployeeCreationData">ManagementEmployeeCreationData</text></a>
+
+</g>
+</g>
+<g transform="translate(13703.5, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ManagementEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ManagementEmployeeCreationData">
+<text x="0.0" y="13.5" stroke="none" data-name="ManagementEmployeeCreationData">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ManagementEmployeeCreationData">+id: &quot;mgmt_1&quot; | &quot;mgmt_2&quot; | &quot;mgmt_3&quot; | &quot;mgmt_4&quot; | &quot;mgmt_5&quot;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="ManagementEmployeeCreationData">+capacity: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="ManagementEmployeeCreationData">+notPaid?: boolean</text>
+<text x="0.0" y="73.5" stroke="none" data-name="ManagementEmployeeCreationData">+oneOf?: boolean</text>
+
+</g>
+</g>
+<g transform="translate(13703.5, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ManagementEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ManagementEmployeeCreationData">
+
+</g>
+</g>
+</g>
+<g data-name="MarketingEmployee">
+<g fill="lightblue" stroke="#33322E" data-name="MarketingEmployee">
+<rect x="12233.5" y="718.0" height="115.0" width="439.0" data-name="MarketingEmployee"></rect>
+<path d="M12233.5 749.0 L12672.5 749.0" fill="none" data-name="MarketingEmployee"></path>
+<path d="M12233.5 825.0 L12672.5 825.0" fill="none" data-name="MarketingEmployee"></path>
+</g>
+<g transform="translate(12233.5, 718)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MarketingEmployee">
+<a id="shared/employees/employee_types/MarketingEmployees.ts.MarketingEmployee" xlink:href="shared/employees/employee_types/MarketingEmployees.ts"><text x="211.5" y="13.5" stroke="none" text-anchor="middle" data-name="MarketingEmployee">MarketingEmployee</text></a>
+
+</g>
+</g>
+<g transform="translate(12233.5, 749)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MarketingEmployee">
+<text x="0.0" y="13.5" stroke="none" data-name="MarketingEmployee">+type: &quot;MARKETING&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MarketingEmployee">+id: &quot;market_1&quot; | &quot;market_2&quot; | &quot;market_3&quot; | &quot;market_4&quot;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MarketingEmployee">+colour: EMPLOYEE_COLOUR.LIGHT_BLUE</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MarketingEmployee">+marketingType: MARKETING_TYPE</text>
+
+</g>
+</g>
+<g transform="translate(12233.5, 825)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingEmployee">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MarketingEmployee">
+
+</g>
+</g>
+</g>
+<g data-name="MarketingEmployeeCreationData">
+<g fill="lightblue" stroke="#33322E" data-name="MarketingEmployeeCreationData">
+<rect x="14228.5" y="274.0" height="115.0" width="439.0" data-name="MarketingEmployeeCreationData"></rect>
+<path d="M14228.5 305.0 L14667.5 305.0" fill="none" data-name="MarketingEmployeeCreationData"></path>
+<path d="M14228.5 381.0 L14667.5 381.0" fill="none" data-name="MarketingEmployeeCreationData"></path>
+</g>
+<g transform="translate(14228.5, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MarketingEmployeeCreationData">
+<a id="shared/employees/employee_types/MarketingEmployees.ts.MarketingEmployeeCreationData" xlink:href="shared/employees/employee_types/MarketingEmployees.ts"><text x="211.5" y="13.5" stroke="none" text-anchor="middle" data-name="MarketingEmployeeCreationData">MarketingEmployeeCreationData</text></a>
+
+</g>
+</g>
+<g transform="translate(14228.5, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MarketingEmployeeCreationData">
+<text x="0.0" y="13.5" stroke="none" data-name="MarketingEmployeeCreationData">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MarketingEmployeeCreationData">+id: &quot;market_1&quot; | &quot;market_2&quot; | &quot;market_3&quot; | &quot;market_4&quot;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MarketingEmployeeCreationData">+marketingType: MARKETING_TYPE</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MarketingEmployeeCreationData">+notPaid?: boolean</text>
+
+</g>
+</g>
+<g transform="translate(14228.5, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingEmployeeCreationData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MarketingEmployeeCreationData">
+
+</g>
+</g>
+</g>
+<g data-name="WaitressEmployee">
+<g fill="lightblue" stroke="#33322E" data-name="WaitressEmployee">
+<rect x="12712.5" y="725.5" height="100.0" width="303.0" data-name="WaitressEmployee"></rect>
+<path d="M12712.5 756.5 L13015.5 756.5" fill="none" data-name="WaitressEmployee"></path>
+<path d="M12712.5 817.5 L13015.5 817.5" fill="none" data-name="WaitressEmployee"></path>
+</g>
+<g transform="translate(12712.5, 725.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WaitressEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="WaitressEmployee">
+<a id="shared/employees/employee_types/WaitressEmployees.ts.WaitressEmployee" xlink:href="shared/employees/employee_types/WaitressEmployees.ts"><text x="143.5" y="13.5" stroke="none" text-anchor="middle" data-name="WaitressEmployee">WaitressEmployee</text></a>
+
+</g>
+</g>
+<g transform="translate(12712.5, 756.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WaitressEmployee">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="WaitressEmployee">
+<text x="0.0" y="13.5" stroke="none" data-name="WaitressEmployee">+type: &quot;WAITRESS&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="WaitressEmployee">+id: &quot;waitress&quot;</text>
+<text x="0.0" y="43.5" stroke="none" data-name="WaitressEmployee">+colour: EMPLOYEE_COLOUR.PINK</text>
+
+</g>
+</g>
+<g transform="translate(12712.5, 817.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WaitressEmployee">
+<g transform="translate(8, 8)" fill="#33322E" data-name="WaitressEmployee">
+
+</g>
+</g>
+</g>
+<g data-name="BaseGameAction">
+<g fill="lightblue" stroke="#33322E" data-name="BaseGameAction">
+<rect x="14707.5" y="281.5" height="100.0" width="217.0" data-name="BaseGameAction"></rect>
+<path d="M14707.5 312.5 L14924.5 312.5" fill="none" data-name="BaseGameAction"></path>
+<path d="M14707.5 373.5 L14924.5 373.5" fill="none" data-name="BaseGameAction"></path>
+</g>
+<g transform="translate(14707.5, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseGameAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseGameAction">
+<a id="shared/game/actions/types.ts.BaseGameAction" xlink:href="shared/game/actions/types.ts"><text x="100.5" y="13.5" stroke="none" text-anchor="middle" data-name="BaseGameAction">BaseGameAction</text></a>
+
+</g>
+</g>
+<g transform="translate(14707.5, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseGameAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseGameAction">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseGameAction">+type: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseGameAction">+employeeIndex: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="BaseGameAction">+player: number</text>
+
+</g>
+</g>
+<g transform="translate(14707.5, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseGameAction">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseGameAction">
+
+</g>
+</g>
+</g>
+<g data-name="RecruitAction">
+<g fill="lightblue" stroke="#33322E" data-name="RecruitAction">
+<rect x="13055.5" y="733.0" height="85.0" width="229.0" data-name="RecruitAction"></rect>
+<path d="M13055.5 764.0 L13284.5 764.0" fill="none" data-name="RecruitAction"></path>
+<path d="M13055.5 810.0 L13284.5 810.0" fill="none" data-name="RecruitAction"></path>
+</g>
+<g transform="translate(13055.5, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RecruitAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="RecruitAction">
+<a id="shared/game/actions/types.ts.RecruitAction" xlink:href="shared/game/actions/types.ts"><text x="106.5" y="13.5" stroke="none" text-anchor="middle" data-name="RecruitAction">RecruitAction</text></a>
+
+</g>
+</g>
+<g transform="translate(13055.5, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RecruitAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RecruitAction">
+<text x="0.0" y="13.5" stroke="none" data-name="RecruitAction">+type: &quot;RECRUIT&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="RecruitAction">+recruiting: EMPLOYEE_ID</text>
+
+</g>
+</g>
+<g transform="translate(13055.5, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RecruitAction">
+<g transform="translate(8, 8)" fill="#33322E" data-name="RecruitAction">
+
+</g>
+</g>
+</g>
+<g data-name="MarketingAction">
+<g fill="lightblue" stroke="#33322E" data-name="MarketingAction">
+<rect x="14884.8" y="733.0" height="85.0" width="181.0" data-name="MarketingAction"></rect>
+<path d="M14884.8 764.0 L15065.8 764.0" fill="none" data-name="MarketingAction"></path>
+<path d="M14884.8 810.0 L15065.8 810.0" fill="none" data-name="MarketingAction"></path>
+</g>
+<g transform="translate(14884.75, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MarketingAction">
+<a id="shared/game/actions/types.ts.MarketingAction" xlink:href="shared/game/actions/types.ts"><text x="82.5" y="13.5" stroke="none" text-anchor="middle" data-name="MarketingAction">MarketingAction</text></a>
+
+</g>
+</g>
+<g transform="translate(14884.75, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MarketingAction">
+<text x="0.0" y="13.5" stroke="none" data-name="MarketingAction">+type: &quot;MARKETING&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MarketingAction">+tile: MarketingTile</text>
+
+</g>
+</g>
+<g transform="translate(14884.75, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingAction">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MarketingAction">
+
+</g>
+</g>
+</g>
+<g data-name="DemandAction">
+<g fill="lightblue" stroke="#33322E" data-name="DemandAction">
+<rect x="15105.8" y="725.5" height="100.0" width="225.0" data-name="DemandAction"></rect>
+<path d="M15105.8 756.5 L15330.8 756.5" fill="none" data-name="DemandAction"></path>
+<path d="M15105.8 817.5 L15330.8 817.5" fill="none" data-name="DemandAction"></path>
+</g>
+<g transform="translate(15105.75, 725.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DemandAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="DemandAction">
+<a id="shared/game/actions/types.ts.DemandAction" xlink:href="shared/game/actions/types.ts"><text x="104.5" y="13.5" stroke="none" text-anchor="middle" data-name="DemandAction">DemandAction</text></a>
+
+</g>
+</g>
+<g transform="translate(15105.75, 756.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DemandAction">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="DemandAction">
+<text x="0.0" y="13.5" stroke="none" data-name="DemandAction">+type: &quot;GET_DEMAND&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="DemandAction">+demand: DEMAND_TYPE</text>
+<text x="0.0" y="43.5" stroke="none" data-name="DemandAction">+amount: number</text>
+
+</g>
+</g>
+<g transform="translate(15105.75, 817.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DemandAction">
+<g transform="translate(8, 8)" fill="#33322E" data-name="DemandAction">
+
+</g>
+</g>
+</g>
+<g data-name="BaseTile">
+<g fill="lightblue" stroke="#33322E" data-name="BaseTile">
+<rect x="17349.0" y="266.5" height="130.0" width="222.0" data-name="BaseTile"></rect>
+<path d="M17349.0 297.5 L17571.0 297.5" fill="none" data-name="BaseTile"></path>
+<path d="M17349.0 388.5 L17571.0 388.5" fill="none" data-name="BaseTile"></path>
+</g>
+<g transform="translate(17349, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseTile">
+<a id="shared/map/tiles/types.ts.BaseTile" xlink:href="shared/map/tiles/types.ts"><text x="103.0" y="13.5" stroke="none" text-anchor="middle" data-name="BaseTile">BaseTile</text></a>
+
+</g>
+</g>
+<g transform="translate(17349, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseTile">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseTile">+tileType: TileType</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseTile">+pos: Position</text>
+<text x="0.0" y="43.5" stroke="none" data-name="BaseTile">+width: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="BaseTile">+height: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="BaseTile">+rotation: RotationAmount</text>
+
+</g>
+</g>
+<g transform="translate(17349, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseTile">
+
+</g>
+</g>
+</g>
+<g data-name="BaseMapTileData">
+<g fill="lightblue" stroke="#33322E" data-name="BaseMapTileData">
+<rect x="15370.8" y="733.0" height="85.0" width="243.0" data-name="BaseMapTileData"></rect>
+<path d="M15370.8 764.0 L15613.8 764.0" fill="none" data-name="BaseMapTileData"></path>
+<path d="M15370.8 810.0 L15613.8 810.0" fill="none" data-name="BaseMapTileData"></path>
+</g>
+<g transform="translate(15370.75, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMapTileData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseMapTileData">
+<a id="shared/map/tiles/types.ts.BaseMapTileData" xlink:href="shared/map/tiles/types.ts"><text x="113.5" y="13.5" stroke="none" text-anchor="middle" data-name="BaseMapTileData">BaseMapTileData</text></a>
+
+</g>
+</g>
+<g transform="translate(15370.75, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMapTileData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseMapTileData">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseMapTileData">+tileType: TileType</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseMapTileData">+pieceEdges: DirectionBools</text>
+
+</g>
+</g>
+<g transform="translate(15370.75, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMapTileData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseMapTileData">
+
+</g>
+</g>
+</g>
+<g data-name="TileType">
+<g fill="lightgreen" stroke="#33322E" data-name="TileType">
+<rect x="16194.0" y="248.0" height="167.0" width="128.0" data-name="TileType"></rect>
+<path d="M16194.0 279.0 L16322.0 279.0" fill="none" data-name="TileType"></path>
+</g>
+<g transform="translate(16194, 248)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TileType">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TileType">
+<a id="shared/map/tiles/types.ts.TileType" xlink:href="shared/map/tiles/types.ts"><text x="56.0" y="13.5" stroke="none" text-anchor="middle" data-name="TileType">TileType</text></a>
+
+</g>
+</g>
+<g transform="translate(16194, 279)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TileType">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TileType">
+<text x="0.0" y="13.5" stroke="none" data-name="TileType">EMPTY</text>
+<text x="0.0" y="28.5" stroke="none" data-name="TileType">ROAD</text>
+<text x="0.0" y="43.5" stroke="none" data-name="TileType">HOUSE</text>
+<text x="0.0" y="58.5" stroke="none" data-name="TileType">LEMONADE</text>
+<text x="0.0" y="73.5" stroke="none" data-name="TileType">COLA</text>
+<text x="0.0" y="88.5" stroke="none" data-name="TileType">BEER</text>
+<text x="0.0" y="103.5" stroke="none" data-name="TileType">MARKETING</text>
+<text x="0.0" y="118.5" stroke="none" data-name="TileType">RESTAURANT</text>
+
+</g>
+</g>
+</g>
+<g data-name="DirectionBools">
+<g fill="lightgray" stroke="#33322E" data-name="DirectionBools">
+<rect x="16362.0" y="274.0" height="115.0" width="144.0" data-name="DirectionBools"></rect>
+<path d="M16362.0 305.0 L16506.0 305.0" fill="none" data-name="DirectionBools"></path>
+<path d="M16362.0 381.0 L16506.0 381.0" fill="none" data-name="DirectionBools"></path>
+</g>
+<g transform="translate(16362, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DirectionBools">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="DirectionBools">
+<a id="shared/map/tiles/types.ts.DirectionBools" xlink:href="shared/map/tiles/types.ts"><text x="64.0" y="13.5" stroke="none" text-anchor="middle" data-name="DirectionBools">DirectionBools</text></a>
+
+</g>
+</g>
+<g transform="translate(16362, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DirectionBools">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="DirectionBools">
+<text x="0.0" y="13.5" stroke="none" data-name="DirectionBools">+north: boolean</text>
+<text x="0.0" y="28.5" stroke="none" data-name="DirectionBools">+south: boolean</text>
+<text x="0.0" y="43.5" stroke="none" data-name="DirectionBools">+east: boolean</text>
+<text x="0.0" y="58.5" stroke="none" data-name="DirectionBools">+west: boolean</text>
+
+</g>
+</g>
+<g transform="translate(16362, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DirectionBools">
+<g transform="translate(8, 8)" fill="#33322E" data-name="DirectionBools">
+
+</g>
+</g>
+</g>
+<g data-name="MapPieceData">
+<g fill="lightgray" stroke="#33322E" data-name="MapPieceData">
+<rect x="16546.0" y="274.0" height="115.0" width="245.0" data-name="MapPieceData"></rect>
+<path d="M16546.0 305.0 L16791.0 305.0" fill="none" data-name="MapPieceData"></path>
+<path d="M16546.0 381.0 L16791.0 381.0" fill="none" data-name="MapPieceData"></path>
+</g>
+<g transform="translate(16546, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapPieceData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MapPieceData">
+<a id="shared/map/tiles/types.ts.MapPieceData" xlink:href="shared/map/tiles/types.ts"><text x="114.5" y="13.5" stroke="none" text-anchor="middle" data-name="MapPieceData">MapPieceData</text></a>
+
+</g>
+</g>
+<g transform="translate(16546, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapPieceData">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MapPieceData">
+<text x="0.0" y="13.5" stroke="none" data-name="MapPieceData">+id: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MapPieceData">+xOffset: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MapPieceData">+yOffset: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MapPieceData">+tiles: PartialMap2D | Map2D</text>
+
+</g>
+</g>
+<g transform="translate(16546, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapPieceData">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MapPieceData">
+
+</g>
+</g>
+</g>
+<g data-name="PlayerDinnertimeDetails">
+<g fill="lightblue" stroke="#33322E" data-name="PlayerDinnertimeDetails">
+<rect x="16831.0" y="266.5" height="130.0" width="241.0" data-name="PlayerDinnertimeDetails"></rect>
+<path d="M16831.0 297.5 L17072.0 297.5" fill="none" data-name="PlayerDinnertimeDetails"></path>
+<path d="M16831.0 388.5 L17072.0 388.5" fill="none" data-name="PlayerDinnertimeDetails"></path>
+</g>
+<g transform="translate(16831, 266.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerDinnertimeDetails">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlayerDinnertimeDetails">
+<a id="backend/src/game/TransactionFunctions/Dinnertime.ts.PlayerDinnertimeDetails" xlink:href="backend/src/game/TransactionFunctions/Dinnertime.ts"><text x="112.5" y="13.5" stroke="none" text-anchor="middle" data-name="PlayerDinnertimeDetails">PlayerDinnertimeDetails</text></a>
+
+</g>
+</g>
+<g transform="translate(16831, 297.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerDinnertimeDetails">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlayerDinnertimeDetails">
+<text x="0.0" y="13.5" stroke="none" data-name="PlayerDinnertimeDetails">+playerNumber: number</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlayerDinnertimeDetails">+distances: HouseDistances</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PlayerDinnertimeDetails">+unitPrice: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PlayerDinnertimeDetails">+waitresses: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="PlayerDinnertimeDetails">+turnOrder: number</text>
+
+</g>
+</g>
+<g transform="translate(16831, 388.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlayerDinnertimeDetails">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PlayerDinnertimeDetails">
+
+</g>
+</g>
+</g>
+<g data-name="TransactionBundle">
+<g fill="lightblue" stroke="#33322E" data-name="TransactionBundle">
+<rect x="17112.0" y="281.5" height="100.0" width="197.0" data-name="TransactionBundle"></rect>
+<path d="M17112.0 312.5 L17309.0 312.5" fill="none" data-name="TransactionBundle"></path>
+<path d="M17112.0 373.5 L17309.0 373.5" fill="none" data-name="TransactionBundle"></path>
+</g>
+<g transform="translate(17112, 281.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TransactionBundle">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TransactionBundle">
+<a id="backend/src/game/TransactionFunctions/types.ts.TransactionBundle" xlink:href="backend/src/game/TransactionFunctions/types.ts"><text x="90.5" y="13.5" stroke="none" text-anchor="middle" data-name="TransactionBundle">TransactionBundle</text></a>
+
+</g>
+</g>
+<g transform="translate(17112, 312.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TransactionBundle">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="TransactionBundle">
+<text x="0.0" y="13.5" stroke="none" data-name="TransactionBundle">+ctx: TransactionClient</text>
+<text x="0.0" y="28.5" stroke="none" data-name="TransactionBundle">+gameId: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="TransactionBundle">+player: number</text>
+
+</g>
+</g>
+<g transform="translate(17112, 373.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TransactionBundle">
+<g transform="translate(8, 8)" fill="#33322E" data-name="TransactionBundle">
+
+</g>
+</g>
+</g>
+<g data-name="BaseClientState">
+<g fill="lightblue" stroke="#33322E" data-name="BaseClientState">
+<rect x="15707.0" y="289.0" height="85.0" width="447.0" data-name="BaseClientState"></rect>
+<path d="M15707.0 320.0 L16154.0 320.0" fill="none" data-name="BaseClientState"></path>
+<path d="M15707.0 366.0 L16154.0 366.0" fill="none" data-name="BaseClientState"></path>
+</g>
+<g transform="translate(15707, 289)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseClientState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseClientState">
+<a id="frontend/src/hooks/game/useClientState.ts.BaseClientState" xlink:href="frontend/src/hooks/game/useClientState.ts"><text x="215.5" y="13.5" stroke="none" text-anchor="middle" data-name="BaseClientState">BaseClientState</text></a>
+
+</g>
+</g>
+<g transform="translate(15707, 320)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseClientState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseClientState">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseClientState">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseClientState">+placementStatus: &quot;PLACING&quot; | &quot;SUCCESS&quot; | &quot;FAILED&quot;</text>
+
+</g>
+</g>
+<g transform="translate(15707, 366)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseClientState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseClientState">
+
+</g>
+</g>
+</g>
+<g data-name="ClientStateFailed">
+<g fill="lightblue" stroke="#33322E" data-name="ClientStateFailed">
+<rect x="15653.8" y="733.0" height="85.0" width="239.0" data-name="ClientStateFailed"></rect>
+<path d="M15653.8 764.0 L15892.8 764.0" fill="none" data-name="ClientStateFailed"></path>
+<path d="M15653.8 810.0 L15892.8 810.0" fill="none" data-name="ClientStateFailed"></path>
+</g>
+<g transform="translate(15653.75, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateFailed">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ClientStateFailed">
+<a id="frontend/src/hooks/game/useClientState.ts.ClientStateFailed" xlink:href="frontend/src/hooks/game/useClientState.ts"><text x="111.5" y="13.5" stroke="none" text-anchor="middle" data-name="ClientStateFailed">ClientStateFailed</text></a>
+
+</g>
+</g>
+<g transform="translate(15653.75, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateFailed">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ClientStateFailed">
+<text x="0.0" y="13.5" stroke="none" data-name="ClientStateFailed">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ClientStateFailed">+placementStatus: &quot;FAILED&quot;</text>
+
+</g>
+</g>
+<g transform="translate(15653.75, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateFailed">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ClientStateFailed">
+
+</g>
+</g>
+</g>
+<g data-name="ClientStateSuccessful">
+<g fill="lightblue" stroke="#33322E" data-name="ClientStateSuccessful">
+<rect x="15932.8" y="733.0" height="85.0" width="260.0" data-name="ClientStateSuccessful"></rect>
+<path d="M15932.8 764.0 L16192.8 764.0" fill="none" data-name="ClientStateSuccessful"></path>
+<path d="M15932.8 810.0 L16192.8 810.0" fill="none" data-name="ClientStateSuccessful"></path>
+</g>
+<g transform="translate(15932.75, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateSuccessful">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ClientStateSuccessful">
+<a id="frontend/src/hooks/game/useClientState.ts.ClientStateSuccessful" xlink:href="frontend/src/hooks/game/useClientState.ts"><text x="122.0" y="13.5" stroke="none" text-anchor="middle" data-name="ClientStateSuccessful">ClientStateSuccessful</text></a>
+
+</g>
+</g>
+<g transform="translate(15932.75, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateSuccessful">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ClientStateSuccessful">
+<text x="0.0" y="13.5" stroke="none" data-name="ClientStateSuccessful">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ClientStateSuccessful">+placementStatus: &quot;SUCCESS&quot;</text>
+
+</g>
+</g>
+<g transform="translate(15932.75, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateSuccessful">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ClientStateSuccessful">
+
+</g>
+</g>
+</g>
+<g data-name="ClientStatePlacing">
+<g fill="lightblue" stroke="#33322E" data-name="ClientStatePlacing">
+<rect x="16689.3" y="733.0" height="85.0" width="254.0" data-name="ClientStatePlacing"></rect>
+<path d="M16689.3 764.0 L16943.3 764.0" fill="none" data-name="ClientStatePlacing"></path>
+<path d="M16689.3 810.0 L16943.3 810.0" fill="none" data-name="ClientStatePlacing"></path>
+</g>
+<g transform="translate(16689.25, 733)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStatePlacing">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ClientStatePlacing">
+<a id="frontend/src/hooks/game/useClientState.ts.ClientStatePlacing" xlink:href="frontend/src/hooks/game/useClientState.ts"><text x="119.0" y="13.5" stroke="none" text-anchor="middle" data-name="ClientStatePlacing">ClientStatePlacing</text></a>
+
+</g>
+</g>
+<g transform="translate(16689.25, 764)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStatePlacing">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ClientStatePlacing">
+<text x="0.0" y="13.5" stroke="none" data-name="ClientStatePlacing">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ClientStatePlacing">+placementStatus: &quot;PLACING&quot;</text>
+
+</g>
+</g>
+<g transform="translate(16689.25, 810)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStatePlacing">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ClientStatePlacing">
+
+</g>
+</g>
+</g>
+<g data-name="MAP_RENDER_KEYS">
+<g fill="lightgreen" stroke="#33322E" data-name="MAP_RENDER_KEYS">
+<rect x="17611.0" y="293.0" height="77.0" width="186.0" data-name="MAP_RENDER_KEYS"></rect>
+<path d="M17611.0 324.0 L17797.0 324.0" fill="none" data-name="MAP_RENDER_KEYS"></path>
+</g>
+<g transform="translate(17611, 293)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MAP_RENDER_KEYS">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MAP_RENDER_KEYS">
+<a id="frontend/src/hooks/game/useMap.ts.MAP_RENDER_KEYS" xlink:href="frontend/src/hooks/game/useMap.ts"><text x="85.0" y="13.5" stroke="none" text-anchor="middle" data-name="MAP_RENDER_KEYS">MAP_RENDER_KEYS</text></a>
+
+</g>
+</g>
+<g transform="translate(17611, 324)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MAP_RENDER_KEYS">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MAP_RENDER_KEYS">
+<text x="0.0" y="13.5" stroke="none" data-name="MAP_RENDER_KEYS">TILES</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MAP_RENDER_KEYS">HOUSES</text>
+
+</g>
+</g>
+</g>
+<g data-name="MapInteractionState">
+<g fill="lightgray" stroke="#33322E" data-name="MapInteractionState">
+<rect x="17837.0" y="296.5" height="70.0" width="215.0" data-name="MapInteractionState"></rect>
+<path d="M17837.0 327.5 L18052.0 327.5" fill="none" data-name="MapInteractionState"></path>
+<path d="M17837.0 358.5 L18052.0 358.5" fill="none" data-name="MapInteractionState"></path>
+</g>
+<g transform="translate(17837, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapInteractionState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MapInteractionState">
+<a id="frontend/src/hooks/game/useMapTileInteraction.ts.MapInteractionState" xlink:href="frontend/src/hooks/game/useMapTileInteraction.ts"><text x="99.5" y="13.5" stroke="none" text-anchor="middle" data-name="MapInteractionState">MapInteractionState</text></a>
+
+</g>
+</g>
+<g transform="translate(17837, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapInteractionState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MapInteractionState">
+<text x="0.0" y="13.5" stroke="none" data-name="MapInteractionState">+hovering: HoveringType</text>
+
+</g>
+</g>
+<g transform="translate(17837, 358.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapInteractionState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MapInteractionState">
+
+</g>
+</g>
+</g>
+<g data-name="GamePlanningState">
+<g fill="lightblue" stroke="#33322E" data-name="GamePlanningState">
+<rect x="18092.0" y="296.5" height="70.0" width="253.0" data-name="GamePlanningState"></rect>
+<path d="M18092.0 327.5 L18345.0 327.5" fill="none" data-name="GamePlanningState"></path>
+<path d="M18092.0 358.5 L18345.0 358.5" fill="none" data-name="GamePlanningState"></path>
+</g>
+<g transform="translate(18092, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GamePlanningState">
+<a id="frontend/src/hooks/game/useTurnPlanning.ts.GamePlanningState" xlink:href="frontend/src/hooks/game/useTurnPlanning.ts"><text x="118.5" y="13.5" stroke="none" text-anchor="middle" data-name="GamePlanningState">GamePlanningState</text></a>
+
+</g>
+</g>
+<g transform="translate(18092, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GamePlanningState">
+<text x="0.0" y="13.5" stroke="none" data-name="GamePlanningState">+plannedActions: TurnAction[]</text>
+
+</g>
+</g>
+<g transform="translate(18092, 358.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlanningState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GamePlanningState">
+
+</g>
+</g>
+</g>
+<g data-name="PageGameAtomObject">
+<g fill="lightgray" stroke="#33322E" data-name="PageGameAtomObject">
+<rect x="18385.0" y="296.5" height="70.0" width="577.0" data-name="PageGameAtomObject"></rect>
+<path d="M18385.0 327.5 L18962.0 327.5" fill="none" data-name="PageGameAtomObject"></path>
+<path d="M18385.0 358.5 L18962.0 358.5" fill="none" data-name="PageGameAtomObject"></path>
+</g>
+<g transform="translate(18385, 296.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PageGameAtomObject">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PageGameAtomObject">
+<a id="frontend/src/pages/Lobby/PageGameContext.ts.PageGameAtomObject" xlink:href="frontend/src/pages/Lobby/PageGameContext.ts"><text x="280.5" y="13.5" stroke="none" text-anchor="middle" data-name="PageGameAtomObject">PageGameAtomObject</text></a>
+
+</g>
+</g>
+<g transform="translate(18385, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PageGameAtomObject">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PageGameAtomObject">
+<text x="0.0" y="13.5" stroke="none" data-name="PageGameAtomObject">+sendMessage: (message: BackendMessage) =&gt; void | Promise&lt;void&gt;</text>
+
+</g>
+</g>
+<g transform="translate(18385, 358.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PageGameAtomObject">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PageGameAtomObject">
+
+</g>
+</g>
+</g>
+<g data-name="LemonadeTile">
+<g fill="lightblue" stroke="#33322E" data-name="LemonadeTile">
+<rect x="14694.5" y="910.5" height="70.0" width="264.0" data-name="LemonadeTile"></rect>
+<path d="M14694.5 941.5 L14958.5 941.5" fill="none" data-name="LemonadeTile"></path>
+<path d="M14694.5 972.5 L14958.5 972.5" fill="none" data-name="LemonadeTile"></path>
+</g>
+<g transform="translate(14694.5, 910.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LemonadeTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="LemonadeTile">
+<a id="shared/map/tiles/tile_files/DrinkTiles.ts.LemonadeTile" xlink:href="shared/map/tiles/tile_files/DrinkTiles.ts"><text x="124.0" y="13.5" stroke="none" text-anchor="middle" data-name="LemonadeTile">LemonadeTile</text></a>
+
+</g>
+</g>
+<g transform="translate(14694.5, 941.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LemonadeTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="LemonadeTile">
+<text x="0.0" y="13.5" stroke="none" data-name="LemonadeTile">+tileType: TileType.LEMONADE</text>
+
+</g>
+</g>
+<g transform="translate(14694.5, 972.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="LemonadeTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="LemonadeTile">
+
+</g>
+</g>
+</g>
+<g data-name="BeerTile">
+<g fill="lightblue" stroke="#33322E" data-name="BeerTile">
+<rect x="14998.5" y="910.5" height="70.0" width="215.0" data-name="BeerTile"></rect>
+<path d="M14998.5 941.5 L15213.5 941.5" fill="none" data-name="BeerTile"></path>
+<path d="M14998.5 972.5 L15213.5 972.5" fill="none" data-name="BeerTile"></path>
+</g>
+<g transform="translate(14998.5, 910.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BeerTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BeerTile">
+<a id="shared/map/tiles/tile_files/DrinkTiles.ts.BeerTile" xlink:href="shared/map/tiles/tile_files/DrinkTiles.ts"><text x="99.5" y="13.5" stroke="none" text-anchor="middle" data-name="BeerTile">BeerTile</text></a>
+
+</g>
+</g>
+<g transform="translate(14998.5, 941.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BeerTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BeerTile">
+<text x="0.0" y="13.5" stroke="none" data-name="BeerTile">+tileType: TileType.BEER</text>
+
+</g>
+</g>
+<g transform="translate(14998.5, 972.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BeerTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BeerTile">
+
+</g>
+</g>
+</g>
+<g data-name="ColaTile">
+<g fill="lightblue" stroke="#33322E" data-name="ColaTile">
+<rect x="15253.5" y="910.5" height="70.0" width="216.0" data-name="ColaTile"></rect>
+<path d="M15253.5 941.5 L15469.5 941.5" fill="none" data-name="ColaTile"></path>
+<path d="M15253.5 972.5 L15469.5 972.5" fill="none" data-name="ColaTile"></path>
+</g>
+<g transform="translate(15253.5, 910.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ColaTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ColaTile">
+<a id="shared/map/tiles/tile_files/DrinkTiles.ts.ColaTile" xlink:href="shared/map/tiles/tile_files/DrinkTiles.ts"><text x="100.0" y="13.5" stroke="none" text-anchor="middle" data-name="ColaTile">ColaTile</text></a>
+
+</g>
+</g>
+<g transform="translate(15253.5, 941.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ColaTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ColaTile">
+<text x="0.0" y="13.5" stroke="none" data-name="ColaTile">+tileType: TileType.COLA</text>
+
+</g>
+</g>
+<g transform="translate(15253.5, 972.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ColaTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ColaTile">
+
+</g>
+</g>
+</g>
+<g data-name="EmptyTile">
+<g fill="lightblue" stroke="#33322E" data-name="EmptyTile">
+<rect x="15853.0" y="910.5" height="70.0" width="227.0" data-name="EmptyTile"></rect>
+<path d="M15853.0 941.5 L16080.0 941.5" fill="none" data-name="EmptyTile"></path>
+<path d="M15853.0 972.5 L16080.0 972.5" fill="none" data-name="EmptyTile"></path>
+</g>
+<g transform="translate(15853, 910.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EmptyTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EmptyTile">
+<a id="shared/map/tiles/tile_files/EmptyTiles.ts.EmptyTile" xlink:href="shared/map/tiles/tile_files/EmptyTiles.ts"><text x="105.5" y="13.5" stroke="none" text-anchor="middle" data-name="EmptyTile">EmptyTile</text></a>
+
+</g>
+</g>
+<g transform="translate(15853, 941.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EmptyTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="EmptyTile">
+<text x="0.0" y="13.5" stroke="none" data-name="EmptyTile">+tileType: TileType.EMPTY</text>
+
+</g>
+</g>
+<g transform="translate(15853, 972.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EmptyTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="EmptyTile">
+
+</g>
+</g>
+</g>
+<g data-name="HouseTile">
+<g fill="lightblue" stroke="#33322E" data-name="HouseTile">
+<rect x="16120.0" y="910.5" height="70.0" width="229.0" data-name="HouseTile"></rect>
+<path d="M16120.0 941.5 L16349.0 941.5" fill="none" data-name="HouseTile"></path>
+<path d="M16120.0 972.5 L16349.0 972.5" fill="none" data-name="HouseTile"></path>
+</g>
+<g transform="translate(16120, 910.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HouseTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="HouseTile">
+<a id="shared/map/tiles/tile_files/HouseTiles.ts.HouseTile" xlink:href="shared/map/tiles/tile_files/HouseTiles.ts"><text x="106.5" y="13.5" stroke="none" text-anchor="middle" data-name="HouseTile">HouseTile</text></a>
+
+</g>
+</g>
+<g transform="translate(16120, 941.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HouseTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="HouseTile">
+<text x="0.0" y="13.5" stroke="none" data-name="HouseTile">+tileType: TileType.HOUSE</text>
+
+</g>
+</g>
+<g transform="translate(16120, 972.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="HouseTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="HouseTile">
+
+</g>
+</g>
+</g>
+<g data-name="BaseMarketingTile">
+<g fill="lightblue" stroke="#33322E" data-name="BaseMarketingTile">
+<rect x="17439.8" y="703.0" height="145.0" width="305.0" data-name="BaseMarketingTile"></rect>
+<path d="M17439.8 734.0 L17744.8 734.0" fill="none" data-name="BaseMarketingTile"></path>
+<path d="M17439.8 840.0 L17744.8 840.0" fill="none" data-name="BaseMarketingTile"></path>
+</g>
+<g transform="translate(17439.75, 703)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseMarketingTile">
+<a id="shared/map/tiles/tile_files/MarketingTiles.ts.BaseMarketingTile" xlink:href="shared/map/tiles/tile_files/MarketingTiles.ts"><text x="144.5" y="13.5" stroke="none" text-anchor="middle" data-name="BaseMarketingTile">BaseMarketingTile</text></a>
+
+</g>
+</g>
+<g transform="translate(17439.75, 734)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseMarketingTile">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseMarketingTile">+tileType: TileType.MARKETING</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseMarketingTile">+placingEmployee: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="BaseMarketingTile">+marketingType: MARKETING_TYPE</text>
+<text x="0.0" y="58.5" stroke="none" data-name="BaseMarketingTile">+tileNumber: number</text>
+<text x="0.0" y="73.5" stroke="none" data-name="BaseMarketingTile">+rotation: 0 | 90</text>
+<text x="0.0" y="88.5" stroke="none" data-name="BaseMarketingTile">+demand: DEMAND_TYPE</text>
+
+</g>
+</g>
+<g transform="translate(17439.75, 840)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseMarketingTile">
+
+</g>
+</g>
+</g>
+<g data-name="BillBoardMarketingTile">
+<g fill="lightblue" stroke="#33322E" data-name="BillBoardMarketingTile">
+<rect x="16698.0" y="910.5" height="70.0" width="260.0" data-name="BillBoardMarketingTile"></rect>
+<path d="M16698.0 941.5 L16958.0 941.5" fill="none" data-name="BillBoardMarketingTile"></path>
+<path d="M16698.0 972.5 L16958.0 972.5" fill="none" data-name="BillBoardMarketingTile"></path>
+</g>
+<g transform="translate(16698, 910.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BillBoardMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BillBoardMarketingTile">
+<a id="shared/map/tiles/tile_files/MarketingTiles.ts.BillBoardMarketingTile" xlink:href="shared/map/tiles/tile_files/MarketingTiles.ts"><text x="122.0" y="13.5" stroke="none" text-anchor="middle" data-name="BillBoardMarketingTile">BillBoardMarketingTile</text></a>
+
+</g>
+</g>
+<g transform="translate(16698, 941.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BillBoardMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BillBoardMarketingTile">
+<text x="0.0" y="13.5" stroke="none" data-name="BillBoardMarketingTile">+marketingType: &quot;BILLBOARD&quot;</text>
+
+</g>
+</g>
+<g transform="translate(16698, 972.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BillBoardMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BillBoardMarketingTile">
+
+</g>
+</g>
+</g>
+<g data-name="MailboxMarketingTile">
+<g fill="lightblue" stroke="#33322E" data-name="MailboxMarketingTile">
+<rect x="16998.0" y="903.0" height="85.0" width="240.0" data-name="MailboxMarketingTile"></rect>
+<path d="M16998.0 934.0 L17238.0 934.0" fill="none" data-name="MailboxMarketingTile"></path>
+<path d="M16998.0 980.0 L17238.0 980.0" fill="none" data-name="MailboxMarketingTile"></path>
+</g>
+<g transform="translate(16998, 903)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MailboxMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MailboxMarketingTile">
+<a id="shared/map/tiles/tile_files/MarketingTiles.ts.MailboxMarketingTile" xlink:href="shared/map/tiles/tile_files/MarketingTiles.ts"><text x="112.0" y="13.5" stroke="none" text-anchor="middle" data-name="MailboxMarketingTile">MailboxMarketingTile</text></a>
+
+</g>
+</g>
+<g transform="translate(16998, 934)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MailboxMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MailboxMarketingTile">
+<text x="0.0" y="13.5" stroke="none" data-name="MailboxMarketingTile">+marketingType: &quot;MAILBOX&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MailboxMarketingTile">+rotation: 0</text>
+
+</g>
+</g>
+<g transform="translate(16998, 980)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MailboxMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MailboxMarketingTile">
+
+</g>
+</g>
+</g>
+<g data-name="PlaneMarketingTile">
+<g fill="lightblue" stroke="#33322E" data-name="PlaneMarketingTile">
+<rect x="17617.3" y="903.0" height="85.0" width="220.0" data-name="PlaneMarketingTile"></rect>
+<path d="M17617.3 934.0 L17837.3 934.0" fill="none" data-name="PlaneMarketingTile"></path>
+<path d="M17617.3 980.0 L17837.3 980.0" fill="none" data-name="PlaneMarketingTile"></path>
+</g>
+<g transform="translate(17617.25, 903)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaneMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PlaneMarketingTile">
+<a id="shared/map/tiles/tile_files/MarketingTiles.ts.PlaneMarketingTile" xlink:href="shared/map/tiles/tile_files/MarketingTiles.ts"><text x="102.0" y="13.5" stroke="none" text-anchor="middle" data-name="PlaneMarketingTile">PlaneMarketingTile</text></a>
+
+</g>
+</g>
+<g transform="translate(17617.25, 934)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaneMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PlaneMarketingTile">
+<text x="0.0" y="13.5" stroke="none" data-name="PlaneMarketingTile">+marketingType: &quot;PLANE&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PlaneMarketingTile">+rotation: 0 | 90</text>
+
+</g>
+</g>
+<g transform="translate(17617.25, 980)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PlaneMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PlaneMarketingTile">
+
+</g>
+</g>
+</g>
+<g data-name="RadioMarketingTile">
+<g fill="lightblue" stroke="#33322E" data-name="RadioMarketingTile">
+<rect x="17877.3" y="888.0" height="115.0" width="218.0" data-name="RadioMarketingTile"></rect>
+<path d="M17877.3 919.0 L18095.3 919.0" fill="none" data-name="RadioMarketingTile"></path>
+<path d="M17877.3 995.0 L18095.3 995.0" fill="none" data-name="RadioMarketingTile"></path>
+</g>
+<g transform="translate(17877.25, 888)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RadioMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="RadioMarketingTile">
+<a id="shared/map/tiles/tile_files/MarketingTiles.ts.RadioMarketingTile" xlink:href="shared/map/tiles/tile_files/MarketingTiles.ts"><text x="101.0" y="13.5" stroke="none" text-anchor="middle" data-name="RadioMarketingTile">RadioMarketingTile</text></a>
+
+</g>
+</g>
+<g transform="translate(17877.25, 919)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RadioMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RadioMarketingTile">
+<text x="0.0" y="13.5" stroke="none" data-name="RadioMarketingTile">+marketingType: &quot;RADIO&quot;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="RadioMarketingTile">+width: 1</text>
+<text x="0.0" y="43.5" stroke="none" data-name="RadioMarketingTile">+height: 1</text>
+<text x="0.0" y="58.5" stroke="none" data-name="RadioMarketingTile">+rotation: 0</text>
+
+</g>
+</g>
+<g transform="translate(17877.25, 995)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RadioMarketingTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="RadioMarketingTile">
+
+</g>
+</g>
+</g>
+<g data-name="MarketingTileCreationProps">
+<g fill="lightblue" stroke="#33322E" data-name="MarketingTileCreationProps">
+<rect x="19002.0" y="274.0" height="115.0" width="305.0" data-name="MarketingTileCreationProps"></rect>
+<path d="M19002.0 305.0 L19307.0 305.0" fill="none" data-name="MarketingTileCreationProps"></path>
+<path d="M19002.0 381.0 L19307.0 381.0" fill="none" data-name="MarketingTileCreationProps"></path>
+</g>
+<g transform="translate(19002, 274)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingTileCreationProps">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MarketingTileCreationProps">
+<a id="shared/map/tiles/tile_files/MarketingTiles.ts.MarketingTileCreationProps" xlink:href="shared/map/tiles/tile_files/MarketingTiles.ts"><text x="144.5" y="13.5" stroke="none" text-anchor="middle" data-name="MarketingTileCreationProps">MarketingTileCreationProps</text></a>
+
+</g>
+</g>
+<g transform="translate(19002, 305)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingTileCreationProps">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MarketingTileCreationProps">
+<text x="0.0" y="13.5" stroke="none" data-name="MarketingTileCreationProps">+marketingType: MARKETING_TYPE</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MarketingTileCreationProps">+tileNumber: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="MarketingTileCreationProps">+width: number</text>
+<text x="0.0" y="58.5" stroke="none" data-name="MarketingTileCreationProps">+height: number</text>
+
+</g>
+</g>
+<g transform="translate(19002, 381)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MarketingTileCreationProps">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MarketingTileCreationProps">
+
+</g>
+</g>
+</g>
+<g data-name="RestaurantTile">
+<g fill="lightblue" stroke="#33322E" data-name="RestaurantTile">
+<rect x="17784.8" y="718.0" height="115.0" width="282.0" data-name="RestaurantTile"></rect>
+<path d="M17784.8 749.0 L18066.8 749.0" fill="none" data-name="RestaurantTile"></path>
+<path d="M17784.8 825.0 L18066.8 825.0" fill="none" data-name="RestaurantTile"></path>
+</g>
+<g transform="translate(17784.75, 718)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RestaurantTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="RestaurantTile">
+<a id="shared/map/tiles/tile_files/RestaurantTiles.ts.RestaurantTile" xlink:href="shared/map/tiles/tile_files/RestaurantTiles.ts"><text x="133.0" y="13.5" stroke="none" text-anchor="middle" data-name="RestaurantTile">RestaurantTile</text></a>
+
+</g>
+</g>
+<g transform="translate(17784.75, 749)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RestaurantTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RestaurantTile">
+<text x="0.0" y="13.5" stroke="none" data-name="RestaurantTile">+tileType: TileType.RESTAURANT</text>
+<text x="0.0" y="28.5" stroke="none" data-name="RestaurantTile">+restaurant: number</text>
+<text x="0.0" y="43.5" stroke="none" data-name="RestaurantTile">+width: 2</text>
+<text x="0.0" y="58.5" stroke="none" data-name="RestaurantTile">+height: 2</text>
+
+</g>
+</g>
+<g transform="translate(17784.75, 825)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RestaurantTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="RestaurantTile">
+
+</g>
+</g>
+</g>
+<g data-name="RoadTile">
+<g fill="lightblue" stroke="#33322E" data-name="RoadTile">
+<rect x="16389.0" y="903.0" height="85.0" width="269.0" data-name="RoadTile"></rect>
+<path d="M16389.0 934.0 L16658.0 934.0" fill="none" data-name="RoadTile"></path>
+<path d="M16389.0 980.0 L16658.0 980.0" fill="none" data-name="RoadTile"></path>
+</g>
+<g transform="translate(16389, 903)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RoadTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="RoadTile">
+<a id="shared/map/tiles/tile_files/RoadTiles.ts.RoadTile" xlink:href="shared/map/tiles/tile_files/RoadTiles.ts"><text x="126.5" y="13.5" stroke="none" text-anchor="middle" data-name="RoadTile">RoadTile</text></a>
+
+</g>
+</g>
+<g transform="translate(16389, 934)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RoadTile">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="RoadTile">
+<text x="0.0" y="13.5" stroke="none" data-name="RoadTile">+tileType: TileType.ROAD</text>
+<text x="0.0" y="28.5" stroke="none" data-name="RoadTile">+adjacentRoads: DirectionBools</text>
+
+</g>
+</g>
+<g transform="translate(16389, 980)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="RoadTile">
+<g transform="translate(8, 8)" fill="#33322E" data-name="RoadTile">
+
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

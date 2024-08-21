@@ -1,11 +1,11 @@
 import { FullGamePlayer } from "../../backend/src/database/controller/includes";
-import { parseJsonArray } from "../../backend/src/utils";
-import { TreeNode } from "../utils";
-import { Employee } from "./EmployeeTypes";
 import {
-	EmployeesById,
-	IsValidEmployeeId
-} from "./Employees";
+	Employee,
+	parseJsonArray
+} from "../../backend/src/utils";
+import { TreeNode } from "../utils";
+import { IsValidId } from "./EmployeeMethods";
+import { EmployeeType } from "./types";
 
 export type EmployeeNode = TreeNode<number>;
 
@@ -112,11 +112,11 @@ export function GetEmployeeTreeOrThrow(
 			tree,
 			parseJsonArray(player.employees).map(
 				(value) => {
-					if (!IsValidEmployeeId(value))
+					if (!IsValidId(value))
 						throw new Error(
 							`Invalid employee ID: ${value}`
 						);
-					return EmployeesById[value];
+					return Employee.ById(value);
 				}
 			)
 		)
@@ -130,7 +130,7 @@ export function GetEmployeeTreeOrThrow(
 
 export function IsValidEmployeeTree(
 	tree: EmployeeNode,
-	employeeList: Employee[]
+	employeeList: EmployeeType[]
 ): boolean {
 	if (!tree) return false;
 
@@ -155,7 +155,7 @@ export function CountEmptySlots(
 
 function checkNode(
 	node: EmployeeNode,
-	list: Employee[],
+	list: EmployeeType[],
 	set: Set<number>,
 	depth: number
 ): boolean {

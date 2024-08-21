@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { EMPLOYEE_ID } from "../../../../../shared/employees/EmployeeIDs";
+import { EMPLOYEE_ID } from "../../../../../shared/employees/types";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import { RecruitAction } from "../../../utils";
@@ -22,7 +22,7 @@ function HiringWindow({
 		if (!myEmployees[employeeHiringIndex])
 			throw new Error(
 				"Invalid employee index: " +
-					employeeHiringIndex
+				employeeHiringIndex
 			);
 
 		const employee = myEmployees[employeeHiringIndex];

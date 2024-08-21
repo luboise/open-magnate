@@ -19,4 +19,4 @@ export interface TransactionBundle {
 	player: number;
 }
 
-export type HouseDistances = Record<number, number>;
+export type HouseDistances = Record<number, number | null>;

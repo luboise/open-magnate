@@ -1,11 +1,8 @@
 import {
 	BaseEmployee,
-	MarketingType
-} from "../../frontend/src/utils";
-import {
-	COLOURS,
-	createMarketingEmployee
-} from "./Employees";
+	MARKETING_TYPE
+} from "../../../frontend/src/utils";
+import { EMPLOYEE_COLOUR } from "../EmployeeTypes";
 
 const MARKETING_EMPLOYEE_IDS = [
 	"market_1",
@@ -20,14 +17,14 @@ export type MARKETING_EMPLOYEE_ID =
 export interface MarketingEmployee extends BaseEmployee {
 	type: "MARKETING";
 	id: MARKETING_EMPLOYEE_ID;
-	colour: COLOURS.LIGHT_BLUE;
-	marketingType: MarketingType;
+	colour: EMPLOYEE_COLOUR.LIGHT_BLUE;
+	marketingType: MARKETING_TYPE;
 }
 
 interface MarketingEmployeeCreationData {
 	name: string;
 	id: MARKETING_EMPLOYEE_ID;
-	marketingType: MarketingType;
+	marketingType: MARKETING_TYPE;
 	notPaid?: boolean;
 }
 
@@ -41,7 +38,7 @@ export function createMarketingEmployee({
 		id: id,
 		name: name,
 		type: "MARKETING",
-		colour: COLOURS.LIGHT_BLUE,
+		colour: EMPLOYEE_COLOUR.LIGHT_BLUE,
 		marketingType: marketingType,
 		buildsInto: [],
 		notPaid: notPaid

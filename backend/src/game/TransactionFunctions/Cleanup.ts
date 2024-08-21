@@ -9,7 +9,7 @@ import {
 import {
 	Area,
 	CreateHouseView,
-	FoodType,
+	DEMAND_TYPE,
 	MarketingCampaignView,
 	MarketingTilesByNumber
 } from "../../utils";
@@ -59,7 +59,7 @@ export const HandleEndOfRound: MoveTransactionFunctionUntyped =
 
 export const AddDemand: MoveTransactionFunctionTyped<{
 	house: HouseView;
-	foodType: FoodType;
+	foodType: DEMAND_TYPE;
 }> = async (bundle, details): Promise<void> => {
 	const { ctx, gameId } = bundle;
 	const { house, foodType } = details;
@@ -136,7 +136,7 @@ export const HouseIsAffectedByMarketing = (
 			},
 			{
 				...MarketingTilesByNumber[
-					campaign.priority
+				campaign.priority
 				],
 
 				pos: {

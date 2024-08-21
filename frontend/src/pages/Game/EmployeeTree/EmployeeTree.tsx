@@ -12,6 +12,7 @@ import {
 	IsValidEmployeeTree,
 	ParseEmployeeTree
 } from "../../../../../shared/employees/EmployeeStructure";
+import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "../../../../../shared/game/defaults";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
@@ -21,7 +22,6 @@ import useDragDrop, {
 	SpreadIfDropFunction
 } from "../../../hooks/useDragDrop";
 import usePanning from "../../../hooks/usePanning";
-import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 import EmployeeTreeNode, {
 	EmployeeTreeNodeDropDetails
@@ -214,7 +214,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 
 			<div
 				className="game-employee-tree-content"
-				onMouseDown={startPanning}
+				onMouseDown={(event) => startPanning(event)}
 			>
 				{plannedTree ? (
 					<EmployeeTreeNode
@@ -266,4 +266,3 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 }
 
 export default EmployeeTree;
-

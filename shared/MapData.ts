@@ -1,26 +1,4 @@
 import { ENTRANCE_CORNER } from "../backend/src/dataViews";
-import { MapStringChar } from "./MapParsing";
-import {
-	BaseMapTileData,
-	MapTileData
-} from "./MapTiles/MapPieceTiles";
-
-export type PartialMapTileData = Omit<
-	BaseMapTileData,
-	"pieceEdges"
->;
-
-// export type MapTileData = {
-// 	x: number;
-// 	y: number;
-// 	type: TileType;
-// 	pieceEdges: DirectionBools;
-// 	data?: any;
-// };
-
-export type UndetailedMap2D = MapStringChar[][];
-export type PartialMap2D = PartialMapTileData[][];
-export type Map2D = MapTileData[][];
 
 // Check if x or y is in the middle of a tile. Useful for finding connecting spots
 export function IsMiddle(pos: number): boolean {
@@ -122,4 +100,3 @@ export function rotateEntranceCorner(
 // 		row === Math.floor(MAP_PIECE_HEIGHT / 2)
 // 	);
 // }
-

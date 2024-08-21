@@ -1,5 +1,5 @@
 import { Position } from "../../../backend/src/dataViews";
-import { Map2D } from "../../MapData";
+import { Map2D } from "../../map/map_2d/types";
 
 type PathNode = {
 	pos: Position;
@@ -38,12 +38,22 @@ export function FindPath(
 	pos1: Position,
 	pos2: Position
 ): Path {
+	return new Path();
+	// TODO: Implement pathfinding
+	/**
 	const currentPos = { ...pos1 };
 
 	const visited = new Set<Position>({ ...currentPos });
 
-	const currents: Position[] = { ...currentPos };
-	while (currents.length > 0) {}
+	return _findPathRec(
+		map,
+		{ cost: 0, pos: pos1 },
+		pos2,
+		visited
+	);
+	const currents: Position[] = [{ ...currentPos }];
+	while (currents.length > 0) { }
+	**/
 }
 
 function _findPathRec(
@@ -77,9 +87,9 @@ function _findPathRec(
 			const newCost: number =
 				seeker.cost +
 				(oldPos.x % 5 === 0 ||
-				newPos.x % 5 === 0 ||
-				oldPos.y % 5 === 0 ||
-				newPos.y % 5 === 0
+					newPos.x % 5 === 0 ||
+					oldPos.y % 5 === 0 ||
+					newPos.y % 5 === 0
 					? 1
 					: 0);
 
@@ -92,9 +102,14 @@ function _findPathRec(
 			if (visited.has(newPos)) {
 			}
 
-			return _findPathRec(map, target, visited);
+			return _findPathRec(
+				map,
+				newSeeker,
+				target,
+				visited
+			);
 		})
-		.filter((val) => val !== null);
+		.filter((val) => val !== null) as Array<number>;
 
 	if (costs.length === 0) return null;
 	else return Math.min(...costs);

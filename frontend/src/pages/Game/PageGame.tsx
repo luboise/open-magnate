@@ -8,7 +8,6 @@ import useMap from "../../hooks/game/useMap";
 import useLocalVal from "../../hooks/useLocalVal";
 import usePanning from "../../hooks/usePanning";
 import useScalingValue from "../../hooks/useScalingValue";
-import { TileType } from "../../utils";
 import EmployeeTree from "./EmployeeTree/EmployeeTree";
 import GlobalUI, {
 	ToggleableType
@@ -128,8 +127,8 @@ function PageGame() {
 		return (
 			<PlacementHandler
 				placementTypes={[
-					TileType.RESTAURANT,
-					TileType.MARKETING
+					"RESTAURANT",
+					"MARKETING"
 				]}
 			/>
 		);

@@ -1,11 +1,11 @@
-import { Employee } from "../../../utils";
+import { EmployeeType } from "../../../../../shared/employees/types";
 import "./EmployeeCard.css";
 
 import { HTMLAttributes } from "react";
 
 interface EmployeeCardProps
 	extends HTMLAttributes<HTMLDivElement> {
-	employee: Employee;
+	employee: EmployeeType;
 }
 
 function EmployeeCard(props: EmployeeCardProps) {
@@ -43,4 +43,3 @@ function EmployeeCard(props: EmployeeCardProps) {
 }
 
 export default EmployeeCard;
-

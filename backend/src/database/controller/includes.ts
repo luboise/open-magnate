@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import {
 	CreateMarketingCampaignView,
+	Employee,
 	GamePlayerViewPrivate,
 	MarketingCampaignViewPrivate,
 	ReadyStatusToBoolean,
@@ -45,7 +46,9 @@ export function CreateGamePlayerView(
 		playerNumber: player.number,
 		restaurant: player.restaurantData.id,
 		milestones: readJsonNumberArray(player.milestones),
-		employees: parseJsonArray(player.employees),
+		employees: parseJsonArray(player.employees).filter(
+			Employee.IsValidId
+		),
 		employeeTreeStr: player.employeeTree,
 		ready: ReadyStatusToBoolean(player.ready),
 		marketingCampaigns: player.marketingCampaigns.map(

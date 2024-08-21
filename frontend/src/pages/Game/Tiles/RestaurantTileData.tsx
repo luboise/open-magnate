@@ -1,8 +1,9 @@
-import { RestaurantTile, TileType } from "../../../utils";
+import { RestaurantTile } from "../../../utils";
 
 export function GetMyRestaurantTile(): RestaurantTile {
 	return {
-		tileType: TileType.RESTAURANT,
+		level: "OVERLAY",
+		tileType: "RESTAURANT",
 		restaurant: 1,
 		pos: { x: 0, y: 0 },
 		rotation: 0,

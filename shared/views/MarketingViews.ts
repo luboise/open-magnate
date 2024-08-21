@@ -2,13 +2,15 @@ import {
 	DEMAND_TYPE,
 	Position
 } from "../../backend/src/dataViews";
+
+import {
+	MARKETING_TYPE,
+	MarketingCampaign
+} from "../../backend/src/shareToFront";
 import {
 	MarketingTile,
-	MarketingTilesByNumber,
-	MarketingType
-} from "../../frontend/src/utils";
-
-import { MarketingCampaign } from "../../backend/src/shareToFront";
+	MarketingTilesByNumber
+} from "../map/tiles";
 
 export function CreateMarketingCampaignView(
 	campaign: MarketingCampaign
@@ -32,7 +34,7 @@ export interface MarketingCampaignView {
 	priority: number;
 	playerNumber: number;
 
-	type: MarketingType;
+	type: MARKETING_TYPE;
 	foodType: DEMAND_TYPE;
 
 	pos: Position;

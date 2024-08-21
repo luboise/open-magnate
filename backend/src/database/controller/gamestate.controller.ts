@@ -10,7 +10,7 @@ import {
 	PLAYER_DEFAULTS
 } from "../../../../shared";
 import { GetEmployeeTreeOrThrow } from "../../../../shared/employees/EmployeeStructure";
-import { MapStringChar } from "../../../../shared/MapParsing";
+import { MapStringChar } from "../../../../shared/map/parsing/types";
 import { MoveData } from "../../../../shared/Moves";
 import { parseTurnOrder } from "../../../../shared/views/GameStateViews";
 import prisma from "../../datasource";
@@ -145,9 +145,9 @@ const GameStateController = {
 	NewMap: (
 		playerCount: number
 	): [
-		mapString: string,
-		Prisma.HouseCreateManyGameInput[]
-	] => {
+			mapString: string,
+			Prisma.HouseCreateManyGameInput[]
+		] => {
 		const defaults = PLAYER_DEFAULTS[playerCount];
 
 		if (!defaults)

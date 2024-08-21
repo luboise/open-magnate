@@ -3,7 +3,7 @@ import {
 	MAP_PIECE_ROW_SEP,
 	MapStringChar,
 	ParsableMapString
-} from "../../../shared/MapParsing";
+} from "../../../shared/map/parsing/types";
 
 type MapPieceColArray = [
 	MapStringChar,

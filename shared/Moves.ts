@@ -1,6 +1,6 @@
 import { ENTRANCE_CORNER } from "../backend/src/dataViews";
 import { EmployeeNode } from "./employees/EmployeeStructure";
-import { TurnAction } from "./GameState";
+import { TurnAction } from "./game/actions/types";
 
 export enum MOVE_TYPE {
 	PLACE_RESTAURANT = "PLACE_RESTAURANT",
@@ -48,4 +48,3 @@ export type MoveData =
 	| MoveNegotiateSalaries
 	| MoveRestructure
 	| MovePickTurnOrder;
-

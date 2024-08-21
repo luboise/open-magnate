@@ -1,18 +1,16 @@
 import { selector, useRecoilValue } from "recoil";
 import { Reserve } from "../../../../backend/src/game/NewGameStructures";
 import {
+	Employee,
 	GetTransposed,
-	ParseMapStringFromGSV
+	MapBackgroundTile
 } from "../../../../backend/src/utils";
-import { Employee } from "../../../../shared/employees/EmployeeTypes";
+import { EmployeeType } from "../../../../shared/employees/types";
 import {
 	EmployeeNode,
-	EmployeesById,
 	GamePlayerViewPrivate,
 	GamePlayerViewPublic,
 	HouseView,
-	IsValidEmployeeId,
-	MapTileData,
 	MarketingCampaignView,
 	ParseEmployeeTree,
 	RestaurantView,
@@ -26,17 +24,17 @@ const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
 const NullGamestateMsg =
 	"Null gamestate. Make sure the selectors can only be called after the atom.";
 
-type MapSelectorType = MapTileData[][];
+type MapSelectorType = MapBackgroundTile[][];
 const mapColumnOrderSelector = selector<MapSelectorType>({
 	key: RECOIL_MAP_COL_ORDER_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
-		const parsedMap = ParseMapStringFromGSV(
-			gameState.map
-		);
-		return parsedMap;
+		//const parsedMap = ParseMapStringFromGSV(
+		//gameState.map
+		//);
+		return gameState.map;
 	}
 });
 
@@ -133,7 +131,7 @@ const playerDataSelector = selector<GamePlayerViewPrivate>({
 	}
 });
 
-const myEmployeesSelector = selector<Employee[]>({
+const myEmployeesSelector = selector<EmployeeType[]>({
 	key: "MY_EMPLOYEES",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
@@ -143,12 +141,12 @@ const myEmployeesSelector = selector<Employee[]>({
 
 		if (!playerData) return [];
 
-		const myEmployees: Employee[] = [];
+		const myEmployees: EmployeeType[] = [];
 
 		playerData.employees.forEach((employeeId) => {
-			if (!IsValidEmployeeId(employeeId)) return;
+			if (!Employee.IsValidId(employeeId)) return;
 
-			myEmployees.push(EmployeesById[employeeId]);
+			myEmployees.push(Employee.ById(employeeId));
 		});
 
 		return myEmployees;

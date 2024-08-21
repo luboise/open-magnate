@@ -29,7 +29,10 @@ import {
 	MarketingCampaignView
 } from "../../shared/views/MarketingViews";
 import { Reserve } from "./game/NewGameStructures";
-import { CreateHouseView } from "./utils";
+import {
+	CreateHouseView,
+	ParseMapStringFromGSV
+} from "./utils";
 
 export type READY_STATUS = PrismaReadyStatus;
 
@@ -52,22 +55,9 @@ export const CreateGameStateView = (
 
 	// TODO: Fix this to be more efficient
 	const turnOrder = getTurnOrder(gameState);
+
 	const currentPlayer = getCurrentPlayer(gameState);
 
-	// gameState.marketingCampaigns.map(
-	// 	(campaign) => {
-	// 		return {
-	// 			priority: campaign.number,
-	// 			turnsRemaining:
-	// 				campaign.turnsRemaining,
-	// 			type: campaign.type,
-	// 			x: campaign.x,
-	// 			y: campaign.y,
-	// 			orientation:
-	// 				campaign.orientation
-	// 		};
-	// 	}
-	// ),
 	const houses: HouseView[] = gameState.houses.map(
 		(house) => CreateHouseView(house)
 	);
@@ -75,20 +65,6 @@ export const CreateGameStateView = (
 	const gardens: GardenView[] = houses
 		.filter((house) => Boolean(house.garden))
 		.map((house) => house.garden) as GardenView[];
-
-	//    const gardens = gameState.houses
-	//.filter((house) => house.garden)
-	//.map((house): GardenView => {
-	//// Can safely ignore TypeScript type complaints since we pre-filtered the list
-	//return {
-	//houseNumber: house.number,
-	//pos: {
-	//x: house.garden!.x,
-	//y: house.garden!.y,
-	//orientation: house.garden!.orientation
-	//}
-	//};
-	//});
 
 	const marketingCampaigns: MarketingCampaignView[] =
 		gameState.players.reduce<MarketingCampaignView[]>(
@@ -122,13 +98,15 @@ export const CreateGameStateView = (
 		)
 		.flat(1);
 
-	const finalMap = createDetailedMapString(
+	const mapString = createDetailedMapString(
 		gameState.rawMap,
 		marketingCampaigns,
 		restaurants,
 		houses,
 		gardens
 	);
+
+	const finalMap = ParseMapStringFromGSV(mapString);
 
 	return {
 		currentPlayer: currentPlayer,

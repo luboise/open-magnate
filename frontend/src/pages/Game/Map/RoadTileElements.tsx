@@ -1,6 +1,7 @@
 import { useMemo } from "react";
-import { TileType } from "../../../../../shared/MapTiles/Tile";
-import { DirectionBools } from "../../../utils";
+import {
+	DirectionBools,
+} from "../../../../../shared/map/tiles/types";
 import RoadLines from "./RoadLines";
 
 interface RoadTileProps {
@@ -12,7 +13,7 @@ function RoadTileElements({
 }: RoadTileProps) {
 	if (!roadDirections)
 		throw new Error(
-			`No road data specified for map of type "${TileType.ROAD}"`
+			`No road data specified for map of type "${"ROAD"}"`
 		);
 
 	const elements = useMemo((): JSX.Element[] => {
@@ -42,4 +43,3 @@ function RoadTileElements({
 }
 
 export default RoadTileElements;
-

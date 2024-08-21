@@ -1,6 +1,6 @@
 import { DEMAND_TYPE } from "@prisma/client";
+import { EMPLOYEE_ID } from "../../../../shared/employees/types";
 import {
-	EMPLOYEE_ID,
 	MarketingAction,
 	MarketingCampaignView,
 	TurnAction,

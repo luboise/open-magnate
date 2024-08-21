@@ -7,10 +7,10 @@ import { useGameStateView } from "../../../../hooks/game/useGameState";
 import usePageGame from "../../../../hooks/game/usePageGame";
 import useTurnPlanning from "../../../../hooks/game/useTurnPlanning";
 import {
+	MapOverlayTileType,
 	MarketingAction,
 	MarketingTile,
-	RestaurantTile,
-	TileType
+	RestaurantTile
 } from "../../../../utils";
 
 // interface RestaurantPlacerState {
@@ -34,7 +34,7 @@ import {
 // 	  };
 
 interface Props {
-	placementTypes: TileType[];
+	placementTypes: MapOverlayTileType[];
 }
 
 function PlacementHandler({ placementTypes }: Props) {
@@ -80,7 +80,7 @@ function PlacementHandler({ placementTypes }: Props) {
 		[]
 	);
 
-	const {} = useClientState(onTileDropped);
+	const { } = useClientState(onTileDropped);
 
 	// TODO: Implement actual house placement logic
 	// if (event.type === "TILE" && event.data.type === "EMPTY")
@@ -156,4 +156,3 @@ function PlacementHandler({ placementTypes }: Props) {
 }
 
 export default PlacementHandler;
-

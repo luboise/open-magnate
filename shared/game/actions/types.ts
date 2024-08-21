@@ -1,22 +1,6 @@
-// export type GameState = {
-// 	turnProgress: TurnProgress;
-// 	currentTurn: number;
-// 	currentPlayer: number;
-// 	players: Array<Player>;
-// 	mapPieces: Array<MapPieceData>;
-// 	houses: Array<House>;
-// 	turnOrder: Array<number> | null;
-// };
-
-import { DEMAND_TYPE } from "../backend/src/dataViews";
-import { EMPLOYEE_ID } from "./employees/EmployeeIDs";
-import { MarketingTile } from "./MapTiles";
-
-// export interface GameCreationParams {
-// 	players: Player[];
-// }
-
-export const MAX_PLAYER_COUNT = 5;
+import { DEMAND_TYPE } from "../../../backend/src/dataViews";
+import { EMPLOYEE_ID } from "../../employees/types";
+import { MarketingTile } from "../../map/tiles";
 
 interface BaseGameAction {
 	type: string;

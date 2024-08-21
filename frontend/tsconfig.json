@@ -32,5 +32,8 @@
 		"../../shared/Player.ts",
 		"../../shared/MapData.ts"
 	],
+	"exclude": [
+		"node_modules"
+	],
 	"references": [{ "path": "./tsconfig.node.json" }]
 }

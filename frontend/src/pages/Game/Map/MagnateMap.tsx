@@ -9,13 +9,13 @@ import {
 	GetMarketingTileFromView,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
-	MapTileData
+	MapBackgroundTile
 } from "../../../utils";
 import House from "./House";
 import MapMarketingTile from "./MapMarketingTile";
 import MapTile from "./MapTile";
 
-interface MapProps extends HTMLAttributes<HTMLDivElement> {}
+interface MapProps extends HTMLAttributes<HTMLDivElement> { }
 
 function MagnateMap({
 	children,
@@ -49,7 +49,7 @@ function MagnateMap({
 	// );
 
 	function FilterPreviewFiles(
-		_tile: MapTileData
+		_tile: MapBackgroundTile
 	): boolean {
 		// if (mapType === "cropped") {
 		// 	return (
@@ -92,7 +92,7 @@ function MagnateMap({
 						<tr>
 							{...new Array(
 								map.length /
-									MAP_PIECE_HEIGHT
+								MAP_PIECE_HEIGHT
 							).fill(<td />)}
 						</tr>
 					)}

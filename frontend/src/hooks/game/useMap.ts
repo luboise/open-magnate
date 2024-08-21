@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
-import { HouseView, MapTileData } from "../../utils";
+import { HouseView, MapBackgroundTile } from "../../utils";
 import { useGameStateView } from "./useGameState";
 
 type MapRenderListType = Record<string, JSX.Element[]>;
@@ -32,9 +32,9 @@ export enum MAP_RENDER_KEYS {
 
 type MapCursorEvent =
 	| {
-			type: "TILE";
-			data: MapTileData;
-	  }
+		type: "TILE";
+		data: MapBackgroundTile;
+	}
 	| { type: "HOUSE"; data: HouseView };
 
 // type MouseEvent =
@@ -197,4 +197,3 @@ function useMap() {
 }
 
 export default useMap;
-

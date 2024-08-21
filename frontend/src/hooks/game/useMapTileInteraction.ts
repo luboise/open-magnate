@@ -1,7 +1,10 @@
 import { atom, useRecoilState } from "recoil";
-import { MapOverlayTile, MapTileData } from "../../utils";
+import {
+	MapBackgroundTile,
+	MapOverlayTile
+} from "../../utils";
 
-type HoveringType = MapOverlayTile | MapTileData;
+type HoveringType = MapOverlayTile | MapBackgroundTile;
 
 type MapInteractionState = {
 	hovering: HoveringType | null;
@@ -36,4 +39,3 @@ function useMapTileInteraction() {
 }
 
 export default useMapTileInteraction;
-

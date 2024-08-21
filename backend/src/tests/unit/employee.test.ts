@@ -1,15 +1,15 @@
 import {
+	Employee,
 	EmployeeNode,
-	EmployeesById,
 	IsValidEmployeeTree,
 	ParseEmployeeTree,
-	SerialiseEmployeeTree,
-	createCEOEmployee
+	SerialiseEmployeeTree
 } from "../../../../shared";
-import { Employee } from "../../../../shared/employees/EmployeeTypes";
+import { createCEOEmployee } from "../../../../shared/employees/employee_types";
+import { EmployeeType } from "../../../../shared/employees/types";
 
 let testTree: EmployeeNode;
-let list: Employee[] = [];
+let list: EmployeeType[] = [];
 
 beforeEach(() => {
 	testTree = {
@@ -48,18 +48,18 @@ beforeEach(() => {
 
 	list = [
 		createCEOEmployee(3),
-		EmployeesById["mgmt_1"],
-		EmployeesById["mgmt_1"],
-		EmployeesById["mgmt_1"],
-		EmployeesById["mgmt_1"],
-		EmployeesById["food_basic"],
-		EmployeesById["food_basic"],
-		EmployeesById["food_basic"],
-		EmployeesById["food_basic"],
-		EmployeesById["food_basic"],
-		EmployeesById["food_basic"],
-		EmployeesById["food_basic"],
-		EmployeesById["food_basic"]
+		Employee.ById("mgmt_1"),
+		Employee.ById("mgmt_1"),
+		Employee.ById("mgmt_1"),
+		Employee.ById("mgmt_1"),
+		Employee.ById("food_basic"),
+		Employee.ById("food_basic"),
+		Employee.ById("food_basic"),
+		Employee.ById("food_basic"),
+		Employee.ById("food_basic"),
+		Employee.ById("food_basic"),
+		Employee.ById("food_basic"),
+		Employee.ById("food_basic")
 	];
 });
 

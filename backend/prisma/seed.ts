@@ -1,5 +1,4 @@
 // import prisma from "../src/datasource";
-import { DEFAULT_EMPLOYEE_ARRAY } from "../../shared/employees/Employees";
 
 import {
 	Prisma,
@@ -8,7 +7,10 @@ import {
 	RestaurantData,
 	TURN_PROGRESS
 } from "@prisma/client";
-import { RESTAURANT_NAMES } from "../../shared";
+import {
+	GameDefaults,
+	RESTAURANT_NAMES
+} from "../../shared";
 import { GetNewReserve } from "../src/game/NewGameStructures";
 // import prisma from "../src/datasource";
 
@@ -122,13 +124,15 @@ export const seedGameState1: Prisma.GameStateCreateInput = {
 			data: [
 				{
 					number: 1,
-					employees: DEFAULT_EMPLOYEE_ARRAY,
+					employees:
+						GameDefaults.DEFAULT_EMPLOYEE_ARRAY,
 					milestones: [],
 					restaurantDataId: seedRestaurant1.id
 				},
 				{
 					number: 2,
-					employees: DEFAULT_EMPLOYEE_ARRAY,
+					employees:
+						GameDefaults.DEFAULT_EMPLOYEE_ARRAY,
 					milestones: [],
 					restaurantDataId: seedRestaurant2.id
 				}

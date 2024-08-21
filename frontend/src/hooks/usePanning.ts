@@ -22,7 +22,9 @@ type MouseDownAction =
 	  }
 	| { actionType: "RELEASED" | "RESET_OFFSET" };
 
-type MouseEventType = globalThis.MouseEvent;
+type MouseEventType =
+	| globalThis.MouseEvent
+	| React.MouseEvent<HTMLElement, MouseEvent>;
 
 function calculateOffset(
 	actualPos: Position,

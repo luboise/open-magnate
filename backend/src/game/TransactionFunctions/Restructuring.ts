@@ -1,12 +1,15 @@
+import { EMPLOYEE_ID } from "../../../../shared/employees/types";
 import {
-	EMPLOYEE_ID,
+	Employee,
 	EmployeeNode,
-	EmployeesById,
 	IsValidEmployeeTree,
 	SerialiseEmployeeTree,
 	parseJsonArray
 } from "../../utils";
-import { MoveTransactionFunctionTyped } from "./types";
+import {
+	MoveTransactionFunctionTyped,
+	MoveTransactionFunctionUntyped
+} from "./types";
 import { BuildErrorMessage } from "./utils";
 
 export const Restructure: MoveTransactionFunctionTyped<
@@ -30,7 +33,7 @@ export const Restructure: MoveTransactionFunctionTyped<
 	if (
 		!IsValidEmployeeTree(
 			newTree,
-			employeeList.map((emp) => EmployeesById[emp])
+			employeeList.map((emp) => Employee.ById(emp))
 		)
 	)
 		throw new Error(
@@ -54,3 +57,24 @@ export const Restructure: MoveTransactionFunctionTyped<
 			`Unable to restructure for player ${player} in lobby #${gameId}`
 		);
 };
+export const BackupTurnOrder: MoveTransactionFunctionUntyped =
+	async (bundle) => {
+		const { ctx, gameId } = bundle;
+
+		const game = await ctx.gameState.findUniqueOrThrow({
+			where: { id: gameId }
+		});
+
+		if (
+			!(await ctx.gameState.update({
+				where: { id: gameId },
+				data: {
+					oldTurnOrder: game.turnOrder,
+					turnOrder: "X".repeat(game.playerCount)
+				}
+			}))
+		)
+			throw new Error(
+				"Unable to update currentTurnOrder"
+			);
+	};

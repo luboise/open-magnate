@@ -1,5 +1,5 @@
 import { Position } from "../../backend/src/dataViews";
-import { RotationAmount } from "../MapTiles";
+import { RotationAmount } from "../map/tiles/types";
 
 export interface AreaData {
 	pos: Position;

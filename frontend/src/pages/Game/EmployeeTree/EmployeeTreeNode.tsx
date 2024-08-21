@@ -1,6 +1,6 @@
 import { HTMLAttributes } from "react";
 import { EmployeeNode } from "../../../../../shared/employees/EmployeeStructure";
-import { Employee } from "../../../utils";
+import { EmployeeType } from "../../../../../shared/employees/types";
 import EmployeeCard from "../Employees/EmployeeCard";
 import {
 	EmployeeTreeSpreadIfDragCallback,
@@ -28,7 +28,7 @@ export interface EmployeeTreeNodeDropDetails {
 interface EmployeeTreeNodeProps
 	extends HTMLAttributes<HTMLDivElement> {
 	node: EmployeeNode;
-	employeeList: Employee[];
+	employeeList: EmployeeType[];
 	spreadIfDrag: EmployeeTreeSpreadIfDragCallback;
 	spreadIfDrop: EmployeeTreeSpreadIfDropCallback;
 	depth?: number;
@@ -88,13 +88,13 @@ function EmployeeTreeNode({
 				employee={employee}
 				{...(parentDetails
 					? spreadIfDrop({
-							droppedOnto: node.data,
-							parentReceiving:
-								parentDetails.parentNode
-									.data,
-							indexInParent:
-								parentDetails.indexInParent
-						})
+						droppedOnto: node.data,
+						parentReceiving:
+							parentDetails.parentNode
+								.data,
+						indexInParent:
+							parentDetails.indexInParent
+					})
 					: {})}
 				{...(depth > 1
 					? spreadIfDrag(node.data)
@@ -108,7 +108,7 @@ function EmployeeTreeNode({
 					left: "50%",
 					width:
 						childNodes.length *
-							depthMap[depth] ?? undefined
+						depthMap[depth] ?? undefined
 				}}
 			>
 				{...childNodes}
@@ -118,4 +118,3 @@ function EmployeeTreeNode({
 }
 
 export default EmployeeTreeNode;
-

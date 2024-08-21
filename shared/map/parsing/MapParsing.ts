@@ -1,64 +1,43 @@
 import {
-	CloneArray,
-	DirectionBools,
+	AbstractMapTileInterface,
 	GetTransposed,
-	IsConnecting,
-	IsEdge,
-	IsMaxBound,
-	IsMinBound,
 	Map2D,
+	MapAnyTileType,
+	MapBackgroundTile,
 	new2DArray
-} from "../backend/src/utils";
+} from "../../../backend/src/utils";
 import {
 	GardenView,
 	HouseView,
 	RestaurantView
-} from "./views/MapViews";
-import { MarketingCampaignView } from "./views/MarketingViews";
+} from "../../views/MapViews";
+import { MarketingCampaignView } from "../../views/MarketingViews";
 
-import {
-	PartialMap2D,
-	PartialMapTileData,
-	UndetailedMap2D
-} from "./MapData";
-import { MarketingTilesByNumber } from "./MapTiles";
 import {
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_SIZE,
-	MAP_PIECE_WIDTH,
-	MapPieceData,
-	MapTileData
-} from "./MapTiles/MapPieceTiles";
-import { TileType } from "./MapTiles/Tile";
-
-export type MapStringChar =
-	| "X"
-	| "R"
-	| "L"
-	| "C"
-	| "B"
-	| "H"
-	| "X"
-	| "M";
+	MAP_PIECE_WIDTH
+} from "../../game/constants/MapConstants";
+import { addMapDetails } from "../map_2d/MapDetails";
+import {
+	PartialMap2D,
+	UndetailedMap2D
+} from "../map_2d/types";
+import { MarketingTilesByNumber } from "../tiles";
+import { MapPieceData } from "../tiles/types";
+import {
+	CHAR_TO_MAP_TILETYPE,
+	MapStringChar,
+	ParsableMapString
+} from "./types";
 
 export function IsValidMapStringChar(
 	char: string
 ): char is MapStringChar {
 	return (
-		char.length === 1 &&
-		char in CHAR_TO_MAP_TILE_CONVERTER
+		char.length === 1 && char in CHAR_TO_MAP_TILETYPE
 	);
 }
-
-export const MAP_PIECE_ROW_SEP = " ";
-export const MAP_PIECE_COL_SEP = ";";
-
-export type ParsableMapChar =
-	| MapStringChar
-	| typeof MAP_PIECE_ROW_SEP
-	| typeof MAP_PIECE_COL_SEP;
-
-export type ParsableMapString = string;
 
 export function IsParsableMapString(
 	str: string
@@ -69,7 +48,7 @@ export function IsParsableMapString(
 }
 
 export function translateMapTile(
-	tile: MapTileData,
+	tile: MapBackgroundTile,
 	xPieces: number,
 	yPieces: number
 ) {
@@ -82,42 +61,19 @@ export function parseMapChar(
 	char: MapStringChar,
 	x: number,
 	y: number
-): PartialMapTileData {
-	// Handle invalid character
+): AbstractMapTileInterface {
+	// TODO: Separate this logic out for background/overlay
+	const thetype: { tileType: MapAnyTileType } =
+		CHAR_TO_MAP_TILETYPE[char];
 
-	const parsedObject: PartialMapTileData = {
-		...CHAR_TO_MAP_TILE_CONVERTER[char],
+	const parsedObject: AbstractMapTileInterface = {
+		level: "BACKGROUND",
+		tileType: thetype.tileType,
 		pos: {
 			x: x,
 			y: y
-		},
-		width: 1,
-		height: 1,
-		rotation: 0
+		}
 	};
-
-	if (parsedObject.tileType === TileType.ROAD) {
-		parsedObject.data = {
-			// north:
-			// 	isTopMiddle(row, col) ||
-			// 	(row > 0 && chars[row - 1][col] === "R"),
-			// south:
-			// 	isBottomMiddle(row, col) ||
-			// 	(row < MAP_PIECE_HEIGHT - 1 &&
-			// 		chars[row + 1][col] === "R"),
-			// east:
-			// 	isRightMiddle(row, col) ||
-			// 	(col < MAP_PIECE_WIDTH - 1 &&
-			// 		chars[row][col + 1] === "R"),
-			// west:
-			// 	isLeftMiddle(row, col) ||
-			// 	(col > 0 && chars[row][col - 1] === "R")
-			north: true,
-			south: true,
-			east: true,
-			west: true
-		};
-	}
 
 	return parsedObject;
 }
@@ -276,7 +232,7 @@ export function createDetailedMapString(
 	for (const marketingCampaign of marketingCampaigns) {
 		const tile =
 			MarketingTilesByNumber[
-				marketingCampaign.priority
+			marketingCampaign.priority
 			];
 		if (!tile)
 			throw new Error(
@@ -285,12 +241,12 @@ export function createDetailedMapString(
 
 		const width =
 			marketingCampaign.pos.orientation ===
-			"HORIZONTAL"
+				"HORIZONTAL"
 				? tile.width
 				: tile.height;
 		const height =
 			marketingCampaign.pos.orientation ===
-			"HORIZONTAL"
+				"HORIZONTAL"
 				? tile.height
 				: tile.width;
 
@@ -305,21 +261,6 @@ export function createDetailedMapString(
 	return finalMap.map((col) => col.join("")).join(";");
 }
 
-export const CHAR_TO_MAP_TILE_CONVERTER: Record<
-	MapStringChar,
-	{ tileType: TileType }
-> = {
-	X: { tileType: TileType.EMPTY },
-
-	R: { tileType: TileType.ROAD },
-	H: { tileType: TileType.HOUSE },
-
-	L: { tileType: TileType.LEMONADE },
-	C: { tileType: TileType.COLA },
-	B: { tileType: TileType.BEER },
-	M: { tileType: TileType.MARKETING }
-} as const;
-
 export function ParseMapStringFromGSV(
 	mapString: string
 ): Map2D {
@@ -331,93 +272,4 @@ export function ParseMapStringFromGSV(
 		);
 
 	return addMapDetails(GetTransposed(rowOrderMap));
-}
-
-export function addMapDetails(
-	baseMap: PartialMap2D
-): Map2D {
-	const newMap = CloneArray(baseMap) as Map2D;
-
-	// const newMap = new2DArray<MapTileData>(
-	// 	baseMap.length,
-	// 	baseMap[0].length
-	// );
-	const maxX = baseMap.length - 1;
-
-	// function test(y, maxy, )
-	// Since the data is in column major order, iterate Y first
-	for (let x = 0; x <= maxX; x++) {
-		const maxY = newMap[x].length - 1;
-
-		for (let y = 0; y <= maxY; y++) {
-			const val = newMap[x][y];
-			const oldDetails = baseMap[x][y];
-
-			const calculated: DirectionBools = {
-				north:
-					IsEdge(val.pos.y - 1) &&
-					IsEdge(val.pos.y),
-				south:
-					IsEdge(val.pos.y + 1) &&
-					IsEdge(val.pos.y),
-				east:
-					IsEdge(val.pos.x + 1) &&
-					IsEdge(val.pos.x),
-				west:
-					IsEdge(val.pos.x - 1) &&
-					IsEdge(val.pos.x)
-			};
-
-			const z = oldDetails.tileType;
-
-			const newVal: MapTileData = {
-				...oldDetails,
-				pieceEdges: calculated,
-				...(z === TileType.ROAD
-					? {
-							adjacentRoads: {
-								north:
-									(!IsMinBound(y) &&
-										y > 0 &&
-										newMap[x][y - 1]
-											.tileType ===
-											TileType.ROAD) ||
-									IsConnecting(x, y - 1),
-								south:
-									(!IsMaxBound(y) &&
-										y < maxY &&
-										newMap[x][y + 1]
-											.tileType ===
-											TileType.ROAD) ||
-									IsConnecting(x, y + 1),
-								east:
-									(!IsMaxBound(x) &&
-										x < maxX &&
-										newMap[x + 1][y]
-											.tileType ===
-											TileType.ROAD) ||
-									IsConnecting(
-										val.pos.x + 1,
-										val.pos.y
-									),
-								west:
-									(!IsMinBound(x) &&
-										x > 0 &&
-										newMap[x - 1][y]
-											.tileType ===
-											TileType.ROAD) ||
-									IsConnecting(
-										val.pos.x - 1,
-										val.pos.y
-									)
-							}
-						}
-					: {})
-			};
-
-			newMap[x][y] = newVal;
-		}
-	}
-
-	return newMap;
 }
