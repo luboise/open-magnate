@@ -174,7 +174,7 @@ export class DijkstraPriorityQueue {
 		return node;
 	}
 
-	public solve(): Path | null {
+	public solve(): PathDetails | null {
 		let finalNode = this.visit();
 		while (
 			finalNode !== null &&
@@ -187,6 +187,8 @@ export class DijkstraPriorityQueue {
 		}
 
 		if (finalNode === null) return null;
+
+		const finalCost = finalNode.cost;
 
 		const path: Path = new Path();
 		while (
@@ -206,6 +208,16 @@ export class DijkstraPriorityQueue {
 		}
 		path.addNode(this.start);
 
-		return path;
+		const pathDetails: PathDetails = {
+			path: path,
+			cost: finalCost
+		};
+
+		return pathDetails;
 	}
+}
+
+export interface PathDetails {
+	path: Path;
+	cost: number;
 }

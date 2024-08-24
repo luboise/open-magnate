@@ -19,25 +19,28 @@ export function IsAdjacent(
 	m1: Measurable,
 	m2: Measurable
 ): boolean {
-	const m1xInBounds = m1.pos.x < m2.pos.x + m2.width;
-	const m1yInBounds = m1.pos.y < m2.pos.y + m2.height;
+	const m1Bottom = m1.pos.y + m1.height;
+	const m1Right = m1.pos.x + m1.width;
 
-	// Check for m2 contains m1 origin
-	if (m1xInBounds && m1yInBounds) return false;
+	const m2Bottom = m2.pos.y + m2.height;
+	const m2Right = m2.pos.x + m2.width;
+
+	const m1xInBounds =
+		(m1.pos.x >= m2.pos.x && m1.pos.x < m2Right) ||
+		(m1Right - 1 >= m2.pos.x && m1Right - 1 < m2Right);
+	const m1yInBounds =
+		(m1.pos.y >= m2.pos.y && m1.pos.y < m2Bottom) ||
+		(m1Bottom - 1 >= m2.pos.y &&
+			m1Bottom - 1 < m2Bottom);
 
 	// Bottom touching
-	if (m1.pos.y + m1.height === m2.pos.y && m1xInBounds)
-		return true;
-
+	if (m1Bottom === m2.pos.y && m1xInBounds) return true;
 	// Top touching
-	if (m1.pos.y === m2.pos.y + m2.height && m1xInBounds)
-		return true;
+	if (m2Bottom === m1.pos.y && m1xInBounds) return true;
 	// Left touching
-	if (m1.pos.x === m2.pos.x + m2.width && m1yInBounds)
-		return true;
+	if (m2Right === m1.pos.x && m1yInBounds) return true;
 	// Right touching
-	if (m1.pos.x + m1.width === m2.pos.x && m1yInBounds)
-		return true;
+	if (m1Right === m2.pos.x && m1yInBounds) return true;
 
 	// All cases fail
 	return false;

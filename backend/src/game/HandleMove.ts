@@ -141,7 +141,6 @@ export function GetNextTurnPhase(
 		case "USE_EMPLOYEES": {
 			return "SALARY_PAYOUTS";
 		}
-		// TODO: Fix this to run cleanup
 		case "SALARY_PAYOUTS": {
 			return "RESTRUCTURING";
 		}

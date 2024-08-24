@@ -164,14 +164,15 @@ function usePanning(
 				return;
 
 			if (type === "mousedown") {
-				console.debug(
-					"Pan started: ",
-					"Current state: ",
-					state,
-					"Position: ",
-					pos
-				);
-
+				/**
+								console.debug(
+									"Pan started: ",
+									"Current state: ",
+									state,
+									"Position: ",
+									pos
+								);
+				**/
 				event.preventDefault();
 				event.stopPropagation();
 				dispatch({ actionType: "PRESSED", pos });

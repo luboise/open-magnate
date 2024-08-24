@@ -1,6 +1,7 @@
 import {
 	FullGameState,
-	FullGameStateInclude
+	FullGameStateInclude,
+	FullHouse
 } from "../../database/controller/includes";
 import {
 	CreateGameStateView,
@@ -42,7 +43,6 @@ export const HandleEndOfRound: MoveTransactionFunctionUntyped =
 			await BroadcastMarketing(bundle, campaign);
 		}
 
-		// TODO: Add logic here for marketing campaigns and other post round actions
 		const updated = await ctx.gameState.update({
 			where: {
 				id: gameState.id
@@ -116,6 +116,7 @@ export const GetAffectedHouses: MoveTransactionFunctionTyped<
 			include: FullGameStateInclude
 		});
 
+	console.log(campaign, game.houses);
 	return game.houses
 		.filter((house) =>
 			HouseIsAffectedByMarketing(house, campaign)
@@ -124,7 +125,7 @@ export const GetAffectedHouses: MoveTransactionFunctionTyped<
 };
 
 export const HouseIsAffectedByMarketing = (
-	house: FullGameState["houses"][number],
+	house: FullHouse,
 	campaign: MarketingCampaignView
 ): boolean => {
 	if (campaign.type === "BILLBOARD") {
@@ -136,7 +137,7 @@ export const HouseIsAffectedByMarketing = (
 			},
 			{
 				...MarketingTilesByNumber[
-				campaign.priority
+					campaign.priority
 				],
 
 				pos: {
@@ -147,5 +148,5 @@ export const HouseIsAffectedByMarketing = (
 		);
 	}
 	// TODO: Account for the other marketing types
-	return true;
+	return false;
 };
