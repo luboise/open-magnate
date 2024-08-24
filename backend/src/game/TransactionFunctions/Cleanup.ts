@@ -116,7 +116,6 @@ export const GetAffectedHouses: MoveTransactionFunctionTyped<
 			include: FullGameStateInclude
 		});
 
-	console.log(campaign, game.houses);
 	return game.houses
 		.filter((house) =>
 			HouseIsAffectedByMarketing(house, campaign)

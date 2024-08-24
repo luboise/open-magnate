@@ -213,8 +213,6 @@ export function createDetailedMapString(
 	const map = GetTransposed(array);
 	if (!map) throw new Error("Unable to parse raw map");
 
-	console.debug(map[0]);
-
 	for (const house of houses) {
 		for (let i = 0; i < 2; i++)
 			for (let j = 0; j < 2; j++)
@@ -232,7 +230,7 @@ export function createDetailedMapString(
 	for (const marketingCampaign of marketingCampaigns) {
 		const tile =
 			MarketingTilesByNumber[
-			marketingCampaign.priority
+				marketingCampaign.priority
 			];
 		if (!tile)
 			throw new Error(
@@ -241,12 +239,12 @@ export function createDetailedMapString(
 
 		const width =
 			marketingCampaign.pos.orientation ===
-				"HORIZONTAL"
+			"HORIZONTAL"
 				? tile.width
 				: tile.height;
 		const height =
 			marketingCampaign.pos.orientation ===
-				"HORIZONTAL"
+			"HORIZONTAL"
 				? tile.height
 				: tile.width;
 

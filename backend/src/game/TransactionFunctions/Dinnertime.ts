@@ -16,6 +16,7 @@ import {
 } from "../../utils";
 import {
 	HouseDistances,
+	MoveTransactionFunctionTyped,
 	MoveTransactionFunctionUntyped
 } from "./types";
 
@@ -89,9 +90,9 @@ export const HandleDinnertime: MoveTransactionFunctionUntyped =
 			return true;
 		}
 
-		for (const house of houses.sort(
-			(house) => house.priority
-		)) {
+		for (const house of houses
+			.filter((house) => house.demand.length)
+			.sort((house) => house.priority)) {
 			const players = details
 				.filter((player) =>
 					CanSatisfy(player, house)
@@ -104,11 +105,79 @@ export const HandleDinnertime: MoveTransactionFunctionUntyped =
 
 			if (players.length === 0) continue;
 
-			console.debug(
+			await PlayerSellsDemand(bundle, {
+				player: players[0],
+				houseNumber: house.priority
+			});
+			/**console.debug(
 				`Need to implement selling house ${house.priority} to player ${players[0].playerNumber} in game ${gameId}.`
-			);
+			);**/
 		}
 	};
+
+const PlayerSellsDemand: MoveTransactionFunctionTyped<{
+	player: PlayerDinnertimeDetails;
+	houseNumber: number;
+}> = async (bundle, details) => {
+	const { ctx, gameId } = bundle;
+
+	const game = await ctx.gameState.findUniqueOrThrow({
+		where: { id: gameId },
+		include: FullGameStateInclude
+	});
+
+	const house = game.houses.find(
+		(house) => house.number === details.houseNumber
+	);
+	if (!house)
+		throw new Error(
+			`House ${details.houseNumber} not found.`
+		);
+
+	for (const demand of house.demand) {
+		await ctx.houseDemand.delete({
+			where: {
+				demandId: (
+					await ctx.houseDemand.findFirstOrThrow({
+						where: {
+							type: demand.type,
+							houseId: house.id
+						}
+					})
+				).demandId
+			}
+		});
+		const playerDemand =
+			await ctx.playerDemand.findFirstOrThrow({
+				where: {
+					type: demand.type,
+					gameId: gameId,
+					playerNumber:
+						details.player.playerNumber
+				}
+			});
+		await ctx.playerDemand.delete({
+			where: {
+				demandId: playerDemand.demandId
+			}
+		});
+	}
+
+	await ctx.gamePlayer.update({
+		where: {
+			gamePlayerId: {
+				gameId: gameId,
+				number: details.player.playerNumber
+			}
+		},
+		data: {
+			money: {
+				// TODO: Calculate the actual amount that the player receives
+				increment: 10 * house.demand.length
+			}
+		}
+	});
+};
 
 export interface PlayerDinnertimeDetails {
 	playerNumber: number;
