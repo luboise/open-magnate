@@ -1,8 +1,7 @@
-import {
-	READY_STATUS
-} from "../../backend/src/dataViews";
+import { READY_STATUS } from "../../backend/src/dataViews";
 import { DEMAND_TYPE } from "../../backend/src/shareToFront";
 import {
+	GameEventView,
 	Map2D,
 	TURN_PROGRESS
 } from "../../frontend/src/utils";
@@ -22,6 +21,8 @@ interface BaseGameStateView {
 	turnProgress: TURN_PROGRESS;
 	currentTurn: number;
 	currentPlayer: number | null;
+
+	history: GameEventView[];
 
 	map: Map2D;
 	turnOrder: Array<number>;

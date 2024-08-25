@@ -1,5 +1,6 @@
 export * from "./Cleanup";
 export * from "./Dinnertime";
+export * from "./Events";
 export * from "./Placement";
 export * from "./ReadyStatus";
 export * from "./Restructuring";

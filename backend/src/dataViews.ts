@@ -30,7 +30,9 @@ import {
 } from "../../shared/views/MarketingViews";
 import { Reserve } from "./game/NewGameStructures";
 import {
+	CreateGameEventView,
 	CreateHouseView,
+	GameEventView,
 	ParseMapStringFromGSV
 } from "./utils";
 
@@ -107,6 +109,10 @@ export const CreateGameStateView = (
 
 	const finalMap = ParseMapStringFromGSV(mapString);
 
+	const history: GameEventView[] = gameState.events
+		.map((event) => CreateGameEventView(event))
+		.sort((e1, e2) => e2.time - e1.time);
+
 	return {
 		currentPlayer: currentPlayer,
 		currentTurn: gameState.currentTurn,
@@ -114,6 +120,7 @@ export const CreateGameStateView = (
 		map: finalMap,
 		playerCount: gameState.playerCount,
 		turnOrder: turnOrder,
+		history: history,
 		realTurnOrder: gameState.turnOrder
 			.split("")
 			.map((char) =>

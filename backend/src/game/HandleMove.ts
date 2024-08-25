@@ -126,6 +126,7 @@ export async function TransactMove(
 
 	await TransactionFunctions.ReadyPlayer(bundle);
 	await TransactionFunctions.ValidateTurnProgress(bundle);
+	await TransactionFunctions.NewEvent(bundle);
 }
 
 export function GetNextTurnPhase(

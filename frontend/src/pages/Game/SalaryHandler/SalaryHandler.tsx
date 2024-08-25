@@ -1,11 +1,11 @@
-import "./SalaryHandler.css";
-
 import { HTMLAttributes, useMemo, useReducer } from "react";
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import { BASE_SALARY } from "../../../utils";
+import DinnertimeRecap from "./DinnertimeRecap";
+import "./SalaryHandler.css";
 
 interface State {
 	employeesToRemove: number[];
@@ -18,7 +18,8 @@ interface Action {
 
 interface Props extends HTMLAttributes<HTMLDivElement> {}
 function SalaryHandler({ ...args }: Props) {
-	const { myEmployees, playerData } = useGameStateView();
+	const { myEmployees, playerData, lastEvent } =
+		useGameStateView();
 
 	const { makeMove } = usePageGame();
 
@@ -71,7 +72,13 @@ function SalaryHandler({ ...args }: Props) {
 
 	return (
 		<div className={`game-salary-handler`} {...args}>
-			<div className="game-salary-handler-main"></div>
+			<div className="game-salary-handler-main">
+				{lastEvent ? (
+					<DinnertimeRecap event={lastEvent} />
+				) : (
+					<>NO EVENT</>
+				)}
+			</div>
 			<div className="game-salary-handler-receipt-summary">
 				receipt top
 			</div>

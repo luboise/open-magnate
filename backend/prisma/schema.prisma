@@ -107,12 +107,28 @@ model GamePlayerRestaurant {
   @@map("game_player_restaurant")
 }
 
+model GameEvent {
+  id Int @id @default(autoincrement()) @map("game_event_id")
+
+  gameId Int       @map("game_state_id")
+  game   GameState @relation(fields: [gameId], references: [id])
+
+  time Int @default(dbgenerated("UNIX_TIMESTAMP()")) @map("time_of_occurence")
+
+  eventData Json @map("game_event_data")
+}
+
 model GameState {
   // ID fields
   id    Int   @id @map("gamestate_id")
   lobby Lobby @relation(fields: [id], references: [id], onDelete: Cascade)
 
-  turnProgress TURN_PROGRESS @default(PREGAME)
+  timeStarted Int @default(dbgenerated("UNIX_TIMESTAMP()")) @map("game_start_timestamp")
+
+  turnProgress        TURN_PROGRESS @default(PREGAME)
+  turnProgressDetails Json?
+
+  events GameEvent[]
 
   // Scalar fields
   rawMap String @db.VarChar(2048)

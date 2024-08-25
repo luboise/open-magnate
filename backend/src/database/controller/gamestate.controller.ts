@@ -9,9 +9,9 @@ import {
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
 } from "../../../../shared";
+import { MoveData } from "../../../../shared/Moves";
 import { GetEmployeeTreeOrThrow } from "../../../../shared/employees/EmployeeStructure";
 import { MapStringChar } from "../../../../shared/map/parsing/types";
-import { MoveData } from "../../../../shared/Moves";
 import { parseTurnOrder } from "../../../../shared/views/GameStateViews";
 import prisma from "../../datasource";
 import { TransactMove as TransactMoves } from "../../game/HandleMove";
@@ -19,7 +19,10 @@ import {
 	MAP_PIECES,
 	createMapString
 } from "../../game/MapPieces";
-import { GetTransposed } from "../../utils";
+import {
+	GetTransposed,
+	TransactionInfo
+} from "../../utils";
 import GameStateRepository from "../repository/gamestate.repository";
 import {
 	FullGameState,
@@ -350,6 +353,9 @@ const GameStateController = {
 						`Invalid player number (${player}) for game #${game}`
 					);
 
+				const transactionMoves: TransactionInfo[] =
+					[];
+
 				// Perform each move inside of the transaction
 				// If any fail, transactmoves will throw an error
 				for (const move of moves) {
@@ -357,11 +363,19 @@ const GameStateController = {
 						{
 							ctx: ctx,
 							gameId: game,
-							player: player
+							currentTurn:
+								gameState.currentTurn,
+							player: player,
+							transactionInfo:
+								transactionMoves
 						},
 						move
 					);
 				}
+				console.log(
+					"Transaction Moves: ",
+					transactionMoves
+				);
 			});
 		} catch (error) {
 			console.error(error);

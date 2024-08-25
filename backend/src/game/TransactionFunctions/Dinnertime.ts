@@ -119,7 +119,9 @@ const PlayerSellsDemand: MoveTransactionFunctionTyped<{
 	player: PlayerDinnertimeDetails;
 	houseNumber: number;
 }> = async (bundle, details) => {
-	const { ctx, gameId } = bundle;
+	const { ctx, gameId, transactionInfo, currentTurn } =
+		bundle;
+	const { player, houseNumber } = details;
 
 	const game = await ctx.gameState.findUniqueOrThrow({
 		where: { id: gameId },
@@ -127,12 +129,10 @@ const PlayerSellsDemand: MoveTransactionFunctionTyped<{
 	});
 
 	const house = game.houses.find(
-		(house) => house.number === details.houseNumber
+		(house) => house.number === houseNumber
 	);
 	if (!house)
-		throw new Error(
-			`House ${details.houseNumber} not found.`
-		);
+		throw new Error(`House ${houseNumber} not found.`);
 
 	for (const demand of house.demand) {
 		await ctx.houseDemand.delete({
@@ -152,8 +152,7 @@ const PlayerSellsDemand: MoveTransactionFunctionTyped<{
 				where: {
 					type: demand.type,
 					gameId: gameId,
-					playerNumber:
-						details.player.playerNumber
+					playerNumber: player.playerNumber
 				}
 			});
 		await ctx.playerDemand.delete({
@@ -161,13 +160,15 @@ const PlayerSellsDemand: MoveTransactionFunctionTyped<{
 				demandId: playerDemand.demandId
 			}
 		});
+
+		player.supply[demand.type] -= 1;
 	}
 
 	await ctx.gamePlayer.update({
 		where: {
 			gamePlayerId: {
 				gameId: gameId,
-				number: details.player.playerNumber
+				number: player.playerNumber
 			}
 		},
 		data: {
@@ -176,6 +177,14 @@ const PlayerSellsDemand: MoveTransactionFunctionTyped<{
 				increment: 10 * house.demand.length
 			}
 		}
+	});
+
+	transactionInfo.push({
+		type: "DinnertimeSell",
+		turn: currentTurn,
+		player: player.playerNumber,
+		house: house.number,
+		sold: house.demand.map((demand) => demand.type)
 	});
 };
 

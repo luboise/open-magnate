@@ -68,10 +68,11 @@ export function CreateGamePlayerView(
 }
 
 export const FullGameStateInclude = {
+	events: true,
 	houses: {
 		include: {
 			demand: true,
-			garden: true
+			garden: true,
 		}
 	},
 	players: {

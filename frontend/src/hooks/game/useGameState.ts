@@ -2,6 +2,7 @@ import { selector, useRecoilValue } from "recoil";
 import { Reserve } from "../../../../backend/src/game/NewGameStructures";
 import {
 	Employee,
+	GameEventView,
 	GetTransposed,
 	MapBackgroundTile
 } from "../../../../backend/src/utils";
@@ -241,6 +242,26 @@ const marketingCampaignSelector = selector<
 	}
 });
 
+const historySelector = selector<GameEventView[]>({
+	key: "GAME_HISTORY",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
+
+		return gameState.history;
+	}
+});
+
+const lastEventSelector = selector<GameEventView | null>({
+	key: "LAST_EVENT",
+	get: ({ get }) => {
+		const history = get(historySelector);
+		if (history.length === 0) return null;
+
+		return history[0];
+	}
+});
+
 export function useGameStateView() {
 	const mapColOrder = useRecoilValue(
 		mapColumnOrderSelector
@@ -283,6 +304,9 @@ export function useGameStateView() {
 		realTurnOrderSelector
 	);
 
+	const history = useRecoilValue(historySelector);
+	const lastEvent = useRecoilValue(lastEventSelector);
+
 	return {
 		mapColOrder,
 		mapRowOrder,
@@ -299,6 +323,8 @@ export function useGameStateView() {
 		turnOrder,
 		realTurnOrder,
 		playerCount,
-		marketingCampaigns
+		marketingCampaigns,
+		history,
+		lastEvent
 	};
 }

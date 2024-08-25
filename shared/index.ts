@@ -22,3 +22,5 @@ export * from "../backend/src/shareToFront";
 export * from "./employees";
 
 export * from "./game";
+
+export * from "./events"

@@ -7,20 +7,27 @@ import Demand from "./Tiles/Demand";
 interface HouseProps
 	extends HTMLAttributes<HTMLDivElement> {
 	house: HouseView;
+	usePositioning?: boolean;
 }
 
 function House({
 	house,
 	className,
 	style,
+	usePositioning = true,
 	...args
 }: HouseProps) {
 	return (
 		<div
 			className={`map-overlay-tile game-map-house ${className ?? ""}`}
 			style={{
-				gridColumn: `${house.pos.x + 1} / span 2`,
-				gridRow: `${house.pos.y + 1} / span 2`
+				...style,
+				...(usePositioning
+					? {
+						gridColumn: `${house.pos.x + 1} / span 2`,
+						gridRow: `${house.pos.y + 1} / span 2`
+					}
+					: {})
 			}}
 			{...args}
 		>

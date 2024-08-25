@@ -3,6 +3,7 @@ import { DEMAND_TYPE, TURN_PROGRESS } from "@prisma/client";
 // Enums
 export {
 	type DEMAND_TYPE,
+	type GameEvent,
 	type MARKETING_TYPE,
 	type TURN_PROGRESS
 } from "@prisma/client";

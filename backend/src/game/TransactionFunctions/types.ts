@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { TransactionInfo } from "../../../../shared";
 
 export type MoveTransactionFunctionUntyped = (
 	bundle: TransactionBundle
@@ -15,7 +16,9 @@ export type MoveTransactionFunction =
 
 export interface TransactionBundle {
 	ctx: Prisma.TransactionClient;
+	transactionInfo: TransactionInfo[];
 	gameId: number;
+	currentTurn: number;
 	player: number;
 }
 
