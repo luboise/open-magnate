@@ -2,7 +2,10 @@ import {
 	BaseEmployee,
 	MARKETING_TYPE
 } from "../../../frontend/src/utils";
-import { EMPLOYEE_COLOUR } from "../EmployeeTypes";
+import {
+	EMPLOYEE_COLOUR,
+	EmployeeCreationData
+} from "../EmployeeTypes";
 
 const MARKETING_EMPLOYEE_IDS = [
 	"market_1",
@@ -21,19 +24,12 @@ export interface MarketingEmployee extends BaseEmployee {
 	marketingType: MARKETING_TYPE;
 }
 
-interface MarketingEmployeeCreationData {
-	name: string;
-	id: MARKETING_EMPLOYEE_ID;
-	marketingType: MARKETING_TYPE;
-	notPaid?: boolean;
-}
-
 export function createMarketingEmployee({
 	name,
 	id,
 	marketingType,
 	notPaid = false
-}: MarketingEmployeeCreationData): MarketingEmployee {
+}: EmployeeCreationData<MarketingEmployee>): MarketingEmployee {
 	return {
 		id: id,
 		name: name,
@@ -53,21 +49,25 @@ export const MarketingEmployees: Record<
 		id: "market_1",
 		marketingType: "BILLBOARD",
 		name: "Marketing Trainee",
-		notPaid: true
+		notPaid: true,
+		buildsInto: ["market_2"]
 	}),
 	market_2: createMarketingEmployee({
 		id: "market_2",
 		marketingType: "MAILBOX",
-		name: "Campaign Manager"
+		name: "Campaign Manager",
+		buildsInto: ["market_3"]
 	}),
 	market_3: createMarketingEmployee({
 		id: "market_3",
 		marketingType: "PLANE",
-		name: "Brand Manager"
+		name: "Brand Manager",
+		buildsInto: ["market_4"]
 	}),
 	market_4: createMarketingEmployee({
 		id: "market_4",
 		marketingType: "RADIO",
-		name: "Brand Director"
+		name: "Brand Director",
+		buildsInto: []
 	})
 } as const;

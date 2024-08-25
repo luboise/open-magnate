@@ -26,7 +26,9 @@ export const DEFAULT_RESERVE_BASE_GAME: Reserve = {
 	market_3: 6,
 	market_4: ONEOF_VALUE,
 
-	waitress: 12
+	waitress: 12,
+
+	trainer: 12
 } as const;
 
 export function GetNewReserve(

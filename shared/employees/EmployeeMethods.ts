@@ -3,6 +3,7 @@ import {
 	FoodEmployees,
 	ManagementEmployees,
 	MarketingEmployees,
+	TrainingEmployees,
 	WaitressEmployees
 } from "./employee_types";
 import { EMPLOYEE_ID, EmployeeType } from "./types";
@@ -15,7 +16,7 @@ const EmployeesById: Record<
 	...FoodEmployees,
 	...MarketingEmployees,
 	...WaitressEmployees,
-
+	...TrainingEmployees,
 	CEO: CEOEmployeeInitial
 } as const;
 
@@ -44,7 +45,7 @@ export function ById(id: EMPLOYEE_ID): EmployeeType {
 	if (!IsValidId(id))
 		throw new Error(
 			"Attempted to get invalid employee ID from ById(): " +
-			id
+				id
 		);
 	return { ...EmployeesById[id] };
 }

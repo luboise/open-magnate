@@ -21,5 +21,11 @@ export enum EMPLOYEE_COLOUR {
 	DARK_GREEN = "#008000",
 	GREY = "#808080",
 	LIGHT_BLUE = "#9bedff",
-	PINK = "#111111"
+	PINK = "#111111",
+	TRAINER_GREY = "#BEB5B4"
 }
+
+export type EmployeeCreationData<T> = Omit<
+	T,
+	"colour" | "type"
+>;

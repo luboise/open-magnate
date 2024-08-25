@@ -2,6 +2,7 @@ import "./ReserveDisplay.css";
 
 import { HTMLAttributes } from "react";
 import {
+	EMPLOYEE_ENUM,
 	EMPLOYEE_ID,
 	EmployeeType
 } from "../../../../../shared/employees/types";
@@ -47,10 +48,11 @@ function ReserveDisplay({
 		] as [EmployeeType | undefined, number];
 	});
 
-	const employeeTypes = [
+	const employeeTypes: EMPLOYEE_ENUM[] = [
 		"MANAGEMENT",
 		"FOOD",
-		"MARKETING"
+		"MARKETING",
+		"TRAINING"
 	];
 
 	const categoryArrays = employeeTypes.map((type) => {
