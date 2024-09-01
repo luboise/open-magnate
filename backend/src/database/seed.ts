@@ -10,8 +10,9 @@ import {
 import {
 	GameDefaults,
 	RESTAURANT_NAMES
-} from "../../shared";
-import { GetNewReserve } from "../src/game/NewGameStructures";
+} from "../../../shared";
+import { GetNewReserve } from "../game/NewGameStructures";
+
 // import prisma from "../src/datasource";
 
 // const [

@@ -1,5 +1,5 @@
 import { READY_STATUS } from "../../backend/src/dataViews";
-import { DEMAND_TYPE } from "../../backend/src/shareToFront";
+import { DEMAND_TYPE } from "../../backend/src/exported";
 import {
 	GameEventView,
 	Map2D,

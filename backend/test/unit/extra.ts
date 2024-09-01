@@ -1,4 +1,4 @@
-import { Map2D } from "../../utils";
+import { Map2D } from "../../src/utils";
 
 export const PATHFINDING_TEST_MAP: Map2D = [
 	[

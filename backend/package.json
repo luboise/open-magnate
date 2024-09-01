@@ -7,12 +7,12 @@
 		"start": "node dist/backend/src/index.js",
 		"migrate": "prisma migrate db",
 		"migrate-dev": "prisma migrate dev",
-		"dev": "dotenv -e .env.dev -- nodemon --config ../config/nodemon.json",
-		"seed:dev": "npx dotenv -e .env.dev -- npx prisma db seed",
+		"dev": "npx dotenv-cli -e .env.dev -- nodemon --config ../config/nodemon.json",
+		"seed:dev": "npx dotenv-cli -e .env.dev -- prisma db seed",
 		"test:integration:setup:docker": "docker compose up --force-recreate -d && npx wait-on tcp:localhost:3307",
 		"test:integration:teardown": "docker compose down",
-		"test:integration:setup:db": "npx dotenv -e .env.test -- npx prisma migrate deploy && npx dotenv -e .env.test -- npx prisma db seed",
-		"test:integration:run": "npx dotenv -e .env.test -- jest -i --runInBand",
+		"test:integration:setup:db": "npx dotenv-cli -e .env.test -- prisma migrate deploy && prisma db seed",
+		"test:integration:run": "npx dotenv-cli -e .env.test -- jest -i --runInBand",
 		"test:integration": "npm run test:integration:setup:docker && npm run test:integration:setup:db && npm run test:integration:run",
 		"test:unit": "jest -c jest.config.unit.ts --watch"
 	},
@@ -21,6 +21,7 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
+		"@dotenvx/dotenvx": "^1.12.1",
 		"@prisma/client": "5.18.0",
 		"class-validator": "^0.14.1",
 		"cors": "^2.8.5",
@@ -46,6 +47,6 @@
 		"wait-on": "^7.2.0"
 	},
 	"prisma": {
-		"seed": "ts-node prisma/seed.ts"
+		"seed": "ts-node src/database/seed.ts"
 	}
 }

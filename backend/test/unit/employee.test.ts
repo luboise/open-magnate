@@ -1,12 +1,12 @@
+import { createCEOEmployee } from "../../../shared/employees/employee_types";
+import { EmployeeType } from "../../../shared/employees/types";
 import {
 	Employee,
 	EmployeeNode,
 	IsValidEmployeeTree,
 	ParseEmployeeTree,
 	SerialiseEmployeeTree
-} from "../../../../shared";
-import { createCEOEmployee } from "../../../../shared/employees/employee_types";
-import { EmployeeType } from "../../../../shared/employees/types";
+} from "../../src/utils";
 
 let testTree: EmployeeNode;
 let list: EmployeeType[] = [];

@@ -1,12 +1,13 @@
+import { IsAdjacent } from "../../../shared/area/AreaUtils";
+import GameStateController from "../../src/database/controller/gamestate.controller";
+import { GetNewReserve } from "../../src/game/NewGameStructures";
 import {
+	GetTransposed,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
+	Measurable,
 	PLAYER_DEFAULTS
-} from "../../../../shared";
-import { IsAdjacent } from "../../../../shared/area/AreaUtils";
-import GameStateController from "../../database/controller/gamestate.controller";
-import { GetNewReserve } from "../../game/NewGameStructures";
-import { GetTransposed, Measurable } from "../../utils";
+} from "../../src/utils";
 
 function testNewMap(playerCount: number) {
 	const [map, houses] =
@@ -32,9 +33,9 @@ function testNewMap(playerCount: number) {
 		)
 	).toBeLessThan(
 		MAP_PIECE_WIDTH *
-			MAP_PIECE_HEIGHT *
-			defaults.mapWidth *
-			defaults.mapHeight
+		MAP_PIECE_HEIGHT *
+		defaults.mapWidth *
+		defaults.mapHeight
 	);
 
 	rows.forEach((row) => {

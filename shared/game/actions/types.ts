@@ -1,4 +1,4 @@
-import { DEMAND_TYPE } from "../../../backend/src/shareToFront";
+import { DEMAND_TYPE } from "../../../backend/src/exported";
 import { EMPLOYEE_ID } from "../../employees/types";
 import { MarketingTile } from "../../map/tiles";
 

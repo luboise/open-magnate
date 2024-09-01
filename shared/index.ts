@@ -17,10 +17,10 @@ export * from "./area";
 export * from "./views";
 
 // Shared types that rely on backend types
-export * from "../backend/src/shareToFront";
+export * from "../backend/src/exported";
 
 export * from "./employees";
 
 export * from "./game";
 
-export * from "./events"
+export * from "./events";

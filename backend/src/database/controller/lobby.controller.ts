@@ -13,7 +13,7 @@ import {
 	LobbyViewPerPlayer
 } from "../../../../shared";
 
-import prisma from "../../datasource";
+import prisma from "../datasource";
 import { GetNewReserve } from "../../game/NewGameStructures";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";

@@ -1,12 +1,10 @@
-import {
-	Position
-} from "../../backend/src/dataViews";
-import { DEMAND_TYPE } from "../../backend/src/shareToFront";
+import { Position } from "../../backend/src/dataViews";
+import { DEMAND_TYPE } from "../../backend/src/exported";
 
 import {
 	MARKETING_TYPE,
 	MarketingCampaign
-} from "../../backend/src/shareToFront";
+} from "../../backend/src/exported";
 import {
 	MarketingTile,
 	MarketingTilesByNumber

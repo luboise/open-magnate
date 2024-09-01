@@ -1,6 +1,6 @@
-import { FullHouse } from "../../../database/controller/includes";
-import { HouseIsAffectedByMarketing } from "../../../game/TransactionFunctions";
-import { MarketingCampaignView } from "../../../utils";
+import { FullHouse } from "../../../src/database";
+import { TransactionFunctions } from "../../../src/game";
+import { MarketingCampaignView } from "../../../src/utils";
 
 describe("Testing endofround cleanup functions", () => {
 	describe("Testing isAffectedByMarketing", () => {
@@ -20,7 +20,10 @@ describe("Testing endofround cleanup functions", () => {
 			} as MarketingCampaignView;
 
 			expect(
-				HouseIsAffectedByMarketing(house, campaign)
+				TransactionFunctions.HouseIsAffectedByMarketing(
+					house,
+					campaign
+				)
 			).toBeTruthy();
 		});
 		test("Billboard 15 gets adjacent house to its left", () => {
@@ -40,7 +43,10 @@ describe("Testing endofround cleanup functions", () => {
 			} as MarketingCampaignView;
 
 			expect(
-				HouseIsAffectedByMarketing(house, campaign)
+				TransactionFunctions.HouseIsAffectedByMarketing(
+					house,
+					campaign
+				)
 			).toBeTruthy();
 		});
 		test("Billboard 15 gets adjacent bottom house to its left", () => {
@@ -60,7 +66,10 @@ describe("Testing endofround cleanup functions", () => {
 			} as MarketingCampaignView;
 
 			expect(
-				HouseIsAffectedByMarketing(house, campaign)
+				TransactionFunctions.HouseIsAffectedByMarketing(
+					house,
+					campaign
+				)
 			).toBeTruthy();
 		});
 		test("Billboard 15 fails when too high (top-right)", () => {
@@ -80,7 +89,10 @@ describe("Testing endofround cleanup functions", () => {
 			} as MarketingCampaignView;
 
 			expect(
-				HouseIsAffectedByMarketing(house, campaign)
+				TransactionFunctions.HouseIsAffectedByMarketing(
+					house,
+					campaign
+				)
 			).toBeFalsy();
 		});
 	});

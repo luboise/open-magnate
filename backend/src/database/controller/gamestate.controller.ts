@@ -13,7 +13,6 @@ import { MoveData } from "../../../../shared/Moves";
 import { GetEmployeeTreeOrThrow } from "../../../../shared/employees/EmployeeStructure";
 import { MapStringChar } from "../../../../shared/map/parsing/types";
 import { parseTurnOrder } from "../../../../shared/views/GameStateViews";
-import prisma from "../../datasource";
 import { TransactMove as TransactMoves } from "../../game/HandleMove";
 import {
 	MAP_PIECES,
@@ -23,6 +22,7 @@ import {
 	GetTransposed,
 	TransactionInfo
 } from "../../utils";
+import prisma from "../datasource";
 import GameStateRepository from "../repository/gamestate.repository";
 import {
 	FullGameState,
@@ -390,7 +390,6 @@ const GameStateController = {
 	}
 };
 
-export default GameStateController;
 export function getTurnOrder(
 	game: FullGameState
 ): number[] {
@@ -439,3 +438,5 @@ export function getCurrentPlayer(
 
 	return null;
 }
+
+export default GameStateController;

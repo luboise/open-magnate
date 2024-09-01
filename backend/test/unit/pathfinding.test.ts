@@ -1,4 +1,4 @@
-import { Pathfinding } from "../../utils";
+import { Pathfinding } from "../../src/utils";
 import { PATHFINDING_TEST_MAP } from "./extra";
 
 describe("Pathfinding Tests", () => {

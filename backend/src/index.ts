@@ -5,7 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import expressWs from "express-ws";
 
-import prisma from "./datasource";
+import prisma from "./database/datasource";
 import InitialiseRoutes from "./routes";
 
 // Express app with websockets
