@@ -1,35 +1,40 @@
-import { useState } from "react";
+import "./OptionsMenu.css";
+
 import Button from "../../../global_components/Button";
 import ModalPanel from "../../../global_components/ModalPanel";
+import useLobbyMessaging from "../../../hooks/game/useLobbyMessaging";
 
-interface Props {}
+interface Props {
+	onClose: () => void | Promise<void>;
+}
 
-function OptionsMenu({}: Props) {
-	const [inOptions, setInOptions] = useState(false);
+function OptionsMenu({ onClose }: Props) {
+	const { leaveLobby } = useLobbyMessaging();
+
+	const OPTION_TYPES = [
+		"All",
+		"UI",
+		"Sound",
+		"Lobby"
+	] as const;
 
 	return (
-		<div
-			id="options-menu-background"
-			className={inOptions ? "blurred" : ""}
-			style={{ zIndex: 999 }}
-		>
-			{inOptions ? (
-				<ModalPanel
-					onClose={() => setInOptions(false)}
-				>
-					<div>option 1, option 2, option 3</div>
-				</ModalPanel>
-			) : (
-				<Button
-					className="corner-button"
-					onClick={() =>
-						setInOptions((old) => !old)
-					}
-				>
-					⚙️
+		<ModalPanel onClose={onClose} id="options-menu">
+			<div id="options-menu-tabs">
+				{OPTION_TYPES.map((opt) => (
+					<Button onClick={() => alert(opt)}>
+						{opt}
+					</Button>
+				))}
+			</div>
+			<div>
+				<div>option 1, option 2, option 3</div>
+				<Button onClick={leaveLobby}>
+					Leave Lobby
 				</Button>
-			)}
-		</div>
+			</div>
+			OptionsMenu
+		</ModalPanel>
 	);
 }
 

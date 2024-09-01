@@ -1,8 +1,11 @@
-import { PropsWithChildren } from "react";
+import { HTMLAttributes, PropsWithChildren } from "react";
 import CustomPanel from "./CustomPanel";
 import "./ModalPanel.css";
 
-interface Props extends PropsWithChildren<{}> {
+interface Props
+	extends PropsWithChildren<
+		HTMLAttributes<HTMLDivElement>
+	> {
 	onClose: () => void | Promise<void>;
 }
 

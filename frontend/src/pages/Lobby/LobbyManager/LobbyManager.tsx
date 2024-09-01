@@ -1,7 +1,7 @@
 import "./LobbyManager.css";
 
 import Button from "../../../global_components/Button";
-import usePageGame from "../../../hooks/game/usePageGame";
+import useLobbyMessaging from "../../../hooks/game/useLobbyMessaging";
 import useClipboard from "../../../hooks/useClipboard";
 import useNotification from "../../../hooks/useNotification";
 import {
@@ -21,7 +21,7 @@ function LobbyManager(props: {
 	const { writeClipboard } = useClipboard();
 	const { sendNotification } = useNotification();
 
-	const { leaveLobby, startGame } = usePageGame();
+	const { leaveLobby, startGame } = useLobbyMessaging();
 
 	function onCopyInviteLink() {
 		writeClipboard(lobby.inviteCode);

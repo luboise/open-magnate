@@ -1,7 +1,7 @@
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import usePageGame from "../../../hooks/game/usePageGame";
+import useLobbyMessaging from "../../../hooks/game/useLobbyMessaging";
 import "./TurnOrderPrompt.css";
 
 import { HTMLAttributes, useCallback } from "react";
@@ -15,7 +15,7 @@ function TurnOrderPrompt({ ...args }: Props) {
 		players,
 		playerCount
 	} = useGameStateView();
-	const { makeMove } = usePageGame();
+	const { makeMove } = useLobbyMessaging();
 
 	const onSlotPicked = useCallback(
 		(slot: number) =>

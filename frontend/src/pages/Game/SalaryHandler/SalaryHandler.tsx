@@ -2,7 +2,7 @@ import { HTMLAttributes, useMemo, useReducer } from "react";
 import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import usePageGame from "../../../hooks/game/usePageGame";
+import useLobbyMessaging from "../../../hooks/game/useLobbyMessaging";
 import { BASE_SALARY } from "../../../utils";
 import DinnertimeRecap from "./DinnertimeRecap";
 import "./SalaryHandler.css";
@@ -21,7 +21,7 @@ function SalaryHandler({ ...args }: Props) {
 	const { myEmployees, playerData, lastEvent } =
 		useGameStateView();
 
-	const { makeMove } = usePageGame();
+	const { makeMove } = useLobbyMessaging();
 
 	const [state, _dispatch] = useReducer(
 		(state: State, action: Action): State => {

@@ -1,0 +1,9 @@
+#options-menu {
+	display: grid;
+	aspect-ratio: 5/3;
+	grid-template-rows: 70% auto;
+}
+
+#options-menu-tabs button {
+	border-radius: 0;
+}

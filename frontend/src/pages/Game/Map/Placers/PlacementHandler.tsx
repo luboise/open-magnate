@@ -4,7 +4,7 @@ import useClientState, {
 	OnTilePlacedCallback
 } from "../../../../hooks/game/useClientState";
 import { useGameStateView } from "../../../../hooks/game/useGameState";
-import usePageGame from "../../../../hooks/game/usePageGame";
+import useLobbyMessaging from "../../../../hooks/game/useLobbyMessaging";
 import useTurnPlanning from "../../../../hooks/game/useTurnPlanning";
 import {
 	MapOverlayTileType,
@@ -43,7 +43,7 @@ function PlacementHandler({ placementTypes }: Props) {
 			"No placement types provided to PlacementHandler"
 		);
 
-	const { makeMove } = usePageGame();
+	const { makeMove } = useLobbyMessaging();
 
 	const { turnProgress, myEmployees } =
 		useGameStateView();

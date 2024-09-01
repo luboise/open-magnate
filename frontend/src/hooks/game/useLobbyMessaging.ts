@@ -6,7 +6,7 @@ import {
 	StartGameMessage
 } from "../../utils";
 
-function usePageGame() {
+function useLobbyMessaging() {
 	const [pageGame] = useRecoilState(PageGameAtom);
 
 	function leaveLobby() {
@@ -35,5 +35,5 @@ function usePageGame() {
 	};
 }
 
-export default usePageGame;
+export default useLobbyMessaging;
 

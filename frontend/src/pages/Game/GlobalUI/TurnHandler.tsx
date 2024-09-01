@@ -4,7 +4,7 @@ import { MOVE_TYPE } from "../../../../../shared/Moves";
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import usePageGame from "../../../hooks/game/usePageGame";
+import useLobbyMessaging from "../../../hooks/game/useLobbyMessaging";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import {
@@ -19,7 +19,7 @@ function TurnHandler() {
 	const { isMyTurn, turnProgress, currentPlayer } =
 		useGameStateView();
 
-	const { makeMove } = usePageGame();
+	const { makeMove } = useLobbyMessaging();
 
 	const { turnActions } = useTurnPlanning();
 
