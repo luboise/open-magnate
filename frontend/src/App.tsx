@@ -1,6 +1,8 @@
 import "./Animations.css";
 import "./App.css";
 
+import "./global_styles/blurred.css";
+import "./global_styles/centered.css";
 import "./global_styles/corner-button.css";
 import "./global_styles/highlighted.css";
 

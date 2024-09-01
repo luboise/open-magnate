@@ -6,7 +6,7 @@
 		"build": "tsc",
 		"start": "node dist/backend/src/index.js",
 		"migrate": "prisma migrate db",
-		"migrate-dev": "prisma migrate dev",
+		"migrate-dev": "npx dotenv-cli -e .env.dev -- prisma migrate dev",
 		"dev": "npx dotenv-cli -e .env.dev -- nodemon --config ../config/nodemon.json",
 		"seed:dev": "npx dotenv-cli -e .env.dev -- prisma db seed",
 		"test:integration:setup:docker": "docker compose up --force-recreate -d && npx wait-on tcp:localhost:3307",
@@ -47,6 +47,6 @@
 		"wait-on": "^7.2.0"
 	},
 	"prisma": {
-		"seed": "ts-node src/database/seed.ts"
+		"seed": "ts-node src/database/seeding/seed.ts"
 	}
 }

@@ -1,12 +1,12 @@
 #root {
 	--resizable-element-border-size: 1.5em;
-
 	--resizable-element-grab-tab-size: 1em;
 }
 
 .resizable-element {
 	display: inline-flex;
 	position: absolute;
+
 	/* top: 0;
 	right: 0; */
 
@@ -14,11 +14,12 @@
 
 	box-sizing: border-box;
 
+	/** Colouring **/
 	background-color: black;
-
 	border: var(--resizable-element-border-size) black solid;
 	border-radius: var(--resizable-element-border-size);
 
+	/** Very slight opacity transition **/
 	transition: opacity 0.02s;
 }
 
@@ -26,8 +27,11 @@
 	/* Modifiable */
 	cursor: nwse-resize;
 
-	/* Set in stone */
+	/** Sizing **/
+	width: var(--resizable-element-border-size);
+	height: var(--resizable-element-border-size);
 
+	/** Positioning **/
 	position: absolute;
 	bottom: calc(
 		-1 / 1.15 * var(--resizable-element-border-size)
@@ -36,11 +40,8 @@
 		-1 / 1.15 * var(--resizable-element-border-size)
 	);
 
+	/** Colouring **/
 	background-color: white;
-
-	width: var(--resizable-element-border-size);
-	height: var(--resizable-element-border-size);
-
 	border-radius: 100%;
 }
 
@@ -51,29 +52,27 @@
 }
 
 .resizable-element-top-tab {
-	/* aspect-ratio: 1; */
 	user-select: none;
 	cursor: move;
 
-	color: black;
-
-	translate: 0 -100%;
-
-	height: var(--resizable-element-border-size);
-	z-index: 2;
-
-	background-color: dimgray;
+	/** Size/Position **/
 	position: absolute;
-
+	translate: 0 -100%;
+	height: var(--resizable-element-border-size);
 	width: 100%;
-	opacity: 0;
 
-	font-weight: bold;
+	/** Colouring **/
+	color: black;
+	background-color: dimgray;
 	border-radius: var(--resizable-element-border-size);
+	font-weight: bold;
+
+	/** Misc **/
 	transition: opacity 0.15s linear;
+	opacity: 0;
+	z-index: 2;
 }
 
 .resizable-element-top-tab:hover {
 	opacity: 1;
 }
-

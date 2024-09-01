@@ -1,9 +1,9 @@
 import { UserSessionController } from "../../src/database/";
 import {
 	dropEverything,
-	reseedDatabase,
-	seedUser1
-} from "../../src/database/seed";
+	reseedDatabase
+} from "../../src/database/seeding/seed";
+import { seedUser1 } from "../../src/database/seeding/seed_users";
 import { basicAfterEach } from "./utils";
 
 beforeEach(async () => {

@@ -2,7 +2,7 @@ import "./TurnPlanner.css";
 
 import { HTMLAttributes, useMemo, useState } from "react";
 import { EmployeeType } from "../../../../../shared/employees/types";
-import ModalPanel from "../../../global_components/ModalPanel";
+import CustomPanel from "../../../global_components/CustomPanel";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import {
@@ -121,12 +121,12 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 		<>
 			<div className="game-turn-planner" {...args}>
 				{eventWindow !== null ? (
-					<ModalPanel
+					<CustomPanel
 						className="event-window"
 						onClose={clearSelectedEmployee}
 					>
 						{eventWindow}
-					</ModalPanel>
+					</CustomPanel>
 				) : (
 					<></>
 				)}

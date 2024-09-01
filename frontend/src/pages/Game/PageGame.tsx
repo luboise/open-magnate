@@ -126,10 +126,7 @@ function PageGame() {
 
 		return (
 			<PlacementHandler
-				placementTypes={[
-					"RESTAURANT",
-					"MARKETING"
-				]}
+				placementTypes={["RESTAURANT", "MARKETING"]}
 			/>
 		);
 	}, [turnProgress, isMyTurn]);
@@ -212,10 +209,7 @@ function PageGame() {
 				// TODO: Fix dimension scaling for resizable elements
 				scalingType="SCALE"
 			>
-				<EmployeeTree
-					id="employee-tree"
-					style={{ width: "1200px" }}
-				/>
+				<EmployeeTree id="employee-tree" />
 			</Resizable>
 
 			<Resizable

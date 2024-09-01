@@ -1,4 +1,5 @@
 import GlobalReserveDisplay from "../Reserve/GlobalReserveDisplay";
+import OptionsMenu from "./OptionsMenu";
 import PlayerInventory from "./PlayerInventory";
 import TurnHandler from "./TurnHandler";
 import WindowToolbar, {
@@ -34,6 +35,8 @@ function GlobalUI({
 			<TurnHandler />
 
 			<PlayerInventory />
+
+			<OptionsMenu />
 		</>
 	);
 }
