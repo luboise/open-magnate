@@ -14,9 +14,10 @@ import DemandSelector from "./DemandSelector";
 import GameActionPreview from "./GameActionPreview";
 import HiringWindow from "./HiringWindow";
 import MarketingWindow from "./MarketingWindow";
+import TrainingWindow from "./TrainingWindow";
 
 interface TurnPlannerProps
-	extends HTMLAttributes<HTMLDivElement> { }
+	extends HTMLAttributes<HTMLDivElement> {}
 
 function TurnPlanner({ ...args }: TurnPlannerProps) {
 	const { currentTree, myEmployees, playerData } =
@@ -60,6 +61,14 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				/>
 			);
 
+		if (employee.type === "TRAINING")
+			return (
+				<TrainingWindow
+					employeeIndex={selectedEmployeeIndex}
+					onClose={clearSelectedEmployee}
+				/>
+			);
+
 		if (employee.type === "MARKETING")
 			return (
 				<MarketingWindow
@@ -75,7 +84,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 					<DemandSelector
 						demands={
 							employee.produces ===
-								"BURGER_AND_PIZZA"
+							"BURGER_AND_PIZZA"
 								? ["BURGER", "PIZZA"]
 								: [employee.produces]
 						}
@@ -146,7 +155,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 									}
 									className={
 										selectedEmployeeIndex ===
-											index
+										index
 											? "item-highlighted"
 											: undefined
 									}

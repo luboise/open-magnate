@@ -1,4 +1,5 @@
 import { EmployeeType } from "../../../../../shared/employees/types";
+import useClientOptions from "../../../hooks/game/useClientOptions";
 import "./EmployeeCard.css";
 
 import { HTMLAttributes } from "react";
@@ -11,6 +12,8 @@ interface EmployeeCardProps
 function EmployeeCard(props: EmployeeCardProps) {
 	const { employee, className, style, ...args } = props;
 
+	const { employeeCardWidth } = useClientOptions();
+
 	// Real cards are 56mm x 87mm, meaning they have an aspect ratio of 56/87
 
 	return (
@@ -19,7 +22,8 @@ function EmployeeCard(props: EmployeeCardProps) {
 			style={{
 				backgroundColor: employee.colour,
 				...style,
-				pointerEvents: "auto"
+				pointerEvents: "auto",
+				width: `${employeeCardWidth}vw`
 			}}
 			{...args}
 		>

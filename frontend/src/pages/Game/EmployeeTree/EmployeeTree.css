@@ -81,7 +81,8 @@
 }
 
 .game-employee-tree .game-employee-card {
-	width: 100px;
+	/* width: 100px; */
+
 	user-select: none;
 	cursor: grab;
 }

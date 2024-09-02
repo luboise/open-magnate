@@ -3,7 +3,6 @@
 	margin: 0 auto;
 	padding: 2rem;
 	text-align: center;
-
 	width: 100%;
 }
 
@@ -13,9 +12,11 @@
 	will-change: filter;
 	transition: filter 300ms;
 }
+
 .logo:hover {
 	filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
 	filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -24,6 +25,7 @@
 	from {
 		transform: rotate(0deg);
 	}
+
 	to {
 		transform: rotate(360deg);
 	}
@@ -47,6 +49,7 @@
 	/* animation: bgGlow 1.75s infinite; */
 	animation: box-shadow-animation 2s infinite ease-in-out;
 	transition: box-shadow 1s;
+
 	/* transition: filter 1s; */
 }
 
@@ -54,6 +57,7 @@
 	0%,
 	100% {
 		filter: none;
+
 		/* box-shadow: 0 0 0 0.1em orange; */
 	}
 
@@ -65,7 +69,6 @@
 		filter: brightness(1.65);
 		transform: scaleX(1.05) scaleY(1.02);
 		border-radius: 0.3em;
-		color: #aaaaaa;
+		color: #aaa;
 	}
 }
-
