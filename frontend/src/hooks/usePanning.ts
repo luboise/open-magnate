@@ -178,7 +178,7 @@ function usePanning(
 				dispatch({ actionType: "PRESSED", pos });
 			} else if (type === "mouseup") {
 				event.preventDefault();
-				event.stopPropagation();
+				//event.stopPropagation();
 				dispatch({ actionType: "RELEASED" });
 			} else {
 				console.debug("Dropped");

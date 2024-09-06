@@ -5,7 +5,8 @@ import ModalPanel from "../../../global_components/ModalPanel";
 import UIOption from "../../../global_components/UIOption/UIOption";
 import useClientOptions, {
 	MAX_CARD_WIDTH,
-	MIN_CARD_WIDTH
+	MIN_CARD_WIDTH,
+	useSetClientOptions
 } from "../../../hooks/game/useClientOptions";
 import useLobbyMessaging from "../../../hooks/game/useLobbyMessaging";
 
@@ -15,7 +16,10 @@ interface Props {
 
 function OptionsMenu({ onClose }: Props) {
 	const { leaveLobby } = useLobbyMessaging();
-	const { setOption } = useClientOptions();
+
+	const setOption = useSetClientOptions();
+
+	const { employeeCardWidth } = useClientOptions();
 
 	const OPTION_TYPES = [
 		"All",
@@ -25,7 +29,11 @@ function OptionsMenu({ onClose }: Props) {
 	] as const;
 
 	return (
-		<ModalPanel onClose={onClose} id="options-menu">
+		<ModalPanel
+			id="options-menu-panel"
+			className="centered"
+			onClose={onClose}
+		>
 			<div id="options-menu-tabs">
 				{...OPTION_TYPES.map((opt) => (
 					<Button onClick={() => alert(opt)}>
@@ -33,12 +41,16 @@ function OptionsMenu({ onClose }: Props) {
 					</Button>
 				))}
 			</div>
-			<div id="options">
+			<div id="options-menu">
 				<UIOption
-					type="Slider"
-					min={MIN_CARD_WIDTH}
-					max={MAX_CARD_WIDTH}
-					onSet={(val) =>
+					optionType="Slider"
+					label="Employee Card Width"
+					params={{
+						defaultValue: employeeCardWidth,
+						min: MIN_CARD_WIDTH,
+						max: MAX_CARD_WIDTH
+					}}
+					onUpdate={(val) =>
 						setOption("employeeCardWidth", val)
 					}
 				/>

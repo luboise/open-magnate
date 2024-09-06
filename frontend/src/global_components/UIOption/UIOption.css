@@ -1,0 +1,16 @@
+.ui-option-wrapper {
+	display: grid;
+
+	/*
+	grid-template-columns: 30% 50% auto;
+	*/
+
+	grid-template-columns: minmax(auto, 75%) minmax(
+			40%,
+			auto
+		);
+}
+
+.ui-option-wrapper > * {
+	padding: 1em;
+}

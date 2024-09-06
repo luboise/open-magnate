@@ -1,9 +1,27 @@
-#options-menu {
+#options-menu-panel {
 	display: grid;
-	aspect-ratio: 5/3;
 	grid-template-rows: 70% auto;
+	width: 60vw;
+	position: absolute;
 }
 
 #options-menu-tabs button {
 	border-radius: 0;
+}
+
+#options-menu {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5em;
+}
+
+#options-menu > * {
+	padding: 1em;
+
+	/* width: 100%; */
+}
+
+#options-menu-background {
+	width: 100vw;
+	height: 100vh;
 }

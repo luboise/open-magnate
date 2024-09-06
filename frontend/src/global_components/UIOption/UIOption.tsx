@@ -1,37 +1,28 @@
-import React, {
-	InputHTMLAttributes,
-	useMemo,
-	useState
-} from "react";
+import "./UIOption.css";
+
+import { Slider } from "@mui/material";
+import { ReactNode } from "react";
 
 type UIOptionType = "Slider" | "Number" | "Text";
-
-const ConstantInputMap: Record<
-	UIOptionType,
-	InputHTMLAttributes<HTMLInputElement>
-> = {
-	Slider: {
-		type: "range"
-	},
-	Number: {},
-	Text: {}
-} as const;
 
 type InputParams<T extends UIOptionType> =
 	T extends "Slider"
 		? {
+				defaultValue: UIMap<T>;
 				min: number;
 				max: number;
 				step?: number;
 			}
 		: T extends "Number"
 			? {
+					defaultValue: UIMap<T>;
 					min: number;
 					max: number;
 					step?: number;
 				}
 			: T extends "Text"
 				? {
+						defaultValue: UIMap<T>;
 						pattern: RegExp;
 					}
 				: never;
@@ -44,43 +35,45 @@ type UIMap<T extends UIOptionType> = T extends "Slider"
 			? string
 			: never;
 
-function UIOption<T extends UIOptionType>(
-	props: { type: T } & InputParams<T> & {
-			onSet: (val: UIMap<T>) => void | Promise<void>;
-		}
-) {
-	type ValueType = UIMap<T>;
+interface Props<T extends UIOptionType> {
+	optionType: T;
+	params: InputParams<T>;
+	label: string;
+	onUpdate: (val: UIMap<T>) => void | Promise<void>;
+	extra?: JSX.Element | ReactNode;
+}
 
-	const [val, setVal] = useState<ValueType>(0);
-
-	function updateValue(
-		changeEvent: React.ChangeEvent<HTMLInputElement>
-	) {
-		changeEvent.preventDefault();
-		const value = changeEvent.target.value;
-
-		setVal(value as ValueType);
-		props.onSet(value as ValueType);
-	}
-
-	const option = useMemo((): JSX.Element => {
-		if (props.type === "Slider") {
-			const { type, onSet, ...others } = props;
-			return (
-				<input
-					value={val}
-					onChange={updateValue}
-					{...others}
-					{...ConstantInputMap[props.type]}
-				/>
-			);
-		}
-
-		return <>Invalid UIOption</>;
-	}, [props]);
+function UIOption<T extends UIOptionType>({
+	optionType,
+	params,
+	label,
+	onUpdate,
+	extra = <></>
+}: Props<T>) {
+	const option =
+		optionType === "Slider" ? (
+			<Slider
+				defaultValue={params.defaultValue}
+				min={params.min}
+				max={params.max}
+				onChange={(_, value) =>
+					onUpdate(
+						(Array.isArray(value)
+							? value[0]
+							: value) as UIMap<T>
+					)
+				}
+			/>
+		) : (
+			<>Invalid UIOption</>
+		);
 
 	return (
-		<div className="ui-option-wrapper">{option}</div>
+		<div className="ui-option-wrapper">
+			<div className="ui-option-name">{label}</div>
+			{option}
+			{extra}
+		</div>
 	);
 }
 

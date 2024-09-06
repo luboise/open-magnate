@@ -1,11 +1,16 @@
 import { useCallback } from "react";
-import { atom, useRecoilState } from "recoil";
+import {
+	atom,
+	selector,
+	useRecoilState,
+	useRecoilValue
+} from "recoil";
 
+// Values in CSS vw
 export const MIN_CARD_WIDTH = 5;
 export const MAX_CARD_WIDTH = 20;
 
 type ClientOptions = {
-	// Between 5vw and
 	employeeCardWidth: number;
 };
 
@@ -16,8 +21,15 @@ const ClientOptionsAtom = atom<ClientOptions>({
 	}
 });
 
-function useClientOptions() {
-	const [options, setOptions] = useRecoilState(
+const CardWidthSelector = selector<number>({
+	key: "CARD_WIDTH",
+	get: ({ get }) => {
+		return get(ClientOptionsAtom).employeeCardWidth;
+	}
+});
+
+export function useSetClientOptions() {
+	const [_options, setOptions] = useRecoilState(
 		ClientOptionsAtom
 	);
 
@@ -53,9 +65,17 @@ function useClientOptions() {
 
 		[]
 	);
+
+	return setOption;
+}
+
+function useClientOptions() {
+	const employeeCardWidth = useRecoilValue(
+		CardWidthSelector
+	);
+
 	return {
-		setOption,
-		...options
+		employeeCardWidth
 	};
 }
 

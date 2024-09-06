@@ -9,17 +9,20 @@ interface Props
 	onClose: () => void | Promise<void>;
 }
 
-function ModalPanel({ children, onClose }: Props) {
+function ModalPanel({
+	children,
+	onClose,
+	className,
+	...args
+}: Props) {
 	return (
-		<div className="modal-panel-container">
-			<div className="modal-panel-background" />
-			<CustomPanel
-				onClose={onClose}
-				className="centered"
-			>
-				{children}
-			</CustomPanel>
-		</div>
+		<CustomPanel
+			onClose={onClose}
+			className={`centered ${className}`}
+			{...args}
+		>
+			{children}
+		</CustomPanel>
 	);
 }
 
