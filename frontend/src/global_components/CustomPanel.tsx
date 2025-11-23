@@ -18,7 +18,7 @@ function CustomPanel({
 }: CustomPanelProps) {
 	return (
 		<div
-			className={"modal-panel " + className ?? ""}
+			className={"modal-panel " + (className ?? "")}
 			{...args}
 		>
 			<Button

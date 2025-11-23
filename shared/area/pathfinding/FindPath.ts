@@ -1,5 +1,5 @@
-import { Position } from "../../../backend/src/dataViews";
 import { Map2D } from "../../map";
+import { Position } from "../Units";
 import {
 	DijkstraPriorityQueue,
 	PathDetails

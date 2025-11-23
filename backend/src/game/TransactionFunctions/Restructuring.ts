@@ -1,9 +1,9 @@
-import { EMPLOYEE_ID } from "../../../../shared/employees/types";
+import { EmployeeId } from "../../../../shared/employees/types";
 import {
-	Employee,
 	EmployeeNode,
 	IsValidEmployeeTree,
 	SerialiseEmployeeTree,
+	getEmployeeById,
 	parseJsonArray
 } from "../../utils";
 import {
@@ -28,12 +28,12 @@ export const Restructure: MoveTransactionFunctionTyped<
 
 	const employeeList = parseJsonArray(
 		gamePlayer.employees
-	) as EMPLOYEE_ID[];
+	) as EmployeeId[];
 
 	if (
 		!IsValidEmployeeTree(
 			newTree,
-			employeeList.map((emp) => Employee.ById(emp))
+			employeeList.map((emp) => getEmployeeById(emp))
 		)
 	)
 		throw new Error(

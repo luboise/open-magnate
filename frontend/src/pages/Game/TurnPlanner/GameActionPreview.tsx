@@ -3,7 +3,7 @@ import "./GameActionPreview.css";
 import { HTMLAttributes, useMemo } from "react";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import { Employee, TurnAction } from "../../../utils";
+import { getEmployeeById, TurnAction } from "../../../utils";
 
 interface GameActionPreviewProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -23,7 +23,7 @@ function GameActionPreview({
 	const details = useMemo(() => {
 		switch (gameAction.type) {
 			case "RECRUIT":
-				return `Hired ${Employee.ById(gameAction.recruiting).name}`;
+				return `Hired ${getEmployeeById(gameAction.recruiting).name}`;
 			default:
 				return "";
 		}

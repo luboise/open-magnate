@@ -19,16 +19,16 @@ export const FOOD_EMPLOYEE_IDS = [
 
 export interface FoodEmployee extends BaseEmployee {
 	type: "FOOD";
-	id: FOOD_EMPLOYEE_ID;
+	id: FoodEmployeeId;
 	colour: EMPLOYEE_COLOUR.DARK_GREEN;
 	supply: Supply<FoodType[]>;
 }
 
-export type FOOD_EMPLOYEE_ID =
+export type FoodEmployeeId =
 	(typeof FOOD_EMPLOYEE_IDS)[number];
 
 export const FoodEmployees: Record<
-	FOOD_EMPLOYEE_ID,
+	FoodEmployeeId,
 	FoodEmployee
 > = {
 	food_basic: createFoodEmployee({

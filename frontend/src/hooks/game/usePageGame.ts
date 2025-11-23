@@ -1,5 +1,5 @@
+import { MoveData } from "@shared/Moves";
 import { useRecoilState } from "recoil";
-import { MoveData } from "../../../../shared/Moves";
 import { PageGameAtom } from "../../pages/Lobby/PageGameContext";
 import {
 	LeaveLobbyMessage,

@@ -1,11 +1,9 @@
-import {
-	DEMAND_TYPE,
-	MARKETING_TYPE
-} from "../../../../backend/src/utils";
+import { DemandType } from "@shared/demand";
+import { MarketingType } from "@shared/marketing";
 import { MapOverlayTileInterface } from "./types";
 
 export type MarketingTile = PartialMarketingTile & {
-	demand: DEMAND_TYPE;
+	demand: DemandType;
 	placingEmployee: number;
 };
 
@@ -19,7 +17,7 @@ export interface BaseMarketingTile
 	extends MapOverlayTileInterface {
 	tileType: "MARKETING";
 
-	marketingType: MARKETING_TYPE;
+	marketingType: MarketingType;
 	tileNumber: number;
 
 	rotation: 0 | 90;
@@ -136,7 +134,7 @@ export const MarketingTilesByNumber: Record<
 } as const;
 
 interface MarketingTileCreationProps {
-	marketingType: MARKETING_TYPE;
+	marketingType: MarketingType;
 	tileNumber: number;
 	width: number;
 	height: number;

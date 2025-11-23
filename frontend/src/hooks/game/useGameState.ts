@@ -1,21 +1,21 @@
 import { selector, useRecoilValue } from "recoil";
-import { Reserve } from "../../../../backend/src/game/NewGameStructures";
-import {
-	Employee,
-	GameEventView,
-	GetTransposed,
-	MapBackgroundTile
-} from "../../../../backend/src/utils";
-import { EmployeeType } from "../../../../shared/employees/types";
+
+import { GetTransposed } from "@shared/area/AreaUtils";
+import { Employee } from "@shared/employees/types";
 import {
 	EmployeeNode,
+	GameEventView,
 	GamePlayerViewPrivate,
 	GamePlayerViewPublic,
 	HouseView,
+	MapBackgroundTile,
 	MarketingCampaignView,
 	ParseEmployeeTree,
+	Reserve,
 	RestaurantView,
-	TURN_PROGRESS
+	TurnProgress,
+	getEmployeeById,
+	isValidEmployeeId
 } from "../../utils";
 import { GameStateAtom } from "./useFullGameState";
 
@@ -64,7 +64,7 @@ const mapHouseSelector = selector<HouseView[]>({
 });
 
 const RECOIL_TURN_PROGRESS_KEY = "TURN_PROGRESS";
-const turnProgressSelector = selector<TURN_PROGRESS>({
+const turnProgressSelector = selector<TurnProgress>({
 	key: RECOIL_TURN_PROGRESS_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
@@ -132,7 +132,7 @@ const playerDataSelector = selector<GamePlayerViewPrivate>({
 	}
 });
 
-const myEmployeesSelector = selector<EmployeeType[]>({
+const myEmployeesSelector = selector<Employee[]>({
 	key: "MY_EMPLOYEES",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
@@ -142,12 +142,12 @@ const myEmployeesSelector = selector<EmployeeType[]>({
 
 		if (!playerData) return [];
 
-		const myEmployees: EmployeeType[] = [];
+		const myEmployees: Employee[] = [];
 
 		playerData.employees.forEach((employeeId) => {
-			if (!Employee.IsValidId(employeeId)) return;
+			if (!isValidEmployeeId(employeeId)) return;
 
-			myEmployees.push(Employee.ById(employeeId));
+			myEmployees.push(getEmployeeById(employeeId));
 		});
 
 		return myEmployees;

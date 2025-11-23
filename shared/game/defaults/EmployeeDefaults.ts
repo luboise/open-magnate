@@ -1,7 +1,7 @@
-import { EMPLOYEE_ID } from "../../employees/types";
+import { EmployeeId } from "../../employees/types";
 
 export const DEFAULT_EMPLOYEE_ARRAY: (
-	| EMPLOYEE_ID
+	| EmployeeId
 	| "CEO"
 )[] = ["CEO"] as const;
 

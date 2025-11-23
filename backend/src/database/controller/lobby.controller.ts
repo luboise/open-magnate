@@ -1,3 +1,4 @@
+/*
 import {
 	// GameState,
 	Lobby,
@@ -5,6 +6,7 @@ import {
 	TURN_PROGRESS,
 	UserSession
 } from "@prisma/client";
+*/
 
 import {
 	GameDefaults,
@@ -13,8 +15,15 @@ import {
 	LobbyViewPerPlayer
 } from "../../../../shared";
 
-import prisma from "../datasource";
+import {
+	Lobby,
+	prisma,
+	TURN_PROGRESS,
+	UserSession
+} from "../datasource";
+
 import { GetNewReserve } from "../../game/NewGameStructures";
+import { LobbyWhereInput } from "../datasource/generated/models";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import UserSessionRepository from "../repository/usersession.repository";
@@ -23,7 +32,7 @@ import { FullLobby, FullLobbyInclude } from "./includes";
 
 const LobbyController = {
 	_get: async <T extends boolean = false>(
-		where: Prisma.LobbyWhereInput,
+		where: LobbyWhereInput,
 		fullGet?: T
 	): Promise<
 		(T extends true ? FullLobby : Lobby) | null
@@ -211,9 +220,9 @@ const LobbyController = {
 			inGame:
 				lobby.gameState !== null &&
 				lobby.gameState.turnProgress !==
-				TURN_PROGRESS.PREGAME &&
+					TURN_PROGRESS.PREGAME &&
 				lobby.gameState.turnProgress !==
-				TURN_PROGRESS.POSTGAME,
+					TURN_PROGRESS.POSTGAME,
 
 			lobbyId: lobby.id,
 			lobbyName: lobby.name,

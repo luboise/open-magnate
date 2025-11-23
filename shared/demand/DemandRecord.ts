@@ -1,14 +1,16 @@
 import {
-	DEMAND_TYPE,
-	DEMAND_VALUES,
 	GamePlayerViewPrivate,
 	ReduceTupleArray
 } from "../../backend/src/utils";
-import { DemandRecord } from "./types";
+import {
+	DemandRecord,
+	DemandType,
+	DemandTypes
+} from "./Supply";
 
 export function New(): DemandRecord {
-	const tuples = DEMAND_VALUES.map(
-		(val): [DEMAND_TYPE, number] => [val, 0]
+	const tuples = DemandTypes.map(
+		(val): [DemandType, number] => [val, 0]
 	);
 	return ReduceTupleArray(tuples);
 }
@@ -20,9 +22,9 @@ export function FromPlayer(
 }
 
 export function FromDemands(
-	demands: DEMAND_TYPE[]
+	demands: DemandType[]
 ): DemandRecord {
-	const tuples = DEMAND_VALUES.map<[DEMAND_TYPE, number]>(
+	const tuples = DemandTypes.map<[DemandType, number]>(
 		(demand) => [
 			demand,
 			demands.reduce(

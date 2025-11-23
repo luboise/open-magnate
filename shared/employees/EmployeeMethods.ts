@@ -7,20 +7,18 @@ import {
 	RecruitmentEmployees,
 	WaitressEmployees
 } from "./employee_types";
-import { EMPLOYEE_ID, EmployeeType } from "./types";
+import { Employee, EmployeeId } from "./types";
 
-const EmployeesById: Record<
-	EMPLOYEE_ID | "CEO",
-	EmployeeType
-> = {
-	...ManagementEmployees,
-	...DrinkEmployees,
-	...FoodEmployees,
-	...MarketingEmployees,
-	...WaitressEmployees,
-	...RecruitmentEmployees,
-	CEO: CEOEmployeeInitial
-} as const;
+const EmployeesById: Record<EmployeeId | "CEO", Employee> =
+	{
+		...ManagementEmployees,
+		...DrinkEmployees,
+		...FoodEmployees,
+		...MarketingEmployees,
+		...WaitressEmployees,
+		...RecruitmentEmployees,
+		CEO: CEOEmployeeInitial
+	} as const;
 
 // function getEmployee() {
 // 	if () {
@@ -32,19 +30,21 @@ const EmployeesById: Record<
 // 	return null;
 // }
 
-export function IsValidId(id: string): id is EMPLOYEE_ID {
+export function isValidEmployeeId(
+	id: string
+): id is EmployeeId {
 	return id in EmployeesById;
 }
 
-export function EmployeeCanHire(employee: EmployeeType) {
+export function EmployeeCanHire(employee: Employee) {
 	return (
 		employee.type === "MANAGEMENT" ||
 		employee.type === "CEO"
 	);
 }
 
-export function ById(id: EMPLOYEE_ID): EmployeeType {
-	if (!IsValidId(id))
+export function getEmployeeById(id: EmployeeId): Employee {
+	if (!isValidEmployeeId(id))
 		throw new Error(
 			"Attempted to get invalid employee ID from ById(): " +
 				id

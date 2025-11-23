@@ -1,4 +1,4 @@
-import { Position } from "../../../backend/src/dataViews";
+import { Position } from "../Units";
 
 export class Path {
 	private nodes: PathNode[];

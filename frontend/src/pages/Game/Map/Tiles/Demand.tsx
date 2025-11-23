@@ -2,11 +2,11 @@ import "./Demand.css";
 
 import { ImgHTMLAttributes } from "react";
 import Image from "../../../../global_components/Image";
-import { DEMAND_TYPE } from "../../../../utils";
+import { DemandType } from "@shared/demand/Supply";
 
 interface Props
 	extends ImgHTMLAttributes<HTMLImageElement> {
-	demand: DEMAND_TYPE;
+	demand: DemandType;
 }
 
 function Demand({ demand, className, ...args }: Props) {

@@ -1,10 +1,8 @@
-import { Position } from "../../backend/src/dataViews";
-import { DEMAND_TYPE } from "../../backend/src/exported";
+import { Position } from "../area/Units";
 
-import {
-	MARKETING_TYPE,
-	MarketingCampaign
-} from "../../backend/src/exported";
+import { MarketingType } from "@shared/marketing";
+import { MarketingCampaign } from "../../backend/src/exported";
+import { DemandType } from "../demand/Supply";
 import {
 	MarketingTile,
 	MarketingTilesByNumber
@@ -32,8 +30,8 @@ export interface MarketingCampaignView {
 	priority: number;
 	playerNumber: number;
 
-	type: MARKETING_TYPE;
-	foodType: DEMAND_TYPE;
+	type: MarketingType;
+	foodType: DemandType;
 
 	pos: Position;
 

@@ -1,5 +1,5 @@
 import { HTMLAttributes, useMemo, useReducer } from "react";
-import { MOVE_TYPE } from "../../../../../shared/Moves";
+import { MOVE_TYPE } from "@shared/Moves";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
@@ -16,7 +16,7 @@ interface Action {
 	payload: number;
 }
 
-interface Props extends HTMLAttributes<HTMLDivElement> {}
+interface Props extends HTMLAttributes<HTMLDivElement> { }
 function SalaryHandler({ ...args }: Props) {
 	const { myEmployees, playerData, lastEvent } =
 		useGameStateView();

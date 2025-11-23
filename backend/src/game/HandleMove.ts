@@ -1,9 +1,9 @@
-import { TURN_PROGRESS } from "@prisma/client";
 import { MOVE_TYPE, MoveData } from "../../../shared/Moves";
 
 import { TransactionFunctions } from ".";
 import { getCurrentPlayer } from "../database/controller/gamestate.controller";
 import { FullGameStateInclude } from "../database/controller/includes";
+import { TurnProgress } from "../utils";
 import { TransactionBundle } from "./TransactionFunctions/types";
 import { BuildErrorMessage } from "./TransactionFunctions/utils";
 
@@ -130,8 +130,8 @@ export async function TransactMove(
 }
 
 export function GetNextTurnPhase(
-	currentTurnPhase: TURN_PROGRESS
-): TURN_PROGRESS {
+	currentTurnPhase: TurnProgress
+): TurnProgress {
 	switch (currentTurnPhase) {
 		case "RESTRUCTURING": {
 			return "TURN_ORDER_SELECTION";

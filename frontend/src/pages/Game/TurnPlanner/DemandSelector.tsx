@@ -1,10 +1,10 @@
-import { DEMAND_TYPE } from "../../../utils";
+import { DemandType } from "@shared/demand";
 import Demand from "../Map/Tiles/Demand";
 
 type Props = {
-	demands: DEMAND_TYPE[];
+	demands: DemandType[];
 	onDemandClicked: (
-		demand: DEMAND_TYPE
+		demand: DemandType
 	) => void | Promise<void>;
 };
 

@@ -1,7 +1,5 @@
+import { DirectionBools } from "@shared/map/tiles/types";
 import { useMemo } from "react";
-import {
-	DirectionBools,
-} from "../../../../../shared/map/tiles/types";
 import RoadLines from "./RoadLines";
 
 interface RoadTileProps {
@@ -43,3 +41,4 @@ function RoadTileElements({
 }
 
 export default RoadTileElements;
+

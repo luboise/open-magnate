@@ -1,0 +1,17 @@
+import { PrismaMariaDb } from "@prisma/adapter-mariadb";
+import "dotenv/config";
+import { PrismaClient } from "./generated/client";
+
+const adapter = new PrismaMariaDb({
+	database: process.env.DB_DATABASE_NAME,
+	host: process.env.DB_HOST,
+	user: process.env.DB_USERNAME,
+	password: process.env.DB_PASSWORD,
+	port: Number(process.env.DB_PORT) || 3307
+});
+
+const prisma = new PrismaClient({ adapter });
+
+export * from "./generated/client";
+export * from "./generated/models";
+export { prisma };

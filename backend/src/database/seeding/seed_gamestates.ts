@@ -1,13 +1,16 @@
-import { Prisma, TURN_PROGRESS } from "@prisma/client";
 import { DEFAULT_EMPLOYEE_ARRAY } from "../../../../shared/game/defaults";
 import { GetNewReserve } from "../../game/NewGameStructures";
+import {
+	GameStateCreateInput,
+	TURN_PROGRESS
+} from "../datasource";
 import { seedLobby1 } from "./seed_lobbies";
 import {
 	seedRestaurant1,
 	seedRestaurant2
 } from "./seed_restaurants";
 
-export const seedGameState1: Prisma.GameStateCreateInput = {
+export const seedGameState1: GameStateCreateInput = {
 	currentTurn: 0,
 	lobby: {
 		connect: { id: seedLobby1.id }

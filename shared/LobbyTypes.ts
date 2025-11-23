@@ -1,5 +1,3 @@
-// import { House } from "@prisma/client";
-
 import { GameStateViewPerPlayer } from ".";
 
 export interface LobbySubmissionData {

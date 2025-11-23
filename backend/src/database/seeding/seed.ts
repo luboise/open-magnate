@@ -1,10 +1,4 @@
-// import prisma from "../src/datasource";
-
-import {
-	Prisma,
-	PrismaClient,
-	PrismaPromise
-} from "@prisma/client";
+import { Prisma } from "../datasource";
 
 import { seedGameState1 } from "./seed_gamestates";
 import { seedLobby1 } from "./seed_lobbies";
@@ -15,9 +9,11 @@ import {
 	seedUser2
 } from "./seed_users";
 
+import { prisma } from "../datasource";
+import { PrismaPromise } from "../datasource/generated/internal/prismaNamespace";
+
 // TODO: Fix main throwing an error when running without debug mode on GitHub actions
 async function main() {
-	const prisma = new PrismaClient();
 	try {
 		const transactions = [];
 		// // Delete lobby dependees
@@ -156,8 +152,6 @@ export async function reseedDatabase() {
 }
 
 export async function dropEverything() {
-	const prisma = new PrismaClient();
-
 	const transactions: PrismaPromise<any>[] = [];
 	transactions.push(
 		prisma.$executeRaw`SET FOREIGN_KEY_CHECKS = 0;`

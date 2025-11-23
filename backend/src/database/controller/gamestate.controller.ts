@@ -1,15 +1,11 @@
 import {
-	Prisma,
-	READY_STATUS,
-	TURN_PROGRESS
-} from "@prisma/client";
-import {
 	CountEmptySlots,
 	MAP_PIECE_HEIGHT,
 	MAP_PIECE_WIDTH,
 	PLAYER_DEFAULTS
 } from "../../../../shared";
 import { MoveData } from "../../../../shared/Moves";
+import { GetTransposed } from "../../../../shared/area/AreaUtils";
 import { GetEmployeeTreeOrThrow } from "../../../../shared/employees/EmployeeStructure";
 import { MapStringChar } from "../../../../shared/map/parsing/types";
 import { parseTurnOrder } from "../../../../shared/views/GameStateViews";
@@ -18,11 +14,15 @@ import {
 	MAP_PIECES,
 	createMapString
 } from "../../game/MapPieces";
+import { TransactionInfo } from "../../utils";
+
 import {
-	GetTransposed,
-	TransactionInfo
-} from "../../utils";
-import prisma from "../datasource";
+	HouseCreateManyGameInput,
+	READY_STATUS,
+	TURN_PROGRESS,
+	prisma
+} from "../datasource";
+
 import GameStateRepository from "../repository/gamestate.repository";
 import {
 	FullGameState,
@@ -147,17 +147,13 @@ const GameStateController = {
 
 	NewMap: (
 		playerCount: number
-	): [
-			mapString: string,
-			Prisma.HouseCreateManyGameInput[]
-		] => {
+	): [mapString: string, HouseCreateManyGameInput[]] => {
 		const defaults = PLAYER_DEFAULTS[playerCount];
 
 		if (!defaults)
 			throw new Error("Invalid player count");
 
-		const houses: Prisma.HouseCreateManyGameInput[] =
-			[];
+		const houses: HouseCreateManyGameInput[] = [];
 
 		// Unused map pieces in a random order
 		const unusedMapPieces = new Array(20)

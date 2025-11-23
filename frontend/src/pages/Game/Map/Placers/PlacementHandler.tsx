@@ -1,5 +1,5 @@
+import { MOVE_TYPE } from "@shared/Moves";
 import { useCallback } from "react";
-import { MOVE_TYPE } from "../../../../../../shared/Moves";
 import useClientState, {
 	OnTilePlacedCallback
 } from "../../../../hooks/game/useClientState";
@@ -80,7 +80,7 @@ function PlacementHandler({ placementTypes }: Props) {
 		[]
 	);
 
-	const { } = useClientState(onTileDropped);
+	const {} = useClientState(onTileDropped);
 
 	// TODO: Implement actual house placement logic
 	// if (event.type === "TILE" && event.data.type === "EMPTY")
@@ -156,3 +156,4 @@ function PlacementHandler({ placementTypes }: Props) {
 }
 
 export default PlacementHandler;
+

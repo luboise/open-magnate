@@ -1,2 +1,2 @@
 export * as DemandRecords from "./DemandRecord";
-export * from "./types";
+export * from "./Supply";

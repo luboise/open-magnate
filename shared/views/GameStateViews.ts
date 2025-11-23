@@ -1,9 +1,8 @@
 import { READY_STATUS } from "../../backend/src/dataViews";
-import { DEMAND_TYPE } from "../../backend/src/exported";
 import {
 	GameEventView,
 	Map2D,
-	TURN_PROGRESS
+	TurnProgress
 } from "../../frontend/src/utils";
 import {
 	GardenView,
@@ -15,10 +14,11 @@ import {
 	MarketingCampaignViewPrivate
 } from "./MarketingViews";
 
-import { EMPLOYEE_ID } from "../employees/types";
+import { DemandType } from "../demand/Supply";
+import { EmployeeId } from "../employees/types";
 
 interface BaseGameStateView {
-	turnProgress: TURN_PROGRESS;
+	turnProgress: TurnProgress;
 	currentTurn: number;
 	currentPlayer: number | null;
 
@@ -35,7 +35,7 @@ interface BaseGameStateView {
 	houses: HouseView[];
 	gardens: GardenView[];
 
-	reserve: Record<EMPLOYEE_ID, number>;
+	reserve: Record<EmployeeId, number>;
 
 	marketingCampaigns: MarketingCampaignView[];
 }
@@ -58,12 +58,12 @@ export interface GamePlayerViewPublic {
 	restaurant: number;
 	money: number;
 	ready: boolean | null;
-	supply: DEMAND_TYPE[];
+	supply: DemandType[];
 }
 
 export interface GamePlayerViewPrivate
 	extends GamePlayerViewPublic {
-	employees: EMPLOYEE_ID[];
+	employees: EmployeeId[];
 	employeeTreeStr: string;
 	marketingCampaigns: MarketingCampaignViewPrivate[];
 }

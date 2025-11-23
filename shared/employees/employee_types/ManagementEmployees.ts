@@ -12,12 +12,12 @@ export const MGMT_EMPLOYEE_IDS = [
 	"mgmt_5"
 ] as const;
 
-export type MGMT_EMPLOYEE_ID =
+export type ManagementEmployeeId =
 	(typeof MGMT_EMPLOYEE_IDS)[number];
 
 export interface ManagementEmployee extends BaseEmployee {
 	type: "MANAGEMENT";
-	id: MGMT_EMPLOYEE_ID;
+	id: ManagementEmployeeId;
 	colour: EMPLOYEE_COLOUR.BLACK;
 	capacity: number;
 }
@@ -38,7 +38,7 @@ export function createManagementEmployee(
 }
 
 export const ManagementEmployees: Record<
-	MGMT_EMPLOYEE_ID,
+	ManagementEmployeeId,
 	ManagementEmployee
 > = {
 	mgmt_1: createManagementEmployee({

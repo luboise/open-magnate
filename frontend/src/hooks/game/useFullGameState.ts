@@ -1,5 +1,5 @@
+import { GameStateViewPerPlayer } from "@shared/views";
 import { atom, useRecoilState } from "recoil";
-import { GameStateViewPerPlayer } from "../../utils";
 
 const RECOIL_GAMESTATE_KEY = "GameState";
 type GameStateAtomType = GameStateViewPerPlayer | null;
@@ -14,4 +14,3 @@ function useFullGameState() {
 }
 
 export default useFullGameState;
-

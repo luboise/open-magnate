@@ -1,3 +1,4 @@
+import { DemandType } from "../../../../shared/demand/Supply";
 import {
 	FullGameState,
 	FullGameStateInclude,
@@ -5,12 +6,11 @@ import {
 } from "../../database/controller/includes";
 import {
 	CreateGameStateView,
+	CreateHouseView,
 	HouseView
 } from "../../dataViews";
 import {
 	Area,
-	CreateHouseView,
-	DEMAND_TYPE,
 	MarketingCampaignView,
 	MarketingTilesByNumber
 } from "../../utils";
@@ -59,7 +59,7 @@ export const HandleEndOfRound: MoveTransactionFunctionUntyped =
 
 export const AddDemand: MoveTransactionFunctionTyped<{
 	house: HouseView;
-	foodType: DEMAND_TYPE;
+	foodType: DemandType;
 }> = async (bundle, details): Promise<void> => {
 	const { ctx, gameId } = bundle;
 	const { house, foodType } = details;

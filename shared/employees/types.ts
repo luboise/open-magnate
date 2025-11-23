@@ -1,20 +1,20 @@
 import {
 	CEOEmployee,
-	DRINK_EMPLOYEE_ID,
 	DrinkEmployee,
-	FOOD_EMPLOYEE_ID,
+	DrinkEmployeeId,
 	FoodEmployee,
-	MARKETING_EMPLOYEE_ID,
-	MGMT_EMPLOYEE_ID,
+	FoodEmployeeId,
 	ManagementEmployee,
+	ManagementEmployeeId,
 	MarketingEmployee,
-	RECRUITMENT_EMPLOYEE_ID,
+	MarketingEmployeeId,
 	RecruitmentEmployee,
-	WAITRESS_EMPLOYEE_ID,
+	RecruitmentEmployeeId,
+	WaitressEmployeeId as WaitreeEmployeeId,
 	WaitressEmployee
 } from "./employee_types";
 
-export type EMPLOYEE_ENUM =
+export type EmployeeType =
 	| "MANAGEMENT"
 	| "FOOD"
 	| "DRINK"
@@ -28,15 +28,15 @@ export type EMPLOYEE_ENUM =
 // export type PINK_NAME = (typeof PINK_NAMES)[number];
 
 // TODO: Implement the rest of the employees
-export type EMPLOYEE_ID =
-	| MGMT_EMPLOYEE_ID
-	| FOOD_EMPLOYEE_ID
-	| DRINK_EMPLOYEE_ID
-	| MARKETING_EMPLOYEE_ID
-	| WAITRESS_EMPLOYEE_ID
-	| RECRUITMENT_EMPLOYEE_ID;
+export type EmployeeId =
+	| ManagementEmployeeId
+	| FoodEmployeeId
+	| DrinkEmployeeId
+	| MarketingEmployeeId
+	| WaitreeEmployeeId
+	| RecruitmentEmployeeId;
 
-export type EmployeeType =
+export type Employee =
 	| ManagementEmployee
 	| DrinkEmployee
 	| FoodEmployee

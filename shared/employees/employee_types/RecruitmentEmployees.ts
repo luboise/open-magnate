@@ -27,12 +27,12 @@ const RECRUITMENT_EMPLOYEE_IDS = [
 // const PINK_NAMES = ["Waitress", "CEO"] as const;
 
 // Will be expanded later with movie star employees
-export type RECRUITMENT_EMPLOYEE_ID =
+export type RecruitmentEmployeeId =
 	(typeof RECRUITMENT_EMPLOYEE_IDS)[number];
 
 export interface RecruitmentEmployee extends BaseEmployee {
 	type: "RECRUITMENT";
-	id: RECRUITMENT_EMPLOYEE_ID;
+	id: RecruitmentEmployeeId;
 	colour: EMPLOYEE_COLOUR.RECRUITMENT_GREY;
 	hiringSlots: number;
 	canReduceSalary: boolean;
@@ -64,7 +64,7 @@ function createRecruitmentEmployee({
 }
 
 export const RecruitmentEmployees: Record<
-	RECRUITMENT_EMPLOYEE_ID,
+	RecruitmentEmployeeId,
 	RecruitmentEmployee
 > = {
 	trainer: createRecruitmentEmployee({

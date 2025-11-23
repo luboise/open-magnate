@@ -1,5 +1,5 @@
+import { toTitleCase } from "@shared/utils";
 import { HTMLAttributes, useEffect, useState } from "react";
-import { toTitleCase } from "../../../shared/utils";
 
 interface SpinningStatusProps<T>
 	extends HTMLAttributes<HTMLDivElement> {

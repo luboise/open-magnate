@@ -10,6 +10,7 @@ export * from "./demand";
 export * from "./game/actions/types";
 export * from "./map";
 export * from "./map/parsing/MapParsing";
+export * from "./marketing";
 
 export * from "./utils";
 
@@ -17,7 +18,7 @@ export * from "./area";
 export * from "./views";
 
 // Shared types that rely on backend types
-export * from "../backend/src/exported";
+// export * from "../backend/src/exported";
 
 export * from "./employees";
 

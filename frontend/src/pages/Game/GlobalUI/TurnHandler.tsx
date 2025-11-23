@@ -1,6 +1,6 @@
 import "./TurnHandler.css";
 
-import { MOVE_TYPE } from "../../../../../shared/Moves";
+import { MOVE_TYPE } from "@shared/Moves";
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
 import { useGameStateView } from "../../../hooks/game/useGameState";
@@ -9,7 +9,7 @@ import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import {
 	RESTAURANT_NAMES,
-	TURN_PROGRESS_VALUES
+	TurnProgressValues
 } from "../../../utils";
 import TurnOrderList from "./TurnOrderList";
 
@@ -70,13 +70,13 @@ function TurnHandler() {
 				{isMyTurn
 					? "Your turn"
 					: "Waiting for " +
-						(currentPlayer === null
-							? "others to ready up."
-							: `${RESTAURANT_NAMES[currentPlayer.restaurant]}...`)}
+					(currentPlayer === null
+						? "others to ready up."
+						: `${RESTAURANT_NAMES[currentPlayer.restaurant]}...`)}
 			</h2>
 
 			<SpinningStatus
-				orderedOptions={TURN_PROGRESS_VALUES}
+				orderedOptions={TurnProgressValues}
 				currentOption={turnProgress}
 				style={{
 					gridRow: "2 / span 1",
@@ -124,3 +124,4 @@ function TurnHandler() {
 }
 
 export default TurnHandler;
+

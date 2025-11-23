@@ -1,4 +1,4 @@
-import { ENTRANCE_CORNER } from "../backend/src/dataViews";
+import { ENTRANCE_CORNER } from "./area";
 import { EmployeeNode } from "./employees/EmployeeStructure";
 import { TurnAction } from "./game/actions/types";
 

@@ -1,10 +1,9 @@
 import {
-	ORIENTATION,
+	GameEvent,
 	ENTRANCE_CORNER as PrismaEntranceCorner,
 	READY_STATUS as PrismaReadyStatus
-} from "@prisma/client";
+} from "./database/datasource";
 
-import { createDetailedMapString } from "../../shared";
 import {
 	GamePlayerViewPrivate,
 	GameStateView,
@@ -16,9 +15,11 @@ import {
 } from "./database/controller/gamestate.controller";
 import {
 	CreateGamePlayerView,
-	FullGameState
+	FullGameState,
+	FullHouse
 } from "./database/controller/includes";
 
+import { Reserve } from "../../shared/employees/Reserve";
 import {
 	GardenView,
 	HouseView,
@@ -28,23 +29,17 @@ import {
 	CreateMarketingCampaignView,
 	MarketingCampaignView
 } from "../../shared/views/MarketingViews";
-import { Reserve } from "./game/NewGameStructures";
 import {
-	CreateGameEventView,
-	CreateHouseView,
 	GameEventView,
-	ParseMapStringFromGSV
+	ParseMapStringFromGSV,
+	TransactionInfo,
+	createDetailedMapString,
+	parseJsonArray
 } from "./utils";
 
 export type READY_STATUS = PrismaReadyStatus;
 
 export type ENTRANCE_CORNER = PrismaEntranceCorner;
-
-export interface Position {
-	x: number;
-	y: number;
-	orientation?: ORIENTATION;
-}
 
 export const CreateGameStateView = (
 	gameState: FullGameState
@@ -111,7 +106,10 @@ export const CreateGameStateView = (
 
 	const history: GameEventView[] = gameState.events
 		.map((event) => CreateGameEventView(event))
-		.sort((e1, e2) => e2.time - e1.time);
+		.sort(
+			(e1, e2) =>
+				e2.time.getTime() - e1.time.getTime()
+		);
 
 	return {
 		currentPlayer: currentPlayer,
@@ -166,5 +164,46 @@ export const GetPublicGameStateView = (
 
 	return newVal;
 };
+
+export function CreateGameEventView(
+	event: GameEvent
+): GameEventView {
+	const arr = parseJsonArray(event.eventData).map((val) =>
+		JSON.parse(val)
+	) as TransactionInfo[];
+
+	const data: GameEventView = {
+		time: event.time,
+		data: arr
+	};
+
+	return data;
+}
+
+export function CreateHouseView(
+	house: FullHouse
+): HouseView {
+	return {
+		demand: house.demand.map((demand) => demand.type),
+		demandLimit: house.demandLimit,
+		priority: house.number,
+		pos: {
+			x: house.x,
+			y: house.y,
+			orientation: "HORIZONTAL"
+		},
+		garden: house.garden
+			? {
+					houseNumber: house.garden?.houseId,
+					pos: {
+						x: house.garden.x,
+						y: house.garden.y,
+						orientation:
+							house.garden?.orientation
+					}
+				}
+			: null
+	};
+}
 
 export * from "../../shared/views";

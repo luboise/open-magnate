@@ -1,6 +1,6 @@
-import { Position } from "../../../../backend/src/dataViews";
 import { Area } from "../../../../backend/src/utils";
 import { Map2D } from "../../../map";
+import { Position } from "../../Units";
 import { Path } from "../Path";
 
 interface DijkstraNode {

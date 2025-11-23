@@ -1,5 +1,5 @@
-import { DEMAND_TYPE } from "../../../backend/src/exported";
-import { EMPLOYEE_ID } from "../../employees/types";
+import { DemandType } from "../../demand/Supply";
+import { EmployeeId } from "../../employees";
 import { MarketingTile } from "../../map/tiles";
 
 interface BaseGameAction {
@@ -10,7 +10,7 @@ interface BaseGameAction {
 
 export interface RecruitAction extends BaseGameAction {
 	type: "RECRUIT";
-	recruiting: EMPLOYEE_ID;
+	recruiting: EmployeeId;
 }
 
 export interface MarketingAction extends BaseGameAction {
@@ -20,7 +20,7 @@ export interface MarketingAction extends BaseGameAction {
 
 export interface DemandAction extends BaseGameAction {
 	type: "GET_DEMAND";
-	demand: DEMAND_TYPE;
+	demand: DemandType;
 	amount: number;
 }
 
@@ -28,5 +28,21 @@ export type TurnAction =
 	| RecruitAction
 	| MarketingAction
 	| DemandAction;
+
+export const TurnProgressValues = [
+	"PREGAME",
+	"SETTING_UP",
+	"RESTAURANT_PLACEMENT",
+	"RESTRUCTURING",
+	"TURN_ORDER_SELECTION",
+	"USE_EMPLOYEES",
+	"SALARY_PAYOUTS",
+	"MARKETING_CAMPAIGNS",
+	"CLEAN_UP",
+	"POSTGAME"
+] as const;
+
+export type TurnProgress =
+	(typeof TurnProgressValues)[number];
 
 export const BASE_SALARY = 5;

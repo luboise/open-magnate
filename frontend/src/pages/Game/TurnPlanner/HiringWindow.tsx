@@ -1,5 +1,5 @@
+import { EmployeeId } from "@shared/employees/types";
 import { useEffect, useMemo, useState } from "react";
-import { EMPLOYEE_ID } from "../../../../../shared/employees/types";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import { RecruitAction } from "../../../utils";
@@ -45,7 +45,7 @@ function HiringWindow({
 			: 1
 	);
 
-	function onHire(employeeId: EMPLOYEE_ID) {
+	function onHire(employeeId: EmployeeId) {
 		const newHire: Omit<RecruitAction, "player"> = {
 			employeeIndex: employeeHiringIndex,
 			recruiting: employeeId,
@@ -74,3 +74,4 @@ function HiringWindow({
 }
 
 export default HiringWindow;
+

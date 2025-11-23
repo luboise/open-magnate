@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { UserSessionCreateInput } from "../datasource";
 
 export const seedUser1 = {
 	sessionKey: "1",
@@ -41,7 +41,7 @@ export const seedUserOutOfLobby5 = {
 	browserId: "outoflobby-5",
 	name: "outoflobby-5"
 };
-export const SEED_USERS: Prisma.UserSessionCreateInput[] = [
+export const SEED_USERS: UserSessionCreateInput[] = [
 	seedUser1,
 	seedUser2,
 	seedUserOutOfLobby1,

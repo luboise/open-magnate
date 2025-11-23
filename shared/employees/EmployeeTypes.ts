@@ -1,12 +1,12 @@
-import { EMPLOYEE_ENUM, EMPLOYEE_ID } from "./types";
+import { EmployeeId, EmployeeType } from "./types";
 
 export interface BaseEmployee {
-	id: EMPLOYEE_ID | "CEO";
+	id: EmployeeId | "CEO";
 	name: string;
 
-	type: EMPLOYEE_ENUM;
+	type: EmployeeType;
 	colour: EMPLOYEE_COLOUR;
-	buildsInto: EMPLOYEE_ID[];
+	buildsInto: EmployeeId[];
 	notPaid?: boolean;
 	oneOf?: boolean;
 }

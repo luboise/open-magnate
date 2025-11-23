@@ -1,5 +1,5 @@
 import { DEMAND_TYPE } from "@prisma/client";
-import { EMPLOYEE_ID } from "../../../../shared/employees/types";
+import { EmployeeId } from "../../../../shared/employees/types";
 import {
 	MarketingAction,
 	MarketingCampaignView,
@@ -23,7 +23,7 @@ export const ExecuteTurn: MoveTransactionFunctionTyped<
 		});
 
 	// TODO: Add validation for valid recruiting
-	const newRecruits: EMPLOYEE_ID[] = [];
+	const newRecruits: EmployeeId[] = [];
 
 	for (const action of turn) {
 		if (action.type === "RECRUIT") {

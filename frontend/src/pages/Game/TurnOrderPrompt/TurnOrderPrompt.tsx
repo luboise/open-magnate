@@ -1,4 +1,4 @@
-import { MOVE_TYPE } from "../../../../../shared/Moves";
+import { MOVE_TYPE } from "@shared/Moves";
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
@@ -87,3 +87,4 @@ function TurnOrderPrompt({ ...args }: Props) {
 }
 
 export default TurnOrderPrompt;
+

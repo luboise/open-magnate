@@ -6,12 +6,12 @@ import {
 const WAITRESS_EMPLOYEE_IDS = ["waitress"] as const;
 
 // Will be expanded later with movie star employees
-export type WAITRESS_EMPLOYEE_ID =
+export type WaitressEmployeeId =
 	(typeof WAITRESS_EMPLOYEE_IDS)[number];
 
 export interface WaitressEmployee extends BaseEmployee {
 	type: "WAITRESS";
-	id: WAITRESS_EMPLOYEE_ID;
+	id: WaitressEmployeeId;
 	colour: EMPLOYEE_COLOUR.PINK;
 }
 
@@ -25,7 +25,7 @@ const BaseWaitress: WaitressEmployee = {
 } as const;
 
 export const WaitressEmployees: Record<
-	WAITRESS_EMPLOYEE_ID,
+	WaitressEmployeeId,
 	WaitressEmployee
 > = {
 	waitress: BaseWaitress

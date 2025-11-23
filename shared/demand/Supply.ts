@@ -1,18 +1,21 @@
-import { DEMAND_TYPE } from "../../backend/src/utils";
+export const FoodTypes = ["BURGER", "PIZZA"] as const;
+export type FoodType = (typeof FoodTypes)[number];
 
-export type FoodType = Extract<
-	DEMAND_TYPE,
-	"BURGER" | "PIZZA"
->;
+export const DrinkTypes = [
+	"LEMONADE",
+	"BEER",
+	"COLA"
+] as const;
+export type DrinkType = (typeof DrinkTypes)[number];
 
-export type DrinkType = Extract<
-	DEMAND_TYPE,
-	"LEMONADE" | "BEER" | "COLA"
->;
-
-export type DemandType = FoodType | DrinkType;
+export const DemandTypes = [
+	...FoodTypes,
+	...DrinkTypes
+] as const;
+export type DemandType = (typeof DemandTypes)[number];
 
 export interface Supply<T extends DemandType[]> {
 	demand_type: T;
 	amount: number;
 }
+export type DemandRecord = Record<DemandType, number>;

@@ -1,6 +1,6 @@
 import {
 	BaseEmployee,
-	MARKETING_TYPE
+	MarketingType
 } from "../../../frontend/src/utils";
 import {
 	EMPLOYEE_COLOUR,
@@ -14,14 +14,14 @@ const MARKETING_EMPLOYEE_IDS = [
 	"market_4"
 ] as const;
 
-export type MARKETING_EMPLOYEE_ID =
+export type MarketingEmployeeId =
 	(typeof MARKETING_EMPLOYEE_IDS)[number];
 
 export interface MarketingEmployee extends BaseEmployee {
 	type: "MARKETING";
-	id: MARKETING_EMPLOYEE_ID;
+	id: MarketingEmployeeId;
 	colour: EMPLOYEE_COLOUR.LIGHT_BLUE;
-	marketingType: MARKETING_TYPE;
+	marketingType: MarketingType;
 }
 
 export function createMarketingEmployee({
@@ -42,7 +42,7 @@ export function createMarketingEmployee({
 }
 
 export const MarketingEmployees: Record<
-	MARKETING_EMPLOYEE_ID,
+	MarketingEmployeeId,
 	MarketingEmployee
 > = {
 	market_1: createMarketingEmployee({

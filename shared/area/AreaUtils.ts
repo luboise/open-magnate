@@ -1,6 +1,7 @@
-import { Position } from "../../backend/src/dataViews";
+import { new2DArray } from "../../backend/src/utils";
 import { Map2D } from "../map";
 import { AreaData, Measurable } from "./Area";
+import { Position } from "./Units";
 
 export function GetRealArea(tile: Measurable): AreaData {
 	const rotated =
@@ -68,4 +69,20 @@ export function CrossedTileBorder(
 		m1.y % 5 === 0 ||
 		m2.y % 5 === 0
 	);
+}
+
+export function GetTransposed<T>(array: T[][]) {
+	// Create an empty array to transpose into
+	const transposed = new2DArray<T>(
+		array[0].length,
+		array.length
+	);
+
+	for (let i = 0; i < array.length; i++) {
+		for (let j = 0; j < array[i].length; j++) {
+			transposed[j][i] = array[i][j];
+		}
+	}
+
+	return transposed;
 }

@@ -1,4 +1,4 @@
-import { Position } from "../../../backend/src/dataViews";
+import { Position } from "../../area/Units";
 import { Map2D, PartialMap2D } from "../map_2d";
 import { MapBackgroundTile } from "./background";
 import { MapOverlayTile } from "./overlay";

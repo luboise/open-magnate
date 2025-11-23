@@ -34,4 +34,4 @@ export function GetReactChildId(
 	return id;
 }
 
-export * from "../../shared";
+export * from "@shared/index";

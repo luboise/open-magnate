@@ -1,11 +1,12 @@
-import { EmployeeType } from "../../../../../shared/employees/types";
+import { Employee } from "@shared/employees";
+
 import "./EmployeeCard.css";
 
 import { HTMLAttributes } from "react";
 
 interface EmployeeCardProps
 	extends HTMLAttributes<HTMLDivElement> {
-	employee: EmployeeType;
+	employee: Employee;
 }
 
 function EmployeeCard(props: EmployeeCardProps) {

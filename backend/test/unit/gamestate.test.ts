@@ -1,8 +1,10 @@
-import { IsAdjacent } from "../../../shared/area/AreaUtils";
+import {
+	GetTransposed,
+	IsAdjacent
+} from "../../../shared/area/AreaUtils";
 import GameStateController from "../../src/database/controller/gamestate.controller";
 import { GetNewReserve } from "../../src/game/NewGameStructures";
 import {
-	GetTransposed,
 	Measurable,
 	PLAYER_DEFAULTS
 } from "../../src/utils";

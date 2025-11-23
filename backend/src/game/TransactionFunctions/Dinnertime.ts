@@ -1,3 +1,4 @@
+import { DemandType } from "@shared/demand/Supply";
 import { CreateGameStateView } from "../../dataViews";
 import {
 	FullGamePlayer,
@@ -5,14 +6,13 @@ import {
 	FullHouse
 } from "../../database/controller/includes";
 import {
-	DEMAND_TYPE,
 	DemandRecord,
 	DemandRecords,
-	Employee,
 	GamePlayerViewPrivate,
 	GameStateView,
 	HouseView,
-	Map2D
+	Map2D,
+	getEmployeeById
 } from "../../utils";
 import {
 	HouseDistances,
@@ -79,11 +79,11 @@ export const HandleDinnertime: MoveTransactionFunctionUntyped =
 				house.demand
 			);
 
-			// Can safely typecast, as houseDemands uses DEMAND_TYPE as a key
+			// Can safely typecast, as houseDemands uses DemandType as a key
 			for (const demand in houseDemands) {
 				if (
-					player.supply[demand as DEMAND_TYPE] <
-					houseDemands[demand as DEMAND_TYPE]
+					player.supply[demand as DemandType] <
+					houseDemands[demand as DemandType]
 				)
 					return false;
 			}
@@ -241,7 +241,7 @@ export function GetDinnertimeDetails(
 
 			waitresses: player.employees.filter(
 				(employee) =>
-					Employee.ById(employee).type ===
+					getEmployeeById(employee).type ===
 					"WAITRESS"
 			).length,
 			turnOrder: game.turnOrder.findIndex(

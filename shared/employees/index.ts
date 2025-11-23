@@ -1,4 +1,6 @@
 export * from "./EmployeeStructure";
 export * from "./EmployeeTypes";
+export * from "./Reserve";
+export * from "./types";
 
-export * as Employee from "./EmployeeMethods";
+export * from "./EmployeeMethods";

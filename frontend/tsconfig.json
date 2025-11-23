@@ -21,10 +21,13 @@
 		"noFallthroughCasesInSwitch": true,
 
 		// Source map for debugging
-		"sourceMap": true
+		"sourceMap": true,
+		"paths": {
+      		"@shared/*": ["../shared/*"],
+    	}
 	},
 	"include": [
-		"src",
+		"src/*",
 		"../../shared/GameState.ts",
 		"../../shared/MapTileData.ts",
 		"../../shared/House.ts",

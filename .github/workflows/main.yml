@@ -36,6 +36,10 @@ jobs:
                   cd ./backend
                   npm ci
 
+            - name: Setup test .env file
+              run: |
+                  cp .env.test .env
+
             - name: Run Tests
               run: |
                   cd ./backend

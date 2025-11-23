@@ -1,7 +1,5 @@
-import {
-	JsonArray,
-	JsonValue
-} from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
+
 import { Response } from "express";
 
 export * from "../../shared/";
@@ -106,25 +104,11 @@ export function CloneArray<T>(array: T[]): T[] {
 	return newArray;
 }
 
-export function GetTransposed<T>(array: T[][]) {
-	// Create an empty array to transpose into
-	const transposed = new2DArray<T>(
-		array[0].length,
-		array.length
-	);
-
-	for (let i = 0; i < array.length; i++) {
-		for (let j = 0; j < array[i].length; j++) {
-			transposed[j][i] = array[i][j];
-		}
-	}
-
-	return transposed;
-}
-
 // Reads a JSON number array. Can't have NaN in the array
-export function readJsonNumberArray(array: JsonValue) {
-	const asArray = array as JsonArray | null;
+export function readJsonNumberArray(
+	array: Prisma.JsonValue
+) {
+	const asArray = array as Prisma.JsonArray | null;
 	if (asArray === null) return [];
 
 	const vals: number[] = Array.isArray(array)
@@ -137,8 +121,8 @@ export function readJsonNumberArray(array: JsonValue) {
 	return vals.filter((val) => !Number.isNaN(val));
 }
 
-export function parseJsonArray(array: JsonValue) {
-	const asArray = array as JsonArray | null;
+export function parseJsonArray(array: Prisma.JsonValue) {
+	const asArray = array as Prisma.JsonArray | null;
 	if (asArray === null) return [];
 
 	const vals: string[] = Array.isArray(array)

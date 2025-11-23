@@ -1,10 +1,11 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../datasource/";
+
 import {
 	CreateMarketingCampaignView,
-	Employee,
 	GamePlayerViewPrivate,
 	MarketingCampaignViewPrivate,
 	ReadyStatusToBoolean,
+	isValidEmployeeId,
 	parseJsonArray,
 	readJsonNumberArray
 } from "../../utils";
@@ -32,7 +33,7 @@ export const FullGamePlayerInclude = {
 	marketingCampaigns: true,
 	restaurants: true,
 	supply: true
-} as const;
+} satisfies Prisma.GamePlayerInclude;
 
 export type FullGamePlayer = Prisma.GamePlayerGetPayload<{
 	include: typeof FullGamePlayerInclude;
@@ -47,7 +48,7 @@ export function CreateGamePlayerView(
 		restaurant: player.restaurantData.id,
 		milestones: readJsonNumberArray(player.milestones),
 		employees: parseJsonArray(player.employees).filter(
-			Employee.IsValidId
+			isValidEmployeeId
 		),
 		employeeTreeStr: player.employeeTree,
 		ready: ReadyStatusToBoolean(player.ready),
@@ -58,7 +59,7 @@ export function CreateGamePlayerView(
 						campaign
 					),
 					employeeIndex: campaign.employeeIndex
-				};
+				} satisfies MarketingCampaignViewPrivate;
 			}
 		),
 		supply: player.supply.map(
@@ -72,7 +73,7 @@ export const FullGameStateInclude = {
 	houses: {
 		include: {
 			demand: true,
-			garden: true,
+			garden: true
 		}
 	},
 	players: {

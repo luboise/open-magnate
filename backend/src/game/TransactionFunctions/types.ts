@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
 import { TransactionInfo } from "../../../../shared";
+import { Prisma } from "../../database/datasource";
 
 export type MoveTransactionFunctionUntyped = (
 	bundle: TransactionBundle

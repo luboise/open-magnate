@@ -9,7 +9,7 @@ import { DrinkType, Supply } from "../../demand/Supply";
 
 export interface DrinkEmployee extends BaseEmployee {
 	type: "DRINK";
-	id: DRINK_EMPLOYEE_ID;
+	id: DrinkEmployeeId;
 	colour: EMPLOYEE_COLOUR.LIGHT_GREEN;
 	/// How much this employee can produce regardless of distance
 	supply?: Supply<DrinkType[]>;
@@ -22,11 +22,11 @@ export const DRINK_EMPLOYEE_IDS = [
 	"drink_zeppelin"
 ] as const;
 
-export type DRINK_EMPLOYEE_ID =
+export type DrinkEmployeeId =
 	(typeof DRINK_EMPLOYEE_IDS)[number];
 
 export const DrinkEmployees: Record<
-	DRINK_EMPLOYEE_ID,
+	DrinkEmployeeId,
 	DrinkEmployee
 > = {
 	drink_boy: createDrinkEmployee({

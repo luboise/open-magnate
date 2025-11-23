@@ -1,7 +1,7 @@
 import "./TurnPlanner.css";
 
+import { Employee } from "@shared/employees/types";
 import { HTMLAttributes, useMemo, useState } from "react";
-import { EmployeeType } from "../../../../../shared/employees/types";
 import CustomPanel from "../../../global_components/CustomPanel";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
@@ -32,7 +32,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 
 	if (!currentTree || !playerData) return <></>;
 
-	const employees: EmployeeType[] = GetAllTreeData(
+	const employees: Employee[] = GetAllTreeData(
 		currentTree
 	).map((index) => myEmployees[index]);
 
@@ -85,7 +85,8 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 								employeeIndex:
 									selectedEmployeeIndex,
 								demand: demand,
-								amount: employee.supply.amount
+								amount: employee.supply
+									.amount
 							};
 							addAction(newAction);
 							clearSelectedEmployee();
@@ -172,3 +173,4 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 }
 
 export default TurnPlanner;
+

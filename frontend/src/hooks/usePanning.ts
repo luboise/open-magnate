@@ -4,7 +4,8 @@ import React, {
 	useMemo,
 	useReducer
 } from "react";
-import { Position } from "../../../backend/src/dataViews";
+
+import { Position } from "../utils";
 import useLocalVal from "./useLocalVal";
 
 interface PanningState {

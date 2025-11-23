@@ -1,5 +1,6 @@
 import { UserSession } from "@prisma/client";
-import prisma from "../datasource";
+
+import { prisma } from "../datasource";
 import UserSessionRepository from "../repository/usersession.repository";
 
 const UserSessionController = {

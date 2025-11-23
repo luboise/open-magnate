@@ -1,11 +1,11 @@
 import {
 	AbstractMapTileInterface,
-	GetTransposed,
 	Map2D,
 	MapAnyTileType,
 	MapBackgroundTile,
 	new2DArray
 } from "../../../backend/src/utils";
+import { GetTransposed } from "../../area/AreaUtils";
 import {
 	GardenView,
 	HouseView,

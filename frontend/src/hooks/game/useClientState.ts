@@ -1,9 +1,9 @@
+import { Position } from "@shared/area";
+import { MapOverlayTile } from "@shared/map";
+import { RotationAmount } from "@shared/map/tiles/types";
+import { Clamp } from "@shared/utils";
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
-import { Position } from "../../../../backend/src/dataViews";
-import { RotationAmount } from "../../../../shared/map/tiles/types";
-import { Clamp } from "../../../../shared/utils";
-import { MapOverlayTile } from "../../utils";
 import { useBoardInfo } from "./useMap";
 import useMapTileInteraction from "./useMapTileInteraction";
 

@@ -1,6 +1,6 @@
 import { HTMLAttributes } from "react";
 
-import { EmployeeType } from "../../../../../shared/employees/types";
+import { EmployeeType } from "@shared/employees/types";
 import EmployeeCard from "../Employees/EmployeeCard";
 
 interface InteractiveEmployeeCardBaseProps
@@ -23,3 +23,4 @@ function InteractiveEmployeeCard({
 }
 
 export default InteractiveEmployeeCard;
+
