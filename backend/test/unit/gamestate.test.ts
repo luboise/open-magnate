@@ -3,11 +3,14 @@ import GameStateController from "../../src/database/controller/gamestate.control
 import { GetNewReserve } from "../../src/game/NewGameStructures";
 import {
 	GetTransposed,
-	MAP_PIECE_HEIGHT,
-	MAP_PIECE_WIDTH,
 	Measurable,
 	PLAYER_DEFAULTS
 } from "../../src/utils";
+
+import {
+	MAP_PIECE_HEIGHT,
+	MAP_PIECE_WIDTH
+} from "../../../shared/game/constants/MapConstants";
 
 function testNewMap(playerCount: number) {
 	const [map, houses] =
@@ -16,10 +19,19 @@ function testNewMap(playerCount: number) {
 
 	const defaults = PLAYER_DEFAULTS[playerCount];
 
+	expect(defaults).toBeTruthy();
+	expect(defaults.mapHeight).toBeGreaterThan(0);
+	expect(defaults.mapWidth).toBeGreaterThan(0);
+
 	const rows = map.split(";");
-	expect(rows).toHaveLength(
-		defaults.mapHeight * MAP_PIECE_HEIGHT
-	);
+
+	const numRows: number =
+		defaults.mapHeight * MAP_PIECE_HEIGHT;
+
+	expect(numRows).toBeTruthy();
+	expect(numRows).toBeGreaterThan(0);
+
+	expect(rows).toHaveLength(numRows);
 
 	const firstColumn = rows[0].split("");
 	expect(firstColumn).toHaveLength(
@@ -33,9 +45,9 @@ function testNewMap(playerCount: number) {
 		)
 	).toBeLessThan(
 		MAP_PIECE_WIDTH *
-		MAP_PIECE_HEIGHT *
-		defaults.mapWidth *
-		defaults.mapHeight
+			MAP_PIECE_HEIGHT *
+			defaults.mapWidth *
+			defaults.mapHeight
 	);
 
 	rows.forEach((row) => {
