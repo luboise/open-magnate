@@ -1,0 +1,78 @@
+#root {
+	--resizable-element-border-size: 1.5em;
+	--resizable-element-grab-tab-size: 1em;
+}
+
+.resizable-element {
+	display: inline-flex;
+	position: absolute;
+
+	/* top: 0;
+	right: 0; */
+
+	/* height: auto; */
+
+	box-sizing: border-box;
+
+	/** Colouring **/
+	background-color: black;
+	border: var(--resizable-element-border-size) black solid;
+	border-radius: var(--resizable-element-border-size);
+
+	/** Very slight opacity transition **/
+	transition: opacity 0.02s;
+}
+
+.resizable-element-handle {
+	/* Modifiable */
+	cursor: nwse-resize;
+
+	/** Sizing **/
+	width: var(--resizable-element-border-size);
+	height: var(--resizable-element-border-size);
+
+	/** Positioning **/
+	position: absolute;
+	bottom: calc(
+		-1 / 1.15 * var(--resizable-element-border-size)
+	);
+	right: calc(
+		-1 / 1.15 * var(--resizable-element-border-size)
+	);
+
+	/** Colouring **/
+	background-color: white;
+	border-radius: 100%;
+}
+
+.resizable-minimised {
+	opacity: 0;
+	pointer-events: none;
+	visibility: hidden;
+}
+
+.resizable-element-top-tab {
+	user-select: none;
+	cursor: move;
+
+	/** Size/Position **/
+	position: absolute;
+	translate: 0 -100%;
+	height: var(--resizable-element-border-size);
+	width: 100%;
+
+	/** Colouring **/
+	color: black;
+	background-color: dimgray;
+	border-radius: var(--resizable-element-border-size);
+	font-weight: bold;
+
+	/** Misc **/
+	transition: opacity 0.15s linear;
+	opacity: 0;
+	z-index: 2;
+}
+
+.resizable-element-top-tab:hover {
+	opacity: 1;
+}

@@ -7,33 +7,19 @@ import {
 } from "@prisma/client";
 
 import {
-	DEFAULT_EMPLOYEE_ARRAY,
+	GameDefaults,
 	LobbySubmissionData,
 	LobbyView,
 	LobbyViewPerPlayer
 } from "../../../../shared";
-import prisma from "../../datasource";
+
+import prisma from "../datasource";
+import { GetNewReserve } from "../../game/NewGameStructures";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import UserSessionRepository from "../repository/usersession.repository";
-import GameStateController, {
-	FullGameStateInclude
-} from "./gamestate.controller";
-
-const LobbyGetParams = {
-	playersInLobby: {
-		include: {
-			userSession: true
-		}
-	},
-	gameState: {
-		include: { ...FullGameStateInclude }
-	}
-};
-
-export type FullLobby = Prisma.LobbyGetPayload<{
-	include: typeof LobbyGetParams;
-}>;
+import GameStateController from "./gamestate.controller";
+import { FullLobby, FullLobbyInclude } from "./includes";
 
 const LobbyController = {
 	_get: async <T extends boolean = false>(
@@ -45,7 +31,7 @@ const LobbyController = {
 		const lobby = await LobbyRepository.findFirst({
 			where: where,
 
-			include: fullGet ? LobbyGetParams : undefined
+			include: fullGet ? FullLobbyInclude : undefined
 		});
 
 		return lobby as T extends true ? FullLobby : Lobby;
@@ -110,18 +96,22 @@ const LobbyController = {
 				return null;
 			}
 
+			const playerIndices = new Array(
+				newLobbyData.playerCount
+			)
+				.fill(null)
+				.map((_, index) => index + 1);
+
+			const initialTurnOrder = playerIndices
+				.sort((_a, _b) => Math.random() - 0.5)
+				.join("");
+
 			const newLobby: Lobby =
 				await prisma.$transaction(async (ctx) => {
 					const [map, houses] =
 						GameStateController.NewMap(
 							newLobbyData.playerCount
 						);
-
-					const playerIndices = new Array(
-						newLobbyData.playerCount
-					)
-						.fill(null)
-						.map((_, index) => index + 1);
 
 					const lobby = await ctx.lobby.create({
 						data: {
@@ -139,13 +129,13 @@ const LobbyController = {
 											data: houses
 										}
 									},
-									turnOrder: playerIndices
-										.sort(
-											(_a, _b) =>
-												Math.random() -
-												0.5
-										)
-										.join(""),
+									turnOrder:
+										initialTurnOrder,
+									oldTurnOrder:
+										initialTurnOrder,
+									reserve: GetNewReserve(
+										newLobbyData.playerCount
+									),
 									players: {
 										createMany: {
 											data: playerIndices.map(
@@ -154,7 +144,7 @@ const LobbyController = {
 												) => ({
 													number: playerNumber,
 													employees:
-														DEFAULT_EMPLOYEE_ARRAY,
+														GameDefaults.DEFAULT_EMPLOYEE_ARRAY,
 													milestones:
 														[],
 													restaurantDataId:
@@ -221,9 +211,9 @@ const LobbyController = {
 			inGame:
 				lobby.gameState !== null &&
 				lobby.gameState.turnProgress !==
-					TURN_PROGRESS.PREGAME &&
+				TURN_PROGRESS.PREGAME &&
 				lobby.gameState.turnProgress !==
-					TURN_PROGRESS.POSTGAME,
+				TURN_PROGRESS.POSTGAME,
 
 			lobbyId: lobby.id,
 			lobbyName: lobby.name,
@@ -383,20 +373,6 @@ const LobbyController = {
 				}
 			});
 
-			const players = await prisma.lobbyPlayer.count({
-				where: {
-					lobbyId: lobbyId
-				}
-			});
-
-			// Delete the lobby if there are no more players
-			// if (players === 0) {
-			// 	await prisma.lobby.delete({
-			// 		where: {
-			// 			id: lobbyId
-			// 		}
-			// 	});
-			// }
 			return true;
 		} catch (error) {
 			console.log(error);
@@ -448,7 +424,6 @@ const LobbyController = {
 				acc + characters[char % characters.length]
 			);
 		}, "");
-		``;
 	}
 };
 

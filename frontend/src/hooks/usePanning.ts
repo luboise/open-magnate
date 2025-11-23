@@ -4,7 +4,7 @@ import React, {
 	useMemo,
 	useReducer
 } from "react";
-import { Position } from "../utils";
+import { Position } from "../../../backend/src/dataViews";
 import useLocalVal from "./useLocalVal";
 
 interface PanningState {
@@ -20,9 +20,11 @@ type MouseDownAction =
 			actionType: "PRESSED" | "MOVED";
 			pos: Position;
 	  }
-	| { actionType: "RELEASED" };
+	| { actionType: "RELEASED" | "RESET_OFFSET" };
 
-type MouseEventType = globalThis.MouseEvent;
+type MouseEventType =
+	| globalThis.MouseEvent
+	| React.MouseEvent<HTMLElement, MouseEvent>;
 
 function calculateOffset(
 	actualPos: Position,
@@ -40,7 +42,8 @@ function calculateOffset(
 
 function usePanning(
 	identifier: string,
-	panningType: "LEFT" | "RIGHT"
+	panningType: "LEFT" | "RIGHT",
+	onStopPanning?: () => void
 ) {
 	if (!identifier)
 		throw new Error(
@@ -48,7 +51,7 @@ function usePanning(
 		);
 
 	const panId = useMemo(() => {
-		`panning-options-${identifier}-${panningType}`;
+		return `panning-options-${identifier}-${panningType}`;
 	}, [identifier, panningType]);
 
 	const [panningOptions, setPanningOptions] =
@@ -98,6 +101,11 @@ function usePanning(
 					)
 						return { ...state };
 
+					if (onStopPanning)
+						(async () => {
+							onStopPanning();
+						})();
+
 					return {
 						...state,
 						buttonIsDown: false,
@@ -106,6 +114,12 @@ function usePanning(
 							state.panCursorStart,
 							state.panCursorCurrentPos
 						)
+					};
+				}
+				case "RESET_OFFSET": {
+					return {
+						...state,
+						offset: { x: 0, y: 0 }
 					};
 				}
 
@@ -150,24 +164,19 @@ function usePanning(
 				return;
 
 			if (type === "mousedown") {
-				console.debug(
-					"Pan started: ",
-					"Current state: ",
-					state,
-					"Position: ",
-					pos
-				);
-
+				/**
+								console.debug(
+									"Pan started: ",
+									"Current state: ",
+									state,
+									"Position: ",
+									pos
+								);
+				**/
 				event.preventDefault();
 				event.stopPropagation();
 				dispatch({ actionType: "PRESSED", pos });
 			} else if (type === "mouseup") {
-				console.debug(
-					"Pan stopped: ",
-					"Current state: ",
-					state
-				);
-
 				event.preventDefault();
 				event.stopPropagation();
 				dispatch({ actionType: "RELEASED" });
@@ -177,6 +186,10 @@ function usePanning(
 		},
 		[]
 	);
+
+	const resetOffset = useCallback(() => {
+		dispatch({ actionType: "RESET_OFFSET" });
+	}, []);
 
 	useEffect(() => {
 		document.body.addEventListener(
@@ -211,10 +224,6 @@ function usePanning(
 		onMouseEvent(event);
 	}
 
-	useEffect(() => {
-		console.debug("Is down: ", state.buttonIsDown);
-	}, [state.buttonIsDown]);
-
 	return {
 		startPanning,
 		offset:
@@ -224,9 +233,10 @@ function usePanning(
 						state.panCursorStart,
 						state.panCursorCurrentPos
 					)
-				: state.offset
+				: state.offset,
+		resetOffset,
+		currentlyPanning: state.buttonIsDown
 	};
 }
 
 export default usePanning;
-

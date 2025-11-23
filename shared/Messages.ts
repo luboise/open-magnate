@@ -1,10 +1,10 @@
-import { GameStateViewPerPlayer } from "../backend/src/dataViews";
 import {
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
 	LobbyViewPerPlayer
 } from "./LobbyTypes";
 import { MoveData } from "./Moves";
+import { GameStateViewPerPlayer } from "./views/GameStateViews";
 
 // export type FrontendMessageType =
 // 	| "NEW_LOBBY"
@@ -101,3 +101,4 @@ export interface MakeMoveMessage extends BaseMessage {
 	type: "MAKE_MOVE";
 	data: MoveData;
 }
+

@@ -1,0 +1,5 @@
+.blurred {
+	backdrop-filter: blur(4px);
+	pointer-events: auto;
+	transition: backdrop-filter 0.5s;
+}

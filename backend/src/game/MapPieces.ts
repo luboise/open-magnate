@@ -1,11 +1,9 @@
-export type MapStringChar =
-	| "X"
-	| "R"
-	| "L"
-	| "C"
-	| "B"
-	| "H"
-	| "X";
+import {
+	MAP_PIECE_COL_SEP,
+	MAP_PIECE_ROW_SEP,
+	MapStringChar,
+	ParsableMapString
+} from "../../../shared/map/parsing/types";
 
 type MapPieceColArray = [
 	MapStringChar,
@@ -15,9 +13,6 @@ type MapPieceColArray = [
 	MapStringChar
 ];
 
-const MAP_PIECE_ROW_SEP = " ";
-const MAP_PIECE_COL_SEP = ";";
-
 export type MapTileArray = [
 	MapPieceColArray,
 	MapPieceColArray,
@@ -26,7 +21,7 @@ export type MapTileArray = [
 	MapPieceColArray
 ];
 
-const MAP_PIECE_STRINGS: string[] = [
+const MAP_PIECE_STRINGS: ParsableMapString[] = [
 	"XXRXX XXRXX RRRRR HHRXX HHRXX",
 	"XXRXX XLRXX RRRRR XXRXX XXRXX",
 	"XXRRR XHHXR RHHXR RXXXX RRRXX",
@@ -106,5 +101,3 @@ export function createMapString(
 
 	return outValue;
 }
-
-export const RESTAURANTS = {};

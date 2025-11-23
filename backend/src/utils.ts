@@ -4,6 +4,8 @@ import {
 } from "@prisma/client/runtime/library";
 import { Response } from "express";
 
+export * from "../../shared/";
+
 export function new2DArray<T>(
 	rows: number,
 	cols: number
@@ -93,10 +95,6 @@ export const HandleRequest = {
 
 // Override prototype of array
 
-interface Array<T> {
-	clone(): T[];
-}
-
 export function CloneArray<T>(array: T[]): T[] {
 	const newArray = array.map((val) => {
 		if (Array.isArray(val)) return CloneArray(val) as T;
@@ -139,7 +137,7 @@ export function readJsonNumberArray(array: JsonValue) {
 	return vals.filter((val) => !Number.isNaN(val));
 }
 
-export function parseJsonArray<T>(array: JsonValue) {
+export function parseJsonArray(array: JsonValue) {
 	const asArray = array as JsonArray | null;
 	if (asArray === null) return [];
 

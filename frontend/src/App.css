@@ -43,3 +43,29 @@
 	color: #888;
 }
 
+.glowing {
+	/* animation: bgGlow 1.75s infinite; */
+	animation: box-shadow-animation 2s infinite ease-in-out;
+	transition: box-shadow 1s;
+	/* transition: filter 1s; */
+}
+
+@keyframes box-shadow-animation {
+	0%,
+	100% {
+		filter: none;
+		/* box-shadow: 0 0 0 0.1em orange; */
+	}
+
+	/* 20% {
+		filter: brightness(1.15);
+		} */
+
+	50% {
+		filter: brightness(1.65);
+		transform: scaleX(1.05) scaleY(1.02);
+		border-radius: 0.3em;
+		color: #aaaaaa;
+	}
+}
+

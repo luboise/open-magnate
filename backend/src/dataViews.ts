@@ -1,88 +1,170 @@
 import {
-	MARKETING_TYPE,
 	ORIENTATION,
-	DEMAND_TYPE as PrismaDemandType,
 	ENTRANCE_CORNER as PrismaEntranceCorner,
-	TURN_PROGRESS as PrismaTurnProgress
+	READY_STATUS as PrismaReadyStatus
 } from "@prisma/client";
 
-export const TURN_PROGRESS_VALUES: TURN_PROGRESS[] =
-	Object.values(PrismaTurnProgress);
+import { createDetailedMapString } from "../../shared";
+import {
+	GamePlayerViewPrivate,
+	GameStateView,
+	GameStateViewPerPlayer
+} from "../../shared/views/GameStateViews";
+import {
+	getCurrentPlayer,
+	getTurnOrder
+} from "./database/controller/gamestate.controller";
+import {
+	CreateGamePlayerView,
+	FullGameState
+} from "./database/controller/includes";
 
-export type TURN_PROGRESS = PrismaTurnProgress;
+import {
+	GardenView,
+	HouseView,
+	RestaurantView
+} from "../../shared/views/MapViews";
+import {
+	CreateMarketingCampaignView,
+	MarketingCampaignView
+} from "../../shared/views/MarketingViews";
+import { Reserve } from "./game/NewGameStructures";
+import {
+	CreateGameEventView,
+	CreateHouseView,
+	GameEventView,
+	ParseMapStringFromGSV
+} from "./utils";
+
+export type READY_STATUS = PrismaReadyStatus;
 
 export type ENTRANCE_CORNER = PrismaEntranceCorner;
-export type DEMAND_TYPE = PrismaDemandType;
-
-export interface RestaurantView extends Position {
-	player: number;
-}
-
-interface BaseGameStateView {
-	turnProgress: TURN_PROGRESS;
-	currentTurn: number;
-	currentPlayer: number;
-
-	map: string;
-	turnOrder: Array<number> | null;
-
-	playerCount: number;
-
-	restaurants: RestaurantView[];
-
-	houses: HouseView[];
-	gardens: GardenView[];
-
-	marketingCampaigns: MarketingCampaignView[];
-}
-
-export interface GameStateView extends BaseGameStateView {
-	players: GamePlayerViewPrivate[];
-}
-
-export interface GameStateViewPerPlayer
-	extends BaseGameStateView {
-	players: GamePlayerViewPublic[];
-
-	// The player's private data
-	privateData: GamePlayerViewPrivate;
-}
-
-export interface GamePlayerViewPublic {
-	playerNumber: number;
-	milestones: number[];
-	restaurant: number;
-	money: number;
-}
-
-export interface GamePlayerViewPrivate
-	extends GamePlayerViewPublic {
-	employees: string[];
-	employeeTreeStr: string;
-}
-
-export interface MarketingCampaignView extends Position {
-	priority: number;
-
-	type: MARKETING_TYPE;
-
-	turnsRemaining: number;
-}
-
-export interface HouseView extends Position {
-	priority: number;
-	demandLimit: number;
-
-	demand: DEMAND_TYPE[];
-	garden: GardenView | null;
-}
-
-export interface GardenView extends Position {
-	houseNumber: number;
-}
 
 export interface Position {
 	x: number;
 	y: number;
 	orientation?: ORIENTATION;
 }
+
+export const CreateGameStateView = (
+	gameState: FullGameState
+): GameStateView => {
+	if (!gameState)
+		throw new Error(
+			"Unable to fetch GameStateView from lobby, as its GameState is null."
+		);
+
+	// TODO: Fix this to be more efficient
+	const turnOrder = getTurnOrder(gameState);
+
+	const currentPlayer = getCurrentPlayer(gameState);
+
+	const houses: HouseView[] = gameState.houses.map(
+		(house) => CreateHouseView(house)
+	);
+
+	const gardens: GardenView[] = houses
+		.filter((house) => Boolean(house.garden))
+		.map((house) => house.garden) as GardenView[];
+
+	const marketingCampaigns: MarketingCampaignView[] =
+		gameState.players.reduce<MarketingCampaignView[]>(
+			(acc, curr) => {
+				return acc.concat(
+					curr.marketingCampaigns.map(
+						(campaign) =>
+							CreateMarketingCampaignView(
+								campaign
+							)
+					)
+				);
+			},
+			[]
+		);
+
+	const restaurants = gameState.players
+		.map((player) =>
+			player.restaurants.map((res) => {
+				const rv: RestaurantView = {
+					player: player.number,
+					pos: {
+						x: res.x,
+						y: res.y,
+						orientation: "HORIZONTAL"
+					}
+				};
+
+				return rv;
+			})
+		)
+		.flat(1);
+
+	const mapString = createDetailedMapString(
+		gameState.rawMap,
+		marketingCampaigns,
+		restaurants,
+		houses,
+		gardens
+	);
+
+	const finalMap = ParseMapStringFromGSV(mapString);
+
+	const history: GameEventView[] = gameState.events
+		.map((event) => CreateGameEventView(event))
+		.sort((e1, e2) => e2.time - e1.time);
+
+	return {
+		currentPlayer: currentPlayer,
+		currentTurn: gameState.currentTurn,
+		turnProgress: gameState.turnProgress,
+		map: finalMap,
+		playerCount: gameState.playerCount,
+		turnOrder: turnOrder,
+		history: history,
+		realTurnOrder: gameState.turnOrder
+			.split("")
+			.map((char) =>
+				!Number.isNaN(Number(char))
+					? Number(char)
+					: "X"
+			),
+		marketingCampaigns: marketingCampaigns,
+
+		gardens: gardens,
+		houses: houses,
+		players: gameState.players.map(
+			(player): GamePlayerViewPrivate =>
+				CreateGamePlayerView(player)
+		),
+		restaurants: restaurants,
+		reserve: gameState.reserve as Reserve
+	};
+};
+
+export const GetPublicGameStateView = (
+	gsv: GameStateView,
+	playerNumber: number
+): GameStateViewPerPlayer => {
+	const player = gsv.players.find(
+		(player) => player.playerNumber === playerNumber
+	);
+	if (!player)
+		throw new Error(
+			`Unable to get public game state for invalid player: ${playerNumber}`
+		);
+
+	const newVal: GameStateViewPerPlayer = {
+		...gsv,
+		players: gsv.players.map((eachPlayer) => {
+			const { employees, ...rest } = eachPlayer;
+			return {
+				...rest
+			};
+		}),
+		privateData: player
+	};
+
+	return newVal;
+};
+
+export * from "../../shared/views";

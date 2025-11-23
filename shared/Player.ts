@@ -46,7 +46,7 @@ export const PLAYER_DEFAULTS: Record<
 	// 	limitedEmployeeCards: 1,
 	// 	marketingUnused: new Set([12, 15, 16])
 	// }
-};
+} as const;
 
 // export type Player = {
 // 	playerNum: number;
@@ -57,4 +57,3 @@ export const PLAYER_DEFAULTS: Record<
 // 	milestones: Array<Milestone>;
 // 	food: Array<Food>;
 // };
-

@@ -1,0 +1,366 @@
+<svg version="1.1" baseProfile="full" width="3389.0" height="326.0" viewbox="0 0 3389 326" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+<desc >#.interface: fill=lightblue
+#.enumeration: fill=lightgreen
+#.type: fill=lightgray
+[&lt;type&gt;Milestone|+name: string;+description: string;+onGain?: () =&gt; void|]
+[&lt;type&gt;DragDropProps&lt;DD,RD&gt;|+dragStartCallback?: DragCallback&lt;DD&gt;;+afterDrop: AfterDropCallback&lt;DD, RD&gt;|]
+[&lt;interface&gt;PanningState|+buttonIsDown: boolean;+panCursorStart: Position;+offset: Position;+panCursorCurrentPos: Position|]
+[&lt;interface&gt;ConnectionParams|+username: string|]
+[&lt;interface&gt;WebSocketParams|+url: string;+onOpen?: () =&gt; void;+onClose?: () =&gt; void;+onMessage?: (msg: string) =&gt; void;+connectionParams?: ConnectionParams;+validator?: () =&gt; boolean|]
+[&lt;interface&gt;BaseClientState|+placing: MapOverlayTile;+placementStatus: &quot;PLACING&quot; \| &quot;SUCCESS&quot; \| &quot;FAILED&quot;|]
+[&lt;interface&gt;ClientStateFailed|+placing: MapOverlayTile;+placementStatus: &quot;FAILED&quot;|]
+[&lt;interface&gt;ClientStateSuccessful|+placing: MapOverlayTile;+placementStatus: &quot;SUCCESS&quot;|]
+[&lt;interface&gt;ClientStatePlacing|+placing: MapOverlayTile;+placementStatus: &quot;PLACING&quot;|]
+[BaseClientState]&lt;:--[ClientStateFailed]
+[BaseClientState]&lt;:--[ClientStateSuccessful]
+[BaseClientState]&lt;:--[ClientStatePlacing]
+[&lt;enumeration&gt;MAP_RENDER_KEYS|TILES;HOUSES]
+[&lt;type&gt;MapInteractionState|+hovering: HoveringType|]
+[&lt;interface&gt;GamePlanningState|+plannedActions: TurnAction\[\]|]
+[&lt;type&gt;PageGameAtomObject|+sendMessage: (message: BackendMessage) =&gt; void \| Promise&lt;void&gt;|]</desc>
+<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="normal" font-style="normal">
+<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+<g stroke="transparent" fill="transparent">
+<rect x="0.0" y="0.0" height="326.0" width="3389.0" stroke="none"></rect>
+</g>
+<g transform="translate(8, 8)" fill="#33322E">
+<g transform="translate(20, 20)" fill="#eee8d5" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+<g stroke-dasharray="6 6">
+<path d="M1572.8 119.1 L1429 165 L1429 185 L1429.0 185.0 " fill="none"></path>
+</g>
+<path d="M1574.4 124.1 L1572.8 119.1 L1571.2 114.0 L1585.5 115.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M1718.5 128.3 L1718.5 165 L1718.5 185 L1718.5 185.0 " fill="none"></path>
+</g>
+<path d="M1723.8 128.3 L1718.5 128.3 L1713.2 128.3 L1718.5 115.0 Z"></path>
+<g stroke-dasharray="6 6">
+<path d="M1867.7 119.0 L2015.5 165 L2015.5 185 L2015.5 185.0 " fill="none"></path>
+</g>
+<path d="M1869.3 113.9 L1867.7 119.0 L1866.1 124.1 L1855.0 115.0 Z"></path>
+<g data-name="Milestone">
+<g fill="lightgray" stroke="#33322E" data-name="Milestone">
+<rect x="0.0" y="22.5" height="100.0" width="178.0" data-name="Milestone"></rect>
+<path d="M0.0 53.5 L178.0 53.5" fill="none" data-name="Milestone"></path>
+<path d="M0.0 114.5 L178.0 114.5" fill="none" data-name="Milestone"></path>
+</g>
+<g transform="translate(0, 22.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Milestone">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Milestone">
+<a id="src/game/Milestone.ts.Milestone" xlink:href="src/game/Milestone.ts"><text x="81.0" y="13.5" stroke="none" text-anchor="middle" data-name="Milestone">Milestone</text></a>
+
+</g>
+</g>
+<g transform="translate(0, 53.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Milestone">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Milestone">
+<text x="0.0" y="13.5" stroke="none" data-name="Milestone">+name: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="Milestone">+description: string</text>
+<text x="0.0" y="43.5" stroke="none" data-name="Milestone">+onGain?: () =&gt; void</text>
+
+</g>
+</g>
+<g transform="translate(0, 114.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Milestone">
+<g transform="translate(8, 8)" fill="#33322E" data-name="Milestone">
+
+</g>
+</g>
+</g>
+<g data-name="DragDropProps&lt;DD,RD&gt;">
+<g fill="lightgray" stroke="#33322E" data-name="DragDropProps&lt;DD,RD&gt;">
+<rect x="218.0" y="30.0" height="85.0" width="337.0" data-name="DragDropProps&lt;DD,RD&gt;"></rect>
+<path d="M218.0 61.0 L555.0 61.0" fill="none" data-name="DragDropProps&lt;DD,RD&gt;"></path>
+<path d="M218.0 107.0 L555.0 107.0" fill="none" data-name="DragDropProps&lt;DD,RD&gt;"></path>
+</g>
+<g transform="translate(218, 30)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DragDropProps&lt;DD,RD&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="DragDropProps&lt;DD,RD&gt;">
+<a id="src/hooks/useDragDrop.ts.DragDropProps&lt;DD,RD&gt;" xlink:href="src/hooks/useDragDrop.ts"><text x="160.5" y="13.5" stroke="none" text-anchor="middle" data-name="DragDropProps&lt;DD,RD&gt;">DragDropProps&lt;DD,RD&gt;</text></a>
+
+</g>
+</g>
+<g transform="translate(218, 61)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DragDropProps&lt;DD,RD&gt;">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="DragDropProps&lt;DD,RD&gt;">
+<text x="0.0" y="13.5" stroke="none" data-name="DragDropProps&lt;DD,RD&gt;">+dragStartCallback?: DragCallback&lt;DD&gt;</text>
+<text x="0.0" y="28.5" stroke="none" data-name="DragDropProps&lt;DD,RD&gt;">+afterDrop: AfterDropCallback&lt;DD, RD&gt;</text>
+
+</g>
+</g>
+<g transform="translate(218, 107)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="DragDropProps&lt;DD,RD&gt;">
+<g transform="translate(8, 8)" fill="#33322E" data-name="DragDropProps&lt;DD,RD&gt;">
+
+</g>
+</g>
+</g>
+<g data-name="PanningState">
+<g fill="lightblue" stroke="#33322E" data-name="PanningState">
+<rect x="595.0" y="15.0" height="115.0" width="271.0" data-name="PanningState"></rect>
+<path d="M595.0 46.0 L866.0 46.0" fill="none" data-name="PanningState"></path>
+<path d="M595.0 122.0 L866.0 122.0" fill="none" data-name="PanningState"></path>
+</g>
+<g transform="translate(595, 15)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PanningState">
+<a id="src/hooks/usePanning.ts.PanningState" xlink:href="src/hooks/usePanning.ts"><text x="127.5" y="13.5" stroke="none" text-anchor="middle" data-name="PanningState">PanningState</text></a>
+
+</g>
+</g>
+<g transform="translate(595, 46)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PanningState">
+<text x="0.0" y="13.5" stroke="none" data-name="PanningState">+buttonIsDown: boolean</text>
+<text x="0.0" y="28.5" stroke="none" data-name="PanningState">+panCursorStart: Position</text>
+<text x="0.0" y="43.5" stroke="none" data-name="PanningState">+offset: Position</text>
+<text x="0.0" y="58.5" stroke="none" data-name="PanningState">+panCursorCurrentPos: Position</text>
+
+</g>
+</g>
+<g transform="translate(595, 122)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PanningState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PanningState">
+
+</g>
+</g>
+</g>
+<g data-name="ConnectionParams">
+<g fill="lightblue" stroke="#33322E" data-name="ConnectionParams">
+<rect x="906.0" y="37.5" height="70.0" width="166.0" data-name="ConnectionParams"></rect>
+<path d="M906.0 68.5 L1072.0 68.5" fill="none" data-name="ConnectionParams"></path>
+<path d="M906.0 99.5 L1072.0 99.5" fill="none" data-name="ConnectionParams"></path>
+</g>
+<g transform="translate(906, 37.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConnectionParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ConnectionParams">
+<a id="src/hooks/useWebSocket.ts.ConnectionParams" xlink:href="src/hooks/useWebSocket.ts"><text x="75.0" y="13.5" stroke="none" text-anchor="middle" data-name="ConnectionParams">ConnectionParams</text></a>
+
+</g>
+</g>
+<g transform="translate(906, 68.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConnectionParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ConnectionParams">
+<text x="0.0" y="13.5" stroke="none" data-name="ConnectionParams">+username: string</text>
+
+</g>
+</g>
+<g transform="translate(906, 99.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ConnectionParams">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ConnectionParams">
+
+</g>
+</g>
+</g>
+<g data-name="WebSocketParams">
+<g fill="lightblue" stroke="#33322E" data-name="WebSocketParams">
+<rect x="1112.0" y="0.0" height="145.0" width="343.0" data-name="WebSocketParams"></rect>
+<path d="M1112.0 31.0 L1455.0 31.0" fill="none" data-name="WebSocketParams"></path>
+<path d="M1112.0 137.0 L1455.0 137.0" fill="none" data-name="WebSocketParams"></path>
+</g>
+<g transform="translate(1112, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WebSocketParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="WebSocketParams">
+<a id="src/hooks/useWebSocket.ts.WebSocketParams" xlink:href="src/hooks/useWebSocket.ts"><text x="163.5" y="13.5" stroke="none" text-anchor="middle" data-name="WebSocketParams">WebSocketParams</text></a>
+
+</g>
+</g>
+<g transform="translate(1112, 31)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WebSocketParams">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="WebSocketParams">
+<text x="0.0" y="13.5" stroke="none" data-name="WebSocketParams">+url: string</text>
+<text x="0.0" y="28.5" stroke="none" data-name="WebSocketParams">+onOpen?: () =&gt; void</text>
+<text x="0.0" y="43.5" stroke="none" data-name="WebSocketParams">+onClose?: () =&gt; void</text>
+<text x="0.0" y="58.5" stroke="none" data-name="WebSocketParams">+onMessage?: (msg: string) =&gt; void</text>
+<text x="0.0" y="73.5" stroke="none" data-name="WebSocketParams">+connectionParams?: ConnectionParams</text>
+<text x="0.0" y="88.5" stroke="none" data-name="WebSocketParams">+validator?: () =&gt; boolean</text>
+
+</g>
+</g>
+<g transform="translate(1112, 137)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WebSocketParams">
+<g transform="translate(8, 8)" fill="#33322E" data-name="WebSocketParams">
+
+</g>
+</g>
+</g>
+<g data-name="BaseClientState">
+<g fill="lightblue" stroke="#33322E" data-name="BaseClientState">
+<rect x="1495.0" y="30.0" height="85.0" width="447.0" data-name="BaseClientState"></rect>
+<path d="M1495.0 61.0 L1942.0 61.0" fill="none" data-name="BaseClientState"></path>
+<path d="M1495.0 107.0 L1942.0 107.0" fill="none" data-name="BaseClientState"></path>
+</g>
+<g transform="translate(1495, 30)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseClientState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="BaseClientState">
+<a id="src/hooks/game/useClientState.ts.BaseClientState" xlink:href="src/hooks/game/useClientState.ts"><text x="215.5" y="13.5" stroke="none" text-anchor="middle" data-name="BaseClientState">BaseClientState</text></a>
+
+</g>
+</g>
+<g transform="translate(1495, 61)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseClientState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="BaseClientState">
+<text x="0.0" y="13.5" stroke="none" data-name="BaseClientState">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="BaseClientState">+placementStatus: &quot;PLACING&quot; | &quot;SUCCESS&quot; | &quot;FAILED&quot;</text>
+
+</g>
+</g>
+<g transform="translate(1495, 107)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="BaseClientState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="BaseClientState">
+
+</g>
+</g>
+</g>
+<g data-name="ClientStateFailed">
+<g fill="lightblue" stroke="#33322E" data-name="ClientStateFailed">
+<rect x="1309.5" y="185.0" height="85.0" width="239.0" data-name="ClientStateFailed"></rect>
+<path d="M1309.5 216.0 L1548.5 216.0" fill="none" data-name="ClientStateFailed"></path>
+<path d="M1309.5 262.0 L1548.5 262.0" fill="none" data-name="ClientStateFailed"></path>
+</g>
+<g transform="translate(1309.5, 185)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateFailed">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ClientStateFailed">
+<a id="src/hooks/game/useClientState.ts.ClientStateFailed" xlink:href="src/hooks/game/useClientState.ts"><text x="111.5" y="13.5" stroke="none" text-anchor="middle" data-name="ClientStateFailed">ClientStateFailed</text></a>
+
+</g>
+</g>
+<g transform="translate(1309.5, 216)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateFailed">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ClientStateFailed">
+<text x="0.0" y="13.5" stroke="none" data-name="ClientStateFailed">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ClientStateFailed">+placementStatus: &quot;FAILED&quot;</text>
+
+</g>
+</g>
+<g transform="translate(1309.5, 262)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateFailed">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ClientStateFailed">
+
+</g>
+</g>
+</g>
+<g data-name="ClientStateSuccessful">
+<g fill="lightblue" stroke="#33322E" data-name="ClientStateSuccessful">
+<rect x="1588.5" y="185.0" height="85.0" width="260.0" data-name="ClientStateSuccessful"></rect>
+<path d="M1588.5 216.0 L1848.5 216.0" fill="none" data-name="ClientStateSuccessful"></path>
+<path d="M1588.5 262.0 L1848.5 262.0" fill="none" data-name="ClientStateSuccessful"></path>
+</g>
+<g transform="translate(1588.5, 185)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateSuccessful">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ClientStateSuccessful">
+<a id="src/hooks/game/useClientState.ts.ClientStateSuccessful" xlink:href="src/hooks/game/useClientState.ts"><text x="122.0" y="13.5" stroke="none" text-anchor="middle" data-name="ClientStateSuccessful">ClientStateSuccessful</text></a>
+
+</g>
+</g>
+<g transform="translate(1588.5, 216)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateSuccessful">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ClientStateSuccessful">
+<text x="0.0" y="13.5" stroke="none" data-name="ClientStateSuccessful">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ClientStateSuccessful">+placementStatus: &quot;SUCCESS&quot;</text>
+
+</g>
+</g>
+<g transform="translate(1588.5, 262)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStateSuccessful">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ClientStateSuccessful">
+
+</g>
+</g>
+</g>
+<g data-name="ClientStatePlacing">
+<g fill="lightblue" stroke="#33322E" data-name="ClientStatePlacing">
+<rect x="1888.5" y="185.0" height="85.0" width="254.0" data-name="ClientStatePlacing"></rect>
+<path d="M1888.5 216.0 L2142.5 216.0" fill="none" data-name="ClientStatePlacing"></path>
+<path d="M1888.5 262.0 L2142.5 262.0" fill="none" data-name="ClientStatePlacing"></path>
+</g>
+<g transform="translate(1888.5, 185)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStatePlacing">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ClientStatePlacing">
+<a id="src/hooks/game/useClientState.ts.ClientStatePlacing" xlink:href="src/hooks/game/useClientState.ts"><text x="119.0" y="13.5" stroke="none" text-anchor="middle" data-name="ClientStatePlacing">ClientStatePlacing</text></a>
+
+</g>
+</g>
+<g transform="translate(1888.5, 216)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStatePlacing">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="ClientStatePlacing">
+<text x="0.0" y="13.5" stroke="none" data-name="ClientStatePlacing">+placing: MapOverlayTile</text>
+<text x="0.0" y="28.5" stroke="none" data-name="ClientStatePlacing">+placementStatus: &quot;PLACING&quot;</text>
+
+</g>
+</g>
+<g transform="translate(1888.5, 262)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ClientStatePlacing">
+<g transform="translate(8, 8)" fill="#33322E" data-name="ClientStatePlacing">
+
+</g>
+</g>
+</g>
+<g data-name="MAP_RENDER_KEYS">
+<g fill="lightgreen" stroke="#33322E" data-name="MAP_RENDER_KEYS">
+<rect x="1982.0" y="34.0" height="77.0" width="186.0" data-name="MAP_RENDER_KEYS"></rect>
+<path d="M1982.0 65.0 L2168.0 65.0" fill="none" data-name="MAP_RENDER_KEYS"></path>
+</g>
+<g transform="translate(1982, 34)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MAP_RENDER_KEYS">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MAP_RENDER_KEYS">
+<a id="src/hooks/game/useMap.ts.MAP_RENDER_KEYS" xlink:href="src/hooks/game/useMap.ts"><text x="85.0" y="13.5" stroke="none" text-anchor="middle" data-name="MAP_RENDER_KEYS">MAP_RENDER_KEYS</text></a>
+
+</g>
+</g>
+<g transform="translate(1982, 65)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MAP_RENDER_KEYS">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MAP_RENDER_KEYS">
+<text x="0.0" y="13.5" stroke="none" data-name="MAP_RENDER_KEYS">TILES</text>
+<text x="0.0" y="28.5" stroke="none" data-name="MAP_RENDER_KEYS">HOUSES</text>
+
+</g>
+</g>
+</g>
+<g data-name="MapInteractionState">
+<g fill="lightgray" stroke="#33322E" data-name="MapInteractionState">
+<rect x="2208.0" y="37.5" height="70.0" width="215.0" data-name="MapInteractionState"></rect>
+<path d="M2208.0 68.5 L2423.0 68.5" fill="none" data-name="MapInteractionState"></path>
+<path d="M2208.0 99.5 L2423.0 99.5" fill="none" data-name="MapInteractionState"></path>
+</g>
+<g transform="translate(2208, 37.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapInteractionState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="MapInteractionState">
+<a id="src/hooks/game/useMapTileInteraction.ts.MapInteractionState" xlink:href="src/hooks/game/useMapTileInteraction.ts"><text x="99.5" y="13.5" stroke="none" text-anchor="middle" data-name="MapInteractionState">MapInteractionState</text></a>
+
+</g>
+</g>
+<g transform="translate(2208, 68.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapInteractionState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="MapInteractionState">
+<text x="0.0" y="13.5" stroke="none" data-name="MapInteractionState">+hovering: HoveringType</text>
+
+</g>
+</g>
+<g transform="translate(2208, 99.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="MapInteractionState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="MapInteractionState">
+
+</g>
+</g>
+</g>
+<g data-name="GamePlanningState">
+<g fill="lightblue" stroke="#33322E" data-name="GamePlanningState">
+<rect x="2463.0" y="37.5" height="70.0" width="253.0" data-name="GamePlanningState"></rect>
+<path d="M2463.0 68.5 L2716.0 68.5" fill="none" data-name="GamePlanningState"></path>
+<path d="M2463.0 99.5 L2716.0 99.5" fill="none" data-name="GamePlanningState"></path>
+</g>
+<g transform="translate(2463, 37.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GamePlanningState">
+<a id="src/hooks/game/useTurnPlanning.ts.GamePlanningState" xlink:href="src/hooks/game/useTurnPlanning.ts"><text x="118.5" y="13.5" stroke="none" text-anchor="middle" data-name="GamePlanningState">GamePlanningState</text></a>
+
+</g>
+</g>
+<g transform="translate(2463, 68.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlanningState">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="GamePlanningState">
+<text x="0.0" y="13.5" stroke="none" data-name="GamePlanningState">+plannedActions: TurnAction[]</text>
+
+</g>
+</g>
+<g transform="translate(2463, 99.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GamePlanningState">
+<g transform="translate(8, 8)" fill="#33322E" data-name="GamePlanningState">
+
+</g>
+</g>
+</g>
+<g data-name="PageGameAtomObject">
+<g fill="lightgray" stroke="#33322E" data-name="PageGameAtomObject">
+<rect x="2756.0" y="37.5" height="70.0" width="577.0" data-name="PageGameAtomObject"></rect>
+<path d="M2756.0 68.5 L3333.0 68.5" fill="none" data-name="PageGameAtomObject"></path>
+<path d="M2756.0 99.5 L3333.0 99.5" fill="none" data-name="PageGameAtomObject"></path>
+</g>
+<g transform="translate(2756, 37.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PageGameAtomObject">
+<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PageGameAtomObject">
+<a id="src/pages/Lobby/PageGameContext.ts.PageGameAtomObject" xlink:href="src/pages/Lobby/PageGameContext.ts"><text x="280.5" y="13.5" stroke="none" text-anchor="middle" data-name="PageGameAtomObject">PageGameAtomObject</text></a>
+
+</g>
+</g>
+<g transform="translate(2756, 68.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PageGameAtomObject">
+<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="PageGameAtomObject">
+<text x="0.0" y="13.5" stroke="none" data-name="PageGameAtomObject">+sendMessage: (message: BackendMessage) =&gt; void | Promise&lt;void&gt;</text>
+
+</g>
+</g>
+<g transform="translate(2756, 99.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PageGameAtomObject">
+<g transform="translate(8, 8)" fill="#33322E" data-name="PageGameAtomObject">
+
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>

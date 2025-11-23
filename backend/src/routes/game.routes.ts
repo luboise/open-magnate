@@ -1,9 +1,8 @@
 import { RouteHandler } from "../types";
 
 import { Request } from "express";
-import LobbyController, {
-	FullLobby
-} from "../database/controller/lobby.controller";
+import { FullLobby } from "../database/controller/includes";
+import LobbyController from "../database/controller/lobby.controller";
 import UserSessionController from "../database/controller/usersession.controller";
 
 // Fixes issues from using base WebSocket without extended methods
@@ -20,8 +19,13 @@ import {
 	MakeMoveMessage,
 	StartGameMessage
 } from "../../../shared";
-import { MOVE_TYPE } from "../../../shared/Moves";
+import {
+	CreateGameStateView,
+	GetPublicGameStateView
+} from "../dataViews";
 import GameStateController from "../database/controller/gamestate.controller";
+import { FullGameState } from "../database/controller/includes";
+import { GameClass } from "../game/GameClass";
 import { connectionsToWebsocket } from "./connections";
 
 // Helpers
@@ -45,6 +49,8 @@ type ParamBundle<MessageType extends BaseMessage> = {
 	ws: WebSocket;
 	userBrowserId: string | null;
 	userSession: UserSession | null;
+	lobbyId: number | null;
+	playerNumber: number | null;
 };
 
 type BackendMessageHandler<T extends BaseMessage> = (
@@ -59,15 +65,33 @@ const routeHandler: RouteHandler = (express, app) => {
 
 		ws.on("message", async (msg: string) => {
 			const userBrowserId = GetUserIdentifier(req);
+
+			const userSession =
+				await UserSessionController.GetBySessionKey(
+					req.query.sessionKey as string
+				);
+
+			const lobby = userSession
+				? await LobbyController.GetFromSessionKey(
+						userSession.sessionKey
+					)
+				: null;
+
+			const playerNumber: number | null =
+				lobby?.playersInLobby.find(
+					(player) =>
+						player.userId ===
+						userSession?.sessionKey
+				)?.playerNumber ?? null;
+
 			const params: ParamBundle<any> = {
 				message: JSON.parse(msg) as BackendMessage,
 				req: req,
 				userBrowserId: userBrowserId,
 				ws: ws,
-				userSession:
-					await UserSessionController.GetBySessionKey(
-						req.query.sessionKey as string
-					)
+				userSession: userSession,
+				lobbyId: lobby?.id || null,
+				playerNumber: playerNumber
 			};
 
 			console.log(
@@ -219,7 +243,11 @@ async function handleNewConnection(
 	}
 
 	try {
-		updateOnePlayer(lobby, userSession, "ALL");
+		updateOnePlayer(
+			lobby,
+			userSession.sessionKey,
+			"ALL"
+		);
 	} catch (error) {
 		console.error(error);
 		ws.send(String(error));
@@ -266,7 +294,7 @@ const handleCreateLobby: BackendMessageHandler<
 
 		updateOnePlayer(
 			fullLobby,
-			params.userSession,
+			params.userSession.sessionKey,
 			"ALL"
 		);
 	} catch (error) {
@@ -279,10 +307,9 @@ type UPDATE_TYPE = "LOBBY" | "GAMESTATE" | "ALL";
 
 function updateOnePlayer(
 	lobby: FullLobby,
-	player: UserSession,
+	sessionKey: string,
 	updateType: UPDATE_TYPE
 ) {
-	const sessionKey = player.sessionKey;
 	const ws = connectionsToWebsocket[sessionKey];
 
 	if (!ws) return;
@@ -298,8 +325,9 @@ function updateOnePlayer(
 			} as FrontendMessage)
 		);
 	} else if (updateType === "GAMESTATE") {
-		const gameStateView =
-			GameStateController.GetGameStateView(lobby);
+		const gameStateView = CreateGameStateView(
+			lobby.gameState as FullGameState
+		);
 		if (!gameStateView)
 			throw new Error(
 				"Unable to get game state from lobby."
@@ -307,8 +335,7 @@ function updateOnePlayer(
 
 		const playerNumber = lobby.playersInLobby.find(
 			(lobbyPlayer) =>
-				lobbyPlayer.userSession.sessionKey ===
-				player.sessionKey
+				lobbyPlayer.userId === sessionKey
 		)?.playerNumber;
 
 		if (!playerNumber)
@@ -319,7 +346,7 @@ function updateOnePlayer(
 		ws.send(
 			JSON.stringify({
 				type: "GAMESTATE_UPDATED",
-				data: GameStateController.GetPublicGameStateView(
+				data: GetPublicGameStateView(
 					gameStateView,
 					playerNumber
 				)
@@ -327,8 +354,9 @@ function updateOnePlayer(
 		);
 	} else if (updateType === "ALL") {
 		// TODO: Refactor this to not be repeated
-		const gameStateView =
-			GameStateController.GetGameStateView(lobby);
+		const gameStateView = CreateGameStateView(
+			lobby.gameState as FullGameState
+		);
 		if (!gameStateView)
 			throw new Error(
 				"Unable to get game state from lobby."
@@ -336,7 +364,7 @@ function updateOnePlayer(
 
 		const playerNumber = lobby.playersInLobby.find(
 			(lobbyPlayer) =>
-				lobbyPlayer.userId === player.sessionKey
+				lobbyPlayer.userId === sessionKey
 		)?.playerNumber;
 
 		if (!playerNumber)
@@ -353,11 +381,10 @@ function updateOnePlayer(
 							lobby,
 							sessionKey
 						),
-					gameState:
-						GameStateController.GetPublicGameStateView(
-							gameStateView,
-							playerNumber
-						)
+					gameState: GetPublicGameStateView(
+						gameStateView,
+						playerNumber
+					)
 				}
 			} as FrontendMessage)
 		);
@@ -369,9 +396,9 @@ function updateAllPlayers(
 	updateType: UPDATE_TYPE
 ) {
 	for (const player of lobby.playersInLobby.map(
-		(player) => player.userSession
+		(player) => player
 	)) {
-		updateOnePlayer(lobby, player, updateType);
+		updateOnePlayer(lobby, player.userId, updateType);
 	}
 }
 
@@ -556,6 +583,7 @@ const handleMoveMade: BackendMessageHandler<
 > = async (params) => {
 	if (
 		!params.userSession ||
+		params.userSession === null ||
 		!params.userSession.sessionKey
 	) {
 		return;
@@ -570,7 +598,15 @@ const handleMoveMade: BackendMessageHandler<
 		return;
 	}
 
-	const gamePlayer = lobby.gameState?.players.find(
+	if (!lobby.gameState) {
+		params.ws.send("You are not currently in a game.");
+		console.log(
+			`Out-of-game move occured in lobby ${lobby.id}`
+		);
+		return;
+	}
+
+	const gamePlayer = lobby.gameState.players.find(
 		(player) =>
 			player.lobbyPlayer?.userId ===
 			params.userSession?.sessionKey
@@ -583,41 +619,39 @@ const handleMoveMade: BackendMessageHandler<
 		return;
 	}
 
-	const message = params.message.data;
-	if (message.MoveType === MOVE_TYPE.PLACE_RESTAURANT) {
-		const success =
-			await GameStateController.AddNewRestaurant(
-				gamePlayer,
-				{
-					x: message.x,
-					y: message.y,
-					entrance: message.entrance
-				}
-			);
-
-		if (!success) {
-			console.error(
-				"Unable to create new restaurant."
-			);
-			return;
-		}
-
-		const updated =
-			await GameStateController.AdvanceGameState(
-				lobby.id
-			);
-		if (!updated) {
-			const msg = "Unable to advance the game state";
-			console.error(msg);
-			params.ws.send(msg);
-			return;
-		}
+	const moveData = params.message.data;
+	const gameState = await GameStateController.Get(
+		lobby.id
+	);
+	if (!gameState) {
+		const msg = "Unable to retrieve game state";
+		console.log(msg);
+		params.ws.send(msg);
+		return;
 	}
 
-	updateAllPlayers(
-		await LobbyController.refresh(lobby),
-		"GAMESTATE"
-	);
+	const game = new GameClass(gameState);
+	try {
+		game.executeMove(gamePlayer.number, moveData);
+		const moves = game.getMovesMade();
+		const madeMoves =
+			await GameStateController.NewMakeMoves(
+				lobby.id,
+				gamePlayer.number,
+				moves
+			);
+
+		if (madeMoves)
+			updateAllPlayers(
+				await LobbyController.refresh(lobby),
+				"GAMESTATE"
+			);
+	} catch (error) {
+		console.error("Invalid move made");
+		console.error(error);
+		params.ws.send("Invalid move made");
+		return;
+	}
 };
 
 module.exports = routeHandler;

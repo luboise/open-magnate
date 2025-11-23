@@ -1,7 +1,9 @@
 import axios from "axios";
 
-export const LIVE_REQUEST_URL = "http://localhost:3000";
-export const WEB_SOCKET_BASE_URL = "ws://localhost:3000";
+export const LIVE_REQUEST_URL =
+	"http://192.168.190.100:3000";
+export const WEB_SOCKET_BASE_URL =
+	"ws://192.168.190.100:3000";
 
 async function makeRequest<ResT, ReqT>(
 	reqType: string,

@@ -1,0 +1,8 @@
+.corner-button {
+	position: absolute;
+	z-index: 2;
+
+	top: 0.3em;
+	right: 0.3em;
+}
+

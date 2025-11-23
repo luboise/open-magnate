@@ -1,4 +1,4 @@
-import prisma from "../../datasource";
+import prisma from "../datasource";
 
 const UserSessionRepository = prisma.userSession;
 

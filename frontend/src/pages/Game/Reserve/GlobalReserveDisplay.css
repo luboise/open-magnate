@@ -1,0 +1,29 @@
+#game-global-reserve-display {
+	position: fixed;
+	top: 0;
+	right: 0;
+
+	background-color: darkolivegreen;
+	transition: translate 0.15s var(--snappy-bezier);
+	/* cubic-bezier(0.09, 1.58, 0.38, 0.7); */
+}
+
+#game-global-reserve-collapse-btn {
+	--width-val: 4em;
+
+	width: var(--width-val);
+
+	font-weight: bold;
+	writing-mode: sideways-lr;
+	position: absolute;
+	top: min(30%, 30vh);
+	left: 0;
+	translate: -100% 50%;
+	border-radius: var(--width-val) 0 0 var(--width-val);
+	padding: 3.5em 1em;
+}
+
+#game-global-reserve-display .game-reserve-display {
+	height: 100%;
+	width: 100%;
+}

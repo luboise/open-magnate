@@ -13,9 +13,9 @@
 	},
 	"include": [
 		"src/**/*.ts",
-		"prisma/seed.ts",
+		"test/**/*.ts",
 		"../shared/CONVERSION_MAP.ts",
-		"../shared/MapParsing.ts"
+		"../shared/map/MapParsing.ts"
 	],
 	"exclude": ["node_modules"]
 }

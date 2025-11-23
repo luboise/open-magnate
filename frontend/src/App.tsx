@@ -1,4 +1,10 @@
+import "./Animations.css";
 import "./App.css";
+
+import "./global_styles/blurred.css";
+import "./global_styles/centered.css";
+import "./global_styles/corner-button.css";
+import "./global_styles/highlighted.css";
 
 import {
 	BrowserRouter,
@@ -8,21 +14,28 @@ import {
 } from "react-router-dom";
 // import PageAllMapPieces from "./pages/PageAllMapPieces";
 import { RecoilRoot } from "recoil";
-import PageGame from "./pages/PageGame";
-import PageHomepage from "./pages/PageHomepage";
+import PageHomepage from "./pages/HomePage/PageHomepage";
+import PageLobby from "./pages/Lobby/PageLobby";
 import { FrontendRoutes } from "./utils";
 
+// const flexFont = function () {
+// 	var divs = document.getElementsByClassName(
+// 		"flex-font"
+// 	) as HTMLCollectionOf<HTMLDivElement>;
+// 	for (var i = 0; i < divs.length; i++) {
+// 		var relFontsize = divs[i].offsetWidth * 0.05;
+// 		divs[i].style.fontSize = relFontsize + "px";
+// 	}
+// };
+
+// window.onload = function (_event) {
+// 	flexFont();
+// };
+// window.onresize = function (_event) {
+// 	flexFont();
+// };
+
 function App() {
-	// const { localSession } = createLocalSession();
-
-	// if (!localSession) {
-	// 	return (
-	// 		<RecoilRoot>
-	// 			<AuthForm />
-	// 		</RecoilRoot>
-	// 	);
-	// }
-
 	return (
 		<>
 			<h1>Open Magnate</h1>
@@ -44,7 +57,7 @@ function App() {
 						path={FrontendRoutes.PLAY}
 						element={
 							<RecoilRoot>
-								<PageGame />
+								<PageLobby />
 							</RecoilRoot>
 						}
 					/>

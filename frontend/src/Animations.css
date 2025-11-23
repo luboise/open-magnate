@@ -1,0 +1,28 @@
+@keyframes bgGlow {
+	/* 0% {
+		background-color: orange;
+	}
+
+	50% {
+		background-color: unset;
+	}
+
+	100% {
+		background-color: orange;
+	} */
+
+	0%,
+	100% {
+		filter: none; /* Original appearance */
+	}
+
+	50% {
+		filter: brightness(1) sepia(1) hue-rotate(-50deg)
+			saturate(5);
+	}
+}
+
+#root {
+	--snappy-bezier: cubic-bezier(0.62, 0.06, 0.88, 0.74);
+}
+

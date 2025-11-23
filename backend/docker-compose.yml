@@ -1,6 +1,6 @@
 services:
     db:
-        image: mysql
+        image: mysql:8.0
         restart: always
         container_name: integration-tests-prisma
         ports:
@@ -31,4 +31,3 @@ services:
 
 volumes:
     open-magnate-db:
-

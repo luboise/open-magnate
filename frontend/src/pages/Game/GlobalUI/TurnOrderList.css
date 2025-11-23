@@ -1,0 +1,22 @@
+.game-turn-order-list {
+	display: flex;
+	align-items: center;
+	gap: 0.2em;
+	height: fit-content;
+	padding: 0.2em;
+	/* width: 100%; */
+	/* grid-auto-flow: column; */
+	/* grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); */
+}
+
+.game-turn-order-list > * {
+	aspect-ratio: 1;
+	display: flex;
+	height: 3em;
+
+	padding: 0.1em;
+}
+
+.game-turn-order-list img {
+	object-fit: contain;
+}
