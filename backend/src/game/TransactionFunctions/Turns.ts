@@ -25,17 +25,14 @@ export const ExecuteTurn: MoveTransactionFunctionTyped<
 	// TODO: Add validation for valid recruiting
 	const newRecruits: EMPLOYEE_ID[] = [];
 
-	for (const turnAction of turn) {
-		if (turnAction.type === "RECRUIT") {
-			newRecruits.push(turnAction.recruiting);
-		} else if (turnAction.type === "MARKETING") {
-			await CreateMarketingCampaign(
-				bundle,
-				turnAction
-			);
-		} else if (turnAction.type === "GET_DEMAND") {
+	for (const action of turn) {
+		if (action.type === "RECRUIT") {
+			newRecruits.push(action.recruiting);
+		} else if (action.type === "MARKETING") {
+			await CreateMarketingCampaign(bundle, action);
+		} else if (action.type === "GET_DEMAND") {
 			await PlayerCreatedDemand(bundle, {
-				demand: turnAction.demand
+				demand: action.demand
 			});
 		}
 	}

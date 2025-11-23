@@ -1,4 +1,3 @@
-import { DEMAND_TYPE } from "../../backend/src/utils";
 import { EMPLOYEE_ENUM, EMPLOYEE_ID } from "./types";
 
 export interface BaseEmployee {
@@ -12,17 +11,15 @@ export interface BaseEmployee {
 	oneOf?: boolean;
 }
 
-export type FOOD_TYPE =
-	| Extract<DEMAND_TYPE, "BURGER" | "PIZZA">
-	| "BURGER_AND_PIZZA";
-
 export enum EMPLOYEE_COLOUR {
 	BLACK = "#000000",
+
+	LIGHT_GREEN = "#448055",
 	DARK_GREEN = "#008000",
 	GREY = "#808080",
 	LIGHT_BLUE = "#9bedff",
-	PINK = "#111111",
-	TRAINER_GREY = "#BEB5B4"
+	PINK = "rgb(165, 100, 225)",
+	RECRUITMENT_GREY = "#BEB5B4"
 }
 
 export type EmployeeCreationData<T> = Omit<

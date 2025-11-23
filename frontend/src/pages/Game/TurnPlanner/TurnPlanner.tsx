@@ -74,10 +74,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				return (
 					<DemandSelector
 						demands={
-							employee.produces ===
-								"BURGER_AND_PIZZA"
-								? ["BURGER", "PIZZA"]
-								: [employee.produces]
+							employee.supply.demand_type
 						}
 						onDemandClicked={(demand) => {
 							const newAction: Omit<
@@ -88,7 +85,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 								employeeIndex:
 									selectedEmployeeIndex,
 								demand: demand,
-								amount: employee.amountProduced
+								amount: employee.supply.amount
 							};
 							addAction(newAction);
 							clearSelectedEmployee();

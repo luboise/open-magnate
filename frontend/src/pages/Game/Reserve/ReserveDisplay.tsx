@@ -50,9 +50,11 @@ function ReserveDisplay({
 
 	const employeeTypes: EMPLOYEE_ENUM[] = [
 		"MANAGEMENT",
-		"FOOD",
+		"RECRUITMENT",
 		"MARKETING",
-		"TRAINING"
+		"FOOD",
+		"DRINK",
+		"WAITRESS",
 	];
 
 	const categoryArrays = employeeTypes.map((type) => {

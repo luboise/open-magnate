@@ -1,9 +1,10 @@
 import {
 	CEOEmployeeInitial,
+	DrinkEmployees,
 	FoodEmployees,
 	ManagementEmployees,
 	MarketingEmployees,
-	TrainingEmployees,
+	RecruitmentEmployees,
 	WaitressEmployees
 } from "./employee_types";
 import { EMPLOYEE_ID, EmployeeType } from "./types";
@@ -13,10 +14,11 @@ const EmployeesById: Record<
 	EmployeeType
 > = {
 	...ManagementEmployees,
+	...DrinkEmployees,
 	...FoodEmployees,
 	...MarketingEmployees,
 	...WaitressEmployees,
-	...TrainingEmployees,
+	...RecruitmentEmployees,
 	CEO: CEOEmployeeInitial
 } as const;
 
@@ -49,25 +51,3 @@ export function ById(id: EMPLOYEE_ID): EmployeeType {
 		);
 	return { ...EmployeesById[id] };
 }
-// const DRINK_NAMES = [
-// 	"Errand Boy",
-// 	"Cart Operator",
-// 	"Truck Driver",
-// 	"Zeppelin Pilot"
-// ] as const;
-// const TRAINER_NAMES = ["Trainer", "Coach", "Guru"] as const;
-// const RECRUITER_NAMES = [
-// 	"Recruiting Girl",
-// 	"Recruiting Manager",
-// 	"HR Director"
-// ] as const;
-// const PRICER_NAMES = [
-// 	"Pricing Manager",
-// 	"Luxuries Manager",
-// 	"Discount Manager"
-// ] as const;
-// const RED_NAMES = [
-// 	"Local Manager",
-// 	"Regional Manager"
-// ] as const;
-// const PINK_NAMES = ["Waitress", "CEO"] as const;

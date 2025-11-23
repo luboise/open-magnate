@@ -1,9 +1,13 @@
 import {
 	BaseEmployee,
 	EMPLOYEE_COLOUR,
-	EmployeeCreationData,
-	FOOD_TYPE
+	EmployeeCreationData
 } from "../EmployeeTypes";
+
+import {
+	FoodType,
+	Supply
+} from "../../../shared/demand/Supply";
 
 export const FOOD_EMPLOYEE_IDS = [
 	"food_basic",
@@ -12,6 +16,13 @@ export const FOOD_EMPLOYEE_IDS = [
 	"pizza_1",
 	"pizza_2"
 ] as const;
+
+export interface FoodEmployee extends BaseEmployee {
+	type: "FOOD";
+	id: FOOD_EMPLOYEE_ID;
+	colour: EMPLOYEE_COLOUR.DARK_GREEN;
+	supply: Supply<FoodType[]>;
+}
 
 export type FOOD_EMPLOYEE_ID =
 	(typeof FOOD_EMPLOYEE_IDS)[number];
@@ -23,50 +34,46 @@ export const FoodEmployees: Record<
 	food_basic: createFoodEmployee({
 		id: "food_basic",
 		name: "Kitchen Trainee",
-		produces: "BURGER_AND_PIZZA",
-		amountProduced: 1,
+		supply: {
+			demand_type: ["BURGER", "PIZZA"],
+			amount: 1
+		},
 		notPaid: true,
 		buildsInto: ["burger_1", "pizza_1"]
 	}),
 	burger_1: createFoodEmployee({
 		id: "burger_1",
 		name: "Burger Cook",
-		produces: "BURGER",
-		amountProduced: 3,
+		supply: {
+			demand_type: ["BURGER"],
+			amount: 3
+		},
 		buildsInto: ["burger_2"]
 	}),
 	burger_2: createFoodEmployee({
 		id: "burger_2",
 		name: "Burger Chef",
-		produces: "BURGER",
-		amountProduced: 8,
+		supply: {
+			demand_type: ["BURGER"],
+			amount: 8
+		},
+		oneOf: true,
 		buildsInto: []
 	}),
 	pizza_1: createFoodEmployee({
 		id: "pizza_1",
 		name: "Pizza Cook",
-		produces: "PIZZA",
-		amountProduced: 3,
+		supply: { demand_type: ["PIZZA"], amount: 3 },
 		buildsInto: ["pizza_2"]
 	}),
 	pizza_2: createFoodEmployee({
 		id: "pizza_2",
 		name: "Pizza Chef",
-		produces: "PIZZA",
-		amountProduced: 8,
+		supply: { demand_type: ["PIZZA"], amount: 8 },
+		oneOf: true,
 		buildsInto: []
 	})
 } as const;
-
-/**
-export interface FoodEmployeeCreationData {
-	id: FOOD_EMPLOYEE_ID;
-	name: string;
-	produces: FOOD_TYPE;
-	amountProduced: number;
-	notPaid?: boolean;
-}
-**/
 
 export function createFoodEmployee(
 	data: EmployeeCreationData<FoodEmployee>
@@ -76,17 +83,8 @@ export function createFoodEmployee(
 		id: data.id,
 		type: "FOOD",
 		colour: EMPLOYEE_COLOUR.DARK_GREEN,
-		produces: data.produces,
-		amountProduced: 0,
-		buildsInto: [],
+		supply: { ...data.supply },
+		buildsInto: [...data.buildsInto],
 		notPaid: Boolean(data.notPaid)
 	};
-}
-
-export interface FoodEmployee extends BaseEmployee {
-	type: "FOOD";
-	id: FOOD_EMPLOYEE_ID;
-	colour: EMPLOYEE_COLOUR.DARK_GREEN;
-	produces: FOOD_TYPE;
-	amountProduced: number;
 }

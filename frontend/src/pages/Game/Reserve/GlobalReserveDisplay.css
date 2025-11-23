@@ -16,7 +16,7 @@
 	font-weight: bold;
 	writing-mode: sideways-lr;
 	position: absolute;
-	bottom: 50%;
+	top: min(30%, 30vh);
 	left: 0;
 	translate: -100% 50%;
 	border-radius: var(--width-val) 0 0 var(--width-val);
