@@ -64,7 +64,7 @@ CREATE TABLE `game_player_restaurant` (
 CREATE TABLE `GameEvent` (
     `game_event_id` INTEGER NOT NULL AUTO_INCREMENT,
     `game_state_id` INTEGER NOT NULL,
-    `time_of_occurence` INTEGER NOT NULL DEFAULT UNIX_TIMESTAMP(),
+    `time_of_occurence` TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `game_event_data` JSON NOT NULL,
 
     PRIMARY KEY (`game_event_id`)

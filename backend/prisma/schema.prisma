@@ -7,18 +7,7 @@ generator client {
 
 datasource db {
     provider = "mysql"
-    url      = env("DATABASE_URL")
 }
-
-// {
-// 	"type": "sqlite",
-// 	"database": "./database/database.sqlite",
-// 	"synchronize": true,
-// 	"logging": false,
-// 	"entities": ["src/database/entity/**/*.ts"],
-// 	"migrations": ["src/database/migration/**/*.ts"],
-// 	"subscribers": ["src/database/subscriber/**/*.ts"]
-// }
 
 model UserSession {
     sessionKey  String       @id @unique @default(uuid())
@@ -113,7 +102,7 @@ model GameEvent {
     gameId Int       @map("game_state_id")
     game   GameState @relation(fields: [gameId], references: [id])
 
-    time Int @default(dbgenerated("UNIX_TIMESTAMP()")) @map("time_of_occurence")
+    time DateTime @default(now()) @map("time_of_occurence") @db.Timestamp(3)
 
     eventData Json @map("game_event_data")
 }
