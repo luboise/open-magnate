@@ -27,4 +27,6 @@ dist-ssr
 *.sln
 *.sw?
 
-backend/**/generated/
+packages/backend/**/generated/
+packages/magnate-core/src/**/*.js*
+packages/magnate-core/src/**/*.d.*

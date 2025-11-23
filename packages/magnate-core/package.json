@@ -1,0 +1,30 @@
+{
+  "name": "magnate-core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./*": "./dist/*.js",
+    "./area": "./dist/area/index.js",
+    "./area/*": "./dist/area/*.js",
+    "./demand": "./dist/demand/index.js",
+    "./game": "./dist/game/index.js",
+    "./game/constants": "./dist/game/constants/index.js",
+    "./employees": "./dist/employees/index.js",
+    "./map": "./dist/map/index.js",
+    "./views": "./dist/views/index.js"
+  },
+  "scripts": {
+	"build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+	"typescript": "^5.2.2"
+  }
+}

@@ -15,5 +15,11 @@
 		"stylelint-config-standard-scss": "^13.1.0",
 		"ts-node": "^10.9.2",
 		"typescript": "^5.4.5"
-	}
+	},
+	"private": true,
+	"workspaces": [
+		"./packages/magnate-core",
+		"./packages/frontend",
+		"./packages/backend"
+	]
 }
