@@ -1,5 +1,5 @@
+import { DemandType } from "@/game/demand";
 import { BaseTransactionInfoInterface } from "../";
-import { DemandType } from "../../demand";
 
 export interface DinnertimeSellInfo
 	extends BaseTransactionInfoInterface {

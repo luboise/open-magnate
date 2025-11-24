@@ -1,26 +1,15 @@
 export * from "./Food";
-export * from "./LobbyTypes";
-export * from "./LocalSessionData";
 export * from "./MapData";
-export * from "./Messages";
-export * from "./Player";
-export * from "./RestaurantNames";
 export * from "./Routes";
-export * from "./demand";
-export * from "./map";
-export * from "./map/parsing/MapParsing";
-export * from "./marketing";
-
+export * from "./game/marketing";
+export * from "./networking/LobbyTypes";
+export * from "./networking/LocalSessionData";
+export * from "./networking/Messages";
 export * from "./utils";
-
-export * from "./area";
-export * from "./views";
 
 // Shared types that rely on backend types
 // export * from "../backend/src/exported";
 
-export * from "./employees";
-
 export * from "./game";
 
-export * from "./events";
+// export * from "./events";

@@ -1,0 +1,5 @@
+export type ENTRANCE_CORNER =
+	| "TOPLEFT"
+	| "TOPRIGHT"
+	| "BOTTOMLEFT"
+	| "BOTTOMRIGHT";

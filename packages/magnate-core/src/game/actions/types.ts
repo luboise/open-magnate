@@ -1,16 +1,16 @@
-import { DemandType } from "../../demand/Supply";
-import { EmployeeId } from "../../employees";
-import { MarketingTile } from "../../map/tiles";
+import { EmployeeType } from "@/game/Employee";
+import { DemandType } from "@/game/demand";
+import { MarketingTile } from "@/game/marketing";
 
 interface BaseGameAction {
 	type: string;
-	employeeIndex: number;
-	player: number;
+	employeeId: number;
+	playerIndex: number;
 }
 
 export interface RecruitAction extends BaseGameAction {
 	type: "RECRUIT";
-	recruiting: EmployeeId;
+	recruiting: EmployeeType;
 }
 
 export interface MarketingAction extends BaseGameAction {
@@ -44,5 +44,3 @@ export const TurnProgressValues = [
 
 export type TurnProgress =
 	(typeof TurnProgressValues)[number];
-
-export const BASE_SALARY = 5;

@@ -28,7 +28,10 @@
 
 		// Source map for debugging
 		"sourceMap": true,
-		"composite": true
+		"composite": true,
+		"paths": {
+			"@/*": ["./src/*"]
+		}
 	},
 	"exclude": [
 		"dist/",
