@@ -103,4 +103,3 @@ function SalaryHandler({ ...args }: Props) {
 }
 
 export default SalaryHandler;
-

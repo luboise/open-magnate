@@ -25,4 +25,3 @@ function DemandSelector({
 }
 
 export default DemandSelector;
-

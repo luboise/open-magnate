@@ -42,4 +42,3 @@ function SpinningStatus<T>({
 }
 
 export default SpinningStatus;
-

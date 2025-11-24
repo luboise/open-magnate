@@ -1,11 +1,11 @@
-import { Reach } from "../map/area";
 import {
 	BaseEmployee,
 	DrinkType,
 	EmployeeColour,
 	EmployeeCreationData,
-    Supply
+	Supply
 } from "..";
+import { Reach } from "../map/area";
 
 export interface DrinkEmployee extends BaseEmployee {
 	department: "DRINK";
@@ -87,6 +87,3 @@ export const DrinkEmployees: Record<
 		oneOf: true
 	})
 } as const;
-
-
-

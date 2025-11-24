@@ -1,14 +1,14 @@
 import { DemandType } from "magnate-core/demand/Supply";
 import {
-	FullGameState,
-	FullGameStateInclude,
-	FullHouse
-} from "../../database/controller/includes";
-import {
 	CreateGameStateView,
 	CreateHouseView,
 	HouseView
 } from "../../dataViews";
+import {
+	FullGameState,
+	FullGameStateInclude,
+	FullHouse
+} from "../../database/controller/includes";
 import {
 	Area,
 	MarketingCampaignView,

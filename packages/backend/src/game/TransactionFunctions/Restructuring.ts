@@ -1,4 +1,4 @@
-import { EmployeeId } from "magnate-core/employees/types";
+import { EmployeeType } from "magnate-core/employees/types";
 import {
 	EmployeeNode,
 	IsValidEmployeeTree,
@@ -28,7 +28,7 @@ export const Restructure: MoveTransactionFunctionTyped<
 
 	const employeeList = parseJsonArray(
 		gamePlayer.employees
-	) as EmployeeId[];
+	) as EmployeeType[];
 
 	if (
 		!IsValidEmployeeTree(

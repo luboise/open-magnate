@@ -23,17 +23,17 @@ export interface Measurable {
 }
 
 export interface DirectionSet {
-	north: boolean,
-	south: boolean,
-	east: boolean,
-	west: boolean,
-};
+	north: boolean;
+	south: boolean;
+	east: boolean;
+	west: boolean;
+}
 
 export type ReachType = "ROAD" | "AIR";
 
 export interface Reach {
-    distance: number;
-    reach_type: ReachType;
+	distance: number;
+	reach_type: ReachType;
 }
 
 export * as Pathfinding from "./pathfinding";

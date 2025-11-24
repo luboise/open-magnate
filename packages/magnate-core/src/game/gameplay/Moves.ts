@@ -1,50 +1,49 @@
 import { ENTRANCE_CORNER } from "@/game/map/area";
 import { EmployeeNode } from "../Employee";
-import { TurnAction } from "../actions/types";
+import { TurnAction } from "./actions";
 
-export enum MOVE_TYPE {
-	PLACE_RESTAURANT = "PLACE_RESTAURANT",
-	TAKE_TURN = "TAKE_TURN",
-	NEGOTIATE_SALARIES = "NEGOTIATE_SALARIES",
-	RESTRUCTURE = "RESTRUCTURE",
-	PICK_TURN_ORDER = "PICK_TURN_ORDER"
+export enum MoveType
+
+interface BaseMove {
+	moveType: MoveType;
 }
 
-interface BaseMoveData {
-	MoveType: MOVE_TYPE;
+export interface MoveSelectBankReserve extends BaseMove {
+	moveType: MoveType.SELECT_BANK_RESERVE;
+	reserveAmount: number;
 }
 
-export interface MovePlaceRestaurant extends BaseMoveData {
-	MoveType: MOVE_TYPE.PLACE_RESTAURANT;
+export interface MovePlaceRestaurant extends BaseMove {
+	moveType: MoveType.PLACE_RESTAURANT;
 	x: number;
 	y: number;
 	entrance: ENTRANCE_CORNER;
 }
 
-export interface MoveTakeTurn extends BaseMoveData {
-	MoveType: MOVE_TYPE.TAKE_TURN;
+export interface MoveTakeTurn extends BaseMove {
+	moveType: MoveType.TAKE_TURN;
 	actions: TurnAction[];
 }
 
-export interface MoveNegotiateSalaries
-	extends BaseMoveData {
-	MoveType: MOVE_TYPE.NEGOTIATE_SALARIES;
+export interface MoveNegotiateSalaries extends BaseMove {
+	moveType: MoveType.NEGOTIATE_SALARIES;
 	employeesToFire: number[];
 }
 
-export interface MoveRestructure extends BaseMoveData {
-	MoveType: MOVE_TYPE.RESTRUCTURE;
+export interface MoveRestructure extends BaseMove {
+	moveType: MoveType.RESTRUCTURE;
 	tree: EmployeeNode;
 }
 
-export interface MovePickTurnOrder extends BaseMoveData {
-	MoveType: MOVE_TYPE.PICK_TURN_ORDER;
+export interface MovePickTurnOrder extends BaseMove {
+	moveType: MoveType.PICK_TURN_ORDER;
 	slot: number;
 }
 
-export type MoveData =
+export type Move =
 	| MovePlaceRestaurant
 	| MoveTakeTurn
 	| MoveNegotiateSalaries
 	| MoveRestructure
+	| MoveSelectBankReserve
 	| MovePickTurnOrder;

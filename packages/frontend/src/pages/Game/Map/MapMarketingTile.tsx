@@ -31,11 +31,11 @@ function MapMarketingTile({
 				...{
 					...(snapToGrid
 						? {
-							gridColumn: `${tile.pos.x + 1} / span ${tile.width}`,
-							gridRow: `${tile.pos.y + 1} / span ${tile.height}`,
-							width: "100%",
-							height: "100%"
-						}
+								gridColumn: `${tile.pos.x + 1} / span ${tile.width}`,
+								gridRow: `${tile.pos.y + 1} / span ${tile.height}`,
+								width: "100%",
+								height: "100%"
+							}
 						: {})
 				}
 			}}

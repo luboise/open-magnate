@@ -242,7 +242,7 @@ export function GetDinnertimeDetails(
 
 			waitresses: player.employees.filter(
 				(employee) =>
-					getEmployeeById(employee).type ===
+					getEmployeeById(employee).department ===
 					"WAITRESS"
 			).length,
 			turnOrder: game.turnOrder.findIndex(

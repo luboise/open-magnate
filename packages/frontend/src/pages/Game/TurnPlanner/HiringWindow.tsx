@@ -74,4 +74,3 @@ function HiringWindow({
 }
 
 export default HiringWindow;
-

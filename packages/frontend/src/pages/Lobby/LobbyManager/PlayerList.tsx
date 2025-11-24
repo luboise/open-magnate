@@ -37,4 +37,3 @@ function PlayerList(props: {
 }
 
 export default PlayerList;
-

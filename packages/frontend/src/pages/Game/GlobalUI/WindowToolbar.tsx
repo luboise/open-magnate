@@ -60,4 +60,3 @@ function WindowToolbar(props: WindowToolbarProps) {
 }
 
 export default WindowToolbar;
-

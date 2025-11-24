@@ -1,6 +1,7 @@
 import { TurnProgress } from "@/game";
 import { EmployeeType } from "@/game/Employee";
 import { DemandType } from "@/game/demand";
+import { GameMap } from "@/game/map";
 import { GameEventView } from "./GameEventViews";
 import {
 	GardenView,
@@ -11,7 +12,6 @@ import {
 	MarketingCampaignView,
 	MarketingCampaignViewPrivate
 } from "./MarketingViews";
-import { GameMap } from "@/game/map";
 
 export const ReadyStatuses = [
 	"NOT_READY",

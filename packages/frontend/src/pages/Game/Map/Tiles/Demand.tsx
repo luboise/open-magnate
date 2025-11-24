@@ -20,4 +20,3 @@ function Demand({ demand, className, ...args }: Props) {
 }
 
 export default Demand;
-

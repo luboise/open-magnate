@@ -44,4 +44,3 @@ function EmployeeCard(props: EmployeeCardProps) {
 }
 
 export default EmployeeCard;
-

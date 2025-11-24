@@ -52,12 +52,11 @@ export const PLAYER_DEFAULTS: Record<
 	// }
 } as const;
 export interface PlayerNumDefault {
-    /// Number of map pieces horizontally
-    mapWidth: number;
-    /// Number of map pieces vertically
-    mapHeight: number;
+	/// Number of map pieces horizontally
+	mapWidth: number;
+	/// Number of map pieces vertically
+	mapHeight: number;
 
-    marketingUnused: Set<number>;
-    limitedEmployeeCards: number;
+	marketingUnused: Set<number>;
+	limitedEmployeeCards: number;
 }
-

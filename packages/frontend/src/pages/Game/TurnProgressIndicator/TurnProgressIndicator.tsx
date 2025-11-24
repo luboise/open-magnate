@@ -37,4 +37,3 @@ function TurnProgressIndicator() {
 }
 
 export default TurnProgressIndicator;
-

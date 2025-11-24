@@ -18,4 +18,3 @@ export interface Supply<T extends DemandType[]> {
 	demand_type: T;
 	amount: number;
 }
-

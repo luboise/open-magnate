@@ -9,8 +9,7 @@ export const EntranceCorners = [
 export type EntranceCorner =
 	(typeof EntranceCorners)[number];
 
-export interface RestaurantTile
-	extends BaseMapTile {
+export interface RestaurantTile extends BaseMapTile {
 	tileType: "RESTAURANT";
 	owner: number;
 	openingSoon: boolean;

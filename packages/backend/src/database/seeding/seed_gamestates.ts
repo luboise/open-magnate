@@ -1,5 +1,5 @@
 import { DEFAULT_EMPLOYEE_ARRAY } from "magnate-core/game/defaults";
-import { GetNewReserve } from "../../game/NewGameStructures";
+import { createNewReserve } from "../../game/NewGameStructures";
 import {
 	GameStateCreateInput,
 	TURN_PROGRESS
@@ -38,5 +38,5 @@ export const seedGameState1: GameStateCreateInput = {
 			]
 		}
 	},
-	reserve: GetNewReserve(2)
+	reserve: createNewReserve(2)
 };

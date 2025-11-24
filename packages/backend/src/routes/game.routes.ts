@@ -7,7 +7,6 @@ import UserSessionController from "../database/controller/usersession.controller
 
 // Fixes issues from using base WebSocket without extended methods
 import { UserSession } from "@prisma/client";
-import WebSocket from "ws";
 import {
 	BackendMessage,
 	BaseMessage,
@@ -19,6 +18,7 @@ import {
 	MakeMoveMessage,
 	StartGameMessage
 } from "magnate-core";
+import WebSocket from "ws";
 import {
 	CreateGameStateView,
 	GetPublicGameStateView

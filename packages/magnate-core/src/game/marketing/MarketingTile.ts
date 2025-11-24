@@ -2,68 +2,67 @@ import { DemandType } from "../demand";
 import { BaseMapTile } from "../map";
 import { Position, Rotation } from "../map/area";
 
-
-export type MarketingType = "BILLBOARD" | "MAILBOX" | "PLANE" | "RADIO";
-
+export type MarketingType =
+	| "BILLBOARD"
+	| "MAILBOX"
+	| "PLANE"
+	| "RADIO";
 
 /// An interface describing the current usage of the tile.
-export interface MarketingTileUsageContext  {
-	/// The ID of the employee currently in control of this tile. 
+export interface MarketingTileUsageContext {
+	/// The ID of the employee currently in control of this tile.
 	// They will be returned to the player once the
 	// marketing campaign ends.
 	employeeId: number;
 	demand: DemandType;
 	durationRemaining: number | "INFINITE";
-};
+}
 
 export interface MarketingTile extends BaseMapTile {
-	tileType: "MARKETING",
+	tileType: "MARKETING";
 
 	tileNumber: number;
-	marketingType: MarketingType,
+	marketingType: MarketingType;
 
 	// If this is undefined, the marketing tile is available for use.
 	usage?: MarketingTileUsageContext;
-};
+}
 
 export const MarketingTile = {
-
-
- create({
-	marketingType,
-	tileNumber,
-	width,
-	height,
-	position = {x: 0, y: 0},
-	rotation = 0,
-}: MarketingTileCreationProps & {position?: Position, rotation?: Rotation}): MarketingTile {
-	return  {
-		tileType: "MARKETING",
-		marketingType: marketingType,
-		tileNumber: tileNumber,
+	create({
+		marketingType,
+		tileNumber,
 		width,
 		height,
-		position,
-		rotation,
-	};
-},
+		position = { x: 0, y: 0 },
+		rotation = 0
+	}: MarketingTileCreationProps & {
+		position?: Position;
+		rotation?: Rotation;
+	}): MarketingTile {
+		return {
+			tileType: "MARKETING",
+			marketingType: marketingType,
+			tileNumber: tileNumber,
+			width,
+			height,
+			position,
+			rotation
+		};
+	},
 
-
- createRadioTile(
-	tileNumber: number,
-): MarketingTile {
-	return {
-		tileType: "MARKETING",
-		marketingType: "RADIO",
-		tileNumber: tileNumber,
-		rotation: 0,
-		width: 1,
-		height: 1,
-		position: { x: 0, y: 0 },
-	};
-},
+	createRadioTile(tileNumber: number): MarketingTile {
+		return {
+			tileType: "MARKETING",
+			marketingType: "RADIO",
+			tileNumber: tileNumber,
+			rotation: 0,
+			width: 1,
+			height: 1,
+			position: { x: 0, y: 0 }
+		};
+	}
 };
-
 
 export const MarketingTilesByNumber: Record<
 	number,

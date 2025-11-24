@@ -6,6 +6,7 @@ import {
 	IsValidEmployeeTree,
 	ParseEmployeeTree
 } from "magnate-core/employees/EmployeeStructure";
+import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "magnate-core/game/defaults/EmployeeDefaults";
 import {
 	HTMLAttributes,
 	useCallback,
@@ -25,7 +26,6 @@ import EmployeeCard from "../Employees/EmployeeCard";
 import EmployeeTreeNode, {
 	EmployeeTreeNodeDropDetails
 } from "./EmployeeTreeNode";
-import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "magnate-core/game/defaults/EmployeeDefaults";
 
 export function findEmployeeRecursive(
 	node: EmployeeNode,
@@ -69,7 +69,7 @@ export function findParentNode(
 }
 
 interface EmployeeTreeProps
-	extends HTMLAttributes<HTMLDivElement> { }
+	extends HTMLAttributes<HTMLDivElement> {}
 
 type dd = number;
 type rd = EmployeeTreeNodeDropDetails;
@@ -126,7 +126,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				)
 					throw new Error(
 						"Invalid index provided for updating the tree: " +
-						index
+							index
 					);
 				console.debug(
 					`Card dropped on employee tree: parent: ${parent.data}, child: ${employeeDropped}, index: ${index}`
@@ -266,4 +266,3 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 }
 
 export default EmployeeTree;
-

@@ -3,7 +3,7 @@ import {
 	IsAdjacent
 } from "magnate-core/area";
 import GameStateController from "../../src/database/controller/gamestate.controller";
-import { GetNewReserve } from "../../src/game/NewGameStructures";
+import { createNewReserve } from "../../src/game/NewGameStructures";
 import {
 	Measurable,
 	PLAYER_DEFAULTS
@@ -127,7 +127,7 @@ describe("Testing Arrays", () => {
 
 describe("Testing GetNewReserve()", () => {
 	test("Expect GetNewReserve() to return a valid reserve", () => {
-		const reserve = GetNewReserve(2);
+		const reserve = createNewReserve(2);
 		expect(reserve).toBeTruthy();
 
 		Object.keys(reserve).forEach((key) => {

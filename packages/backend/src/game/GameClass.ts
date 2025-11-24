@@ -33,4 +33,3 @@ export class GameClass {
 		return JSON.parse(JSON.stringify(this.movesMade));
 	}
 }
-

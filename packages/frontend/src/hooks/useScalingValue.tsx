@@ -1,5 +1,5 @@
-import { Clamp } from "../utils";
 import { useState } from "react";
+import { Clamp } from "../utils";
 
 function useScalingValue(
 	minScale: number = 0.01,
@@ -35,4 +35,3 @@ function useScalingValue(
 }
 
 export default useScalingValue;
-

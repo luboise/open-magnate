@@ -1,4 +1,4 @@
-import { MoveData } from "../game/gameplay/Moves";
+import { Move } from "../game/gameplay/Moves";
 import {
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
@@ -99,5 +99,5 @@ export interface StartGameMessage extends BaseMessage {
 
 export interface MakeMoveMessage extends BaseMessage {
 	type: "MAKE_MOVE";
-	data: MoveData;
+	data: Move;
 }

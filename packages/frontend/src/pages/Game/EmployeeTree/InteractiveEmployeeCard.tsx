@@ -23,4 +23,3 @@ function InteractiveEmployeeCard({
 }
 
 export default InteractiveEmployeeCard;
-

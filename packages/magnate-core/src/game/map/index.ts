@@ -10,8 +10,11 @@ import { MarketingTile } from "../marketing";
 
 export * from "./parsing/MapParsing";
 
-
-export type MapTileType = "HOUSE" | "MARKETING" | "ROAD" | "RESTAURANT";
+export type MapTileType =
+	| "HOUSE"
+	| "MARKETING"
+	| "ROAD"
+	| "RESTAURANT";
 
 export interface BaseMapTile {
 	readonly tileType: MapTileType;

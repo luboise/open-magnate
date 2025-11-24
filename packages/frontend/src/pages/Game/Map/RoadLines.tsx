@@ -27,4 +27,3 @@ function RoadLines({ rotation = "NORTH" }: RoadLinesProps) {
 }
 
 export default RoadLines;
-

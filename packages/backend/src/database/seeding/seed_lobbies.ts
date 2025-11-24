@@ -1,4 +1,3 @@
-
 export const seedLobby1 = {
 	id: -1,
 	name: "seed-lobby-unstarted",
@@ -6,4 +5,3 @@ export const seedLobby1 = {
 	inviteCode: "SEEDLB01"
 };
 export const SEED_LOBBIES = [seedLobby1];
-

@@ -30,3 +30,6 @@ dist-ssr
 packages/backend/**/generated/
 packages/magnate-core/src/**/*.js*
 packages/magnate-core/src/**/*.d.*
+
+**/test/**/*.test.js*
+**/test/**/*.test.d.ts

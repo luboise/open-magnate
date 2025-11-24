@@ -3,7 +3,10 @@ import "./GameActionPreview.css";
 import { HTMLAttributes, useMemo } from "react";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import { getEmployeeById, TurnAction } from "../../../utils";
+import {
+	TurnAction,
+	getEmployeeById
+} from "../../../utils";
 
 interface GameActionPreviewProps
 	extends HTMLAttributes<HTMLDivElement> {

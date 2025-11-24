@@ -5,8 +5,8 @@ import { ManagementEmployeeType } from "./ManagementEmployees";
 import { RecruitmentEmployeeType } from "./RecruitmentEmployees";
 import { WaitressEmployeeType } from "./WaitressEmployees";
 
-export * from "./CEOEmployees";
 export * from "../../demand/DrinkEmployee";
+export * from "./CEOEmployees";
 export * from "./ManagementEmployees";
 export * from "./RecruitmentEmployees";
 // export type PRICER_NAME = (typeof PRICER_NAMES)[number];

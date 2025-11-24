@@ -18,7 +18,6 @@ import PageHomepage from "./pages/HomePage/PageHomepage";
 import PageLobby from "./pages/Lobby/PageLobby";
 import { FrontendRoutes } from "./utils";
 
-
 // const flexFont = function () {
 // 	var divs = document.getElementsByClassName(
 // 		"flex-font"

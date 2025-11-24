@@ -1,5 +1,5 @@
 import { DEMAND_TYPE } from "@prisma/client";
-import { EmployeeId } from "magnate-core/employees/types";
+import { EmployeeType } from "magnate-core/employees/types";
 import {
 	MarketingAction,
 	MarketingCampaignView,
@@ -23,7 +23,7 @@ export const ExecuteTurn: MoveTransactionFunctionTyped<
 		});
 
 	// TODO: Add validation for valid recruiting
-	const newRecruits: EmployeeId[] = [];
+	const newRecruits: EmployeeType[] = [];
 
 	for (const action of turn) {
 		if (action.type === "RECRUIT") {

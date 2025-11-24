@@ -156,4 +156,3 @@ function PlacementHandler({ placementTypes }: Props) {
 }
 
 export default PlacementHandler;
-

@@ -22,7 +22,7 @@ import {
 	UserSession
 } from "../datasource";
 
-import { GetNewReserve } from "../../game/NewGameStructures";
+import { createNewReserve } from "../../game/NewGameStructures";
 import { LobbyWhereInput } from "../datasource/generated/models";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
@@ -142,9 +142,10 @@ const LobbyController = {
 										initialTurnOrder,
 									oldTurnOrder:
 										initialTurnOrder,
-									reserve: GetNewReserve(
-										newLobbyData.playerCount
-									),
+									reserve:
+										createNewReserve(
+											newLobbyData.playerCount
+										),
 									players: {
 										createMany: {
 											data: playerIndices.map(

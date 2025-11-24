@@ -2,10 +2,10 @@ import { PLAYER_DEFAULTS, PlayerCount } from "./defaults";
 import { EmployeeType } from "./Employee";
 
 export const RESERVE_ONEOF_VALUE = -1;
-export type Reserve = Record<EmployeeType, number>;
+export type CardReserve = Record<EmployeeType, number>;
 
-export const Reserve = {
-	create(playerCount: PlayerCount): Reserve {
+export const CardReserve = {
+	create(playerCount: PlayerCount): CardReserve {
 		const defaults = PLAYER_DEFAULTS[playerCount];
 
 		const NewReserve = Object.fromEntries(
@@ -17,15 +17,15 @@ export const Reserve = {
 						: value
 				]
 			)
-		) as Reserve;
+		) as CardReserve;
 
 		return NewReserve;
 	}
 } satisfies {
-	create(playerCount: number): Reserve;
+	create(playerCount: number): CardReserve;
 };
 
-export const DEFAULT_RESERVE_BASE_GAME: Reserve = {
+export const DEFAULT_RESERVE_BASE_GAME: CardReserve = {
 	// Food
 	food_basic: 12,
 	burger_1: 6,

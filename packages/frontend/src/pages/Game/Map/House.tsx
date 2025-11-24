@@ -24,9 +24,9 @@ function House({
 				...style,
 				...(usePositioning
 					? {
-						gridColumn: `${house.pos.x + 1} / span 2`,
-						gridRow: `${house.pos.y + 1} / span 2`
-					}
+							gridColumn: `${house.pos.x + 1} / span 2`,
+							gridRow: `${house.pos.y + 1} / span 2`
+						}
 					: {})
 			}}
 			{...args}
