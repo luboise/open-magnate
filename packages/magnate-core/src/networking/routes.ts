@@ -1,9 +1,14 @@
 export const FRONTEND_BASE_URL = "http://localhost:3000";
 export const API_BASE_URL = "/api/v1";
 
-export enum APIRoutes
-// VALID_TOKEN = "/auth/token-check",
-// SET_USERNAME = "/newuser",
+export enum APIRoutes {
+	// VALID_TOKEN = "/auth/token-check",
+	// SET_USERNAME = "/newuser",
+	NEW_LOBBY = "/lobby/new",
+	GET_LOBBY = "/lobby/",
+	GAME_SOCKET = "/game/:id/socket",
+	PLAY = "/game"
+}
 
 export const FrontendRoutes = {
 	PLAY: "/game",

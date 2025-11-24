@@ -33,3 +33,5 @@ packages/magnate-core/src/**/*.d.*
 
 **/test/**/*.test.js*
 **/test/**/*.test.d.ts
+
+**/jest.config.[dj]*

@@ -2,14 +2,21 @@ import { ENTRANCE_CORNER } from "@/game/map/area";
 import { EmployeeNode } from "../Employee";
 import { TurnAction } from "./actions";
 
-export enum MoveType
+export enum MoveType {
+	SELECT_BANK_RESERVE = "SELECT_BANK_RESERVE",
+	PLACE_RESTAURANT = "PLACE_RESTAURANT",
+	TAKE_TURN = "TAKE_TURN",
+	NEGOTIATE_SALARIES = "NEGOTIATE_SALARIES",
+	RESTRUCTURE = "RESTRUCTURE",
+	PICK_TURN_ORDER = "PICK_TURN_ORDER"
+}
 
 interface BaseMove {
 	moveType: MoveType;
 }
 
 export interface MoveSelectBankReserve extends BaseMove {
-	moveType: MoveType.SELECT_BANK_RESERVE;
+	moveType: MoveType.SELECT_BANK_RESERVE,
 	reserveAmount: number;
 }
 
@@ -25,7 +32,8 @@ export interface MoveTakeTurn extends BaseMove {
 	actions: TurnAction[];
 }
 
-export interface MoveNegotiateSalaries extends BaseMove {
+export interface MoveNegotiateSalaries
+	extends BaseMove {
 	moveType: MoveType.NEGOTIATE_SALARIES;
 	employeesToFire: number[];
 }

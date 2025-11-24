@@ -25,7 +25,10 @@ type MapClickCallback = (
 // 	y: number;
 // }
 
-export enum MAP_RENDER_KEYS
+export enum MAP_RENDER_KEYS {
+	TILES = "TILES",
+	HOUSES = "HOUSES"
+}
 
 type MapCursorEvent =
 	| {
