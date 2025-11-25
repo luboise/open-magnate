@@ -73,3 +73,19 @@ export function CloneArray<T>(array: T[]): T[] {
 
 	return newArray;
 }
+
+export function transpose2dArray<T>(array: T[][]) {
+	// Create an empty array to transpose into
+	const transposed = new2DArray<T>(
+		array[0].length,
+		array.length
+	);
+
+	for (let i = 0; i < array.length; i++) {
+		for (let j = 0; j < array[i].length; j++) {
+			transposed[j][i] = array[i][j];
+		}
+	}
+
+	return transposed;
+}

@@ -5,10 +5,10 @@ import { TurnAction } from "./actions";
 export enum MoveType {
 	SELECT_BANK_RESERVE = "SELECT_BANK_RESERVE",
 	PLACE_RESTAURANT = "PLACE_RESTAURANT",
-	TAKE_TURN = "TAKE_TURN",
+	WORK_EMPLOYEES = "TAKE_TURN",
 	NEGOTIATE_SALARIES = "NEGOTIATE_SALARIES",
 	RESTRUCTURE = "RESTRUCTURE",
-	PICK_TURN_ORDER = "PICK_TURN_ORDER"
+	SELECT_TURN_ORDER = "PICK_TURN_ORDER"
 }
 
 interface BaseMove {
@@ -16,7 +16,7 @@ interface BaseMove {
 }
 
 export interface MoveSelectBankReserve extends BaseMove {
-	moveType: MoveType.SELECT_BANK_RESERVE,
+	moveType: MoveType.SELECT_BANK_RESERVE;
 	reserveAmount: number;
 }
 
@@ -28,12 +28,11 @@ export interface MovePlaceRestaurant extends BaseMove {
 }
 
 export interface MoveTakeTurn extends BaseMove {
-	moveType: MoveType.TAKE_TURN;
+	moveType: MoveType.WORK_EMPLOYEES;
 	actions: TurnAction[];
 }
 
-export interface MoveNegotiateSalaries
-	extends BaseMove {
+export interface MoveNegotiateSalaries extends BaseMove {
 	moveType: MoveType.NEGOTIATE_SALARIES;
 	employeesToFire: number[];
 }
@@ -44,7 +43,7 @@ export interface MoveRestructure extends BaseMove {
 }
 
 export interface MovePickTurnOrder extends BaseMove {
-	moveType: MoveType.PICK_TURN_ORDER;
+	moveType: MoveType.SELECT_TURN_ORDER;
 	slot: number;
 }
 

@@ -1,4 +1,4 @@
-import { Area, Measurable } from "../../../src/utils";
+import { Measurable } from ".";
 
 const TEST_HOUSE_1: Measurable = {
 	pos: {
@@ -40,12 +40,12 @@ describe("Testing isAdjacent", () => {
 			};
 
 			expect(
-				Area.IsAdjacent(TEST_HOUSE_1, m2)
+				Measurable.areAdjacent(TEST_HOUSE_1, m2)
 			).toBeTruthy();
 		});
 		test("Billboard 15 gets adjacent house to its left", () => {
 			expect(
-				Area.IsAdjacent(
+				Measurable.areAdjacent(
 					TEST_HOUSE_2,
 					TEST_BILLBOARD_1
 				)
@@ -62,7 +62,10 @@ describe("Testing isAdjacent", () => {
 			};
 
 			expect(
-				Area.IsAdjacent(TEST_HOUSE_2, billboard)
+				Measurable.areAdjacent(
+					TEST_HOUSE_2,
+					billboard
+				)
 			).toBeTruthy();
 		});
 		test("Billboard 15 should fail when too high (top-right)", () => {
@@ -76,7 +79,10 @@ describe("Testing isAdjacent", () => {
 			};
 
 			expect(
-				Area.IsAdjacent(TEST_HOUSE_2, billboard)
+				Measurable.areAdjacent(
+					TEST_HOUSE_2,
+					billboard
+				)
 			).toBeFalsy();
 		});
 		test("Billboard 15 should fail when too low (bottom-right)", () => {
@@ -90,7 +96,10 @@ describe("Testing isAdjacent", () => {
 			};
 
 			expect(
-				Area.IsAdjacent(TEST_HOUSE_2, billboard)
+				Measurable.areAdjacent(
+					TEST_HOUSE_2,
+					billboard
+				)
 			).toBeFalsy();
 		});
 	});

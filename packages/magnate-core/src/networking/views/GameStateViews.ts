@@ -1,7 +1,7 @@
-import { TurnProgress } from "@/game";
 import { EmployeeType } from "@/game/Employee";
 import { DemandType } from "@/game/demand";
 import { GameMap } from "@/game/map";
+import { TurnProgress } from "@/game/state/actions";
 import { GameEventView } from "./GameEventViews";
 import {
 	GardenView,

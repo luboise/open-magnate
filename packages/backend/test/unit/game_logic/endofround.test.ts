@@ -1,6 +1,6 @@
+import { MarketingCampaignView } from "magnate-core/networking";
 import { FullHouse } from "../../../src/database";
 import { TransactionFunctions } from "../../../src/game";
-import { MarketingCampaignView } from "../../../src/utils";
 
 describe("Testing endofround cleanup functions", () => {
 	describe("Testing isAffectedByMarketing", () => {

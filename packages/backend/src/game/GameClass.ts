@@ -1,5 +1,4 @@
-import { TurnAction } from "magnate-core";
-import { MOVE_TYPE, MoveData } from "magnate-core/Moves";
+import { MoveData } from "magnate-core/Moves";
 import { FullGameState } from "../database/controller/includes";
 
 // The game class creates a simulation of the game in memory and throws an error if an invalid move is attempted

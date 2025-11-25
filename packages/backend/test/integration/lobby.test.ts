@@ -1,4 +1,3 @@
-import { LobbySubmissionData } from "magnate-core";
 import LobbyController from "../../src/database/controller/lobby.controller";
 import UserSessionRepository from "../../src/database/repository/usersession.repository";
 import { basicAfterEach, basicBeforeEach } from "./utils";

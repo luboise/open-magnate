@@ -1,6 +1,5 @@
-import { Prisma } from "@prisma/client";
-
 import { Response } from "express";
+import { Prisma } from "./database/datasource";
 
 export function getRandomInt(
 	max: number,

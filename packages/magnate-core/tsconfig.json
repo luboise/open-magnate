@@ -1,14 +1,14 @@
 {
 	"compilerOptions": {
+
 		"target": "ES2021",
 		"useDefineForClassFields": true,
 		"lib": ["ES2021", "DOM", "DOM.Iterable"],
+		"baseUrl": "./",
 		"module": "ESNext",
 		"skipLibCheck": true,
-		"outDir": "./dist",
-
-		"rootDir": "./src",
-
+		"outDir": "dist",
+		"rootDir": "src",
 		"declaration": true,
 
 		/* Bundler mode */
@@ -18,7 +18,6 @@
 		// "allowImportingTsExtensions": true,
 
 		"resolveJsonModule": true,
-		"isolatedModules": true,
 
 		/* Linting */
 		"strict": true,
@@ -29,13 +28,17 @@
 		// Source map for debugging
 		"sourceMap": true,
 		"composite": true,
+
 		"paths": {
-			"@/*": ["./src/*"]
+			"@/*": ["src/*"],
+			"*": [
+				"src/*",
+				"node_modules/*"
+			]
 		}
 	},
-	"exclude": [
-		"dist/",
-		"node_modules"
+	"include": [
+		"src/**/*"
 	],
 }
 

@@ -1,4 +1,4 @@
-import { Pathfinding } from "../../src/utils";
+import { Pathfinding } from "magnate-core/game/map/area";
 import { PATHFINDING_TEST_MAP } from "./extra";
 
 describe("Pathfinding Tests", () => {

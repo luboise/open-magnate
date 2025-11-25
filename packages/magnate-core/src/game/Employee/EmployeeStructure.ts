@@ -8,113 +8,134 @@ const EMPLOYEE_NULL_CHAR = "X";
 const EMPLOYEE_CHILDREN_START_CHAR = "[";
 const EMPLOYEE_CHILDREN_END_CHAR = "]";
 
-export function SerialiseEmployeeTree(
-	rootNode: EmployeeNode
-): string {
-	let tempString = String(rootNode.data);
+export const EmployeeNode = {
+	isValidTree(
+		treeRoot: EmployeeNode,
+		employeeList: Employee[]
+	) {
+		if (!treeRoot) return false;
 
-	const hasChildren = rootNode.children.length > 0;
+		const set = new Set<number>();
+		return checkNode(treeRoot, employeeList, set, 0);
+	},
 
-	if (!hasChildren) return tempString;
-
-	const children = rootNode.children.map((child) => {
-		if (child === null) return EMPLOYEE_NULL_CHAR;
-		return SerialiseEmployeeTree(child);
-	});
-
-	return (
-		tempString +
-		EMPLOYEE_CHILDREN_START_CHAR +
-		children.join(EMPLOYEE_SEP_CHAR) +
-		EMPLOYEE_CHILDREN_END_CHAR
-	);
-}
-
-// Epic ChatGPT function.
-// TODO: Check the performance of this later and make sure it runs ok
-export function ParseEmployeeTree(
-	inString: string
-): EmployeeNode | null {
-	function parseNode(
-		input: string
-	): [EmployeeNode | null, string] {
-		// Base case: Check for 'X' representing null
-		if (input.startsWith("X")) {
-			return [null, input.slice(1)];
-		}
-
-		// Parse the root data number
-		const numberMatch = input.match(/^(\d+)/);
-		if (!numberMatch)
-			throw new Error("Invalid input format");
-
-		const data = parseInt(numberMatch[1]);
-		let remainingInput = input.slice(
-			numberMatch[1].length
-		);
-
-		// If the next character is '[', parse the children
-		let children: (EmployeeNode | null)[] = [];
-		if (remainingInput.startsWith("[")) {
-			remainingInput = remainingInput.slice(1); // Remove '['
-			while (!remainingInput.startsWith("]")) {
-				const [childNode, newRemainingInput] =
-					parseNode(remainingInput);
-				children.push(childNode);
-
-				remainingInput = newRemainingInput;
-				if (remainingInput.startsWith(",")) {
-					remainingInput =
-						remainingInput.slice(1); // Remove ','
-				} else if (
-					!remainingInput.startsWith("]")
-				) {
-					throw new Error("Invalid input format");
-				}
+	countEmptySlots(treeRoot: EmployeeNode): number {
+		let count = 0;
+		function traverse(node: EmployeeNode) {
+			for (const child of node.children) {
+				if (child === null) count += 1;
+				else traverse(child);
 			}
-			remainingInput = remainingInput.slice(1); // Remove ']'
 		}
 
-		const node: EmployeeNode = { data, children };
-		return [node, remainingInput];
-	}
+		traverse(treeRoot);
+		return count;
+	},
 
-	try {
-		const [rootNode, _] = parseNode(inString);
-		return rootNode;
-	} catch (error) {
-		console.error(
-			"Error parsing employee tree:",
-			error
-		);
-	}
-	return null;
-}
+	getAllTreeData<T>(
+		node: TreeNode<T>,
+		nullChar?: T
+	): Array<T> {
+		let data: Array<T> = [node.data];
 
-export function IsValidEmployeeTree(
-	tree: EmployeeNode,
-	employeeList: Employee[]
-): boolean {
-	if (!tree) return false;
-
-	const set = new Set<number>();
-	return checkNode(tree, employeeList, set, 0);
-}
-
-export function CountEmptySlots(
-	root: EmployeeNode
-): number {
-	let count = 0;
-	function traverse(node: EmployeeNode) {
 		for (const child of node.children) {
-			if (child === null) count += 1;
-			else traverse(child);
+			if (child === null) {
+				if (nullChar) {
+					data.push(nullChar);
+				}
+				continue;
+			}
+			data = data.concat(
+				EmployeeNode.getAllTreeData(child, nullChar)
+			);
 		}
-	}
 
-	traverse(root);
-	return count;
-}
+		return data;
+	},
+
+	serialiseTree(rootNode: EmployeeNode): string {
+		let tempString = String(rootNode.data);
+
+		const hasChildren = rootNode.children.length > 0;
+
+		if (!hasChildren) return tempString;
+
+		const children = rootNode.children.map((child) => {
+			if (child === null) return EMPLOYEE_NULL_CHAR;
+			return EmployeeNode.serialiseTree(child);
+		});
+
+		return (
+			tempString +
+			EMPLOYEE_CHILDREN_START_CHAR +
+			children.join(EMPLOYEE_SEP_CHAR) +
+			EMPLOYEE_CHILDREN_END_CHAR
+		);
+	},
+
+	// Epic ChatGPT function.
+	// TODO: Check the performance of this later and make sure it runs ok
+	deserializeTree(inString: string): EmployeeNode | null {
+		function parseNode(
+			input: string
+		): [EmployeeNode | null, string] {
+			// Base case: Check for 'X' representing null
+			if (input.startsWith("X")) {
+				return [null, input.slice(1)];
+			}
+
+			// Parse the root data number
+			const numberMatch = input.match(/^(\d+)/);
+			if (!numberMatch)
+				throw new Error("Invalid input format");
+
+			const data = parseInt(numberMatch[1]);
+			let remainingInput = input.slice(
+				numberMatch[1].length
+			);
+
+			// If the next character is '[', parse the children
+			let children: (EmployeeNode | null)[] = [];
+			if (remainingInput.startsWith("[")) {
+				remainingInput = remainingInput.slice(1); // Remove '['
+				while (!remainingInput.startsWith("]")) {
+					const [childNode, newRemainingInput] =
+						parseNode(remainingInput);
+					children.push(childNode);
+
+					remainingInput = newRemainingInput;
+					if (remainingInput.startsWith(",")) {
+						remainingInput =
+							remainingInput.slice(1); // Remove ','
+					} else if (
+						!remainingInput.startsWith("]")
+					) {
+						throw new Error(
+							"Invalid input format"
+						);
+					}
+				}
+				remainingInput = remainingInput.slice(1); // Remove ']'
+			}
+
+			const node: EmployeeNode = { data, children };
+			return [node, remainingInput];
+		}
+
+		try {
+			const [rootNode, _] = parseNode(inString);
+			return rootNode;
+		} catch (error) {
+			console.error(
+				"Error parsing employee tree:",
+				error
+			);
+		}
+		return null;
+	}
+};
+
+// Private
 
 function checkNode(
 	node: EmployeeNode,
@@ -177,23 +198,4 @@ function checkNode(
 	}
 
 	return true;
-}
-
-export function GetAllTreeData<T>(
-	node: TreeNode<T>,
-	nullChar?: T
-): Array<T> {
-	let data: Array<T> = [node.data];
-
-	for (const child of node.children) {
-		if (child === null) {
-			if (nullChar) {
-				data.push(nullChar);
-			}
-			continue;
-		}
-		data = data.concat(GetAllTreeData(child, nullChar));
-	}
-
-	return data;
 }

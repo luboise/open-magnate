@@ -6,7 +6,6 @@ import LobbyController from "../database/controller/lobby.controller";
 import UserSessionController from "../database/controller/usersession.controller";
 
 // Fixes issues from using base WebSocket without extended methods
-import { UserSession } from "@prisma/client";
 import {
 	BackendMessage,
 	BaseMessage,
@@ -17,7 +16,8 @@ import {
 	LobbySubmissionData,
 	MakeMoveMessage,
 	StartGameMessage
-} from "magnate-core";
+} from "magnate-core/networking";
+
 import WebSocket from "ws";
 import {
 	CreateGameStateView,
@@ -25,6 +25,7 @@ import {
 } from "../dataViews";
 import GameStateController from "../database/controller/gamestate.controller";
 import { FullGameState } from "../database/controller/includes";
+import { UserSession } from "../database/datasource";
 import { GameClass } from "../game/GameClass";
 import { connectionsToWebsocket } from "./connections";
 

@@ -61,7 +61,7 @@ export const MapTile = {
 		tile.position = MapTile.topLeft(tile);
 
 		// Swap extents if at a 90 degree angle
-		if (tile.rotation == 90 || tile.rotation == 270) {
+		if (tile.rotation === 90 || tile.rotation === 270) {
 			const temp = tile.height;
 			tile.height = tile.width;
 			tile.width = temp;
@@ -103,7 +103,7 @@ export const GameMap = {
 		/// Make copy so that the original pieces aren't touched, in a random order
 		const piecesCopy: MapPiece[] = (
 			JSON.parse(JSON.stringify(pieces)) as MapPiece[]
-		).sort((a, b) => {
+		).sort((_a, _b) => {
 			return Math.random() - 0.5;
 		});
 

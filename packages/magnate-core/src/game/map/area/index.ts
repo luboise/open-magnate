@@ -1,14 +1,10 @@
-export * as Area from "./AreaUtils";
-
-export * from "./Units";
-
 export interface Position {
 	x: number;
 	y: number;
 }
 
 export function Position(x: number, y: number): Position {
-	return {x, y};
+	return { x, y };
 }
 
 export type Rotation = 0 | 90 | 180 | 270;
@@ -26,6 +22,54 @@ export interface Measurable {
 	rotation?: Rotation;
 }
 
+export const Measurable = {
+	getRealArea(tile: Measurable): AreaData {
+		const rotated =
+			tile.rotation !== undefined
+				? tile.rotation % 90 === 90
+				: false;
+
+		return {
+			pos: { ...tile.pos },
+			width: rotated ? tile.width : tile.height,
+			height: rotated ? tile.height : tile.width
+		};
+	},
+
+	areAdjacent(m1: Measurable, m2: Measurable): boolean {
+		const m1Bottom = m1.pos.y + m1.height;
+		const m1Right = m1.pos.x + m1.width;
+
+		const m2Bottom = m2.pos.y + m2.height;
+		const m2Right = m2.pos.x + m2.width;
+
+		const m1xInBounds =
+			(m1.pos.x >= m2.pos.x && m1.pos.x < m2Right) ||
+			(m1Right - 1 >= m2.pos.x &&
+				m1Right - 1 < m2Right);
+		const m1yInBounds =
+			(m1.pos.y >= m2.pos.y && m1.pos.y < m2Bottom) ||
+			(m1Bottom - 1 >= m2.pos.y &&
+				m1Bottom - 1 < m2Bottom);
+
+		// Bottom touching
+		if (m1Bottom === m2.pos.y && m1xInBounds)
+			return true;
+		// Top touching
+		if (m2Bottom === m1.pos.y && m1xInBounds)
+			return true;
+		// Left touching
+		if (m2Right === m1.pos.x && m1yInBounds)
+			return true;
+		// Right touching
+		if (m1Right === m2.pos.x && m1yInBounds)
+			return true;
+
+		// All cases fail
+		return false;
+	}
+};
+
 export interface DirectionSet {
 	north: boolean;
 	south: boolean;
@@ -39,5 +83,11 @@ export interface Reach {
 	distance: number;
 	reach_type: ReachType;
 }
+
+export type ENTRANCE_CORNER =
+	| "TOPLEFT"
+	| "TOPRIGHT"
+	| "BOTTOMLEFT"
+	| "BOTTOMRIGHT";
 
 export * as Pathfinding from "./pathfinding";

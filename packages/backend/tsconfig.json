@@ -14,7 +14,7 @@
 	},
 	"include": [
 		"src/**/*.ts",
-		"test/**/*.ts",
+		"test/**/*.ts", "../magnate-core/src/game/map/area/adjacency.test.ts", "../magnate-core/src/game/map/area/adjacency.test.ts",
 	],
 	"exclude": ["node_modules"],
 		"references": [

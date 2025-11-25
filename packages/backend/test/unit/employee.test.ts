@@ -1,14 +1,8 @@
 import {
-	createCEOEmployee,
-	Employee
-} from "magnate-core/employees";
-import {
-	EmployeeNode,
-	getEmployeeById,
-	IsValidEmployeeTree,
-	ParseEmployeeTree,
-	SerialiseEmployeeTree
-} from "../../src/utils";
+	CEOEmployee,
+	Employee,
+	EmployeeNode
+} from "magnate-core/game/Employee/index";
 
 let testTree: EmployeeNode;
 let list: Employee[] = [];
@@ -49,27 +43,27 @@ beforeEach(() => {
 	};
 
 	list = [
-		createCEOEmployee(3),
-		getEmployeeById("mgmt_1"),
-		getEmployeeById("mgmt_1"),
-		getEmployeeById("mgmt_1"),
-		getEmployeeById("mgmt_1"),
-		getEmployeeById("food_basic"),
-		getEmployeeById("food_basic"),
-		getEmployeeById("food_basic"),
-		getEmployeeById("food_basic"),
-		getEmployeeById("food_basic"),
-		getEmployeeById("food_basic"),
-		getEmployeeById("food_basic"),
-		getEmployeeById("food_basic")
+		CEOEmployee.create(3),
+		Employee.fromId("mgmt_1"),
+		Employee.fromId("mgmt_1"),
+		Employee.fromId("mgmt_1"),
+		Employee.fromId("mgmt_1"),
+		Employee.fromId("food_basic"),
+		Employee.fromId("food_basic"),
+		Employee.fromId("food_basic"),
+		Employee.fromId("food_basic"),
+		Employee.fromId("food_basic"),
+		Employee.fromId("food_basic"),
+		Employee.fromId("food_basic"),
+		Employee.fromId("food_basic")
 	];
 });
 
 describe("Testing Employees", () => {
-	describe("Testing IsValidEmployeeTree()", () => {
+	describe("Testing EmployeeNode.isValidTree()", () => {
 		test("Valid trees should return true", () => {
 			expect(
-				IsValidEmployeeTree(testTree, list)
+				EmployeeNode.isValidTree(testTree, list)
 			).toBeTruthy();
 		});
 
@@ -89,7 +83,7 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 
@@ -108,7 +102,7 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 
@@ -133,7 +127,7 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 
@@ -153,7 +147,7 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 
@@ -172,7 +166,7 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 
@@ -190,7 +184,7 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 
@@ -208,7 +202,7 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 
@@ -226,16 +220,16 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				IsValidEmployeeTree(tree, list)
+				EmployeeNode.isValidTree(tree, list)
 			).toBeFalsy();
 		});
 	});
 
-	describe("Testing SerialiseEmployeeTree()", () => {
+	describe("Testing EmployeeNode.serialiseTree()", () => {
 		test("Valid trees should serialize to a string", () => {
-			expect(SerialiseEmployeeTree(testTree)).toBe(
-				"0[1[5,6],2[7,8],X]"
-			);
+			expect(
+				EmployeeNode.serialiseTree(testTree)
+			).toBe("0[1[5,6],2[7,8],X]");
 		});
 
 		test("A tree with a CEO at the top should serialise correctly", () => {
@@ -252,24 +246,29 @@ describe("Testing Employees", () => {
 			};
 
 			expect(
-				SerialiseEmployeeTree(tree).startsWith("0[")
+				EmployeeNode.serialiseTree(tree).startsWith(
+					"0["
+				)
 			).toBeTruthy();
 		});
 	});
 
-	describe("Testing ParseEmployeeTree()", () => {
+	describe("Testing EmployeeNode.deserializeTree()", () => {
 		test("Valid strings should parse to a tree", () => {
 			const stringToParse = "0[1[5,6],2[7,8],X]";
 
-			const tree = ParseEmployeeTree(stringToParse);
+			const tree =
+				EmployeeNode.deserializeTree(stringToParse);
 
 			expect(
-				IsValidEmployeeTree(tree!, list)
+				EmployeeNode.isValidTree(tree!, list)
 			).toBeTruthy();
 
 			expect(tree).toBeTruthy();
 
-			const serialized = SerialiseEmployeeTree(tree!);
+			const serialized = EmployeeNode.serialiseTree(
+				tree!
+			);
 
 			expect(serialized).toStrictEqual(stringToParse);
 		});

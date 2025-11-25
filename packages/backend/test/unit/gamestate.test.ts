@@ -1,20 +1,18 @@
 import {
-	GetTransposed,
-	IsAdjacent
-} from "magnate-core/area";
-import GameStateController from "../../src/database/controller/gamestate.controller";
-import { createNewReserve } from "../../src/game/NewGameStructures";
-import {
-	Measurable,
-	PLAYER_DEFAULTS
-} from "../../src/utils";
-
-import {
 	MAP_PIECE_HEIGHT,
-	MAP_PIECE_WIDTH
-} from "magnate-core/";
+	MAP_PIECE_WIDTH,
+	transpose2dArray
+} from "magnate-core";
 
-function testNewMap(playerCount: number) {
+import {
+	CardReserve,
+	PLAYER_DEFAULTS,
+	PlayerCount
+} from "magnate-core/game";
+import { Measurable } from "magnate-core/game/map/area";
+import GameStateController from "../../src/database/controller/gamestate.controller";
+
+function testNewMap(playerCount: PlayerCount) {
 	const [map, houses] =
 		GameStateController.NewMap(playerCount);
 	expect(map).toBeTruthy();
@@ -61,7 +59,7 @@ function testNewMap(playerCount: number) {
 
 	expect(houses).toBeTruthy();
 
-	const vals = GetTransposed(
+	const vals = transpose2dArray(
 		map.split(";").map((row) => row.split(""))
 	);
 
@@ -102,7 +100,7 @@ describe("Testing Arrays", () => {
 				[21, 22, 23, 24, 25]
 			];
 
-			const transposed = GetTransposed(array);
+			const transposed = transpose2dArray(array);
 
 			expect(transposed).toBeTruthy();
 			expect(array[1][3]).toEqual(transposed[3][1]);
@@ -116,7 +114,7 @@ describe("Testing Arrays", () => {
 				[21, 22, 23]
 			];
 
-			const transposed = GetTransposed(array);
+			const transposed = transpose2dArray(array);
 
 			expect(transposed).toBeTruthy();
 			expect(array[0][2]).toEqual(transposed[2][0]);
@@ -127,7 +125,7 @@ describe("Testing Arrays", () => {
 
 describe("Testing GetNewReserve()", () => {
 	test("Expect GetNewReserve() to return a valid reserve", () => {
-		const reserve = createNewReserve(2);
+		const reserve = CardReserve.create(2);
 		expect(reserve).toBeTruthy();
 
 		Object.keys(reserve).forEach((key) => {
@@ -164,7 +162,7 @@ describe("Testing createDetailedMapString()", () => {
 });
 **/
 describe("Testing TileUtils", () => {
-	describe("Testing IsAdjacent()", () => {
+	describe("Testing Measurable.areAdjacent()", () => {
 		const testHouse: Measurable = {
 			pos: { x: 10, y: 10 },
 			width: 2,
@@ -179,12 +177,15 @@ describe("Testing TileUtils", () => {
 
 		test("Check 2x1 with 2x2 left corner", () => {
 			expect(
-				IsAdjacent(testHouse, testMarketing)
+				Measurable.areAdjacent(
+					testHouse,
+					testMarketing
+				)
 			).toBeTruthy();
 		});
 		test("Check 1x2 with 2x2 left corner", () => {
 			expect(
-				IsAdjacent(testHouse, {
+				Measurable.areAdjacent(testHouse, {
 					...testMarketing,
 					width: 1,
 					height: 2
@@ -193,7 +194,7 @@ describe("Testing TileUtils", () => {
 		});
 		test("Check 1x1 with 2x2 left corner (should fail)", () => {
 			expect(
-				IsAdjacent(testHouse, {
+				Measurable.areAdjacent(testHouse, {
 					...testMarketing,
 					width: 1,
 					height: 1
@@ -202,7 +203,7 @@ describe("Testing TileUtils", () => {
 		});
 		test("Check right border non-adjacent (2x1 with 2x2)", () => {
 			expect(
-				IsAdjacent(testHouse, {
+				Measurable.areAdjacent(testHouse, {
 					...testMarketing,
 					pos: {
 						x: 12,

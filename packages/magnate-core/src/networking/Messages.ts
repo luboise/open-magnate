@@ -1,4 +1,4 @@
-import { Move } from "../game/gameplay/Moves";
+import { Move } from "@/game";
 import {
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
