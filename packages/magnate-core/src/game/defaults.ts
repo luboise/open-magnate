@@ -1,4 +1,9 @@
+import { DrinkTile } from "./demand/DrinkTile";
 import { EmployeeType } from "./Employee";
+import { MapPiece } from "./map";
+import { Position } from "./map/area";
+import { RoadTile } from "./map/tiles";
+import { HouseTile } from "./map/tiles/HouseTile";
 
 export const DEFAULT_EMPLOYEE_ARRAY: (
 	| EmployeeType
@@ -60,3 +65,184 @@ export interface PlayerNumDefault {
 	marketingUnused: Set<number>;
 	limitedEmployeeCards: number;
 }
+
+// Pieces based on order shown at
+// https://www.boardgamehelpers.com/FoodChainMagnate/MapTileKey.aspx
+export const BASE_GAME_MAP_PIECES: MapPiece[] = [
+	{
+		tiles: [
+			HouseTile.create(Position(0, 3), 2),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	},
+	{
+		tiles: [
+			HouseTile.create(Position(3, 0), 4),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	},
+	{
+		tiles: [
+			HouseTile.create(Position(2, 1), 5),
+			...RoadTile.fromGridText(
+				"RRRRR RXXXR RXXXR RXXXR RRRRR"
+			)
+		]
+	},
+	{
+		tiles: [
+			HouseTile.create(Position(1, 1), 7),
+			...RoadTile.fromGridText(
+				"RRRRR RXXXR RXXXR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		tiles: [
+			DrinkTile.create(Position(1, 1), "BEER"),
+			HouseTile.create(Position(2, 2), 8),
+			...RoadTile.fromGridText(
+				"RRRXX RXXXX RXXXR XXXXR XXRRR"
+			)
+		]
+	},
+	{
+		tiles: [
+			HouseTile.create(Position(0, 0), 10),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		tiles: [
+			HouseTile.create(Position(0, 0), 12),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	},
+	{
+		tiles: [
+			HouseTile.create(Position(1, 3), 13),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		// I
+		tiles: [
+			HouseTile.create(Position(3, 3), 15),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		// J
+		tiles: [
+			HouseTile.create(Position(1, 1), 16),
+			...RoadTile.fromGridText(
+				"XXRRR XXXXR RXXXR RXXXX RRRXX"
+			)
+		]
+	},
+	{
+		// K
+		tiles: [
+			HouseTile.create(Position(2, 1), 18),
+			...RoadTile.fromGridText(
+				"RRRRR RXXXR RXXXR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		// L
+		tiles: [
+			DrinkTile.create(Position(3, 3), "LEMONADE"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		// M
+		tiles: [
+			DrinkTile.create(Position(3, 1), "LEMONADE"),
+			DrinkTile.create(Position(1, 3), "COLA"),
+			...RoadTile.fromGridText(
+				"XXRRR XXXXR RXXXR RXXXX RRRXX"
+			)
+		]
+	},
+	{
+		// N
+		tiles: [
+			DrinkTile.create(Position(1, 1), "BEER"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		// O
+		tiles: [
+			DrinkTile.create(Position(1, 0), "BEER"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	},
+	{
+		// P
+		tiles: [
+			DrinkTile.create(Position(0, 1), "LEMONADE"),
+			DrinkTile.create(Position(3, 4), "BEER"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	},
+	{
+		// Q
+		tiles: [
+			DrinkTile.create(Position(1, 3), "COLA"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXXXX XXXXX"
+			)
+		]
+	},
+	{
+		// R
+		tiles: [
+			DrinkTile.create(Position(1, 1), "COLA"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	},
+	{
+		// S
+		tiles: [
+			DrinkTile.create(Position(3, 0), "COLA"),
+			DrinkTile.create(Position(0, 0), "BEER"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	},
+	{
+		// T
+		tiles: [
+			DrinkTile.create(Position(1, 1), "LEMONADE"),
+			...RoadTile.fromGridText(
+				"XXRXX XXRXX RRRRR XXRXX XXRXX"
+			)
+		]
+	}
+] as const;

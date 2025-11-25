@@ -1,8 +1,8 @@
-import { newGame, NewGameParams } from "../src/game/GameState"
+import { NewGameParams, newGame } from "./GameState";
 
-describe("Test GameState", ()=>{
+describe("Test GameState", () => {
 	test("New game creates a valid game", () => {
-		const params: NewGameParams = {playerCount : 2};
+		const params: NewGameParams = { playerCount: 2 };
 		const ng = newGame(params);
 
 		/// A new game should have the correct number of players
@@ -12,6 +12,10 @@ describe("Test GameState", ()=>{
 		expect(ng.bankReserve).toBeGreaterThan(0);
 
 		/// A new game should have at least one house
-		expect(ng.map.tiles.some(tile=>tile.tileType == "HOUSE")).toBeTruthy();
-	})
-})
+		expect(
+			ng.map.tiles.some(
+				(tile) => tile.tileType == "HOUSE"
+			)
+		).toBeTruthy();
+	});
+});

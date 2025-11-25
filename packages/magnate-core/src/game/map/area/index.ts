@@ -7,6 +7,10 @@ export interface Position {
 	y: number;
 }
 
+export function Position(x: number, y: number): Position {
+	return {x, y};
+}
+
 export type Rotation = 0 | 90 | 180 | 270;
 
 export interface AreaData {

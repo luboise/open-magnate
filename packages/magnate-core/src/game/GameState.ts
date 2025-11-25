@@ -1,6 +1,9 @@
 import { Player } from "./Player";
 import { CardReserve } from "./Reserve";
-import { PlayerCount } from "./defaults";
+import {
+	BASE_GAME_MAP_PIECES,
+	PlayerCount
+} from "./defaults";
 import { GameMap } from "./map";
 import { MarketingTile } from "./marketing/MarketingTile";
 
@@ -27,6 +30,7 @@ export function newGame(params: NewGameParams): GameState {
 
 	const map = GameMap.create(
 		params.playerCount,
+		BASE_GAME_MAP_PIECES,
 		params.seed
 	);
 	const marketingTiles: MarketingTile[] = [];
