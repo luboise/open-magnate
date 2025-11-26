@@ -1,17 +1,4 @@
-import { EmployeeType } from "@/game/Employee";
-import { DemandType } from "@/game/demand";
-import { GameMap } from "@/game/map";
-import { TurnProgress } from "@/game/state/actions";
-import { GameEventView } from "./GameEventViews";
-import {
-	GardenView,
-	HouseView,
-	RestaurantView
-} from "./MapViews";
-import {
-	MarketingCampaignView,
-	MarketingCampaignViewPrivate
-} from "./MarketingViews";
+import { GameState, Player } from "@/game";
 
 export const ReadyStatuses = [
 	"NOT_READY",
@@ -20,56 +7,78 @@ export const ReadyStatuses = [
 ] as const;
 export type ReadyStatus = (typeof ReadyStatuses)[number];
 
-interface BaseGameStateView {
-	turnProgress: TurnProgress;
-	currentTurn: number;
+export type GameStateView = Omit<GameState, "players"> & {
 	currentPlayer: number | null;
+	players: PlayerPublicView[];
+	privateData: PlayerPrivateView;
+};
 
-	history: GameEventView[];
+export const GameStateView = {
+	fromGameState(
+		state: GameState,
+		playerIndex: number
+	): GameStateView {
+		// TODO: Fix this to be more efficient
+		const nextMove = GameState.nextMove(state);
 
-	map: GameMap;
-	turnOrder: Array<number>;
-	realTurnOrder: Array<number | "X">;
+		const currentPlayer =
+			nextMove?.playerIndices.length === 1
+				? nextMove?.playerIndices[0]
+				: null;
 
-	playerCount: number;
+		// TODO: Figure out how to reimplement this
+		/*
+		const history: GameEventView[] = state.events
+			.map((event) => CreateGameEventView(event))
+			.sort(
+				(e1, e2) =>
+					e2.time.getTime() - e1.time.getTime()
+			);
+			*/
 
-	restaurants: RestaurantView[];
+		const player = state.players[playerIndex];
 
-	houses: HouseView[];
-	gardens: GardenView[];
+		const privateData: PlayerPrivateView =
+			PlayerPrivateView.fromPlayer(player);
 
-	reserve: Record<EmployeeType, number>;
+		return {
+			currentPlayer,
+			...state,
 
-	marketingCampaigns: MarketingCampaignView[];
-}
+			players: state.players.map(
+				(player): PlayerPublicView =>
+					PlayerPublicData.fromPlayer(player)
+			),
 
-export interface GameStateView extends BaseGameStateView {
-	players: GamePlayerViewPrivate[];
-}
+			privateData
+		};
+	}
+};
 
-export interface GameStateViewPerPlayer
-	extends BaseGameStateView {
-	players: GamePlayerViewPublic[];
+export type PlayerPublicView = Omit<Player, "tree">;
 
-	// The player's private data
-	privateData: GamePlayerViewPrivate;
-}
+export type PlayerPrivateView = Pick<
+	Player,
+	Exclude<keyof Player, keyof PlayerPublicView>
+>;
 
-export interface GamePlayerViewPublic {
-	playerNumber: number;
-	milestones: number[];
-	restaurant: number;
-	money: number;
-	ready: boolean | null;
-	supply: DemandType[];
-}
+export const PlayerPublicData = {
+	fromPlayer({
+		demand,
+		tree: _tree,
+		money,
+		employees,
+		previousTree
+	}: Player): PlayerPublicView {
+		return { demand, money, employees, previousTree };
+	}
+};
 
-export interface GamePlayerViewPrivate
-	extends GamePlayerViewPublic {
-	employees: EmployeeType[];
-	employeeTreeStr: string;
-	marketingCampaigns: MarketingCampaignViewPrivate[];
-}
+export const PlayerPrivateView = {
+	fromPlayer({ tree }: Player): PlayerPrivateView {
+		return { tree };
+	}
+};
 
 export function parseTurnOrder(
 	serialisedTurnOrder: string

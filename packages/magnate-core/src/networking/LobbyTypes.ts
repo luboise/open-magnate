@@ -1,9 +1,10 @@
-import { GameStateViewPerPlayer } from "./views";
+import { GameState, PlayerCount } from "@/game";
 
 export interface LobbySubmissionData {
 	name: string;
 	password?: string;
-	playerCount: number;
+	playerCount: PlayerCount;
+	gameState?: GameState;
 }
 
 export interface JoinLobbySubmissionData {
@@ -11,6 +12,7 @@ export interface JoinLobbySubmissionData {
 	password?: string;
 }
 
+/*
 export type MagnateLobbyView = {
 	lobbyId: number;
 	lobbyName: string;
@@ -21,10 +23,11 @@ export type MagnateLobbyView = {
 	gameState: GameStateViewPerPlayer;
 	inviteCode: string;
 };
+*/
 
 export interface LobbyPlayerData {
 	name: string;
-	playerNumber: number;
+	playerIndex: number;
 	isHost: boolean;
 	restaurant: number;
 }
@@ -43,5 +46,5 @@ export interface LobbyView {
 // The lobby view sent back to the player, that contains their player number and whether they are the host
 export interface LobbyViewPerPlayer extends LobbyView {
 	hosting: boolean;
-	playerNumber: number;
+	playerIndex: number;
 }

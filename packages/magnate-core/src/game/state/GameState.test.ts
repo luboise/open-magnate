@@ -1,9 +1,9 @@
-import { MoveType } from ".";
 import {
 	GameState,
 	NewGameParams,
 	newGame
 } from "./GameState";
+import { MoveType } from "./Moves";
 
 describe("Test GameState", () => {
 	test("New game creates a valid game", () => {

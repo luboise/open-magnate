@@ -1,10 +1,13 @@
-import { GamePlayerViewPrivate } from "@/networking";
 import { DemandType, DemandTypes } from ".";
 import { ReduceTupleArray } from "../../utils";
 
 export type DemandRecord = Record<DemandType, number>;
 
 export const DemandRecord = {
+	isEmpty(dr: DemandRecord): boolean {
+		return Object.values(dr).every((val) => val <= 0);
+	},
+
 	create(): DemandRecord {
 		const tuples = DemandTypes.map(
 			(val): [DemandType, number] => [val, 0]
@@ -25,11 +28,5 @@ export const DemandRecord = {
 		]);
 
 		return ReduceTupleArray(tuples);
-	},
-
-	fromPlayer(
-		player: GamePlayerViewPrivate
-	): DemandRecord {
-		return DemandRecord.fromDemands(player.supply);
 	}
 };

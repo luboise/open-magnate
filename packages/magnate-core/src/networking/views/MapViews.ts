@@ -3,7 +3,7 @@ import { Position } from "@/game/map/area";
 
 export interface RestaurantView {
 	pos: Position;
-	player: number;
+	playerIndex: number;
 }
 
 export interface HouseView {
@@ -18,5 +18,6 @@ export interface HouseView {
 
 export interface GardenView {
 	pos: Position;
+	rotated: boolean;
 	houseNumber: number;
 }

@@ -9,6 +9,7 @@ import { DrinkTile } from "../demand/DrinkTile";
 import { MarketingTile } from "../marketing";
 import { RoadTile } from "./tiles";
 import { HouseTile } from "./tiles/HouseTile";
+import { RestaurantTile } from "./tiles/RestaurantTiles";
 
 export * from "./parsing/MapParsing";
 
@@ -31,9 +32,37 @@ export type MapTile =
 	| MarketingTile
 	| DrinkTile
 	| HouseTile
-	| RoadTile;
+	| RoadTile
+	| RestaurantTile;
 
 export const MapTile = {
+	areColliding(tile1: MapTile, tile2: MapTile): boolean {
+		return MapTile.collidesWithArea(
+			tile1,
+			MapTile.topLeft(tile2),
+			MapTile.bottomRight(tile2)
+		);
+	},
+
+	collidesWithArea(
+		tile: MapTile,
+		topLeft: Position,
+		bottomRight: Position
+	): boolean {
+		const { x: xMin, y: yMin } = MapTile.topLeft(tile);
+		const { x: xMax, y: yMax } =
+			MapTile.bottomRight(tile);
+
+		// All bounds checks fail
+		const notColliding =
+			bottomRight.x < xMin ||
+			bottomRight.y < yMin ||
+			topLeft.x > xMax ||
+			topLeft.y > yMax;
+
+		return !notColliding;
+	},
+
 	topLeft(tile: MapTile): Position {
 		switch (tile.rotation) {
 			case 90:
@@ -54,6 +83,29 @@ export const MapTile = {
 		}
 
 		// 0 case and fallback
+		return { ...tile.position };
+	},
+
+	bottomRight(tile: MapTile): Position {
+		switch (tile.rotation) {
+			case 0:
+				return Position(
+					tile.position.x + tile.width - 1,
+					tile.position.y + tile.height - 1
+				);
+			case 90:
+				return Position(
+					tile.position.x,
+					tile.position.y + tile.width - 1
+				);
+			case 270:
+				return Position(
+					tile.position.x + tile.height - 1,
+					tile.position.y - tile.width + 1
+				);
+		}
+
+		// 180 case and fallback
 		return { ...tile.position };
 	},
 

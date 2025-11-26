@@ -1,4 +1,5 @@
 import { BaseMapTile } from "..";
+import { Position } from "../area";
 
 export const EntranceCorners = [
 	"TOPLEFT",
@@ -11,11 +12,32 @@ export type EntranceCorner =
 
 export interface RestaurantTile extends BaseMapTile {
 	tileType: "RESTAURANT";
-	owner: number;
+	ownerIndex: number;
 	openingSoon: boolean;
 	width: 2;
 	height: 2;
+	rotation: 0;
 }
+
+export const RestaurantTile = {
+	create(
+		position: Position,
+		ownerIndex: number,
+		openingSoon: boolean
+	): RestaurantTile {
+		return {
+			ownerIndex,
+			openingSoon,
+			position,
+
+			// Default params
+			tileType: "RESTAURANT",
+			width: 2,
+			height: 2,
+			rotation: 0
+		};
+	}
+};
 
 export function rotateEntranceCorner(
 	corner: EntranceCorner,

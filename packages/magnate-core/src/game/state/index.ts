@@ -1,6 +1,6 @@
-export * from "./Moves";
-
 export * from "./GameState";
+export * from "./Moves";
+export * from "./events";
 
 export type GameStatus =
 	| "PLACING_FIRST_RESTAURANTS"
@@ -9,4 +9,5 @@ export type GameStatus =
 	// Standard game loop
 	| "RESTRUCTURING"
 	| "SELECTING_TURN_ORDER"
-	| "WORKING_NINE_TO_FIVE";
+	| "WORKING_NINE_TO_FIVE"
+	| "SALARY_PAYOUTS";
