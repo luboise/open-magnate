@@ -14,7 +14,7 @@ describe("Testing lobby", () => {
 	describe("Reading from existing lobbies", () => {
 		test("Expect getPlayersFrom() to correctly return the playercount of seed lobby", async () => {
 			const lobby =
-				await LobbyController.GetByLobbyId(-1);
+				await LobbyController.getByLobbyId(-1);
 			expect(lobby).toBeTruthy();
 
 			const userSessions =
@@ -25,7 +25,7 @@ describe("Testing lobby", () => {
 
 		test("Expect existing lobbies to be returned with the players included", async () => {
 			const lobby =
-				await LobbyController.GetByLobbyId(-1);
+				await LobbyController.getByLobbyId(-1);
 			expect(lobby).toBeTruthy();
 			expect(lobby!.playersInLobby).toHaveLength(2);
 		});
@@ -71,7 +71,7 @@ describe("Testing lobby", () => {
 			}
 
 			const lobby =
-				await LobbyController.GetByLobbyId(
+				await LobbyController.getByLobbyId(
 					newLobby!.id
 				);
 

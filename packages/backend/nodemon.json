@@ -1,6 +1,6 @@
 {
-	"watch": ["../shared", "../backend"],
+	"watch": ["../backend"],
 	"ext": "ts,json",
 	"ignore": ["**/node_modules/**"],
-	"exec": "ts-node src/index.ts"
+	"exec": "npm run build && npm start"
 }

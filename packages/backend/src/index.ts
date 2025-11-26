@@ -5,7 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import expressWs from "express-ws";
 
-import { prisma } from "./database/datasource";
+import { ensurePrismaIsLoaded } from "./database/datasource";
 import InitialiseRoutes from "./routes";
 
 // Express app with websockets
@@ -21,7 +21,7 @@ app.use(cors());
 	InitialiseRoutes(express, app);
 
 	// Need this here so that the connection is established before the app starts
-	prisma;
+	ensurePrismaIsLoaded();
 
 	const localIP = "0.0.0.0";
 

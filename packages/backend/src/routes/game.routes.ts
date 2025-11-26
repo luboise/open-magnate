@@ -1,32 +1,34 @@
-import { RouteHandler } from "../types";
-
 import { Request } from "express";
-import { FullLobby } from "../database/controller/includes";
-import LobbyController from "../database/controller/lobby.controller";
-import UserSessionController from "../database/controller/usersession.controller";
 
 // Fixes issues from using base WebSocket without extended methods
+
 import {
+	AllUpdatedMessage,
 	BackendMessage,
 	BaseMessage,
 	CreateLobbyMessage,
 	FrontendMessage,
+	GameState,
+	GameStateUpdatedMessage,
+	GameStateView,
 	JoinLobbyMessage,
 	LeaveLobbyMessage,
 	LobbySubmissionData,
+	LobbyUpdatedMessage,
 	MakeMoveMessage,
-	StartGameMessage
-} from "magnate-core/networking";
+	StartGameMessage,
+	applyMoveToGamestate
+} from "magnate-core";
+
+import { FullLobby } from "src/database/controller/lobby.controller";
+import { UserSession } from "src/database/datasource";
+import { RouteHandler } from "src/types";
+import {
+	LobbyController,
+	UserSessionController
+} from "../database";
 
 import WebSocket from "ws";
-import {
-	CreateGameStateView,
-	GetPublicGameStateView
-} from "../dataViews";
-import GameStateController from "../database/controller/gamestate.controller";
-import { FullGameState } from "../database/controller/includes";
-import { UserSession } from "../database/datasource";
-import { GameClass } from "../game/GameClass";
 import { connectionsToWebsocket } from "./connections";
 
 // Helpers
@@ -72,7 +74,7 @@ const routeHandler: RouteHandler = (express, app) => {
 					req.query.sessionKey as string
 				);
 
-			const lobby = userSession
+			const lobby: FullLobby | null = userSession
 				? await LobbyController.GetFromSessionKey(
 						userSession.sessionKey
 					)
@@ -83,7 +85,7 @@ const routeHandler: RouteHandler = (express, app) => {
 					(player) =>
 						player.userId ===
 						userSession?.sessionKey
-				)?.playerNumber ?? null;
+				)?.playerIndex ?? null;
 
 			const params: ParamBundle<any> = {
 				message: JSON.parse(msg) as BackendMessage,
@@ -104,9 +106,10 @@ const routeHandler: RouteHandler = (express, app) => {
 				return;
 			}
 
-			switch (
-				(params.message as BackendMessage).type
-			) {
+			const message: BackendMessage =
+				params.message as BackendMessage;
+
+			switch (message.type) {
 				case "CREATE_LOBBY": {
 					handleCreateLobby(params);
 					return;
@@ -127,6 +130,8 @@ const routeHandler: RouteHandler = (express, app) => {
 					handleMoveMade(params);
 					return;
 				}
+				// default:
+				// message.type satisfies never;
 			}
 		});
 
@@ -232,8 +237,8 @@ async function handleNewConnection(
 		return;
 	}
 
-	const lobby = await LobbyController.GetByLobbyId(
-		userSession.lobbyPlayer.gameStateId
+	const lobby = await LobbyController.getByLobbyId(
+		userSession.lobbyPlayer.lobbyId
 	);
 
 	if (!lobby) {
@@ -244,7 +249,7 @@ async function handleNewConnection(
 	}
 
 	try {
-		updateOnePlayer(
+		updateLobbyPlayer(
 			lobby,
 			userSession.sessionKey,
 			"ALL"
@@ -285,7 +290,7 @@ const handleCreateLobby: BackendMessageHandler<
 		);
 
 		const fullLobby =
-			await LobbyController.GetByLobbyId(newLobby.id);
+			await LobbyController.getByLobbyId(newLobby.id);
 		if (!fullLobby) {
 			console.error(
 				"Unable to get freshly created lobby. "
@@ -293,7 +298,7 @@ const handleCreateLobby: BackendMessageHandler<
 			return;
 		}
 
-		updateOnePlayer(
+		updateLobbyPlayer(
 			fullLobby,
 			params.userSession.sessionKey,
 			"ALL"
@@ -306,7 +311,7 @@ const handleCreateLobby: BackendMessageHandler<
 
 type UPDATE_TYPE = "LOBBY" | "GAMESTATE" | "ALL";
 
-function updateOnePlayer(
+function updateLobbyPlayer(
 	lobby: FullLobby,
 	sessionKey: string,
 	updateType: UPDATE_TYPE
@@ -316,78 +321,75 @@ function updateOnePlayer(
 	if (!ws) return;
 
 	if (updateType === "LOBBY") {
+		const playerLobbyView =
+			FullLobby.getPlayerLobbyView(lobby, sessionKey);
+		if (!playerLobbyView) {
+			ws.send("Unable to build player lobby view.");
+			return;
+		}
+
+		const lobbyUpdateMessage: LobbyUpdatedMessage = {
+			type: "LOBBY_UPDATED",
+			data: playerLobbyView
+		};
+
 		ws.send(
-			JSON.stringify({
-				type: "LOBBY_UPDATED",
-				data: LobbyController.MakeLobbyViewForPlayer(
-					lobby,
-					sessionKey
-				)
-			} as FrontendMessage)
+			JSON.stringify(
+				lobbyUpdateMessage satisfies FrontendMessage
+			)
 		);
 	} else if (updateType === "GAMESTATE") {
-		const gameStateView = CreateGameStateView(
-			lobby.gameState as FullGameState
-		);
-		if (!gameStateView)
-			throw new Error(
-				"Unable to get game state from lobby."
-			);
-
-		const playerNumber = lobby.playersInLobby.find(
+		const playerIndex = lobby.playersInLobby.find(
 			(lobbyPlayer) =>
 				lobbyPlayer.userId === sessionKey
-		)?.playerNumber;
-
-		if (!playerNumber)
+		)?.playerIndex;
+		if (!playerIndex)
 			throw new Error(
 				"Unable to find player in lobby."
 			);
+
+		const gsv = GameStateView.fromGameState(
+			lobby.gameState,
+			playerIndex
+		);
 
 		ws.send(
 			JSON.stringify({
 				type: "GAMESTATE_UPDATED",
-				data: GetPublicGameStateView(
-					gameStateView,
-					playerNumber
-				)
-			} as FrontendMessage)
+				data: gsv
+			} satisfies GameStateUpdatedMessage)
 		);
 	} else if (updateType === "ALL") {
 		// TODO: Refactor this to not be repeated
-		const gameStateView = CreateGameStateView(
-			lobby.gameState as FullGameState
-		);
-		if (!gameStateView)
-			throw new Error(
-				"Unable to get game state from lobby."
-			);
+		const playerLobbyView =
+			FullLobby.getPlayerLobbyView(lobby, sessionKey);
+		if (!playerLobbyView) {
+			ws.send("Unable to build player lobby view.");
+			return;
+		}
 
-		const playerNumber = lobby.playersInLobby.find(
+		const playerIndex = lobby.playersInLobby.find(
 			(lobbyPlayer) =>
 				lobbyPlayer.userId === sessionKey
-		)?.playerNumber;
-
-		if (!playerNumber)
+		)?.playerIndex;
+		if (!playerIndex)
 			throw new Error(
 				"Unable to find player in lobby."
 			);
+
+		const gsv = GameStateView.fromGameState(
+			lobby.gameState,
+			playerIndex
+		);
 
 		ws.send(
 			JSON.stringify({
 				type: "ALL_UPDATED",
 				data: {
-					lobbyState:
-						LobbyController.MakeLobbyViewForPlayer(
-							lobby,
-							sessionKey
-						),
-					gameState: GetPublicGameStateView(
-						gameStateView,
-						playerNumber
-					)
+					lobbyState: playerLobbyView,
+					gameState: gsv
 				}
-			} as FrontendMessage)
+			} satisfies AllUpdatedMessage)
 		);
 	}
 }
@@ -399,7 +401,7 @@ function updateAllPlayers(
 	for (const player of lobby.playersInLobby.map(
 		(player) => player
 	)) {
-		updateOnePlayer(lobby, player.userId, updateType);
+		updateLobbyPlayer(lobby, player.userId, updateType);
 	}
 }
 
@@ -504,7 +506,7 @@ const handleLeaveLobby: BackendMessageHandler<
 	}
 
 	const lobby =
-		await LobbyController.GetByLobbyId(lobbyId);
+		await LobbyController.getByLobbyId(lobbyId);
 
 	if (!lobby)
 		throw new Error(
@@ -557,21 +559,22 @@ const handleStartGame: BackendMessageHandler<
 
 	if (
 		lobby.playersInLobby.length !==
-		lobby.gameState?.playerCount
+		lobby.gameState?.players.length
 	) {
 		params.ws.send(
-			"Not all players have joined the lobby."
+			"Not enough players in lobby to begin the game."
 		);
 		return;
 	}
 
-	const gameStarted =
-		await GameStateController.StartGame(lobby);
-
-	if (!gameStarted) {
-		params.ws.send("Unable to start game.");
+	if (lobby.lobbyStatus != "PRE_LOBBY") {
+		params.ws.send(
+			"The game you are trying to start has already been started."
+		);
 		return;
 	}
+
+	LobbyController.setLobbyStatus(lobby.id, "IN_GAME");
 
 	updateAllPlayers(
 		await LobbyController.refresh(lobby),
@@ -590,69 +593,67 @@ const handleMoveMade: BackendMessageHandler<
 		return;
 	}
 
-	const lobby = await LobbyController.GetFromSessionKey(
-		params.userSession.sessionKey
-	);
+	const sessionKey = params.userSession.sessionKey;
 
+	const lobby =
+		await LobbyController.GetFromSessionKey(sessionKey);
+
+	// Return early if lobby or lobby game state are bad
 	if (!lobby) {
 		params.ws.send("You are not currently in a lobby.");
 		return;
-	}
-
-	if (!lobby.gameState) {
+	} else if (!lobby.gameState) {
 		params.ws.send("You are not currently in a game.");
-		console.log(
+		console.error(
 			`Out-of-game move occured in lobby ${lobby.id}`
 		);
 		return;
 	}
 
-	const gamePlayer = lobby.gameState.players.find(
-		(player) =>
-			player.lobbyPlayer?.userId ===
-			params.userSession?.sessionKey
+	// Get the LobbyPlayer, and return early if fails to do so
+	const lobbyPlayer = lobby.playersInLobby.find(
+		(lobbyPlayer) =>
+			lobbyPlayer.userSession.sessionKey ===
+			sessionKey
 	);
-
-	if (!gamePlayer) {
+	if (!lobbyPlayer) {
 		params.ws.send(
-			"You must be the host of the lobby to start the game."
+			"Failed to retrieve lobby player from user session and lobby."
 		);
 		return;
 	}
 
 	const moveData = params.message.data;
-	const gameState = await GameStateController.Get(
-		lobby.id
+
+	let newState: GameState | undefined = GameState.clone(
+		lobby.gameState
 	);
-	if (!gameState) {
-		const msg = "Unable to retrieve game state";
-		console.log(msg);
-		params.ws.send(msg);
-		return;
-	}
 
-	const game = new GameClass(gameState);
 	try {
-		game.executeMove(gamePlayer.number, moveData);
-		const moves = game.getMovesMade();
-		const madeMoves =
-			await GameStateController.NewMakeMoves(
-				lobby.id,
-				gamePlayer.number,
-				moves
-			);
+		newState = applyMoveToGamestate(
+			newState!,
+			lobbyPlayer.playerIndex,
+			moveData
+		);
 
-		if (madeMoves)
-			updateAllPlayers(
-				await LobbyController.refresh(lobby),
-				"GAMESTATE"
+		if (!newState) {
+			params.ws.send(
+				"Failed to apply move to gamestate."
 			);
+			return;
+		}
+
+		// const moves = game.getMovesMade();
+
+		updateAllPlayers(
+			await LobbyController.refresh(lobby),
+			"GAMESTATE"
+		);
 	} catch (error) {
 		console.error("Invalid move made");
 		console.error(error);
 		params.ws.send("Invalid move made");
-		return;
 	}
 };
 
-module.exports = routeHandler;
+export { routeHandler };

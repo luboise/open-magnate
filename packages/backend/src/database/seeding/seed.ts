@@ -1,15 +1,12 @@
-import { Prisma } from "../datasource";
+import { Prisma, prisma } from "../datasource";
 
-import { seedGameState1 } from "./seed_gamestates";
 import { seedLobby1 } from "./seed_lobbies";
-import { SEED_RESAURANTS } from "./seed_restaurants";
 import {
 	SEED_USERS,
 	seedUser1,
 	seedUser2
 } from "./seed_users";
 
-import { prisma } from "../datasource";
 import { PrismaPromise } from "../datasource/generated/internal/prismaNamespace";
 
 // TODO: Fix main throwing an error when running without debug mode on GitHub actions
@@ -41,36 +38,15 @@ async function main() {
 			);
 		}
 
-		for (const res of SEED_RESAURANTS) {
-			transactions.push(
-				prisma.restaurantData.upsert({
-					where: {
-						id: res.id
-					},
-					update: {
-						name: res.name
-					},
-					create: {
-						id: res.id,
-						name: res.name
-					}
-				})
-			);
-		}
-
 		transactions.push(
 			prisma.lobby.upsert({
 				where: { id: seedLobby1.id },
-				update: seedLobby1,
-				create: seedLobby1
-			})
-		);
-
-		transactions.push(
-			prisma.gameState.upsert({
-				where: { id: seedLobby1.id },
-				update: {},
-				create: seedGameState1
+				update: JSON.parse(
+					JSON.stringify(seedLobby1)
+				),
+				create: JSON.parse(
+					JSON.stringify(seedLobby1)
+				)
 			})
 		);
 
@@ -83,14 +59,7 @@ async function main() {
 			lobby: {
 				connect: { id: seedLobby1.id }
 			},
-			playerData: {
-				connect: {
-					gamePlayerId: {
-						gameId: seedLobby1.id,
-						number: 1
-					}
-				}
-			}
+			playerIndex: 0
 		};
 
 		const seedLP2 = {
@@ -102,14 +71,7 @@ async function main() {
 			lobby: {
 				connect: { id: seedLobby1.id }
 			},
-			playerData: {
-				connect: {
-					gamePlayerId: {
-						gameId: seedLobby1.id,
-						number: 2
-					}
-				}
-			}
+			playerIndex: 1
 		};
 
 		transactions.push(
@@ -159,7 +121,7 @@ export async function dropEverything() {
 
 	const tablenames = await prisma.$queryRaw<
 		Array<{ TABLE_NAME: string }>
-	>`SELECT TABLE_NAME from information_schema.TABLES WHERE TABLE_SCHEMA = 'tests';`;
+	>`SELECT TABLE_NAME from information_schema.TABLES WHERE TABLE_SCHEMA = 'te';`;
 
 	for (const { TABLE_NAME } of tablenames) {
 		if (TABLE_NAME !== "_prisma_migrations") {

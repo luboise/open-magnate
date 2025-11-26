@@ -1,4 +1,4 @@
-import { UserSessionCreateInput } from "../datasource";
+import { UserSessionCreateInput } from "../datasource/generated/models/UserSession";
 
 export const seedUser1 = {
 	sessionKey: "1",

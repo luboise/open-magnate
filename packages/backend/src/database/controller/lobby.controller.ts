@@ -1,34 +1,20 @@
-/*
 import {
-	// GameState,
-	Lobby,
-	Prisma,
-	TURN_PROGRESS,
-	UserSession
-} from "@prisma/client";
-*/
-
-import {
-	GameDefaults,
+	GameState,
+	LobbyPlayerData,
 	LobbySubmissionData,
 	LobbyView,
-	LobbyViewPerPlayer
+	newGame,
+	PlayerLobbyView
 } from "magnate-core";
-
+import { Lobby, prisma, UserSession } from "../datasource";
+import { LOBBY_STATUS } from "../datasource/generated/enums";
 import {
-	Lobby,
-	prisma,
-	TURN_PROGRESS,
-	UserSession
-} from "../datasource";
-
-import { createNewReserve } from "../../game/NewGameStructures";
-import { LobbyWhereInput } from "../datasource/generated/models";
+	LobbyGetPayload,
+	LobbyWhereInput
+} from "../datasource/generated/models/Lobby";
 import LobbyRepository from "../repository/lobby.repository";
 import LobbyPlayerRepository from "../repository/lobbyplayer.repository";
 import UserSessionRepository from "../repository/usersession.repository";
-import GameStateController from "./gamestate.controller";
-import { FullLobby, FullLobbyInclude } from "./includes";
 
 const LobbyController = {
 	_get: async <T extends boolean = false>(
@@ -46,7 +32,7 @@ const LobbyController = {
 		return lobby as T extends true ? FullLobby : Lobby;
 	},
 
-	GetByLobbyId: async (
+	getByLobbyId: async (
 		lobbyId: number
 	): Promise<FullLobby | null> => {
 		return await LobbyController._get(
@@ -105,66 +91,23 @@ const LobbyController = {
 				return null;
 			}
 
-			const playerIndices = new Array(
-				newLobbyData.playerCount
-			)
-				.fill(null)
-				.map((_, index) => index + 1);
-
-			const initialTurnOrder = playerIndices
-				.sort((_a, _b) => Math.random() - 0.5)
-				.join("");
-
 			const newLobby: Lobby =
 				await prisma.$transaction(async (ctx) => {
-					const [map, houses] =
-						GameStateController.NewMap(
-							newLobbyData.playerCount
-						);
-
 					const lobby = await ctx.lobby.create({
 						data: {
 							name: newLobbyData.name,
 							password: newLobbyData.password,
 							inviteCode:
 								LobbyController.generateInviteCode(),
-							gameState: {
-								create: {
-									playerCount:
-										newLobbyData.playerCount,
-									rawMap: map,
-									houses: {
-										createMany: {
-											data: houses
-										}
-									},
-									turnOrder:
-										initialTurnOrder,
-									oldTurnOrder:
-										initialTurnOrder,
-									reserve:
-										createNewReserve(
-											newLobbyData.playerCount
-										),
-									players: {
-										createMany: {
-											data: playerIndices.map(
-												(
-													playerNumber
-												) => ({
-													number: playerNumber,
-													employees:
-														GameDefaults.DEFAULT_EMPLOYEE_ARRAY,
-													milestones:
-														[],
-													restaurantDataId:
-														playerNumber
-												})
-											)
-										}
-									}
-								}
-							}
+							gameState: JSON.parse(
+								JSON.stringify(
+									newLobbyData.gameState ??
+										newGame({
+											playerCount:
+												newLobbyData.playerCount
+										})
+								)
+							)
 						}
 					});
 
@@ -188,14 +131,8 @@ const LobbyController = {
 											host.sessionKey
 									}
 								},
-								playerData: {
-									connect: {
-										gamePlayerId: {
-											number: 1,
-											gameId: lobby.id
-										}
-									}
-								},
+
+								playerIndex: 0,
 								isHost: true
 							}
 						});
@@ -216,126 +153,56 @@ const LobbyController = {
 		return null;
 	},
 
-	MakeLobbyView(lobby: FullLobby) {
-		const lobbyData: LobbyView = {
-			inGame:
-				lobby.gameState !== null &&
-				lobby.gameState.turnProgress !==
-					TURN_PROGRESS.PREGAME &&
-				lobby.gameState.turnProgress !==
-					TURN_PROGRESS.POSTGAME,
-
-			lobbyId: lobby.id,
-			lobbyName: lobby.name,
-
-			inviteCode: lobby.inviteCode,
-			players: lobby.playersInLobby.map((player) => ({
-				name: player.userSession.name,
-				playerNumber: player.playerNumber,
-				isHost: player.isHost,
-				restaurant:
-					lobby.gameState?.players.find(
-						(innerPlayer) =>
-							innerPlayer.number ===
-							player.playerNumber
-					)?.restaurantData.id ?? 1
-			}))
-		};
-
-		return lobbyData;
-	},
-
-	MakeLobbyViewForPlayer(
-		lobby: FullLobby,
-		sessionKey: string
-	): LobbyViewPerPlayer | null {
-		try {
-			const lobbyView =
-				LobbyController.MakeLobbyView(lobby);
-
-			const player = lobby.playersInLobby.find(
-				(player) =>
-					player.userSession.sessionKey ===
-					sessionKey
-			);
-
-			if (!player)
-				throw new Error(
-					"Unable to find player in lobby."
-				);
-
-			return {
-				...lobbyView,
-				hosting: player.isHost,
-				playerNumber: player.playerNumber
-			};
-		} catch (error) {
-			console.error(error);
-		}
-		return null;
-	},
-
-	async GetLobbyView(
+	async queryLobbyView(
 		lobbyId: number
 	): Promise<LobbyView | null> {
 		try {
-			const fullLobby = await this._get(
+			const lobby = await this._get(
 				{ id: lobbyId },
 				true
 			);
-			if (!fullLobby) {
+			if (!lobby) {
 				throw new Error("Unable to find lobby.");
 			}
-			const lobbyView = this.MakeLobbyView(fullLobby);
+
+			const lobbyView = FullLobby.getLobbyView(lobby);
 			if (!lobbyView) {
 				throw new Error(
 					"Unable to get lobby view from existing lobby."
 				);
 			}
+
+			return lobbyView;
 		} catch (error) {
 			console.error(error);
 		}
 
-		return null;
-	},
-
-	async GetLobbyViewForPlayer(
-		lobbyId: number,
-		sessionKey: string
-	): Promise<LobbyViewPerPlayer | null> {
-		try {
-			const lobby = await LobbyController._get(
-				{ id: lobbyId },
-				true
-			);
-			if (!lobby)
-				throw new Error("Unable to find lobby.");
-
-			return LobbyController.MakeLobbyViewForPlayer(
-				lobby,
-				sessionKey
-			);
-		} catch (error) {
-			console.error(error);
-		}
 		return null;
 	},
 
 	async addPlayer(lobbyId: number, player: UserSession) {
 		try {
 			// Find an available GamePlayer (slot) in the lobby
-			const availableSlot =
-				await prisma.gamePlayer.findFirst({
-					where: {
-						gameId: lobbyId,
-						lobbyPlayer: null
-					}
-				});
 
-			if (!availableSlot)
-				throw new Error(
-					"No available slots in lobby. Unable to add player to the lobby."
+			const lobby =
+				await LobbyController.getByLobbyId(lobbyId);
+
+			if (!lobby) {
+				throw Error(
+					"No lobby found for lobby ID " + lobbyId
 				);
+			}
+
+			const slotsInUse = lobby.playersInLobby.length;
+
+			// If the number of people in the lobby matches the number of players in the game, ie, if all players are already in
+			if (
+				slotsInUse != lobby.gameState.players.length
+			) {
+				throw Error(
+					"Lobby " + lobbyId + " is already full."
+				);
+			}
 
 			const newLobbyPlayer =
 				await LobbyPlayerRepository.create({
@@ -349,14 +216,7 @@ const LobbyController = {
 									player.sessionKey
 							}
 						},
-						playerData: {
-							connect: {
-								gamePlayerId: {
-									number: availableSlot.number,
-									gameId: lobbyId
-								}
-							}
-						}
+						playerIndex: slotsInUse
 					}
 				});
 
@@ -409,12 +269,34 @@ const LobbyController = {
 		lobby: Lobby | FullLobby
 	): Promise<FullLobby> {
 		const refreshedLobby =
-			await LobbyController.GetByLobbyId(lobby.id);
+			await LobbyController.getByLobbyId(lobby.id);
 
 		if (!refreshedLobby)
 			throw new Error("Unable to refresh lobby.");
 
 		return refreshedLobby;
+	},
+
+	async setLobbyStatus(
+		lobbyId: number,
+		status: LOBBY_STATUS
+	): Promise<boolean> {
+		try {
+			await LobbyRepository.update({
+				where: {
+					id: lobbyId
+				},
+				data: {
+					lobbyStatus: status
+				}
+			});
+			return true;
+		} catch (e) {
+			console.error(
+				"Error occurred setting lobby status: " + e
+			);
+		}
+		return false;
 	},
 
 	generateInviteCode(): string {
@@ -435,6 +317,95 @@ const LobbyController = {
 			);
 		}, "");
 	}
+
+	// TODO: Figure out if can get rid of this or not
+	/*
+	allPlayersReady: async (
+		gameId: number
+	): Promise<boolean> => {
+		try {
+			const players =
+				await prisma.gamePlayer.findMany({
+					where: {
+						gameId: gameId
+					}
+				});
+
+			return (
+				players.every(
+					(player) =>
+						player.ready === READY_STATUS.READY
+				) ||
+				players.every(
+					(player) =>
+						player.ready ===
+						READY_STATUS.NOT_APPLICABLE
+				)
+			);
+		} catch (error) {
+			console.debug(error);
+			return false;
+		}
+	}
+	*/
 };
 
 export default LobbyController;
+export const FullLobbyInclude = {
+	playersInLobby: {
+		include: {
+			userSession: true
+		}
+	},
+	gameState: true
+} as const;
+export type FullLobby = Omit<
+	LobbyGetPayload<{
+		include: typeof FullLobbyInclude;
+	}>,
+	"gameState"
+> & { gameState: GameState };
+
+export const FullLobby = {
+	getLobbyView(lobby: FullLobby): LobbyView {
+		const lobbyData: LobbyView = {
+			inGame: lobby.lobbyStatus === "IN_GAME",
+
+			lobbyId: lobby.id,
+			lobbyName: lobby.name,
+
+			inviteCode: lobby.inviteCode,
+			players: lobby.playersInLobby.map(
+				(player): LobbyPlayerData => ({
+					name: player.userSession.name,
+					playerIndex: player.playerIndex,
+					isHost: player.isHost,
+					// TODO: Resolve this properly
+					restaurant: player.playerIndex
+				})
+			)
+		};
+
+		return lobbyData;
+	},
+
+	getPlayerLobbyView(
+		lobby: FullLobby,
+		sessionKey: string
+	): PlayerLobbyView | undefined {
+		const lobbyView = FullLobby.getLobbyView(lobby);
+
+		const player = lobby.playersInLobby.find(
+			(player) =>
+				player.userSession.sessionKey === sessionKey
+		);
+
+		if (!player) return undefined;
+
+		return {
+			...lobbyView,
+			hosting: player.isHost,
+			playerIndex: player.playerIndex
+		};
+	}
+};

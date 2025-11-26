@@ -1,23 +1,31 @@
 {
 	"compilerOptions": {
 		"types": ["node", "jest"],
-		"target": "es2022",
-		"module": "es2022",
-		"moduleResolution": "bundler",
-		"strict": true,
+
+		// "module": "nodenext",
+		// "moduleResolution": "nodenext",
+
+		"target": "ESNext",
+    	"module": "ESNext",
+    	"moduleResolution": "Bundler",
+
+
+		// "allowImportingTsExtensions": true,
 		"esModuleInterop": true,
+		"strict": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
-		"outDir": "./dist",
+		"baseUrl": ".",
+		"rootDir": "src",
+		"outDir": "dist",
 		"experimentalDecorators": true /* Enable experimental support for legacy experimental decorators. */,
 		"emitDecoratorMetadata": true /* Emit design-type metadata for decorated declarations in source files. */,
 	},
 	"include": [
-		"src/**/*.ts",
-		"test/**/*.ts", "../magnate-core/src/game/map/area/adjacency.test.ts", "../magnate-core/src/game/map/area/adjacency.test.ts",
+		"./src/**/*.ts"
 	],
 	"exclude": ["node_modules"],
-		"references": [
-    		{ "path": "../magnate-core" }
-		]
+	"references": [
+    	{ "path": "../magnate-core" }
+	]
 }

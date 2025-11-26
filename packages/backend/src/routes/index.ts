@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { RouteHandler } from "../types";
 
 import * as fs from "fs";
+import { RouteHandler } from "../types";
 import { Logger } from "../utils";
 
 const InitialiseRoutes: RouteHandler = (express, app) => {

@@ -1,7 +1,8 @@
-import { MoveData } from "magnate-core/Moves";
-import { FullGameState } from "../database/controller/includes";
+// import { MoveData } from "magnate-core/Moves";
+// import { FullGameState } from "../database/controller/includes";
+/*
 
-// The game class creates a simulation of the game in memory and throws an error if an invalid move is attempted
+/// The game class creates a simulation of the game in memory and throws an error if an invalid move is attempted
 export class GameClass {
 	private gameState: FullGameState;
 	private movesMade: MoveData[];
@@ -32,3 +33,8 @@ export class GameClass {
 		return JSON.parse(JSON.stringify(this.movesMade));
 	}
 }
+*/
+
+export const UNIMPLEMENTED = true;
+
+export default UNIMPLEMENTED;

@@ -44,7 +44,7 @@ export interface LobbyView {
 }
 
 // The lobby view sent back to the player, that contains their player number and whether they are the host
-export interface LobbyViewPerPlayer extends LobbyView {
+export interface PlayerLobbyView extends LobbyView {
 	hosting: boolean;
 	playerIndex: number;
 }

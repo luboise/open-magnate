@@ -1,5 +1,5 @@
 import { BaseMessage, SharedMessage } from ".";
-import { LobbyViewPerPlayer } from "../LobbyTypes";
+import { PlayerLobbyView } from "../LobbyTypes";
 import { GameStateView } from "../views";
 
 export type FrontendMessage =
@@ -13,7 +13,7 @@ export type FrontendMessage =
 export interface AllUpdatedMessage extends BaseMessage {
 	type: "ALL_UPDATED";
 	data: {
-		lobbyState: LobbyViewPerPlayer;
+		lobbyState: PlayerLobbyView;
 		gameState: GameStateView;
 	};
 }
@@ -34,5 +34,5 @@ export interface GameStateUpdatedMessage
 }
 export interface LobbyUpdatedMessage extends BaseMessage {
 	type: "LOBBY_UPDATED";
-	data: LobbyViewPerPlayer;
+	data: PlayerLobbyView;
 }

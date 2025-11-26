@@ -1,42 +1,23 @@
-import { DEFAULT_EMPLOYEE_ARRAY } from "magnate-core/game/defaults";
-import { createNewReserve } from "../../game/NewGameStructures";
 import {
-	GameStateCreateInput,
-	TURN_PROGRESS
-} from "../datasource";
-import { seedLobby1 } from "./seed_lobbies";
-import {
-	seedRestaurant1,
-	seedRestaurant2
-} from "./seed_restaurants";
+	CardReserve,
+	GameState,
+	Player
+} from "magnate-core";
 
-export const seedGameState1: GameStateCreateInput = {
+export const seedGameState1: GameState = {
 	currentTurn: 0,
-	lobby: {
-		connect: { id: seedLobby1.id }
+	map: {
+		width: 15,
+		height: 15,
+		tiles: []
 	},
-	turnProgress: TURN_PROGRESS.RESTAURANT_PLACEMENT,
-	playerCount: 2,
-	rawMap: "RRRRRRRRRRRRRRR;RRRRRRRRRRRRRRR;RRRRRRRRRRRRRRR",
-	turnOrder: "12",
-	oldTurnOrder: "12",
-	players: {
-		createMany: {
-			data: [
-				{
-					number: 1,
-					employees: DEFAULT_EMPLOYEE_ARRAY,
-					milestones: [],
-					restaurantDataId: seedRestaurant1.id
-				},
-				{
-					number: 2,
-					employees: DEFAULT_EMPLOYEE_ARRAY,
-					milestones: [],
-					restaurantDataId: seedRestaurant2.id
-				}
-			]
-		}
-	},
-	reserve: createNewReserve(2)
+
+	turnOrder: [0, 1],
+
+	status: "PLACING_FIRST_RESTAURANTS",
+	cardReserve: CardReserve.create(2),
+	players: [Player.create(), Player.create()],
+	bankReserve: 100,
+	marketingTiles: [],
+	readyStatuses: [false, false]
 };

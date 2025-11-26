@@ -36,4 +36,4 @@ const routeHandler: RouteHandler = (express, app) => {
 	app.use("/lobby", router);
 };
 
-module.exports = routeHandler;
+export { routeHandler };

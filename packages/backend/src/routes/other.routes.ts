@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 const routeHandler: RouteHandler = (express, app) => {
 	const router = express.Router();
 
-	app.get("/", (req: Request, res: Response) => {
+	app.get("/", (_req: Request, res: Response) => {
 		res.send("Express + TypeScript Server");
 	});
 
@@ -13,4 +13,4 @@ const routeHandler: RouteHandler = (express, app) => {
 	app.use("/", router);
 };
 
-module.exports = routeHandler;
+export { routeHandler };

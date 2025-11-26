@@ -2,6 +2,9 @@ import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import "dotenv/config";
 import { PrismaClient } from "./generated/client";
 
+export * from "./generated/client";
+export * from "./generated/models";
+
 const adapter = new PrismaMariaDb({
 	database: process.env.DB_DATABASE_NAME,
 	host: process.env.DB_HOST,
@@ -12,6 +15,8 @@ const adapter = new PrismaMariaDb({
 
 const prisma = new PrismaClient({ adapter });
 
-export * from "./generated/client";
-export * from "./generated/models";
 export { prisma };
+
+export function ensurePrismaIsLoaded() {
+	console.log("Prisma loaded: ", Boolean(prisma));
+}
