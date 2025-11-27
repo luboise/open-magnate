@@ -12,16 +12,18 @@ export type Player = {
 	employees: Employee[];
 	tree: EmployeeNode;
 	previousTree: EmployeeNode;
+	restaurantIndex: number;
 };
 
 export const Player = {
-	create() {
+	create(restaurantIndex) {
 		return {
 			money: 0,
 			demand: DemandRecord.create(),
 			employees: [CEOEmployee.create(3)],
 			previousTree: { data: 0, children: [] },
-			tree: { data: 0, children: [] }
+			tree: { data: 0, children: [] },
+			restaurantIndex
 		} satisfies Player;
 	},
 
@@ -48,7 +50,7 @@ export const Player = {
 		return true;
 	}
 } satisfies {
-	create(): Player;
+	create(restaurantIndex: number): Player;
 
 	canSatisfyDemand(
 		player: Player,

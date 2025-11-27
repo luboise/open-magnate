@@ -259,7 +259,7 @@ export function newGame(params: NewGameParams): GameState {
 	const reserve = CardReserve.create(params.playerCount);
 	const players = [];
 	for (let i = 0; i < params.playerCount; i++) {
-		players.push(Player.create());
+		players.push(Player.create(i));
 	}
 
 	const map = GameMap.create(

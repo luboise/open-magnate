@@ -379,9 +379,7 @@ export const FullLobby = {
 				(player): LobbyPlayerData => ({
 					name: player.userSession.name,
 					playerIndex: player.playerIndex,
-					isHost: player.isHost,
-					// TODO: Resolve this properly
-					restaurant: player.playerIndex
+					isHost: player.isHost
 				})
 			)
 		};

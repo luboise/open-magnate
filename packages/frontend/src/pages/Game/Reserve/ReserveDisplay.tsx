@@ -1,20 +1,15 @@
 import "./ReserveDisplay.css";
 
-import {
-	Employee,
-	EmployeeId,
-	EmployeeType,
-} from "magnate-core/game";
-
 import { HTMLAttributes } from "react";
 import EmployeeCard from "../Employees/EmployeeCard";
 import useFullGameState from "../../../hooks/game/useGameStateView";
+import { Employee, EmployeeDepartment, EmployeeType } from "magnate-core";
 
 interface ReserveDisplayProps
 	extends HTMLAttributes<HTMLDivElement> {
 	employeeFilter?: (employee: Employee) => boolean;
 	onEmployeeClicked?: (
-		employeeClicked: EmployeeId
+		employeeClicked: EmployeeType
 	) => void;
 }
 
@@ -39,10 +34,10 @@ function ReserveDisplay({
 
 	const employeeList: Array<
 		[Employee | undefined, number]
-	> = employeeEntries.map(([employeeId, quantity]) => {
-		const valid = Employee.isValidType(employeeId);
+	> = employeeEntries.map(([employeeType, quantity]) => {
+		const valid = Employee.isValidType(employeeType);
 		const newemployee = Employee.fromType(
-			employeeId as EmployeeId
+			employeeType as EmployeeType
 		);
 
 		return [
@@ -51,7 +46,7 @@ function ReserveDisplay({
 		];
 	});
 
-	const employeeTypes: EmployeeType[] = [
+	const departments: EmployeeDepartment[] = [
 		"MANAGEMENT",
 		"RECRUITMENT",
 		"MARKETING",
@@ -60,10 +55,10 @@ function ReserveDisplay({
 		"WAITRESS"
 	];
 
-	const categoryArrays = employeeTypes.map((type) => {
+	const categoryArrays = departments.map((type) => {
 		const filteredEmployees = employeeList.filter(
 			([employee]) =>
-				employee && employee.type === type
+				employee && employee.department === type
 		);
 
 		return filteredEmployees.map(
@@ -73,12 +68,12 @@ function ReserveDisplay({
 					onClick={() => {
 						if (
 							!employee ||
-							employee.type === "CEO"
+							employee.department === "CEO"
 						)
 							return;
 
 						onEmployeeClicked &&
-							onEmployeeClicked(employee.id);
+							onEmployeeClicked(employee.employeeType);
 					}}
 				/>
 			)

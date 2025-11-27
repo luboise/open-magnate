@@ -1,5 +1,7 @@
 import { selector, useRecoilValue } from "recoil";
 
+import { GameStateAtom } from "./useGameStateView";
+
 import {
 	CardReserve,
 	Employee,
@@ -11,8 +13,6 @@ import {
 	RestaurantTile,
 	RestaurantView
 } from "magnate-core";
-
-import { GameStateAtom } from "./useGameStateView";
 
 // const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
 // const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
@@ -282,9 +282,8 @@ export function useDerivedGameState() {
 	);
 
 	const employees = useRecoilValue(myEmployeesSelector);
-	const currentPlayer = useRecoilValue(
-		currentPlayerSelector
-	);
+	const currentPlayer: PlayerPublicView | null =
+		useRecoilValue(currentPlayerSelector);
 
 	const currentTree = useRecoilValue(currentTreeSelector);
 

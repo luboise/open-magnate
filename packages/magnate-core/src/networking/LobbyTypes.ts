@@ -16,7 +16,6 @@ export interface LobbyPlayerData {
 	name: string;
 	playerIndex: number;
 	isHost: boolean;
-	restaurant: number;
 }
 
 // The base lobby view that is player agnostic

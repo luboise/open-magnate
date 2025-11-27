@@ -19,8 +19,14 @@
 	border: var(--resizable-element-border-size) black solid;
 	border-radius: var(--resizable-element-border-size);
 
+	opacity: 1;
+	filter: none;
+
 	/** Very slight opacity transition **/
-	transition: opacity 0.02s;
+	transition:
+		opacity 0.065s,
+		filter 0.065s,
+		transform 0.085s;
 }
 
 .resizable-element-handle {
@@ -47,8 +53,12 @@
 
 .resizable-minimised {
 	opacity: 0;
+	filter: blur(10px);
+
+	transform: scale(0.02);
+
 	pointer-events: none;
-	visibility: hidden;
+	/* visibility: hidden; */
 }
 
 .resizable-element-top-tab {

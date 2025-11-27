@@ -16,7 +16,7 @@ export const seedGameState1: GameState = {
 
 	status: "PLACING_FIRST_RESTAURANTS",
 	cardReserve: CardReserve.create(2),
-	players: [Player.create(), Player.create()],
+	players: [Player.create(0), Player.create(1)],
 	bankReserve: 100,
 	marketingTiles: [],
 	readyStatuses: [false, false]

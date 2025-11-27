@@ -3,6 +3,7 @@ import "./TurnOrderList.css";
 import { HTMLAttributes } from "react";
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
+import useGameStateView from "../../../hooks/game/useGameStateView";
 
 interface TurnOrderListProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -18,6 +19,9 @@ function TurnOrderList({
 	const { currentPlayer, turnOrder, players } =
 		useDerivedGameState();
 
+	const { gameState } = useGameStateView();
+
+
 	return (
 		<div
 			className={`game-turn-order-list ${className}`}
@@ -30,26 +34,22 @@ function TurnOrderList({
 			// }}
 			{...args}
 		>
-			{...turnOrder?.map((playerNumber) => {
-				const player = players?.find(
-					(player) =>
-						player.playerNumber === playerNumber
-				);
+			{...turnOrder?.map((playerIndex) => {
+				const player = players[playerIndex];
 				if (!player) return <></>;
 
 				return (
 					<div
 						style={{
 							backgroundColor:
-								currentPlayer?.playerNumber ===
-									playerNumber
+								gameState.currentPlayer === playerIndex
 									? "red"
 									: undefined
 						}}
 					>
 						<RestaurantImage
 							restaurantNumber={
-								player.restaurant
+								player.restaurantIndex
 							}
 							style={{ width: "100%" }}
 						/>

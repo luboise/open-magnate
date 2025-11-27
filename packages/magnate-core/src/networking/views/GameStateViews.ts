@@ -49,7 +49,7 @@ export const GameStateView = {
 
 			players: state.players.map(
 				(player): PlayerPublicView =>
-					PlayerPublicData.fromPlayer(player)
+					PlayerPublicView.fromPlayer(player)
 			),
 
 			privateData
@@ -67,14 +67,19 @@ export type PlayerPrivateView = Pick<
 	Exclude<keyof Player, keyof PlayerPublicView>
 >;
 
-export const PlayerPublicData = {
+export const PlayerPublicView = {
 	fromPlayer({
 		demand,
-		tree: _tree,
 		money,
-		previousTree
+		previousTree,
+		restaurantIndex
 	}: Player): PlayerPublicView {
-		return { demand, money, previousTree };
+		return {
+			demand,
+			money,
+			previousTree,
+			restaurantIndex
+		};
 	}
 };
 

@@ -7,12 +7,13 @@ import usePageGame from "../../../hooks/game/usePageGame";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import TurnOrderList from "./TurnOrderList";
-import { MoveType, RESTAURANT_NAMES, TurnProgressValues } from "magnate-core/game";
+import { MoveType, RESTAURANT_NAMES, TurnProgressValues } from "magnate-core";
+import { GameStatuses } from "magnate-core";
 
 const BLOBBY_CLASS_NAME = "game-turn-handler-blobby";
 
 function TurnHandler() {
-	const { isMyTurn, gameStatus: turnProgress, currentPlayer } =
+	const { isMyTurn, gameStatus, currentPlayer } =
 		useDerivedGameState();
 
 	const { makeMove } = usePageGame();
@@ -37,12 +38,12 @@ function TurnHandler() {
 			return;
 		}
 
-		if (turnProgress === "USE_EMPLOYEES") {
+		if (gameStatus === "WORKING_NINE_TO_FIVE") {
 			makeMove({
 				MoveType: MoveType.WORK_EMPLOYEES,
 				actions: turnActions
 			});
-		} else if (turnProgress === "RESTRUCTURING") {
+		} else if (gameStatus === "RESTRUCTURING") {
 			makeMove({
 				MoveType: MoveType.RESTRUCTURE,
 				tree: plannedTree
@@ -65,15 +66,15 @@ function TurnHandler() {
 			>
 				{isMyTurn
 					? "Your turn"
-					: "Waiting for " +
+					: "Waiting on " +
 					(currentPlayer === null
 						? "others to ready up."
-						: `${RESTAURANT_NAMES[currentPlayer.restaurant]}...`)}
+						: `${RESTAURANT_NAMES[currentPlayer.restaurantIndex] ?? "another player"}...`)}
 			</h2>
 
 			<SpinningStatus
-				orderedOptions={TurnProgressValues}
-				currentOption={turnProgress}
+				orderedOptions={GameStatuses}
+				currentOption={gameStatus}
 				style={{
 					gridRow: "2 / span 1",
 					gridColumn: "1 / span 1"
