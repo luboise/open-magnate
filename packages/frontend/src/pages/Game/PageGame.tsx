@@ -15,12 +15,12 @@ import GlobalUI, {
 import TurnOrderList from "./GlobalUI/TurnOrderList";
 import MagnateMap from "./Map/MagnateMap";
 import PlacementHandler from "./Map/Placers/PlacementHandler";
-import Placer from "./Map/Placers/Placer";
+import TilePlacer from "./Map/Placers/TilePlacer";
 import SalaryHandler from "./SalaryHandler/SalaryHandler";
 import TurnOrderPrompt from "./TurnOrderPrompt/TurnOrderPrompt";
 import TurnPlanner from "./TurnPlanner/TurnPlanner";
 import TurnProgressIndicator from "./TurnProgressIndicator/TurnProgressIndicator";
-import useFullGameState from "../../hooks/game/useGameStateView";
+import useGameStateView from "../../hooks/game/useGameStateView";
 
 interface GameInterfaceState {
 	showMap: boolean;
@@ -38,10 +38,10 @@ type GameInterfaceAction = {
 };
 
 function PageGame() {
-	const { gameStatus: turnProgress, isMyTurn } = useDerivedGameState();
+	const { gameStatus, isMyTurn } = useDerivedGameState();
 	const { onMapObjectClicked } = useMap();
 
-	const { gameState } = useFullGameState();
+	const { gameState } = useGameStateView();
 	if (!gameState) return <></>;
 
 	const {
@@ -133,12 +133,12 @@ function PageGame() {
 				placementTypes={["RESTAURANT", "MARKETING"]}
 			/>
 		);
-	}, [turnProgress, isMyTurn]);
+	}, [gameStatus, isMyTurn]);
 
 	onMapObjectClicked((event) => {
 		if (
 			isMyTurn &&
-			turnProgress === "RESTAURANT_PLACEMENT"
+			(gameStatus === "PLACING_FIRST_RESTAURANTS" || gameStatus === "PLACING_FIRST_RESTAURANTS_WAVE_TWO")
 		)
 			console.log("clicked", event);
 	});
@@ -202,7 +202,7 @@ function PageGame() {
 						e.stopPropagation();
 					}}
 				>
-					<Placer />
+					<TilePlacer />
 					{mapConditional}
 				</MagnateMap>
 			) : (
@@ -219,7 +219,7 @@ function PageGame() {
 
 			<Resizable
 				minimiseIf={
-					turnProgress !== "SALARY_PAYOUTS"
+					gameStatus !== "SALARY_PAYOUTS"
 				}
 			>
 				<SalaryHandler id="game-salary-handler" />
@@ -227,7 +227,7 @@ function PageGame() {
 
 			<Resizable
 				minimiseIf={
-					turnProgress !== "TURN_ORDER_SELECTION"
+					gameStatus !== "TURN_ORDER_SELECTION"
 				}
 			>
 				<TurnOrderPrompt id="turn-order-prompt" />

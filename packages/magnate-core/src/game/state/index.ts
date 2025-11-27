@@ -12,6 +12,6 @@ export const GameStatuses = [
 	"SELECTING_TURN_ORDER",
 	"WORKING_NINE_TO_FIVE",
 	"SALARY_PAYOUTS"
-];
+] as const;
 
 export type GameStatus = (typeof GameStatuses)[number];

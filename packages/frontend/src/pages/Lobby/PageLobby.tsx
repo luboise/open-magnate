@@ -20,7 +20,7 @@ import SelectionButtonList from "../../global_components/Form/SelectionButtonLis
 import { WEB_SOCKET_BASE_URL } from "../../hooks/useAPI";
 import useLocalVal from "../../hooks/useLocalVal";
 
-import useFullGameState from "../../hooks/game/useGameStateView";
+import useGameStateView from "../../hooks/game/useGameStateView";
 import LobbyManager from "./LobbyManager/LobbyManager";
 import { PageGameAtom } from "./PageGameContext";
 
@@ -55,7 +55,7 @@ function PageLobby() {
 		LOCAL_STORAGE_INVITE_CODE_NAME
 	);
 
-	const { gameState: gamestate, setGameState: setGamestate } = useFullGameState();
+	const { gameState: gamestate, setGameState: setGamestate } = useGameStateView();
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {

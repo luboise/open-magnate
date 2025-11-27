@@ -3,6 +3,7 @@ import { BaseMapTile } from "../map";
 import { Position } from "../map/area";
 
 export interface DrinkTile extends BaseMapTile {
+	tileType: "DRINK";
 	drinkType: DrinkType;
 	width: 1;
 	height: 1;

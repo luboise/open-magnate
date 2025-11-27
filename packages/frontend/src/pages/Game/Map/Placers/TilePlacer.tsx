@@ -1,4 +1,4 @@
-import "./Placer.css";
+import "./TilePlacer.css";
 
 import { useCallback, useEffect, useMemo } from "react";
 import RestaurantImage from "../../../../global_components/RestaurantImage";
@@ -7,10 +7,12 @@ import { useDerivedGameState } from "../../../../hooks/game/useDerivedGameState"
 import { useBoardInfo } from "../../../../hooks/game/useMap";
 import { GetMyRestaurantTile } from "../../Tiles/RestaurantTileData";
 import MapMarketingTile from "../Tiles/MapMarketingTile";
+import useGameStateView from "../../../../hooks/game/useGameStateView";
+import { GameState, Position, RestaurantTile } from "magnate-core";
 
 type Props = {};
 
-function Placer({ }: Props) {
+function TilePlacer({ }: Props) {
 	// const { hovering } = useMapTileInteraction();
 
 	const {
@@ -21,9 +23,9 @@ function Placer({ }: Props) {
 		startPlacing
 	} = useClientState();
 
-	const { gameStatus: turnProgress, isMyTurn } = useDerivedGameState();
-
-	const { mapColOrder: map } = useDerivedGameState();
+	const { gameStatus, isMyTurn } = useDerivedGameState();
+	const { gameState } = useGameStateView();
+	if (!gameState) return <></>;
 
 	const boardInfo = useBoardInfo();
 	// const { onMapObjectClicked, onMapObjectHovered } =
@@ -36,36 +38,7 @@ function Placer({ }: Props) {
 	const validPlacement = useMemo(() => {
 		if (!tile) return false;
 
-		const width =
-			tile.rotation % 90 === 0
-				? tile.width
-				: tile.height;
-		const height =
-			tile.rotation % 0 ? tile.height : tile.width;
-
-		for (
-			let x = tile.pos.x;
-			x < tile.pos.x + width;
-			x++
-		) {
-			for (
-				let y = tile.pos.y;
-				y < tile.pos.y + height;
-				y++
-			) {
-				if (
-					x >= boardInfo.width ||
-					y >= boardInfo.height
-				)
-					return false;
-
-				if (map[x][y].tileType !== "EMPTY")
-					return false;
-			}
-		}
-
-		// TODO: Implement placement logic
-		return true;
+		return GameState.canPlaceTile(gameState as unknown as GameState, tile);
 	}, [tile, boardInfo.width, boardInfo.height]);
 
 	const attemptPlacement = useCallback(() => {
@@ -85,13 +58,13 @@ function Placer({ }: Props) {
 
 	useEffect(() => {
 		if (
-			turnProgress === "RESTAURANT_PLACEMENT" &&
+			(gameStatus === "PLACING_FIRST_RESTAURANTS" || gameStatus === "PLACING_FIRST_RESTAURANTS_WAVE_TWO") &&
 			isMyTurn
 		) {
 			console.debug("Placing restaurant tile");
-			startPlacing(GetMyRestaurantTile());
+			startPlacing(RestaurantTile.create(Position(0, 0), gameState.playerIndex, false));
 		}
-	}, [turnProgress, isMyTurn]);
+	}, [gameStatus, isMyTurn]);
 
 	if (!tile) return <></>;
 
@@ -105,8 +78,8 @@ function Placer({ }: Props) {
 		<div
 			className="tile-being-placed"
 			style={{
-				gridColumn: `${tile.pos.x + 1} / span ${mapWidth}`,
-				gridRow: `${tile.pos.y + 1} / span ${mapHeight}`,
+				gridColumn: `${tile.position.x + 1} / span ${mapWidth}`,
+				gridRow: `${tile.position.y + 1} / span ${mapHeight}`,
 				opacity: validPlacement ? 1 : 0.8,
 				// Red filter if invalid
 				filter: validPlacement
@@ -124,8 +97,8 @@ function Placer({ }: Props) {
 				<RestaurantImage
 					restaurantNumber={tile.restaurant ?? 1}
 					style={{
-						// gridColumn: `${tile.pos.x + 1} / span 2`,
-						// gridRow: `${tile.pos.y + 1} / span 2`,
+						// gridColumn: `${tile.position.x + 1} / span 2`,
+						// gridRow: `${tile.position.y + 1} / span 2`,
 						// Red if invalid placement
 
 						// backgroundBlendMode: "multiply",
@@ -149,4 +122,4 @@ function Placer({ }: Props) {
 	);
 }
 
-export default Placer;
+export default TilePlacer;

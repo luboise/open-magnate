@@ -154,16 +154,22 @@ export const GameState = {
 		);
 	},
 
+	canPlaceTile(
+		state: GameState,
+		newTile: MapTile
+	): boolean {
+		// Return true if no collisions occur
+		return state.map.tiles.every(
+			(tile) => !MapTile.areColliding(tile, newTile)
+		);
+	},
+
 	placeNewTile(
 		state: GameState,
 		newTile: MapTile
 	): GameState | undefined {
 		// If any tile occupies the area which the new tile will be placed in
-		if (
-			state.map.tiles.some((tile) =>
-				MapTile.areColliding(tile, newTile)
-			)
-		) {
+		if (!GameState.canPlaceTile(state, newTile)) {
 			// Unable to add new tile if they are colliding
 			return undefined;
 		}

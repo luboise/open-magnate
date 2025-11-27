@@ -1,13 +1,8 @@
-import { RestaurantTile } from "magnate-core";
+import { RestaurantTile, Position } from "magnate-core";
+import useGameStateView from "../../../hooks/game/useGameStateView";
 
 export function GetMyRestaurantTile(): RestaurantTile {
-	return {
-		level: "OVERLAY",
-		tileType: "RESTAURANT",
-		restaurant: 1,
-		pos: { x: 0, y: 0 },
-		rotation: 0,
-		width: 2,
-		height: 2
-	};
+	const { gameState } = useGameStateView();
+
+	return RestaurantTile.create(Position(0, 0), gameState!.playerIndex, false);
 }

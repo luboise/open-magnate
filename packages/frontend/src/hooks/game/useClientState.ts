@@ -1,28 +1,32 @@
-import { Clamp, Position } from "magnate-core";
-import { MapOverlayTile } from "magnate-core/map";
-import { RotationAmount } from "magnate-core/map/tiles/types";
+import {
+	Clamp,
+	MapTile,
+	Position,
+	Rotation
+} from "magnate-core";
+
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
 import { useBoardInfo } from "./useMap";
 import useMapTileInteraction from "./useMapTileInteraction";
 
 interface BaseClientState {
-	placing: MapOverlayTile | null;
+	placing: MapTile | null;
 	placementStatus: "PLACING" | "SUCCESS" | "FAILED";
 }
 
 interface ClientStateFailed extends BaseClientState {
-	placing: MapOverlayTile | null;
+	placing: MapTile | null;
 	placementStatus: "FAILED";
 }
 
 interface ClientStateSuccessful extends BaseClientState {
-	placing: MapOverlayTile;
+	placing: MapTile;
 	placementStatus: "SUCCESS";
 }
 
 interface ClientStatePlacing extends BaseClientState {
-	placing: MapOverlayTile;
+	placing: MapTile;
 	placementStatus: "PLACING";
 }
 
@@ -40,7 +44,7 @@ const clientStateAtom = atom<ClientState>({
 });
 
 export type OnTilePlacedCallback = (
-	placed: MapOverlayTile
+	placed: MapTile
 ) => void | Promise<void>;
 
 function useClientState(
@@ -53,10 +57,11 @@ function useClientState(
 
 	const boardInfo = useBoardInfo();
 
-	function startPlacing(toPlace: MapOverlayTile) {
+	function startPlacing(tile: MapTile) {
+		console.log("Beginning placement of tile ", tile);
 		setClientState({
 			...clientState,
-			placing: toPlace,
+			placing: tile,
 			placementStatus: "PLACING"
 		});
 	}
@@ -78,24 +83,25 @@ function useClientState(
 	}
 
 	interface UpdateProps {
-		pos?: Position;
-		rotation?: RotationAmount;
+		position?: Position;
+		rotation?: Rotation;
 	}
 
 	function updatePlacement({
-		pos,
+		position,
 		rotation
 	}: UpdateProps) {
 		if (clientState.placementStatus !== "PLACING") {
 			return;
 		}
 
-		const updatedPlacement: MapOverlayTile = {
+		const updatedPlacement: MapTile = {
 			...clientState.placing,
-			pos: pos ?? clientState.placing.pos,
+			position:
+				position ?? clientState.placing.position,
 			rotation:
 				rotation ?? clientState.placing.rotation
-		} as MapOverlayTile;
+		} as MapTile;
 
 		setClientState({
 			...clientState,
@@ -124,10 +130,8 @@ function useClientState(
 				...tile,
 				rotation: ((tile.rotation +
 					(direction === "FORWARDS" ? 90 : -90)) %
-					(tile.rotationModulo !== undefined
-						? tile.rotationModulo
-						: 360)) as RotationAmount
-			} as MapOverlayTile
+					360) as Rotation
+			} as MapTile
 			// TODO: Remove this as and fix the typing
 		});
 	}
@@ -147,20 +151,20 @@ function useClientState(
 			...clientState,
 			placing: {
 				...clientState.placing,
-				pos: {
-					x: Clamp(
+				position: Position(
+					Clamp(
 						hovering.pos.x,
 						0,
 						boardInfo.width - 2,
 						true
 					),
-					y: Clamp(
+					Clamp(
 						hovering.pos.y,
 						0,
 						boardInfo.height - 2,
 						true
 					)
-				}
+				)
 			}
 		});
 	}, [hovering]);

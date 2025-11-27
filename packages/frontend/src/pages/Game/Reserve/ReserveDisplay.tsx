@@ -2,8 +2,8 @@ import "./ReserveDisplay.css";
 
 import { HTMLAttributes } from "react";
 import EmployeeCard from "../Employees/EmployeeCard";
-import useFullGameState from "../../../hooks/game/useGameStateView";
-import { Employee, EmployeeDepartment, EmployeeType } from "magnate-core";
+import useGameStateView from "../../../hooks/game/useGameStateView";
+import { Employee, EmployeeType, EmployeeDepartment } from "magnate-core";
 
 interface ReserveDisplayProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -19,7 +19,7 @@ function ReserveDisplay({
 	...args
 }: ReserveDisplayProps) {
 
-	const { gameState } = useFullGameState();
+	const { gameState } = useGameStateView();
 
 	if (!gameState) return <></>;
 

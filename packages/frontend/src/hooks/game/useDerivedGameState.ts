@@ -1,28 +1,26 @@
 import { selector, useRecoilValue } from "recoil";
 
-import { GameStateAtom } from "./useGameStateView";
-
 import {
 	CardReserve,
 	Employee,
 	EmployeeNode,
+	GameMap,
 	GameState,
 	GameStatus,
 	PlayerPrivateView,
 	PlayerPublicView,
-	RestaurantTile,
 	RestaurantView
 } from "magnate-core";
 
-// const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
-// const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
+import { GameStateAtom } from "./useGameStateView";
 
 const NullGamestateMsg =
 	"Null gamestate. Make sure the selectors can only be called after the atom.";
 
-/*
-type MapSelectorType = MapBackgroundTile[][];
-const mapColumnOrderSelector = selector<MapSelectorType>({
+const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
+// const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
+
+const mapColumnOrderSelector = selector<GameMap>({
 	key: RECOIL_MAP_COL_ORDER_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
@@ -35,6 +33,7 @@ const mapColumnOrderSelector = selector<MapSelectorType>({
 	}
 });
 
+/*
 const mapRowOrderSelector = selector<MapSelectorType>({
 	key: RECOIL_MAP_ROW_ORDER_KEY,
 	get: ({ get }) => {
@@ -108,12 +107,10 @@ const restaurantsSelector = selector<RestaurantView[]>({
 				(tile) => tile.tileType === "RESTAURANT"
 			)
 			.map((t) => {
-				const tile = t as RestaurantTile;
-
 				return {
-					playerIndex: tile.ownerIndex,
-					pos: { ...tile.position }
-				};
+					playerIndex: t.ownerIndex,
+					pos: { ...t.position }
+				} satisfies RestaurantView;
 			});
 	}
 });
@@ -273,6 +270,9 @@ export function useDerivedGameState() {
 	const players = useRecoilValue(playersSelector);
 	const restaurants = useRecoilValue(restaurantsSelector);
 	const isMyTurn = useRecoilValue(isMyTurnSelector);
+	const mapColOrder = useRecoilValue(
+		mapColumnOrderSelector
+	);
 
 	const publicPlayerData = useRecoilValue(
 		publicViewSelector
@@ -308,6 +308,7 @@ export function useDerivedGameState() {
 
 	return {
 		gameStatus,
+		mapColOrder,
 		players: players,
 		restaurants: restaurants,
 		isMyTurn,

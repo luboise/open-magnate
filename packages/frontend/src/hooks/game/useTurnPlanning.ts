@@ -1,6 +1,6 @@
 import { TurnAction } from "magnate-core";
 import { atom, useRecoilState } from "recoil";
-import useFullGameState from "./useGameStateView";
+import useGameStateView from "./useGameStateView";
 
 interface GamePlanningState {
 	plannedActions: TurnAction[];
@@ -27,7 +27,7 @@ function useTurnPlanning() {
 
 	// const turnActions = useRecoilValue(turnActionsSelector);
 
-	const { gameState } = useFullGameState();
+	const { gameState } = useGameStateView();
 	if (!gameState)
 		throw new Error("No player data available");
 

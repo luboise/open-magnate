@@ -1,13 +1,8 @@
-import {
-	MapBackgroundTile,
-	MapOverlayTile
-} from "magnate-core";
+import { MapTile } from "magnate-core";
 import { atom, useRecoilState } from "recoil";
 
-type HoveringType = MapOverlayTile | MapBackgroundTile;
-
 type MapInteractionState = {
-	hovering: HoveringType | null;
+	hovering: MapTile | null;
 };
 
 const MapTileAtom = atom<MapInteractionState>({
@@ -20,7 +15,7 @@ const MapTileAtom = atom<MapInteractionState>({
 function useMapTileInteraction() {
 	const [state, setState] = useRecoilState(MapTileAtom);
 
-	function nowHovering(tile: HoveringType | null) {
+	function nowHovering(tile: MapTile | null) {
 		setState({
 			...state,
 			hovering: tile

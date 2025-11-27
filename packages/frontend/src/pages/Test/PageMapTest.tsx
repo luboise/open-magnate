@@ -18,7 +18,7 @@ function PageMapTest() {
 					e.stopPropagation();
 				}}
 			>
-				{/* <Placer /> */}
+				{/* <TilePlacer /> */}
 				{/* {mapConditional} */}
 			</MagnateMap>
 

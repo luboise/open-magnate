@@ -10,9 +10,9 @@ export const GameStateAtom = atom<GameStateAtomType>({
 	default: null
 });
 
-function useFullGameState() {
+function useGameStateView() {
 	const [state, setState] = useRecoilState(GameStateAtom);
 	return { gameState: state, setGameState: setState };
 }
 
-export default useFullGameState;
+export default useGameStateView;

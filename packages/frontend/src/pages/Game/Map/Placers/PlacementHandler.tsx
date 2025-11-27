@@ -1,10 +1,3 @@
-import {
-	MapOverlayTileType,
-	MarketingAction,
-	MarketingTile,
-	RestaurantTile
-} from "magnate-core";
-import { MoveType } from "magnate-core/game";
 import { useCallback } from "react";
 import useClientState, {
 	OnTilePlacedCallback
@@ -12,6 +5,7 @@ import useClientState, {
 import { useDerivedGameState } from "../../../../hooks/game/useDerivedGameState";
 import usePageGame from "../../../../hooks/game/usePageGame";
 import useTurnPlanning from "../../../../hooks/game/useTurnPlanning";
+import { MapTileType, RestaurantTile, MoveType } from "magnate-core";
 
 // interface RestaurantPlacerState {
 // 	x: number;
@@ -34,7 +28,7 @@ import useTurnPlanning from "../../../../hooks/game/useTurnPlanning";
 // 	  };
 
 interface Props {
-	placementTypes: MapOverlayTileType[];
+	placementTypes: MapTileType[];
 }
 
 function PlacementHandler({ placementTypes }: Props) {
@@ -45,7 +39,7 @@ function PlacementHandler({ placementTypes }: Props) {
 
 	const { makeMove } = usePageGame();
 
-	const { gameStatus: turnProgress, employees: myEmployees } =
+	const { gameStatus, employees: myEmployees } =
 		useDerivedGameState();
 	const { addAction } = useTurnPlanning();
 
@@ -60,19 +54,20 @@ function PlacementHandler({ placementTypes }: Props) {
 				return;
 			}
 
-			switch (turnProgress) {
-				case "RESTAURANT_PLACEMENT": {
+			switch (gameStatus) {
+				case "PLACING_FIRST_RESTAURANTS":
+				case "PLACING_FIRST_RESTAURANTS_WAVE_TWO": {
 					if (tile.tileType !== "RESTAURANT")
 						return;
 
 					submitRestaurant(tile);
 					break;
 				}
-				case "USE_EMPLOYEES": {
+				case "WORKING_NINE_TO_FIVE": {
 					if (tile.tileType !== "MARKETING")
 						return;
 
-					addMarketingAction(tile);
+					// addMarketingAction(tile);
 					break;
 				}
 			}
@@ -92,13 +87,14 @@ function PlacementHandler({ placementTypes }: Props) {
 		);
 		makeMove({
 			MoveType: MoveType.PLACE_RESTAURANT,
-			x: tile.pos.x,
-			y: tile.pos.y,
+			x: tile.position.x,
+			y: tile.position.y,
 			// TODO: Fix this to support all corner directions
 			entrance: "TOPLEFT"
 		});
 	}
 
+	/*
 	function addMarketingAction(tile: MarketingTile) {
 		console.debug("Adding marketing action: ", tile);
 
@@ -140,6 +136,7 @@ function PlacementHandler({ placementTypes }: Props) {
 			);
 		}
 	}
+	*/
 
 	// useEffect(() => {
 	// 	startPlacing({
