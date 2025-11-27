@@ -3,7 +3,7 @@ import "./PageGame.css";
 import { useEffect, useMemo, useReducer } from "react";
 
 import Resizable from "../../global_components/Resizable";
-import { useGameStateView } from "../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../hooks/game/useDerivedGameState";
 import useMap from "../../hooks/game/useMap";
 import useLocalVal from "../../hooks/useLocalVal";
 import usePanning from "../../hooks/usePanning";
@@ -20,6 +20,7 @@ import SalaryHandler from "./SalaryHandler/SalaryHandler";
 import TurnOrderPrompt from "./TurnOrderPrompt/TurnOrderPrompt";
 import TurnPlanner from "./TurnPlanner/TurnPlanner";
 import TurnProgressIndicator from "./TurnProgressIndicator/TurnProgressIndicator";
+import useFullGameState from "../../hooks/game/useGameStateView";
 
 interface GameInterfaceState {
 	showMap: boolean;
@@ -37,8 +38,11 @@ type GameInterfaceAction = {
 };
 
 function PageGame() {
-	const { turnProgress, isMyTurn } = useGameStateView();
+	const { gameStatus: turnProgress, isMyTurn } = useDerivedGameState();
 	const { onMapObjectClicked } = useMap();
+
+	const { gameState } = useFullGameState();
+	if (!gameState) return <></>;
 
 	const {
 		scaler: zoom,
@@ -188,6 +192,7 @@ function PageGame() {
 			{state.showMap ? (
 				<MagnateMap
 					id="magnate-map"
+					gameMap={gameState.map}
 					style={{
 						zIndex: -1,
 						...styleProperties

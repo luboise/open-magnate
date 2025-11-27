@@ -25,7 +25,7 @@ export interface MarketingAction extends BaseGameAction {
 
 export interface DemandAction extends BaseGameAction {
 	type: "GET_DEMAND";
-	demand: DemandType;
+	demandType: DemandType;
 	amount: number;
 }
 

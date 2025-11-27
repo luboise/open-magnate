@@ -1,7 +1,7 @@
 import { HouseView, MapBackgroundTile } from "magnate-core";
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
-import { useGameStateView } from "./useGameState";
+import useFullGameState from "./useGameStateView";
 
 type MapRenderListType = Record<string, JSX.Element[]>;
 
@@ -48,14 +48,12 @@ type MapCursorEvent =
 // 	|
 
 export function useBoardInfo() {
-	const { mapRowOrder } = useGameStateView();
-
-	const width = mapRowOrder?.length || 0;
-	const height = mapRowOrder?.[0]?.length || 0;
+	// const { mapRowOrder } = useGameStateView();
+	const { gameState } = useFullGameState();
 
 	return {
-		width,
-		height
+		width: gameState!.map.width,
+		height: gameState!.map.height
 	};
 }
 

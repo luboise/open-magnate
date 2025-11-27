@@ -3,10 +3,10 @@ import {
 	LobbyPlayerData,
 	LobbySubmissionData,
 	LobbyView,
-	newGame,
-	PlayerLobbyView
+	PlayerLobbyView,
+	newGame
 } from "magnate-core";
-import { Lobby, prisma, UserSession } from "../datasource";
+import { Lobby, UserSession, prisma } from "../datasource";
 import { LOBBY_STATUS } from "../datasource/generated/enums";
 import {
 	LobbyGetPayload,
@@ -197,7 +197,8 @@ const LobbyController = {
 
 			// If the number of people in the lobby matches the number of players in the game, ie, if all players are already in
 			if (
-				slotsInUse != lobby.gameState.players.length
+				slotsInUse ===
+				lobby.gameState.players.length
 			) {
 				throw Error(
 					"Lobby " + lobbyId + " is already full."
@@ -356,8 +357,7 @@ export const FullLobbyInclude = {
 		include: {
 			userSession: true
 		}
-	},
-	gameState: true
+	}
 } as const;
 export type FullLobby = Omit<
 	LobbyGetPayload<{

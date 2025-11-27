@@ -1,8 +1,8 @@
 import "./LobbyManager.css";
 
 import {
-	GameStateViewPerPlayer,
-	LobbyViewPerPlayer
+	PlayerLobbyView,
+	GameStateView
 } from "magnate-core";
 import Button from "../../../global_components/Button";
 import usePageGame from "../../../hooks/game/usePageGame";
@@ -13,8 +13,8 @@ import PageGame from "../../Game/PageGame";
 import PlayerList from "./PlayerList";
 
 function LobbyManager(props: {
-	lobby: LobbyViewPerPlayer;
-	gameState: GameStateViewPerPlayer;
+	lobby: PlayerLobbyView;
+	gameState: GameStateView;
 }) {
 	const { lobby, gameState } = props;
 
@@ -51,7 +51,7 @@ function LobbyManager(props: {
 						</h2>
 						<PlayerList
 							lobbySize={
-								gameState.playerCount
+								gameState.players.length
 							}
 							players={lobby.players}
 						/>
@@ -75,7 +75,7 @@ function LobbyManager(props: {
 							inactive={
 								!lobby.hosting ||
 								lobby.players.length <
-									gameState.playerCount
+								gameState.players.length
 							}
 							inactiveHoverText="You must be the host to start the game."
 						>
@@ -92,7 +92,7 @@ function LobbyManager(props: {
 			) : (
 				// <Resizable defaultWidth={1000}>
 				<div id="lobby-map-preview">
-					<MagnateMap />
+					<MagnateMap gameMap={gameState.map} />
 				</div>
 				// </Resizable>
 			)}

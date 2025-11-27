@@ -2,9 +2,8 @@ import { BASE_SALARY } from "magnate-core";
 import { MoveType } from "magnate-core/game";
 import { HTMLAttributes, useMemo, useReducer } from "react";
 import Button from "../../../global_components/Button";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
-import DinnertimeRecap from "./DinnertimeRecap";
 import "./SalaryHandler.css";
 
 interface State {
@@ -16,10 +15,10 @@ interface Action {
 	payload: number;
 }
 
-interface Props extends HTMLAttributes<HTMLDivElement> {}
+interface Props extends HTMLAttributes<HTMLDivElement> { }
 function SalaryHandler({ ...args }: Props) {
-	const { myEmployees, playerData, lastEvent } =
-		useGameStateView();
+	const { employees: myEmployees, publicPlayerData: playerData } =
+		useDerivedGameState();
 
 	const { makeMove } = usePageGame();
 
@@ -73,11 +72,13 @@ function SalaryHandler({ ...args }: Props) {
 	return (
 		<div className={`game-salary-handler`} {...args}>
 			<div className="game-salary-handler-main">
-				{lastEvent ? (
+				{ // TODO: Reimplement this
+					/*lastEvent ? (
 					<DinnertimeRecap event={lastEvent} />
 				) : (
 					<>NO EVENT</>
-				)}
+				)*/
+				}
 			</div>
 			<div className="game-salary-handler-receipt-summary">
 				receipt top

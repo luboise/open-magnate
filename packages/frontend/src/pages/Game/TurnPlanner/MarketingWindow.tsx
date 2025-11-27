@@ -5,7 +5,7 @@ import {
 } from "magnate-core";
 import { useMemo } from "react";
 import useClientState from "../../../hooks/game/useClientState";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import MapMarketingTile from "../Map/Tiles/MapMarketingTile";
 import "./MarketingWindow.css";
 
@@ -14,8 +14,8 @@ interface Props {
 }
 
 function MarketingWindow({ employeeHiringIndex }: Props) {
-	const { myEmployees, marketingCampaigns } =
-		useGameStateView();
+	const { employees: myEmployees, marketingCampaigns } =
+		useDerivedGameState();
 
 	const { startPlacing } = useClientState();
 

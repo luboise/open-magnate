@@ -2,7 +2,7 @@ import "./GameActionPreview.css";
 
 import { HTMLAttributes, useMemo } from "react";
 import Button from "../../../global_components/Button";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import { TurnAction, Employee } from "magnate-core";
 
 interface GameActionPreviewProps
@@ -16,7 +16,7 @@ function GameActionPreview({
 	onDestroy,
 	...args
 }: GameActionPreviewProps) {
-	const { myEmployees } = useGameStateView();
+	const { employees: myEmployees } = useDerivedGameState();
 
 	const employee = myEmployees[gameAction.employeeId];
 

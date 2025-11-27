@@ -1,15 +1,16 @@
 import "./PlayerInventory.css";
 
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import GameDemandTile from "./DemandPreview";
+import { DemandRecord } from "magnate-core";
 
 type Props = {};
 
 function PlayerInventory({ }: Props) {
-	const { playerData } = useGameStateView();
+	const { publicPlayerData } = useDerivedGameState();
 	return (
 		<div id="player-inventory">
-			{playerData.supply.map((item) => (
+			{DemandRecord.toDemands(publicPlayerData.demand).map((item) => (
 				<GameDemandTile demand={item} />
 			))}
 		</div>

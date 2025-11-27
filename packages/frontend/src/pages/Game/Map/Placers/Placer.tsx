@@ -3,7 +3,7 @@ import "./Placer.css";
 import { useCallback, useEffect, useMemo } from "react";
 import RestaurantImage from "../../../../global_components/RestaurantImage";
 import useClientState from "../../../../hooks/game/useClientState";
-import { useGameStateView } from "../../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../../hooks/game/useDerivedGameState";
 import { useBoardInfo } from "../../../../hooks/game/useMap";
 import { GetMyRestaurantTile } from "../../Tiles/RestaurantTileData";
 import MapMarketingTile from "../Tiles/MapMarketingTile";
@@ -21,9 +21,9 @@ function Placer({ }: Props) {
 		startPlacing
 	} = useClientState();
 
-	const { turnProgress, isMyTurn } = useGameStateView();
+	const { gameStatus: turnProgress, isMyTurn } = useDerivedGameState();
 
-	const { mapColOrder: map } = useGameStateView();
+	const { mapColOrder: map } = useDerivedGameState();
 
 	const boardInfo = useBoardInfo();
 	// const { onMapObjectClicked, onMapObjectHovered } =

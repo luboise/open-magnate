@@ -1,7 +1,7 @@
 import "./WindowToolbar.css";
 
 import Button from "../../../global_components/Button";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 
 interface WindowToolbarProps {
 	onClick: (clicked: ToolbarType) => void;
@@ -19,7 +19,7 @@ const ToolbarTypes = [
 ] as const;
 
 function WindowToolbar(props: WindowToolbarProps) {
-	const { turnProgress, isMyTurn } = useGameStateView();
+	const { gameStatus: turnProgress, isMyTurn } = useDerivedGameState();
 
 	function onButtonClicked(clicked: ToolbarType) {
 		props.onClick(clicked);

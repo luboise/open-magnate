@@ -13,7 +13,7 @@ esbuild
 		format: "esm",
 		bundle: true,
 		outfile: "dist/index.js",
-		// sourcemap: "both",
+		sourcemap: "both",
 		banner: { js: shim }
 	})
 	.catch(() => process.exit(1));

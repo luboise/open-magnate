@@ -2,11 +2,11 @@ import {
 	APIRoutes,
 	BackendMessage,
 	FrontendMessage,
-	GameStateViewPerPlayer,
+	GameStateView,
 	JoinLobbyMessage,
 	JoinLobbySubmissionData,
 	LobbySubmissionData,
-	LobbyViewPerPlayer
+	PlayerLobbyView,
 } from "magnate-core";
 import { useEffect, useReducer, useRef } from "react";
 import useWebSocket, {
@@ -20,7 +20,7 @@ import SelectionButtonList from "../../global_components/Form/SelectionButtonLis
 import { WEB_SOCKET_BASE_URL } from "../../hooks/useAPI";
 import useLocalVal from "../../hooks/useLocalVal";
 
-import useFullGameState from "../../hooks/game/useTrueGameState";
+import useFullGameState from "../../hooks/game/useGameStateView";
 import LobbyManager from "./LobbyManager/LobbyManager";
 import { PageGameAtom } from "./PageGameContext";
 
@@ -35,8 +35,8 @@ type PageState =
 
 type GamePageState = {
 	pageState: PageState;
-	lobbyState: LobbyViewPerPlayer | null;
-	gameState: GameStateViewPerPlayer | null;
+	lobbyState: PlayerLobbyView | null;
+	gameState: GameStateView | null;
 };
 
 type GamePageStateMessage = {

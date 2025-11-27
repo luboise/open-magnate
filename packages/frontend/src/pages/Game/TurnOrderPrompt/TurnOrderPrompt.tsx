@@ -1,12 +1,12 @@
 import { MoveType } from "magnate-core/game";
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import "./TurnOrderPrompt.css";
 
 import { HTMLAttributes, useCallback } from "react";
 
-interface Props extends HTMLAttributes<HTMLDivElement> {}
+interface Props extends HTMLAttributes<HTMLDivElement> { }
 
 function TurnOrderPrompt({ ...args }: Props) {
 	const {
@@ -14,7 +14,7 @@ function TurnOrderPrompt({ ...args }: Props) {
 		realTurnOrder,
 		players,
 		playerCount
-	} = useGameStateView();
+	} = useDerivedGameState();
 	const { makeMove } = usePageGame();
 
 	const onSlotPicked = useCallback(
@@ -74,7 +74,7 @@ function TurnOrderPrompt({ ...args }: Props) {
 											(p) =>
 												p.playerNumber ===
 												turnOrder[
-													index
+												index
 												]
 										)?.restaurant ?? 0
 									}

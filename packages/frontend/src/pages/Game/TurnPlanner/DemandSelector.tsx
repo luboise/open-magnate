@@ -4,7 +4,7 @@ import GameDemandTile from "../GlobalUI/DemandPreview";
 type Props = {
 	demands: DemandType[];
 	onDemandClicked: (
-		demand: DemandType
+		demandType: DemandType
 	) => void | Promise<void>;
 };
 

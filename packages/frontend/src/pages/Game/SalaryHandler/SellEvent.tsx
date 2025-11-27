@@ -2,7 +2,7 @@ import "./SellEvent.css";
 
 import { DinnertimeSellInfo } from "magnate-core";
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import House from "../Map/House";
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
 }
 
 function SellEvent({ event }: Props) {
-	const { houses } = useGameStateView();
+	const { houses } = useDerivedGameState();
 
 	const house = houses.find(
 		(h) => h.priority === event.house

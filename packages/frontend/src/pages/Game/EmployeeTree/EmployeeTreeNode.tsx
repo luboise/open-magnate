@@ -1,5 +1,3 @@
-import { EmployeeNode } from "magnate-core/game/EmployeeStructure";
-import { Employee } from "magnate-core/game/types";
 import { HTMLAttributes } from "react";
 import EmployeeCard from "../Employees/EmployeeCard";
 import {
@@ -7,6 +5,7 @@ import {
 	EmployeeTreeSpreadIfDropCallback
 } from "./EmployeeTree";
 import EmployeeTreeEmptySlot from "./EmployeeTreeEmptySlot";
+import { EmployeeNode, Employee } from "magnate-core";
 
 export type TreeNodeDropCallback = (
 	parent: number,
@@ -88,13 +87,13 @@ function EmployeeTreeNode({
 				employee={employee}
 				{...(parentDetails
 					? spreadIfDrop({
-							droppedOnto: node.data,
-							parentReceiving:
-								parentDetails.parentNode
-									.data,
-							indexInParent:
-								parentDetails.indexInParent
-						})
+						droppedOnto: node.data,
+						parentReceiving:
+							parentDetails.parentNode
+								.data,
+						indexInParent:
+							parentDetails.indexInParent
+					})
 					: {})}
 				{...(depth > 1
 					? spreadIfDrag(node.data)

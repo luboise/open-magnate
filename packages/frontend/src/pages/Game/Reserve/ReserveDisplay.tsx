@@ -8,7 +8,7 @@ import {
 
 import { HTMLAttributes } from "react";
 import EmployeeCard from "../Employees/EmployeeCard";
-import useFullGameState from "../../../hooks/game/useTrueGameState";
+import useFullGameState from "../../../hooks/game/useGameStateView";
 
 interface ReserveDisplayProps
 	extends HTMLAttributes<HTMLDivElement> {

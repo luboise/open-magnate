@@ -9,6 +9,7 @@ export type ReadyStatus = (typeof ReadyStatuses)[number];
 
 export type GameStateView = Omit<GameState, "players"> & {
 	currentPlayer: number | null;
+	playerIndex: number;
 	players: PlayerPublicView[];
 	privateData: PlayerPrivateView;
 };
@@ -43,6 +44,7 @@ export const GameStateView = {
 
 		return {
 			currentPlayer,
+			playerIndex,
 			...state,
 
 			players: state.players.map(
@@ -55,7 +57,10 @@ export const GameStateView = {
 	}
 };
 
-export type PlayerPublicView = Omit<Player, "tree">;
+export type PlayerPublicView = Omit<
+	Player,
+	"tree" | "employees"
+>;
 
 export type PlayerPrivateView = Pick<
 	Player,
@@ -67,16 +72,18 @@ export const PlayerPublicData = {
 		demand,
 		tree: _tree,
 		money,
-		employees,
 		previousTree
 	}: Player): PlayerPublicView {
-		return { demand, money, employees, previousTree };
+		return { demand, money, previousTree };
 	}
 };
 
 export const PlayerPrivateView = {
-	fromPlayer({ tree }: Player): PlayerPrivateView {
-		return { tree };
+	fromPlayer({
+		tree,
+		employees
+	}: Player): PlayerPrivateView {
+		return { tree, employees };
 	}
 };
 

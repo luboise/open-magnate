@@ -22,7 +22,8 @@ export function ExecuteTurn(
 		} else if (action.type === "MARKETING") {
 			// CreateMarketingCampaign(bundle, action);
 		} else if (action.type === "GET_DEMAND") {
-			player.demand[action.demand] += action.amount;
+			player.demand[action.demandType] +=
+				action.amount;
 		}
 	}
 

@@ -9,7 +9,7 @@ import { useCallback } from "react";
 import useClientState, {
 	OnTilePlacedCallback
 } from "../../../../hooks/game/useClientState";
-import { useGameStateView } from "../../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../../hooks/game/useDerivedGameState";
 import usePageGame from "../../../../hooks/game/usePageGame";
 import useTurnPlanning from "../../../../hooks/game/useTurnPlanning";
 
@@ -45,8 +45,8 @@ function PlacementHandler({ placementTypes }: Props) {
 
 	const { makeMove } = usePageGame();
 
-	const { turnProgress, myEmployees } =
-		useGameStateView();
+	const { gameStatus: turnProgress, employees: myEmployees } =
+		useDerivedGameState();
 	const { addAction } = useTurnPlanning();
 
 	const onTileDropped = useCallback<OnTilePlacedCallback>(
@@ -80,7 +80,7 @@ function PlacementHandler({ placementTypes }: Props) {
 		[]
 	);
 
-	const {} = useClientState(onTileDropped);
+	const { } = useClientState(onTileDropped);
 
 	// TODO: Implement actual house placement logic
 	// if (event.type === "TILE" && event.data.type === "EMPTY")

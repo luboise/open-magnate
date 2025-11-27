@@ -5,7 +5,7 @@ import {
 	findEmployeeRecursive,
 	findParentNode
 } from "../../pages/Game/EmployeeTree/EmployeeTree";
-import { useGameStateView } from "./useGameState";
+import { useDerivedGameState } from "./useDerivedGameState";
 
 const treePlanningAtom = atom<EmployeeNode>({
 	key: "treePlanningAtom",
@@ -17,13 +17,15 @@ const treePlanningAtom = atom<EmployeeNode>({
 });
 
 function useTreePlanning() {
-	const { myEmployees } = useGameStateView();
+	const { employees: myEmployees } =
+		useDerivedGameState();
 
 	const [plannedTree, setPlannedTree] = useRecoilState(
 		treePlanningAtom
 	);
 
-	const { playerData } = useGameStateView();
+	const { privatePlayerData: playerData } =
+		useDerivedGameState();
 	if (!playerData)
 		throw new Error("No player data available");
 

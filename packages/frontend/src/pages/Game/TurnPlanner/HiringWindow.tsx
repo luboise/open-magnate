@@ -1,7 +1,7 @@
 import { RecruitAction } from "magnate-core";
 import { EmployeeId } from "magnate-core/game/types";
 import { useEffect, useMemo, useState } from "react";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import ReserveDisplay from "../Reserve/ReserveDisplay";
 
@@ -14,7 +14,7 @@ function HiringWindow({
 	employeeHiringIndex,
 	onClose
 }: Props) {
-	const { myEmployees } = useGameStateView();
+	const { employees: myEmployees } = useDerivedGameState();
 
 	const { addAction } = useTurnPlanning();
 
@@ -22,7 +22,7 @@ function HiringWindow({
 		if (!myEmployees[employeeHiringIndex])
 			throw new Error(
 				"Invalid employee index: " +
-					employeeHiringIndex
+				employeeHiringIndex
 			);
 
 		const employee = myEmployees[employeeHiringIndex];

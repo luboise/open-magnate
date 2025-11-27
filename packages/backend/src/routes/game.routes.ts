@@ -11,16 +11,12 @@ import {
 } from "../database";
 
 import {
-	GameState,
-	applyMoveToGamestate
-} from "magnate-core/game";
-
-import {
 	AllUpdatedMessage,
 	BackendMessage,
 	BaseMessage,
 	CreateLobbyMessage,
 	FrontendMessage,
+	GameState,
 	GameStateUpdatedMessage,
 	GameStateView,
 	JoinLobbyMessage,
@@ -28,9 +24,9 @@ import {
 	LobbySubmissionData,
 	LobbyUpdatedMessage,
 	MakeMoveMessage,
-	StartGameMessage
-} from "magnate-core/networking";
-
+	StartGameMessage,
+	applyMoveToGamestate
+} from "magnate-core";
 import WebSocket from "ws";
 import { connectionsToWebsocket } from "./connections";
 
@@ -344,11 +340,12 @@ function updateLobbyPlayer(
 	} else if (updateType === "GAMESTATE") {
 		const playerIndex = lobby.playersInLobby.find(
 			(lobbyPlayer) =>
-				lobbyPlayer.userId === sessionKey
+				lobbyPlayer.userSession.sessionKey ===
+				sessionKey
 		)?.playerIndex;
-		if (!playerIndex)
+		if (playerIndex === undefined)
 			throw new Error(
-				"Unable to find player in lobby."
+				"Unable to find player in lobby for gamestate update."
 			);
 
 		const gsv = GameStateView.fromGameState(
@@ -373,11 +370,12 @@ function updateLobbyPlayer(
 
 		const playerIndex = lobby.playersInLobby.find(
 			(lobbyPlayer) =>
-				lobbyPlayer.userId === sessionKey
+				lobbyPlayer.userSession.sessionKey ===
+				sessionKey
 		)?.playerIndex;
-		if (!playerIndex)
+		if (playerIndex === undefined)
 			throw new Error(
-				"Unable to find player in lobby."
+				"Unable to find player in lobby in all update."
 			);
 
 		const gsv = GameStateView.fromGameState(
@@ -446,7 +444,7 @@ const handleJoinLobby: BackendMessageHandler<
 				lobby.id,
 				params.userSession
 			);
-		if (!newLobbyPlayers) {
+		if (newLobbyPlayers === null) {
 			throw new Error(
 				"Unable to add player to lobby."
 			);

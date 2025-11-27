@@ -3,7 +3,7 @@ import "./TurnPlanner.css";
 import { Employee } from "magnate-core/game/Employee";
 import { HTMLAttributes, useMemo, useState } from "react";
 import CustomPanel from "../../../global_components/CustomPanel";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import EmployeeCard from "../Employees/EmployeeCard";
 import DemandSelector from "./DemandSelector";
@@ -11,13 +11,14 @@ import GameActionPreview from "./GameActionPreview";
 import HiringWindow from "./HiringWindow";
 import MarketingWindow from "./MarketingWindow";
 import { EmployeeNode } from "magnate-core/game/Employee";
+import { DemandAction } from "magnate-core";
 
 interface TurnPlannerProps
 	extends HTMLAttributes<HTMLDivElement> { }
 
 function TurnPlanner({ ...args }: TurnPlannerProps) {
-	const { currentTree, myEmployees, playerData } =
-		useGameStateView();
+	const { currentTree, employees, privatePlayerData: playerData } =
+		useDerivedGameState();
 
 	const { turnActions, addAction, removeAction } =
 		useTurnPlanning();
@@ -29,9 +30,9 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 
 	if (!currentTree || !playerData) return <></>;
 
-	const employees: Employee[] = EmployeeNode.getAllTreeData<number>(
+	const treeEmployees: Employee[] = EmployeeNode.getAllTreeData<number>(
 		currentTree
-	).map((index) => myEmployees[index]);
+	).map((index) => employees[index]);
 
 	// TODO: Clean this up to be more efficient
 	const eventWindow = useMemo((): JSX.Element | null => {
@@ -42,11 +43,11 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 		)
 			return null;
 
-		const employee = myEmployees[selectedEmployeeIndex];
+		const employee = employees[selectedEmployeeIndex];
 
 		if (
-			employee.type === "MANAGEMENT" ||
-			employee.type === "CEO"
+			employee.department === "MANAGEMENT" ||
+			employee.department === "CEO"
 		)
 			return (
 				<HiringWindow
@@ -57,7 +58,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				/>
 			);
 
-		if (employee.type === "MARKETING")
+		if (employee.department === "MARKETING")
 			return (
 				<MarketingWindow
 					employeeHiringIndex={
@@ -66,26 +67,24 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 				/>
 			);
 
-		if (employee.type === "FOOD") {
-			if (employee.id === "food_basic")
+		if (employee.department === "FOOD") {
+			if (employee.employeeType === "food_basic")
 				return (
 					<DemandSelector
 						demands={
 							employee.supply.demand_type
 						}
-						onDemandClicked={(demand) => {
-							const newAction: Omit<
-								DemandAction,
-								"player"
-							> = {
+						onDemandClicked={(demandType) => {
+							addAction({
 								type: "GET_DEMAND",
-								employeeIndex:
-									selectedEmployeeIndex,
-								demand: demand,
+								employeeId: selectedEmployeeIndex,
+								demand: demandType,
 								amount: employee.supply
 									.amount
-							};
-							addAction(newAction);
+							} satisfies Omit<
+								DemandAction,
+								"playerIndex"
+							>);
 							clearSelectedEmployee();
 						}}
 					/>
@@ -93,7 +92,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 		}
 
 		return null;
-	}, [selectedEmployeeIndex, myEmployees]);
+	}, [selectedEmployeeIndex, employees]);
 	function clearSelectedEmployee() {
 		setSelectedEmployeeIndex(null);
 	}

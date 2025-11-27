@@ -11,7 +11,7 @@ import {
 	useMemo
 } from "react";
 import Button from "../../../global_components/Button";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useDragDrop, {
 	AfterDropCallback,
@@ -80,7 +80,7 @@ export type EmployeeTreeSpreadIfDropCallback =
 	SpreadIfDropFunction<rd>;
 
 function EmployeeTree({ ...args }: EmployeeTreeProps) {
-	const { myEmployees, playerData } = useGameStateView();
+	const { employees, privatePlayerData: playerData } = useDerivedGameState();
 
 	const { startPanning, offset, resetOffset } =
 		usePanning("employee-tree", "RIGHT");
@@ -135,7 +135,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 					index
 				);
 			},
-			[plannedTree, myEmployees]
+			[plannedTree, employees]
 		);
 
 	const { spreadIfDrag, spreadIfDrop } = useDragDrop({
@@ -177,7 +177,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 
 		if (
 			!newTree ||
-			(newTree && !EmployeeNode.isValidTree(newTree, playerData))
+			(newTree && !EmployeeNode.isValidTree(newTree, playerData.tree))
 		) {
 			resetTree();
 			return;
@@ -198,7 +198,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		setTree(newTree);
 	}, [playerData?.employeeTreeStr]);
 
-	if (!myEmployees || !plannedTree) return <></>;
+	if (!employees || !plannedTree) return <></>;
 
 	return (
 		<div className="game-employee-tree" {...args}>
@@ -220,7 +220,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				{plannedTree ? (
 					<EmployeeTreeNode
 						node={plannedTree}
-						employeeList={myEmployees}
+						employeeList={employees}
 						style={{
 							transform: `translate(${offset.x}px, ${offset.y}px)`
 						}}
@@ -233,7 +233,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				)}
 			</div>
 			<div className="game-employee-tree-cards">
-				{...myEmployees.map(
+				{...employees.map(
 					(employee, index): JSX.Element => {
 						if (
 							!employee ||

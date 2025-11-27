@@ -2,7 +2,7 @@ import "./TurnHandler.css";
 
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
-import { useGameStateView } from "../../../hooks/game/useGameState";
+import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
@@ -12,8 +12,8 @@ import { MoveType, RESTAURANT_NAMES, TurnProgressValues } from "magnate-core/gam
 const BLOBBY_CLASS_NAME = "game-turn-handler-blobby";
 
 function TurnHandler() {
-	const { isMyTurn, turnProgress, currentPlayer } =
-		useGameStateView();
+	const { isMyTurn, gameStatus: turnProgress, currentPlayer } =
+		useDerivedGameState();
 
 	const { makeMove } = usePageGame();
 

@@ -1,13 +1,26 @@
 import { selector, useRecoilValue } from "recoil";
 
-import { GameStateAtom } from "./useTrueGameState";
+import {
+	CardReserve,
+	Employee,
+	EmployeeNode,
+	GameState,
+	GameStatus,
+	PlayerPrivateView,
+	PlayerPublicView,
+	RestaurantTile,
+	RestaurantView
+} from "magnate-core";
 
-const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
-const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
+import { GameStateAtom } from "./useGameStateView";
+
+// const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
+// const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
 
 const NullGamestateMsg =
 	"Null gamestate. Make sure the selectors can only be called after the atom.";
 
+/*
 type MapSelectorType = MapBackgroundTile[][];
 const mapColumnOrderSelector = selector<MapSelectorType>({
 	key: RECOIL_MAP_COL_ORDER_KEY,
@@ -34,44 +47,36 @@ const mapRowOrderSelector = selector<MapSelectorType>({
 		return GetTransposed(colOrder);
 	}
 });
+*/
 
-const RECOIL_MAP_HOUSE_KEY = "PARSED_MAP_HOUSES";
-const mapHouseSelector = selector<HouseView[]>({
-	key: RECOIL_MAP_HOUSE_KEY,
+const RECOIL_GAME_STATUS_KEY = "GAME_STATUS";
+const gameStatusSelector = selector<GameStatus>({
+	key: RECOIL_GAME_STATUS_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
-		return gameState.houses;
-	}
-});
-
-const RECOIL_TURN_PROGRESS_KEY = "TURN_PROGRESS";
-const turnProgressSelector = selector<TurnProgress>({
-	key: RECOIL_TURN_PROGRESS_KEY,
-	get: ({ get }) => {
-		const gameState = get(GameStateAtom);
-		if (!gameState) throw new Error(NullGamestateMsg);
-
-		return gameState.turnProgress;
+		return gameState.status;
 	}
 });
 
 const RECOIL_IS_MY_TURN_KEY = "IS_MY_TURN";
-const isMyTurnSelector = selector<boolean | null>({
+const isMyTurnSelector = selector<boolean>({
 	key: RECOIL_IS_MY_TURN_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
 		if (
-			gameState.turnProgress === "RESTRUCTURING" ||
-			gameState.turnProgress === "SALARY_PAYOUTS"
+			gameState.status === "RESTRUCTURING" ||
+			gameState.status === "SALARY_PAYOUTS"
 		)
-			return !gameState.privateData.ready;
+			return !gameState.readyStatuses[
+				gameState.playerIndex
+			];
 
 		return (
-			gameState.privateData.playerNumber ===
+			gameState.playerIndex ===
 			gameState.currentPlayer
 		);
 	}
@@ -82,7 +87,7 @@ const isMyTurnSelector = selector<boolean | null>({
 // }
 
 const RECOIL_PLAYERS_KEY = "PLAYERS";
-const playersSelector = selector<GamePlayerViewPublic[]>({
+const playersSelector = selector<PlayerPublicView[]>({
 	key: RECOIL_PLAYERS_KEY,
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
@@ -91,9 +96,6 @@ const playersSelector = selector<GamePlayerViewPublic[]>({
 		return gameState.players;
 	}
 });
-// export function usePlayers() {
-// 	return useRecoilValue(playersSelector);
-// }
 
 const restaurantsSelector = selector<RestaurantView[]>({
 	key: "RESTAURANTS",
@@ -101,12 +103,33 @@ const restaurantsSelector = selector<RestaurantView[]>({
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
-		return gameState.restaurants;
+		return gameState.map.tiles
+			.filter(
+				(tile) => tile.tileType === "RESTAURANT"
+			)
+			.map((t) => {
+				const tile = t as RestaurantTile;
+
+				return {
+					playerIndex: tile.ownerIndex,
+					pos: { ...tile.position }
+				};
+			});
 	}
 });
 
-const playerDataSelector = selector<GamePlayerViewPrivate>({
-	key: "PLAYER_DATA",
+const publicViewSelector = selector<PlayerPublicView>({
+	key: "PLAYER_PUBLIC_DATA",
+	get: ({ get }) => {
+		const gameState = get(GameStateAtom);
+		if (!gameState) throw new Error(NullGamestateMsg);
+
+		return gameState.players[gameState.playerIndex];
+	}
+});
+
+const privateViewSelector = selector<PlayerPrivateView>({
+	key: "PLAYER_PRIVATE_DATA",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
@@ -121,62 +144,56 @@ const myEmployeesSelector = selector<Employee[]>({
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
-		const playerData = get(playerDataSelector);
+		const playerData = get(privateViewSelector);
 
 		if (!playerData) return [];
 
-		const myEmployees: Employee[] = [];
-
-		playerData.employees.forEach((employeeId) => {
-			if (!isValidEmployeeId(employeeId)) return;
-
-			myEmployees.push(Employee.fromId(employeeId));
-		});
-
-		return myEmployees;
+		return playerData.employees;
 	}
 });
 
 const currentPlayerSelector =
-	selector<GamePlayerViewPublic | null>({
+	selector<PlayerPublicView | null>({
 		key: "CURRENT_PLAYER",
 		get: ({ get }) => {
 			const gameState = get(GameStateAtom);
 			if (!gameState)
 				throw new Error(NullGamestateMsg);
 
-			const currentPlayer = gameState.players.find(
-				(player) =>
-					player.playerNumber ===
-					gameState.currentPlayer
+			const nextMove = GameState.nextMove(
+				gameState as unknown as GameState
 			);
 
-			if (!currentPlayer) return null;
+			if (
+				!nextMove ||
+				nextMove.playerIndices.length === 0
+			) {
+				return null;
+			}
 
-			return currentPlayer;
+			return gameState.players[
+				nextMove.playerIndices[0]
+			];
 		}
 	});
 
 const currentTreeSelector = selector<EmployeeNode | null>({
 	key: "CURRENT_TREE",
 	get: ({ get }) => {
-		const currentPlayer = get(playerDataSelector);
+		const currentPlayer = get(privateViewSelector);
 		if (!currentPlayer) return null;
 
-		const tree = ParseEmployeeTree(
-			currentPlayer.employeeTreeStr
-		);
-		return tree;
+		return currentPlayer.tree;
 	}
 });
 
-const reserveSelector = selector<Reserve>({
+const cardReserveSelector = selector<CardReserve>({
 	key: "RESERVE",
 	get: ({ get }) => {
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
-		return gameState.reserve;
+		return gameState.cardReserve;
 	}
 });
 
@@ -198,7 +215,7 @@ const realTurnOrderSelector = selector<Array<number | "X">>(
 			if (!gameState)
 				throw new Error(NullGamestateMsg);
 
-			return gameState.realTurnOrder;
+			return gameState.turnOrder;
 		}
 	}
 );
@@ -209,10 +226,11 @@ const playerCountSelector = selector<number>({
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
-		return gameState.playerCount;
+		return gameState.players.length;
 	}
 });
 
+/*
 const marketingCampaignSelector = selector<
 	MarketingCampaignView[]
 >({
@@ -224,7 +242,9 @@ const marketingCampaignSelector = selector<
 		return gameState.marketingCampaigns;
 	}
 });
+*/
 
+/*
 const historySelector = selector<GameEventView[]>({
 	key: "GAME_HISTORY",
 	get: ({ get }) => {
@@ -234,7 +254,9 @@ const historySelector = selector<GameEventView[]>({
 		return gameState.history;
 	}
 });
+*/
 
+/*
 const lastEventSelector = selector<GameEventView | null>({
 	key: "LAST_EVENT",
 	get: ({ get }) => {
@@ -244,70 +266,63 @@ const lastEventSelector = selector<GameEventView | null>({
 		return history[0];
 	}
 });
+*/
 
-export function useGameStateView() {
-	const mapColOrder = useRecoilValue(
-		mapColumnOrderSelector
-	);
-	const mapRowOrder = useRecoilValue(mapRowOrderSelector);
-
-	const houses = useRecoilValue(mapHouseSelector);
-
-	const turnProgress = useRecoilValue(
-		turnProgressSelector
-	);
-
+export function useDerivedGameState() {
+	const gameStatus = useRecoilValue(gameStatusSelector);
 	const players = useRecoilValue(playersSelector);
-
 	const restaurants = useRecoilValue(restaurantsSelector);
-
 	const isMyTurn = useRecoilValue(isMyTurnSelector);
 
-	const playerData = useRecoilValue(playerDataSelector);
+	const publicPlayerData = useRecoilValue(
+		publicViewSelector
+	);
+	const privatePlayerData = useRecoilValue(
+		privateViewSelector
+	);
 
-	const myEmployees = useRecoilValue(myEmployeesSelector);
-
+	const employees = useRecoilValue(myEmployeesSelector);
 	const currentPlayer = useRecoilValue(
 		currentPlayerSelector
 	);
 
 	const currentTree = useRecoilValue(currentTreeSelector);
 
-	const reserve = useRecoilValue(reserveSelector);
+	const reserve = useRecoilValue(cardReserveSelector);
 
 	const turnOrder = useRecoilValue(turnOrderSelector);
 
 	const playerCount = useRecoilValue(playerCountSelector);
 
+	/*
 	const marketingCampaigns = useRecoilValue(
 		marketingCampaignSelector
 	);
+	*/
 
 	const realTurnOrder = useRecoilValue(
 		realTurnOrderSelector
 	);
 
-	const history = useRecoilValue(historySelector);
-	const lastEvent = useRecoilValue(lastEventSelector);
+	// const history = useRecoilValue(historySelector);
+	// const lastEvent = useRecoilValue(lastEventSelector);
 
 	return {
-		mapColOrder,
-		mapRowOrder,
-		houses,
-		turnProgress,
+		gameStatus,
 		players: players,
 		restaurants: restaurants,
 		isMyTurn,
-		playerData: playerData,
-		myEmployees: myEmployees,
+		publicPlayerData,
+		privatePlayerData,
+		employees,
 		currentPlayer,
 		currentTree,
 		reserve,
 		turnOrder,
 		realTurnOrder,
-		playerCount,
-		marketingCampaigns,
-		history,
-		lastEvent
+		playerCount
+		// marketingCampaigns,
+		// history,
+		// lastEvent
 	};
 }
