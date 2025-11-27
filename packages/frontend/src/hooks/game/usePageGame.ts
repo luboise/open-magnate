@@ -1,10 +1,10 @@
-import { MoveData } from "magnate-core/Moves";
-import { useRecoilState } from "recoil";
-import { PageGameAtom } from "../../pages/Lobby/PageGameContext";
 import {
 	LeaveLobbyMessage,
 	StartGameMessage
-} from "../../utils";
+} from "magnate-core";
+import { MoveData } from "magnate-core/game";
+import { useRecoilState } from "recoil";
+import { PageGameAtom } from "../../pages/Lobby/PageGameContext";
 
 function usePageGame() {
 	const [pageGame] = useRecoilState(PageGameAtom);

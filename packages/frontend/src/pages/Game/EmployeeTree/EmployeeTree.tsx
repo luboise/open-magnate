@@ -1,12 +1,9 @@
 import "./EmployeeTree.css";
 
 import {
-	EmployeeNode,
-	GetAllTreeData,
-	IsValidEmployeeTree,
-	ParseEmployeeTree
-} from "magnate-core/employees/EmployeeStructure";
-import { DEFAULT_SERIALISED_EMPLOYEE_STRING } from "magnate-core/game/defaults/EmployeeDefaults";
+	DEFAULT_SERIALISED_EMPLOYEE_STRING,
+	EmployeeNode
+} from "magnate-core";
 import {
 	HTMLAttributes,
 	useCallback,
@@ -69,7 +66,7 @@ export function findParentNode(
 }
 
 interface EmployeeTreeProps
-	extends HTMLAttributes<HTMLDivElement> {}
+	extends HTMLAttributes<HTMLDivElement> { }
 
 type dd = number;
 type rd = EmployeeTreeNodeDropDetails;
@@ -126,7 +123,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 				)
 					throw new Error(
 						"Invalid index provided for updating the tree: " +
-							index
+						index
 					);
 				console.debug(
 					`Card dropped on employee tree: parent: ${parent.data}, child: ${employeeDropped}, index: ${index}`
@@ -148,7 +145,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	function resetTree() {
 		resetOffset;
 
-		const defaultTree = ParseEmployeeTree(
+		const defaultTree = EmployeeNode.deserialiseTree(
 			DEFAULT_SERIALISED_EMPLOYEE_STRING
 		);
 
@@ -161,7 +158,7 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 	const nodesInUse = useMemo(() => {
 		console.debug("Calculating nodes in use");
 		return plannedTree
-			? GetAllTreeData(plannedTree)
+			? EmployeeNode.getAllTreeData(plannedTree)
 			: [];
 	}, [plannedTree]);
 
@@ -175,9 +172,13 @@ function EmployeeTree({ ...args }: EmployeeTreeProps) {
 		// else if (treeStr === null)
 		// dispatch({ type: "SET_TREE", tree: null });
 
-		const newTree = ParseEmployeeTree(treeStr);
+		const newTree =
+			EmployeeNode.deserialiseTree(treeStr);
 
-		if (!newTree || (newTree && !IsValidEmployeeTree)) {
+		if (
+			!newTree ||
+			(newTree && !EmployeeNode.isValidTree(newTree, playerData))
+		) {
 			resetTree();
 			return;
 		}

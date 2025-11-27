@@ -1,5 +1,5 @@
+import { TurnAction } from "magnate-core";
 import { atom, useRecoilState } from "recoil";
-import { TurnAction } from "../../utils";
 import { useGameStateView } from "./useGameState";
 
 interface GamePlanningState {

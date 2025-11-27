@@ -6,11 +6,11 @@ import useClientState from "../../../../hooks/game/useClientState";
 import { useGameStateView } from "../../../../hooks/game/useGameState";
 import { useBoardInfo } from "../../../../hooks/game/useMap";
 import { GetMyRestaurantTile } from "../../Tiles/RestaurantTileData";
-import MapMarketingTile from "../MapMarketingTile";
+import MapMarketingTile from "../Tiles/MapMarketingTile";
 
 type Props = {};
 
-function Placer({}: Props) {
+function Placer({ }: Props) {
 	// const { hovering } = useMapTileInteraction();
 
 	const {

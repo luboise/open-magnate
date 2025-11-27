@@ -24,11 +24,4 @@
 			"./*": ["./*.js", "./*/index.js"]
 		}
 	},
-	// "include": [
-		// "./src/**/*.ts"
-	// ],
-	// "exclude": ["node_modules"],
-	// "references": [
-    	// { "path": "../magnate-core" }
-	// ]
 }

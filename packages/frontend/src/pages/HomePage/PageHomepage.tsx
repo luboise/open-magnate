@@ -1,4 +1,4 @@
-import { FrontendRoutes } from "magnate-core/Routes";
+import { FrontendRoutes } from "magnate-core/networking";
 import { Link } from "react-router-dom";
 
 function PageHomepage() {

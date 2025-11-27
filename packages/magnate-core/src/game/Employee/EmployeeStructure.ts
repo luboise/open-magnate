@@ -75,7 +75,7 @@ export const EmployeeNode = {
 
 	// Epic ChatGPT function.
 	// TODO: Check the performance of this later and make sure it runs ok
-	deserializeTree(inString: string): EmployeeNode | null {
+	deserialiseTree(inString: string): EmployeeNode | null {
 		function parseNode(
 			input: string
 		): [EmployeeNode | null, string] {

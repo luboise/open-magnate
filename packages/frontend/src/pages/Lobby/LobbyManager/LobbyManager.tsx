@@ -1,13 +1,13 @@
 import "./LobbyManager.css";
 
+import {
+	GameStateViewPerPlayer,
+	LobbyViewPerPlayer
+} from "magnate-core";
 import Button from "../../../global_components/Button";
 import usePageGame from "../../../hooks/game/usePageGame";
 import useClipboard from "../../../hooks/useClipboard";
 import useNotification from "../../../hooks/useNotification";
-import {
-	GameStateViewPerPlayer,
-	LobbyViewPerPlayer
-} from "../../../utils";
 import MagnateMap from "../../Game/Map/MagnateMap";
 import PageGame from "../../Game/PageGame";
 import PlayerList from "./PlayerList";

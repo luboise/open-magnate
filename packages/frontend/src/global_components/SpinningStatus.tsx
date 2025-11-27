@@ -1,4 +1,4 @@
-import { toTitleCase } from "magnate-core/utils";
+import { toTitleCase } from "magnate-core";
 import { HTMLAttributes, useEffect, useState } from "react";
 
 interface SpinningStatusProps<T>

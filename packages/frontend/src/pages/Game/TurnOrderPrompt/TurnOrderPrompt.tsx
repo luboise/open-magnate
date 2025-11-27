@@ -1,4 +1,4 @@
-import { MOVE_TYPE } from "magnate-core/Moves";
+import { MoveType } from "magnate-core/game";
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
@@ -20,7 +20,7 @@ function TurnOrderPrompt({ ...args }: Props) {
 	const onSlotPicked = useCallback(
 		(slot: number) =>
 			makeMove({
-				MoveType: MOVE_TYPE.PICK_TURN_ORDER,
+				MoveType: MoveType.PICK_TURN_ORDER,
 				slot: slot
 			}),
 		[]

@@ -1,3 +1,13 @@
+import {
+	APIRoutes,
+	BackendMessage,
+	FrontendMessage,
+	GameStateViewPerPlayer,
+	JoinLobbyMessage,
+	JoinLobbySubmissionData,
+	LobbySubmissionData,
+	LobbyViewPerPlayer
+} from "magnate-core";
 import { useEffect, useReducer, useRef } from "react";
 import useWebSocket, {
 	ReadyState
@@ -9,18 +19,8 @@ import FormInput from "../../global_components/Form/FormInput";
 import SelectionButtonList from "../../global_components/Form/SelectionButtonList";
 import { WEB_SOCKET_BASE_URL } from "../../hooks/useAPI";
 import useLocalVal from "../../hooks/useLocalVal";
-import {
-	APIRoutes,
-	BackendMessage,
-	FrontendMessage,
-	GameStateViewPerPlayer,
-	JoinLobbyMessage,
-	JoinLobbySubmissionData,
-	LobbySubmissionData,
-	LobbyViewPerPlayer
-} from "../../utils";
 
-import useFullGameState from "../../hooks/game/useFullGameState";
+import useFullGameState from "../../hooks/game/useTrueGameState";
 import LobbyManager from "./LobbyManager/LobbyManager";
 import { PageGameAtom } from "./PageGameContext";
 
@@ -55,7 +55,7 @@ function PageLobby() {
 		LOCAL_STORAGE_INVITE_CODE_NAME
 	);
 
-	const { gamestate, setGamestate } = useFullGameState();
+	const { gameState: gamestate, setGameState: setGamestate } = useFullGameState();
 
 	const reconnectOnFail = useRef(false);
 	function reconnectLater() {
@@ -185,7 +185,7 @@ function PageLobby() {
 
 					console.debug(
 						"Received new session key: " +
-							message.data
+						message.data
 					);
 					setSessionKey(message.data);
 					reconnectLater();

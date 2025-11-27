@@ -1,22 +1,19 @@
 import "./TurnPlanner.css";
 
-import { Employee } from "magnate-core/employees/types";
+import { Employee } from "magnate-core/game/Employee";
 import { HTMLAttributes, useMemo, useState } from "react";
 import CustomPanel from "../../../global_components/CustomPanel";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
-import {
-	DemandAction,
-	GetAllTreeData
-} from "../../../utils";
 import EmployeeCard from "../Employees/EmployeeCard";
 import DemandSelector from "./DemandSelector";
 import GameActionPreview from "./GameActionPreview";
 import HiringWindow from "./HiringWindow";
 import MarketingWindow from "./MarketingWindow";
+import { EmployeeNode } from "magnate-core/game/Employee";
 
 interface TurnPlannerProps
-	extends HTMLAttributes<HTMLDivElement> {}
+	extends HTMLAttributes<HTMLDivElement> { }
 
 function TurnPlanner({ ...args }: TurnPlannerProps) {
 	const { currentTree, myEmployees, playerData } =
@@ -32,7 +29,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 
 	if (!currentTree || !playerData) return <></>;
 
-	const employees: Employee[] = GetAllTreeData(
+	const employees: Employee[] = EmployeeNode.getAllTreeData<number>(
 		currentTree
 	).map((index) => myEmployees[index]);
 
@@ -144,7 +141,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 									}
 									className={
 										selectedEmployeeIndex ===
-										index
+											index
 											? "item-highlighted"
 											: undefined
 									}

@@ -1,8 +1,8 @@
-import { EmployeeId } from "magnate-core/employees/types";
+import { RecruitAction } from "magnate-core";
+import { EmployeeId } from "magnate-core/game/types";
 import { useEffect, useMemo, useState } from "react";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
-import { RecruitAction } from "../../../utils";
 import ReserveDisplay from "../Reserve/ReserveDisplay";
 
 type Props = {

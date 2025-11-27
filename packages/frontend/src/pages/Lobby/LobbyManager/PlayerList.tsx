@@ -1,7 +1,7 @@
 import "./PlayerList.css";
 
+import { LobbyPlayerData } from "magnate-core";
 import { useMemo } from "react";
-import { LobbyPlayerData } from "../../../utils";
 import EmptyPlayer from "./EmptyPlayer";
 import PlayerDisplay from "./PlayerDisplay";
 

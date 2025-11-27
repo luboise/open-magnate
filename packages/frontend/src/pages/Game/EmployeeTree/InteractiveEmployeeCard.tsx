@@ -1,6 +1,6 @@
 import { HTMLAttributes } from "react";
 
-import { EmployeeType } from "magnate-core/employees/types";
+import { EmployeeType } from "magnate-core/game/types";
 import EmployeeCard from "../Employees/EmployeeCard";
 
 interface InteractiveEmployeeCardBaseProps

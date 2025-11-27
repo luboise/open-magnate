@@ -1,4 +1,10 @@
-import { MOVE_TYPE } from "magnate-core/Moves";
+import {
+	MapOverlayTileType,
+	MarketingAction,
+	MarketingTile,
+	RestaurantTile
+} from "magnate-core";
+import { MoveType } from "magnate-core/game";
 import { useCallback } from "react";
 import useClientState, {
 	OnTilePlacedCallback
@@ -6,12 +12,6 @@ import useClientState, {
 import { useGameStateView } from "../../../../hooks/game/useGameState";
 import usePageGame from "../../../../hooks/game/usePageGame";
 import useTurnPlanning from "../../../../hooks/game/useTurnPlanning";
-import {
-	MapOverlayTileType,
-	MarketingAction,
-	MarketingTile,
-	RestaurantTile
-} from "../../../../utils";
 
 // interface RestaurantPlacerState {
 // 	x: number;
@@ -91,7 +91,7 @@ function PlacementHandler({ placementTypes }: Props) {
 			tile
 		);
 		makeMove({
-			MoveType: MOVE_TYPE.PLACE_RESTAURANT,
+			MoveType: MoveType.PLACE_RESTAURANT,
 			x: tile.pos.x,
 			y: tile.pos.y,
 			// TODO: Fix this to support all corner directions

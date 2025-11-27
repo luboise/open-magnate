@@ -1,8 +1,8 @@
 import "./SellEvent.css";
 
+import { DinnertimeSellInfo } from "magnate-core";
 import RestaurantImage from "../../../global_components/RestaurantImage";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import { DinnertimeSellInfo } from "../../../utils";
 import House from "../Map/House";
 
 interface Props {

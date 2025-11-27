@@ -1,9 +1,9 @@
-import { MOVE_TYPE } from "magnate-core/Moves";
+import { BASE_SALARY } from "magnate-core";
+import { MoveType } from "magnate-core/game";
 import { HTMLAttributes, useMemo, useReducer } from "react";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
-import { BASE_SALARY } from "../../../utils";
 import DinnertimeRecap from "./DinnertimeRecap";
 import "./SalaryHandler.css";
 
@@ -87,7 +87,7 @@ function SalaryHandler({ ...args }: Props) {
 					onClick={() => {
 						makeMove({
 							MoveType:
-								MOVE_TYPE.NEGOTIATE_SALARIES,
+								MoveType.NEGOTIATE_SALARIES,
 							employeesToFire:
 								state.employeesToRemove
 						});

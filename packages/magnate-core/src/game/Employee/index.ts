@@ -87,13 +87,13 @@ export const Employee = {
 		return employeeType in EmployeesByType;
 	},
 
-	fromId(id: EmployeeType): Employee {
-		if (!Employee.isValidType(id))
+	fromType(employeeType: EmployeeType): Employee {
+		if (!Employee.isValidType(employeeType))
 			throw new Error(
 				"Attempted to get invalid employee ID from ById(): " +
-					id
+					employeeType
 			);
-		return { ...EmployeesByType[id] };
+		return { ...EmployeesByType[employeeType] };
 	},
 	canHire(employee: Employee) {
 		return (

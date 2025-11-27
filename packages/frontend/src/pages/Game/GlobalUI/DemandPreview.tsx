@@ -1,15 +1,15 @@
-import "./Demand.css";
+import "./DemandPreview.css";
 
-import { DemandType } from "magnate-core/demand/Supply";
 import { ImgHTMLAttributes } from "react";
-import Image from "../../../../global_components/Image";
+import Image from "../../../global_components/Image";
+import { DemandType } from "magnate-core/game";
 
 interface Props
 	extends ImgHTMLAttributes<HTMLImageElement> {
 	demand: DemandType;
 }
 
-function Demand({ demand, className, ...args }: Props) {
+function GameDemandTile({ demand, className, ...args }: Props) {
 	return (
 		<Image
 			className={`demand-image ${className}`}
@@ -19,4 +19,4 @@ function Demand({ demand, className, ...args }: Props) {
 	);
 }
 
-export default Demand;
+export default GameDemandTile;

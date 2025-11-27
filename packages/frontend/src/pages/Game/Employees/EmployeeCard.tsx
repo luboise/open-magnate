@@ -1,4 +1,4 @@
-import { Employee } from "magnate-core/employees";
+import { Employee } from "magnate-core/game";
 
 import "./EmployeeCard.css";
 

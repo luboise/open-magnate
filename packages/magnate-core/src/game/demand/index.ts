@@ -18,3 +18,8 @@ export interface Supply<T extends DemandType[]> {
 	demand_type: T;
 	amount: number;
 }
+
+export * from "./DemandRecord";
+export * from "./DrinkEmployee";
+export * from "./DrinkTile";
+export * from "./FoodEmployee";

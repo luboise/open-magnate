@@ -21,7 +21,7 @@
 
 	grid-auto-rows: 1fr;
 
-	background-color: black;
+	background-color: grey;
 
 	gap: var(--map-gap-width);
 	/* GRID TEMPLATE ROWS MUST BE SPECIFIED FROM THE CODE SIDE */

@@ -1,12 +1,12 @@
-import { useMemo } from "react";
-import useClientState from "../../../hooks/game/useClientState";
-import { useGameStateView } from "../../../hooks/game/useGameState";
 import {
 	MarketingTile,
 	MarketingTilesByNumber,
 	PartialMarketingTile
-} from "../../../utils";
-import MapMarketingTile from "../Map/MapMarketingTile";
+} from "magnate-core";
+import { useMemo } from "react";
+import useClientState from "../../../hooks/game/useClientState";
+import { useGameStateView } from "../../../hooks/game/useGameState";
+import MapMarketingTile from "../Map/Tiles/MapMarketingTile";
 import "./MarketingWindow.css";
 
 interface Props {

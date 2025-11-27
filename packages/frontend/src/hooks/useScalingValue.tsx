@@ -1,5 +1,5 @@
+import { Clamp } from "magnate-core";
 import { useState } from "react";
-import { Clamp } from "../utils";
 
 function useScalingValue(
 	minScale: number = 0.01,

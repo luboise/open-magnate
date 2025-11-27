@@ -1,12 +1,12 @@
-import { HouseView } from "../../../utils";
 import "./House.css";
 
 import { HTMLAttributes } from "react";
-import Demand from "./Tiles/Demand";
+import GameDemandTile from "../GlobalUI/DemandPreview";
+import { HouseTile, DemandRecord } from "magnate-core";
 
 interface HouseProps
 	extends HTMLAttributes<HTMLDivElement> {
-	house: HouseView;
+	house: HouseTile;
 	usePositioning?: boolean;
 }
 
@@ -24,24 +24,24 @@ function House({
 				...style,
 				...(usePositioning
 					? {
-							gridColumn: `${house.pos.x + 1} / span 2`,
-							gridRow: `${house.pos.y + 1} / span 2`
-						}
+						gridColumn: `${house.position.x + 1} / span 2`,
+						gridRow: `${house.position.y + 1} / span 2`
+					}
 					: {})
 			}}
 			{...args}
 		>
 			<div className="game-map-house-demand-box">
-				{...house.demand.map((d) => (
+				{...DemandRecord.toDemands(house.demand).map((d) => (
 					<div className="game-map-house-demand-element">
-						<Demand demand={d} />
+						<GameDemandTile demand={d} />
 					</div>
 				))}
 			</div>
 
 			{/* <Image url=""/> */}
 			<div className="house-number-label corner-button">
-				{house.priority}
+				{house.houseNumber}
 			</div>
 		</div>
 	);

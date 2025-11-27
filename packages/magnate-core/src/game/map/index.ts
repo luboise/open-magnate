@@ -2,11 +2,15 @@ import { PLAYER_DEFAULTS, PlayerCount } from "../defaults";
 import { DrinkTile } from "../demand/DrinkTile";
 import { MarketingTile } from "../marketing";
 import { Position, Rotation } from "./area";
-import { RoadTile } from "./tiles";
-import { HouseTile } from "./tiles/HouseTile";
-import { RestaurantTile } from "./tiles/RestaurantTiles";
+import {
+	HouseTile,
+	RestaurantTile,
+	RoadTile
+} from "./tiles";
 
+export * from "./area";
 export * from "./parsing/MapParsing";
+export * from "./tiles";
 
 export type MapTileType =
 	| "DRINK"

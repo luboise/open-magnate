@@ -4,12 +4,11 @@ import {
 	Employee,
 	EmployeeId,
 	EmployeeType,
-	getEmployeeById,
-	isValidEmployeeId
-} from "magnate-core/employees";
+} from "magnate-core/game";
+
 import { HTMLAttributes } from "react";
-import { useGameStateView } from "../../../hooks/game/useGameState";
 import EmployeeCard from "../Employees/EmployeeCard";
+import useFullGameState from "../../../hooks/game/useTrueGameState";
 
 interface ReserveDisplayProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -24,22 +23,25 @@ function ReserveDisplay({
 	onEmployeeClicked,
 	...args
 }: ReserveDisplayProps) {
-	const { reserve } = useGameStateView();
-	[];
-	if (!reserve) return <></>;
 
-	const employeeEntries = Object.entries(reserve).filter(
-		([employeeId]) =>
-			isValidEmployeeId(employeeId) &&
+	const { gameState } = useFullGameState();
+
+	if (!gameState) return <></>;
+
+	const { cardReserve } = gameState;
+
+	const employeeEntries = Object.entries(cardReserve).filter(
+		([employeeType]) =>
+			Employee.isValidType(employeeType) &&
 			(!employeeFilter ||
-				employeeFilter(getEmployeeById(employeeId)))
+				employeeFilter(Employee.fromType(employeeType)))
 	);
 
 	const employeeList: Array<
 		[Employee | undefined, number]
 	> = employeeEntries.map(([employeeId, quantity]) => {
-		const valid = isValidEmployeeId(employeeId);
-		const newemployee = getEmployeeById(
+		const valid = Employee.isValidType(employeeId);
+		const newemployee = Employee.fromType(
 			employeeId as EmployeeId
 		);
 

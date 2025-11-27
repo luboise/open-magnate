@@ -1,11 +1,11 @@
 import {
 	MarketingTile,
 	PartialMarketingTile
-} from "../../../utils";
+} from "magnate-core";
 import "./MapMarketingTile.css";
 
 import { HTMLAttributes } from "react";
-import Demand from "./Tiles/Demand";
+import GameDemandTile from "../../GlobalUI/DemandPreview";
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
 	tile: PartialMarketingTile | MarketingTile;
@@ -31,11 +31,11 @@ function MapMarketingTile({
 				...{
 					...(snapToGrid
 						? {
-								gridColumn: `${tile.pos.x + 1} / span ${tile.width}`,
-								gridRow: `${tile.pos.y + 1} / span ${tile.height}`,
-								width: "100%",
-								height: "100%"
-							}
+							gridColumn: `${tile.pos.x + 1} / span ${tile.width}`,
+							gridRow: `${tile.pos.y + 1} / span ${tile.height}`,
+							width: "100%",
+							height: "100%"
+						}
 						: {})
 				}
 			}}
@@ -44,7 +44,7 @@ function MapMarketingTile({
 			<span>Tile {tile.tileNumber}</span>
 
 			{"demand" in tile ? (
-				<Demand demand={tile.demand} />
+				<GameDemandTile demand={tile.demand} />
 			) : (
 				<></>
 			)}

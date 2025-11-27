@@ -1,6 +1,6 @@
 import { EmployeeNode } from "../..";
 import { ENTRANCE_CORNER, Position } from "../../map/area";
-import { RestaurantTile } from "../../map/tiles/RestaurantTiles";
+import { RestaurantTile } from "../../map/tiles/RestaurantTile";
 import { TurnAction } from "../actions";
 import { ExecuteTurn } from "../events/Turns";
 import { GameState } from "../GameState";
@@ -130,4 +130,3 @@ export function applyMoveToGamestate(
 
 	return newState;
 }
-

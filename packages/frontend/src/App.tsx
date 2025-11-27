@@ -13,10 +13,11 @@ import {
 	Routes
 } from "react-router-dom";
 // import PageAllMapPieces from "./pages/PageAllMapPieces";
+import { FrontendRoutes } from "magnate-core";
 import { RecoilRoot } from "recoil";
 import PageHomepage from "./pages/HomePage/PageHomepage";
 import PageLobby from "./pages/Lobby/PageLobby";
-import { FrontendRoutes } from "./utils";
+import PageMapTest from "./pages/Test/PageMapTest";
 
 // const flexFont = function () {
 // 	var divs = document.getElementsByClassName(
@@ -41,6 +42,9 @@ function App() {
 			<h1>Open Magnate</h1>
 			<BrowserRouter>
 				<Routes>
+					<Route path={"/test/map"}
+						element={<PageMapTest />}
+					/>
 					<Route
 						path={FrontendRoutes.HOME}
 						element={<PageHomepage />}

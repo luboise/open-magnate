@@ -1,4 +1,4 @@
-import { RestaurantTile } from "../../../utils";
+import { RestaurantTile } from "magnate-core";
 
 export function GetMyRestaurantTile(): RestaurantTile {
 	return {

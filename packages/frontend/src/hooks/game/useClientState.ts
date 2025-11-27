@@ -1,7 +1,6 @@
-import { Position } from "magnate-core/area";
+import { Clamp, Position } from "magnate-core";
 import { MapOverlayTile } from "magnate-core/map";
 import { RotationAmount } from "magnate-core/map/tiles/types";
-import { Clamp } from "magnate-core/utils";
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
 import { useBoardInfo } from "./useMap";

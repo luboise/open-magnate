@@ -1,7 +1,7 @@
 import "./PlayerDisplay.css";
 
+import { LobbyPlayerData } from "magnate-core";
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { LobbyPlayerData } from "../../../utils";
 
 function PlayerDisplay(props: { player: LobbyPlayerData }) {
 	return (

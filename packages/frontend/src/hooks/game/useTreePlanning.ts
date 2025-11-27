@@ -1,13 +1,10 @@
+import { EmployeeNode } from "magnate-core";
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
 import {
 	findEmployeeRecursive,
 	findParentNode
 } from "../../pages/Game/EmployeeTree/EmployeeTree";
-import {
-	EmployeeNode,
-	IsValidEmployeeTree
-} from "../../utils";
 import { useGameStateView } from "./useGameState";
 
 const treePlanningAtom = atom<EmployeeNode>({
@@ -32,7 +29,12 @@ function useTreePlanning() {
 
 	const setTree = useCallback(
 		(newTree: EmployeeNode) => {
-			if (!IsValidEmployeeTree(newTree, myEmployees))
+			if (
+				!EmployeeNode.isValidTree(
+					newTree,
+					myEmployees
+				)
+			)
 				throw new Error(
 					"Attempted to set tree to invalid tree."
 				);

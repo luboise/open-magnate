@@ -2,23 +2,19 @@ import "./MagnateMap.css";
 
 import { HTMLAttributes, PropsWithChildren } from "react";
 
-import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useGameStateView } from "../../../hooks/game/useGameState";
-import useMapTileInteraction from "../../../hooks/game/useMapTileInteraction";
-import {
-	GetMarketingTileFromView,
-	MAP_PIECE_HEIGHT,
-	MAP_PIECE_WIDTH,
-	MapBackgroundTile
-} from "../../../utils";
 import House from "./House";
-import MapMarketingTile from "./MapMarketingTile";
-import MapTile from "./MapTile";
+import { GameMap, HouseTile, MAP_PIECE_HEIGHT, MAP_PIECE_WIDTH, MapTile } from "magnate-core/game";
+import GameDemandTile from "../GlobalUI/DemandPreview";
+import GameMapTile from "./Tiles/GameMapTile";
+import GameRoadTile from "./Tiles/GameRoadTile";
 
-interface MapProps extends HTMLAttributes<HTMLDivElement> {}
+interface MapProps extends HTMLAttributes<HTMLDivElement> {
+	gameMap: GameMap
+}
 
 function MagnateMap({
 	children,
+	gameMap,
 	style,
 	...args
 }: PropsWithChildren<MapProps>) {
@@ -30,6 +26,7 @@ function MagnateMap({
 	// 	getAllRenderables
 	// } = useMap();
 
+	/*
 	const {
 		mapRowOrder: map,
 		houses,
@@ -37,8 +34,9 @@ function MagnateMap({
 		players,
 		marketingCampaigns
 	} = useGameStateView();
+	*/
 
-	const { nowHovering } = useMapTileInteraction();
+	// const { nowHovering } = useMapTileInteraction();
 
 	// console.debug(
 	// "Rendering magnate map.",
@@ -49,7 +47,7 @@ function MagnateMap({
 	// );
 
 	function FilterPreviewFiles(
-		_tile: MapBackgroundTile
+		_tile: MapTile
 	): boolean {
 		// if (mapType === "cropped") {
 		// 	return (
@@ -64,61 +62,66 @@ function MagnateMap({
 		return true;
 	}
 
-	if (!map) return <></>;
+	const mapWidth = gameMap.width;
+	const mapHeight = gameMap.height;
+
 
 	return (
 		<div
 			className="map-preview-container"
 			style={{
-				gridTemplateColumns: `repeat(${map[0].length}, 1fr)`,
-				aspectRatio: `${map[0].length} / ${map.length}`,
+				gridTemplateColumns: `repeat(${mapWidth}, 1fr)`,
+				aspectRatio: `${mapHeight} / ${mapHeight}`,
 				...style
 			}}
 			{...args}
-			onMouseLeave={() => nowHovering(null)}
+			onMouseLeave={() => { } /*nowHovering(null)*/}
 		>
 			{/* TODO: Optimise the table rendering?? It seems a bit sluggish */}
 			<table
 				style={{
 					// Fit the parent grid fully
-					gridColumn: `1 / span ${map[0].length}`,
-					gridRow: `1 / span ${map.length}`
+					gridColumn: `1 / span ${mapWidth}`,
+					gridRow: `1 / span ${mapHeight}`
 				}}
 			>
 				<tbody>
 					{...new Array(
-						map[0].length / MAP_PIECE_WIDTH
+						mapWidth / MAP_PIECE_WIDTH
 					).fill(
 						<tr>
 							{...new Array(
-								map.length /
-									MAP_PIECE_HEIGHT
+								mapHeight /
+								MAP_PIECE_HEIGHT
 							).fill(<td />)}
 						</tr>
 					)}
 				</tbody>
 			</table>
 
+
+
 			{/* Tiles */}
-			{...map
-				.flat(2)
+			{...gameMap.tiles
 				.filter(FilterPreviewFiles)
-				.map((tile) => (
-					<MapTile
-						onMouseEnter={() => {
-							nowHovering(tile);
-						}}
-						tile={tile}
-					/>
-				))}
+				.map((tile) => {
+					switch (tile.tileType) {
+						case "HOUSE": {
+							return <House house={tile as HouseTile} />
+						}
+						case "DRINK": {
+							return <GameMapTile tile={tile} />
+						}
+						case "ROAD": {
+							return <GameRoadTile tile={tile} />
+						}
+					}
+					return <></>;
+				})}
 
-			{/* Houses */}
-			{...(houses ?? []).map((house) => (
-				<House house={house} />
-			))}
-
-			{/* Restaurant */}
-			{...restaurants.map((restaurant) => {
+			{
+				/*
+				...restaurants.map((restaurant) => {
 				const player = players?.find(
 					(player) =>
 						player.playerNumber ===
@@ -138,9 +141,12 @@ function MagnateMap({
 						}}
 					/>
 				);
-			})}
+			})
+			*/
+			}
 
-			{...marketingCampaigns.map((campaign) => {
+			{/*
+				...marketingCampaigns.map((campaign) => {
 				const mt =
 					GetMarketingTileFromView(campaign);
 				return (
@@ -149,7 +155,9 @@ function MagnateMap({
 						tile={mt}
 					/>
 				);
-			})}
+			})
+			*/
+			}
 
 			{children}
 		</div>

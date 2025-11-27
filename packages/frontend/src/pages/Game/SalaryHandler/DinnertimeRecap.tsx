@@ -1,6 +1,6 @@
+import { GameEventView } from "magnate-core";
 import { useMemo, useState } from "react";
 import Button from "../../../global_components/Button";
-import { GameEventView } from "../../../utils";
 import "./DinnertimeRecap.css";
 import SellEvent from "./SellEvent";
 

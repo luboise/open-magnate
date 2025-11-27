@@ -1,5 +1,5 @@
-import { DemandType } from "magnate-core/demand";
-import Demand from "../Map/Tiles/Demand";
+import { DemandType } from "magnate-core/game";
+import GameDemandTile from "../GlobalUI/DemandPreview";
 
 type Props = {
 	demands: DemandType[];
@@ -15,7 +15,7 @@ function DemandSelector({
 	return (
 		<div className="demand-selector">
 			{...demands.map((demand) => (
-				<Demand
+				<GameDemandTile
 					demand={demand}
 					onClick={() => onDemandClicked(demand)}
 				/>

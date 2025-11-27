@@ -28,5 +28,13 @@ export const DemandRecord = {
 		]);
 
 		return ReduceTupleArray(tuples);
+	},
+
+	toDemands(dr: DemandRecord): DemandType[] {
+		return Object.entries(dr)
+			.map(([demandType, amount]) =>
+				Array(amount).fill(demandType)
+			)
+			.flat();
 	}
 };

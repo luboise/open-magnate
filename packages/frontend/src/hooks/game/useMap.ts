@@ -1,6 +1,6 @@
+import { HouseView, MapBackgroundTile } from "magnate-core";
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
-import { HouseView, MapBackgroundTile } from "../../utils";
 import { useGameStateView } from "./useGameState";
 
 type MapRenderListType = Record<string, JSX.Element[]>;

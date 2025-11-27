@@ -33,5 +33,3 @@ export function GetReactChildId(
 
 	return id;
 }
-
-export * from "magnate-core";

@@ -1,10 +1,7 @@
+import { Position } from "magnate-core/game";
 import useLocalVal from "../hooks/useLocalVal";
 import usePanning from "../hooks/usePanning";
-import {
-	Colour,
-	GetReactChildId,
-	Position
-} from "../utils";
+import { Colour, GetReactChildId } from "../utils";
 import "./Resizable.css";
 
 import React, {
@@ -14,7 +11,7 @@ import React, {
 	useReducer
 } from "react";
 
-interface BaseResizeState {}
+interface BaseResizeState { }
 
 interface IdleState extends BaseResizeState {
 	type: "IDLE";
@@ -28,10 +25,10 @@ type ResizableState = IdleState | DraggingState;
 
 type ResizableAction =
 	| {
-			type: "START_RESIZE";
-			startWidth: number;
-			startPos: Position;
-	  }
+		type: "START_RESIZE";
+		startWidth: number;
+		startPos: Position;
+	}
 	| { type: "STOP_RESIZE"; newScale: number };
 
 interface ResizableProps
@@ -175,11 +172,11 @@ function Resizable({
 	const currentScale: number =
 		state.type === "DRAGGING"
 			? calculateScale(
-					scale ?? 1,
-					state.startWidth,
-					scaleOffset
-				)
-			: (scale ?? 1);
+				scale ?? 1,
+				state.startWidth,
+				scaleOffset
+			)
+			: scale ?? 1;
 
 	function onScaleStop() {
 		if (state.type === "IDLE") return;
@@ -248,7 +245,7 @@ function Resizable({
 					transformOrigin: "0 0",
 					display: "inline-flex"
 				}}
-				// onLoad={fetchAspectRatio}
+			// onLoad={fetchAspectRatio}
 			>
 				<div
 					className="resizable-element-top-tab"

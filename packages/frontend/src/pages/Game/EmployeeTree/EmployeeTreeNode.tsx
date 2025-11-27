@@ -1,5 +1,5 @@
-import { EmployeeNode } from "magnate-core/employees/EmployeeStructure";
-import { Employee } from "magnate-core/employees/types";
+import { EmployeeNode } from "magnate-core/game/EmployeeStructure";
+import { Employee } from "magnate-core/game/types";
 import { HTMLAttributes } from "react";
 import EmployeeCard from "../Employees/EmployeeCard";
 import {

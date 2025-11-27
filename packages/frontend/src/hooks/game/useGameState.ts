@@ -1,23 +1,6 @@
 import { selector, useRecoilValue } from "recoil";
 
-import { GetTransposed } from "magnate-core/area/AreaUtils";
-import { Employee } from "magnate-core/employees/types";
-import {
-	EmployeeNode,
-	GameEventView,
-	GamePlayerViewPrivate,
-	GamePlayerViewPublic,
-	HouseView,
-	MapBackgroundTile,
-	MarketingCampaignView,
-	ParseEmployeeTree,
-	Reserve,
-	RestaurantView,
-	TurnProgress,
-	getEmployeeById,
-	isValidEmployeeId
-} from "../../utils";
-import { GameStateAtom } from "./useFullGameState";
+import { GameStateAtom } from "./useTrueGameState";
 
 const RECOIL_MAP_COL_ORDER_KEY = "PARSED_MAP_COL_ORDER";
 const RECOIL_MAP_ROW_ORDER_KEY = "PARSED_MAP_ROW_ORDER";
@@ -147,7 +130,7 @@ const myEmployeesSelector = selector<Employee[]>({
 		playerData.employees.forEach((employeeId) => {
 			if (!isValidEmployeeId(employeeId)) return;
 
-			myEmployees.push(getEmployeeById(employeeId));
+			myEmployees.push(Employee.fromId(employeeId));
 		});
 
 		return myEmployees;

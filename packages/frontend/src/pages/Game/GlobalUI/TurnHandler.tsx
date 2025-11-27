@@ -1,17 +1,13 @@
 import "./TurnHandler.css";
 
-import { MOVE_TYPE } from "magnate-core/Moves";
 import Button from "../../../global_components/Button";
 import SpinningStatus from "../../../global_components/SpinningStatus";
 import { useGameStateView } from "../../../hooks/game/useGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
-import {
-	RESTAURANT_NAMES,
-	TurnProgressValues
-} from "../../../utils";
 import TurnOrderList from "./TurnOrderList";
+import { MoveType, RESTAURANT_NAMES, TurnProgressValues } from "magnate-core/game";
 
 const BLOBBY_CLASS_NAME = "game-turn-handler-blobby";
 
@@ -43,12 +39,12 @@ function TurnHandler() {
 
 		if (turnProgress === "USE_EMPLOYEES") {
 			makeMove({
-				MoveType: MOVE_TYPE.TAKE_TURN,
+				MoveType: MoveType.WORK_EMPLOYEES,
 				actions: turnActions
 			});
 		} else if (turnProgress === "RESTRUCTURING") {
 			makeMove({
-				MoveType: MOVE_TYPE.RESTRUCTURE,
+				MoveType: MoveType.RESTRUCTURE,
 				tree: plannedTree
 			});
 		}
@@ -70,9 +66,9 @@ function TurnHandler() {
 				{isMyTurn
 					? "Your turn"
 					: "Waiting for " +
-						(currentPlayer === null
-							? "others to ready up."
-							: `${RESTAURANT_NAMES[currentPlayer.restaurant]}...`)}
+					(currentPlayer === null
+						? "others to ready up."
+						: `${RESTAURANT_NAMES[currentPlayer.restaurant]}...`)}
 			</h2>
 
 			<SpinningStatus

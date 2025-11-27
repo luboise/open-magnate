@@ -5,7 +5,7 @@ import React, {
 	useReducer
 } from "react";
 
-import { Position } from "../utils";
+import { Position } from "magnate-core/game";
 import useLocalVal from "./useLocalVal";
 
 interface PanningState {

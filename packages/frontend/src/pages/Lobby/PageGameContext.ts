@@ -1,5 +1,5 @@
+import { BackendMessage } from "magnate-core";
 import { atom } from "recoil";
-import { BackendMessage } from "../../utils";
 
 type PageGameAtomObject = {
 	sendMessage: (

@@ -12,19 +12,6 @@ export interface JoinLobbySubmissionData {
 	password?: string;
 }
 
-/*
-export type MagnateLobbyView = {
-	lobbyId: number;
-	lobbyName: string;
-	playerCount: number;
-	hosting: boolean;
-	lobbyPlayers: LobbyPlayerData[];
-	inGame: boolean;
-	gameState: GameStateViewPerPlayer;
-	inviteCode: string;
-};
-*/
-
 export interface LobbyPlayerData {
 	name: string;
 	playerIndex: number;

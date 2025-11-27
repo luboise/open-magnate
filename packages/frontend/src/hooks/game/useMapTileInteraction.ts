@@ -1,8 +1,8 @@
-import { atom, useRecoilState } from "recoil";
 import {
 	MapBackgroundTile,
 	MapOverlayTile
-} from "../../utils";
+} from "magnate-core";
+import { atom, useRecoilState } from "recoil";
 
 type HoveringType = MapOverlayTile | MapBackgroundTile;
 

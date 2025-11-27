@@ -1,5 +1,6 @@
 export * from "./GameState";
 export * from "./Moves";
+export * from "./actions";
 export * from "./events";
 
 export type GameStatus =

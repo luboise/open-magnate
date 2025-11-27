@@ -3,10 +3,7 @@ import "./GameActionPreview.css";
 import { HTMLAttributes, useMemo } from "react";
 import Button from "../../../global_components/Button";
 import { useGameStateView } from "../../../hooks/game/useGameState";
-import {
-	TurnAction,
-	getEmployeeById
-} from "../../../utils";
+import { TurnAction, Employee } from "magnate-core";
 
 interface GameActionPreviewProps
 	extends HTMLAttributes<HTMLDivElement> {
@@ -21,12 +18,12 @@ function GameActionPreview({
 }: GameActionPreviewProps) {
 	const { myEmployees } = useGameStateView();
 
-	const employee = myEmployees[gameAction.employeeIndex];
+	const employee = myEmployees[gameAction.employeeId];
 
 	const details = useMemo(() => {
 		switch (gameAction.type) {
 			case "RECRUIT":
-				return `Hired ${getEmployeeById(gameAction.recruiting).name}`;
+				return `Hired ${Employee.fromId(gameAction.recruiting).name}`;
 			default:
 				return "";
 		}
