@@ -1,8 +1,6 @@
-import {
-	EmployeeType,
-	GameState,
-	MoveTakeTurn
-} from "@/game";
+import { EmployeeType } from "../..";
+import { GameState } from "../GameState";
+import { MoveTakeTurn } from "../Moves";
 
 export function ExecuteTurn(
 	state: GameState,

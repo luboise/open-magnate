@@ -1,4 +1,4 @@
-import { GameState, PlayerCount } from "@/game";
+import { GameState, PlayerCount } from "..";
 
 export interface LobbySubmissionData {
 	name: string;

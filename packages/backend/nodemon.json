@@ -2,5 +2,6 @@
 	"watch": ["../backend"],
 	"ext": "ts,json",
 	"ignore": ["**/node_modules/**"],
+	"ignore": ["src/database/datasource/generated"],
 	"exec": "npm run build && npm start"
 }

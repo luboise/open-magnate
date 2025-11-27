@@ -1,9 +1,9 @@
 import { FoodType, Supply } from ".";
 import {
 	BaseEmployee,
-	EmployeeColour,
 	EmployeeCreationData
 } from "../Employee";
+import { EmployeeColour } from "../Employee/EmployeeColour";
 
 export const FoodEmployeeTypes = [
 	"food_basic",

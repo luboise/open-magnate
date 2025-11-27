@@ -1,5 +1,5 @@
-import { Move } from "@/game";
 import { BaseMessage, SharedMessage } from ".";
+import { Move } from "../..";
 import {
 	JoinLobbySubmissionData,
 	LobbySubmissionData
@@ -37,3 +37,4 @@ export interface MakeMoveMessage extends BaseMessage {
 export interface StartGameMessage extends BaseMessage {
 	type: "START_GAME";
 }
+

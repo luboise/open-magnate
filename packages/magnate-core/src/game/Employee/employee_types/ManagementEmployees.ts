@@ -1,8 +1,5 @@
-import {
-	BaseEmployee,
-	EmployeeColour,
-	EmployeeCreationData
-} from "..";
+import { BaseEmployee, EmployeeCreationData } from "..";
+import { EmployeeColour } from "../EmployeeColour";
 
 export const ManagementEmployeeTypes = [
 	"mgmt_1",

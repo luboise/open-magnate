@@ -1,4 +1,5 @@
-import { BaseEmployee, EmployeeColour } from "..";
+import { BaseEmployee } from "..";
+import { EmployeeColour } from "../EmployeeColour";
 
 const WAITRESS_EMPLOYEE_IDS = ["waitress"] as const;
 

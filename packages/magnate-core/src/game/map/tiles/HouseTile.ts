@@ -1,5 +1,5 @@
-import { DemandRecord } from "@/game/demand/DemandRecord";
 import { BaseMapTile } from "..";
+import { DemandRecord } from "../../demand/DemandRecord";
 import { Position } from "../area";
 
 export interface HouseTile extends BaseMapTile {

@@ -1,9 +1,9 @@
 import { MarketingEmployeeType, MarketingType } from ".";
 import {
 	BaseEmployee,
-	EmployeeColour,
 	EmployeeCreationData
 } from "../Employee";
+import { EmployeeColour } from "../Employee/EmployeeColour";
 
 export interface MarketingEmployee extends BaseEmployee {
 	department: "MARKETING";

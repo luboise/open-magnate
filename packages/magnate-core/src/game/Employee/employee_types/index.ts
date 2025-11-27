@@ -1,6 +1,6 @@
-import { FoodEmployeeType } from "@/game/demand/FoodEmployee";
-import { MarketingEmployeeType } from "@/game/marketing";
+import { MarketingEmployeeType } from "../..";
 import { DrinkEmployeeType } from "../../demand/DrinkEmployee";
+import { FoodEmployeeType } from "../../demand/FoodEmployee";
 import { ManagementEmployeeType } from "./ManagementEmployees";
 import { RecruitmentEmployeeType } from "./RecruitmentEmployees";
 import { WaitressEmployeeType } from "./WaitressEmployees";

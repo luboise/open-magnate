@@ -1,22 +1,23 @@
 {
 	"compilerOptions": {
+		/*
 		"target": "ES2022",
 		"useDefineForClassFields": true,
 		// "lib": ["ES2021", "DOM", "DOM.Iterable"],
-		"baseUrl": "./",
 		"skipLibCheck": true,
 		"outDir": "dist",
 		"rootDir": "src",
 		"declaration": true,
 
+		"module": "nodenext",
 		"moduleResolution": "bundler",
 
-		/* Bundler mode */
+		// Bundler mode 
 
 		"noEmit": false,
 		// "allowImportingTsExtensions": true,
 
-		/* Linting */
+		// Linting
 		"strict": true,
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
@@ -25,17 +26,28 @@
 		// Source map for debugging
 		"sourceMap": true,
 		"composite": true,
+		*/
 
+		/*
+		"baseUrl": "./",
 		"paths": {
-			"*": [
-				"src/*",
-				"node_modules/*"
-			],
 			"@/*": ["src/*"]
-		}
+		},
+		*/
+
+		"target": "ES2022",
+    	"module": "nodenext",
+    	"moduleResolution": "bundler",
+    	"declaration": true,
+    	"rootDir": "./src",
+    	"outDir": "./dist",
+    	"esModuleInterop": true,
+    	"forceConsistentCasingInFileNames": true,
+    	"strict": true,
+    	"skipLibCheck": true
 	},
-	"include": [
-		"src/**/*"
-	],
+	// "include": [
+	// 	"src/**/*"
+	// ],
 }
 

@@ -1,25 +1,7 @@
 import { Request } from "express";
 
 // Fixes issues from using base WebSocket without extended methods
-
-import {
-	AllUpdatedMessage,
-	BackendMessage,
-	BaseMessage,
-	CreateLobbyMessage,
-	FrontendMessage,
-	GameState,
-	GameStateUpdatedMessage,
-	GameStateView,
-	JoinLobbyMessage,
-	LeaveLobbyMessage,
-	LobbySubmissionData,
-	LobbyUpdatedMessage,
-	MakeMoveMessage,
-	StartGameMessage,
-	applyMoveToGamestate
-} from "magnate-core";
-
+//
 import { FullLobby } from "src/database/controller/lobby.controller";
 import { UserSession } from "src/database/datasource";
 import { RouteHandler } from "src/types";
@@ -27,6 +9,27 @@ import {
 	LobbyController,
 	UserSessionController
 } from "../database";
+
+import {
+	GameState,
+	applyMoveToGamestate
+} from "magnate-core/game";
+
+import {
+	AllUpdatedMessage,
+	BackendMessage,
+	BaseMessage,
+	CreateLobbyMessage,
+	FrontendMessage,
+	GameStateUpdatedMessage,
+	GameStateView,
+	JoinLobbyMessage,
+	LeaveLobbyMessage,
+	LobbySubmissionData,
+	LobbyUpdatedMessage,
+	MakeMoveMessage,
+	StartGameMessage
+} from "magnate-core/networking";
 
 import WebSocket from "ws";
 import { connectionsToWebsocket } from "./connections";

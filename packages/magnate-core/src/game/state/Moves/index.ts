@@ -1,8 +1,9 @@
-import { EmployeeNode, GameState } from "@/game";
-import { ENTRANCE_CORNER, Position } from "@/game/map/area";
-import { RestaurantTile } from "@/game/map/tiles/RestaurantTiles";
+import { EmployeeNode } from "../..";
+import { ENTRANCE_CORNER, Position } from "../../map/area";
+import { RestaurantTile } from "../../map/tiles/RestaurantTiles";
 import { TurnAction } from "../actions";
 import { ExecuteTurn } from "../events/Turns";
+import { GameState } from "../GameState";
 
 export enum MoveType {
 	SELECT_BANK_RESERVE = "SELECT_BANK_RESERVE",
@@ -129,3 +130,4 @@ export function applyMoveToGamestate(
 
 	return newState;
 }
+

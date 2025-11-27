@@ -1,10 +1,12 @@
 import {
 	BaseEmployee,
 	DrinkType,
-	EmployeeColour,
 	EmployeeCreationData,
 	Supply
 } from "..";
+
+import { EmployeeColour } from "../Employee/EmployeeColour";
+
 import { Reach } from "../map/area";
 
 export interface DrinkEmployee extends BaseEmployee {

@@ -1,5 +1,3 @@
-import { RESTAURANT_NAMES } from "../../utils";
-
 // import prisma from "../src/datasource";
 // const [
 // 	seedRestaurant1,
@@ -11,6 +9,8 @@ import { RESTAURANT_NAMES } from "../../utils";
 // ]: Partial<Restaurant>[] = RESTAURANT_NAMES.map((res) => ({
 // 	name: res
 // }));
+
+import { RESTAURANT_NAMES } from "magnate-core";
 
 export const SEED_RESAURANTS = RESTAURANT_NAMES.map(
 	(res, index) => {

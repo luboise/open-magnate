@@ -1,6 +1,6 @@
-import { EmployeeType } from "@/game/Employee";
-import { DemandType } from "@/game/demand";
-import { MarketingTile } from "@/game/marketing";
+import { EmployeeType } from "../..";
+import { DemandType } from "../../demand";
+import { MarketingTile } from "../../marketing";
 
 export type ActionType =
 	| "RECRUIT"

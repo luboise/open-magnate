@@ -1,8 +1,5 @@
-import {
-	BaseEmployee,
-	EmployeeColour,
-	EmployeeCreationData
-} from "..";
+import { BaseEmployee, EmployeeCreationData } from "..";
+import { EmployeeColour } from "../EmployeeColour";
 
 const RecruitmentEmployeeTypes = [
 	// Training

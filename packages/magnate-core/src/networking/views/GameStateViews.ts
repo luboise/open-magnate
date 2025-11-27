@@ -1,4 +1,4 @@
-import { GameState, Player } from "@/game";
+import { GameState, Player } from "../../game";
 
 export const ReadyStatuses = [
 	"NOT_READY",

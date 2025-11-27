@@ -1,5 +1,5 @@
-import { BaseMapTile } from "@/game/map";
 import { DrinkType } from ".";
+import { BaseMapTile } from "../map";
 import { Position } from "../map/area";
 
 export interface DrinkTile extends BaseMapTile {

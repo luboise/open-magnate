@@ -105,5 +105,3 @@ export function parseJsonArray(array: Prisma.JsonValue) {
 
 	return vals;
 }
-
-export * from "magnate-core";

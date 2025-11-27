@@ -1,4 +1,5 @@
-import { BaseEmployee, EmployeeColour } from "..";
+import { BaseEmployee } from "..";
+import { EmployeeColour } from "../EmployeeColour";
 
 export type CEO_EMPLOYEE_ID = "CEO";
 

@@ -1,4 +1,5 @@
 {
+	"name": "open-magnate",
 	"scripts": {
 		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
 		"prettier-format": "prettier --config .prettierrc \"**/src/**/*.ts*\" --write"
@@ -17,9 +18,5 @@
 		"typescript": "^5.4.5"
 	},
 	"private": true,
-	"workspaces": [
-		"./packages/magnate-core",
-		"./packages/frontend",
-		"./packages/backend"
-	]
+	"preinstall": "npx only-allow pnpm"
 }

@@ -1,12 +1,7 @@
-import {
-	PLAYER_DEFAULTS,
-	PlayerCount
-} from "@/game/defaults";
-
-import { Position, Rotation } from "@/game/map/area";
-
+import { PLAYER_DEFAULTS, PlayerCount } from "../defaults";
 import { DrinkTile } from "../demand/DrinkTile";
 import { MarketingTile } from "../marketing";
+import { Position, Rotation } from "./area";
 import { RoadTile } from "./tiles";
 import { HouseTile } from "./tiles/HouseTile";
 import { RestaurantTile } from "./tiles/RestaurantTiles";

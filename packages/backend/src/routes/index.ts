@@ -1,28 +1,26 @@
 import { Request, Response } from "express";
 
-import * as fs from "fs";
 import { RouteHandler } from "../types";
 import { Logger } from "../utils";
+import { routeHandler as GameRouteHandler } from "./game.routes";
+import { routeHandler as LobbyRouteHandler } from "./lobby.routes";
+import { routeHandler as OtherRouteHandler } from "./other.routes";
 
 const InitialiseRoutes: RouteHandler = (express, app) => {
 	// import the routes and then run them
 
-	// Get every route file
-	const ROUTE_FILES = fs.readdirSync(__dirname);
+	GameRouteHandler(express, app);
+	Logger.Server(`Loaded game routes.`);
 
-	ROUTE_FILES.forEach((file: string) => {
-		if (
-			file.endsWith(".routes.ts") ||
-			file.endsWith(".routes.js")
-		) {
-			require(`./${file}`)(express, app);
-			Logger.Server(`Loaded routes from ${file}`);
-		}
-	});
+	LobbyRouteHandler(express, app);
+	Logger.Server(`Loaded lobby routes.`);
+
+	OtherRouteHandler(express, app);
+	Logger.Server(`Loaded other routes.`);
 
 	// 404 for bad page requests
 	// This must happen after all other routes are loaded
-	app.get("*", (req: Request, res: Response) => {
+	app.get("", (req: Request, res: Response) => {
 		res.status(404).send(`Route not found: ${req.url}`);
 	});
 };

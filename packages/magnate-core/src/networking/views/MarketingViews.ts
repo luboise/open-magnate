@@ -1,11 +1,10 @@
-import { Position } from "@/game/map/area";
-
-import { DemandType } from "@/game/demand";
 import {
+	DemandType,
 	MarketingTile,
 	MarketingTilesByNumber,
 	MarketingType
-} from "@/game/marketing";
+} from "../../game";
+import { Position } from "../../game/map/area";
 
 export interface MarketingCampaignView {
 	priority: number;

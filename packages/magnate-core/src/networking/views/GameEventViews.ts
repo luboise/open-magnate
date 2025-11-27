@@ -1,4 +1,4 @@
-import { TransactionInfo } from "@/events";
+import { TransactionInfo } from "../../events";
 
 export interface GameEventView {
 	time: Date;

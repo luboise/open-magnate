@@ -1,5 +1,5 @@
-import { DemandType } from "@/game/demand";
-import { Position } from "@/game/map/area";
+import { DemandType } from "../../game";
+import { Position } from "../../game/map/area";
 
 export interface RestaurantView {
 	pos: Position;

@@ -2,22 +2,26 @@
 	"name": "magnate-core",
 	"version": "1.0.0",
 	"description": "",
-	"main": "./dist/index.js",
-	"types": "./dist/index.d.ts",
 	"type": "module",
+	"types": "./dist/index.d.mts",
+	"files": [
+		"dist"
+	],
+	"packageManager": "pnpm",
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
-	"devDependencies": {
-		"tsdown": "^0.16.7",
-		"typescript": "^5.2.2"
-	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsdown",
 		"test": "jest --watch"
 	},
 	"exports": {
-		".": "./dist/index.js",
-		"./*": "./dist/*/index.js"
+		".": "./dist/index.mjs",
+		"./*": "./dist/*/index.mjs",
+		"./game/Employee": "./dist/game/Employee/index.mjs"
+	},
+	"devDependencies": {
+		"tsdown": "^0.16.7",
+		"typescript": "^5.2.2"
 	}
 }

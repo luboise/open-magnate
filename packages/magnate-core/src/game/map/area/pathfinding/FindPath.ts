@@ -1,5 +1,5 @@
-import { GameMap } from "@/game/map";
-import { Position } from "@/game/map/area";
+import { Position } from "..";
+import { GameMap } from "../..";
 
 export function FindPath(
 	_map: GameMap,

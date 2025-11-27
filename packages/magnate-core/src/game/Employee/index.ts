@@ -18,17 +18,9 @@ import {
 	WaitressEmployees
 } from "./employee_types";
 
-export * from "./EmployeeStructure";
-export enum EmployeeColour {
-	BLACK = "#000000",
+import { EmployeeColour } from "./EmployeeColour";
 
-	LIGHT_GREEN = "#448055",
-	DARK_GREEN = "#008000",
-	GREY = "#808080",
-	LIGHT_BLUE = "#9bedff",
-	PINK = "rgb(165, 100, 225)",
-	RECRUITMENT_GREY = "#BEB5B4"
-}
+export * from "./EmployeeStructure";
 
 export interface BaseEmployee {
 	department: EmployeeDepartment;
