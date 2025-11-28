@@ -1,4 +1,4 @@
-import { EmployeeNode } from "../..";
+import { BANK_RESERVE_AMOUNTS, EmployeeNode } from "../..";
 import { ENTRANCE_CORNER, Position } from "../../map/area";
 import { RestaurantTile } from "../../map/tiles/RestaurantTile";
 import { TurnAction } from "../actions";
@@ -114,6 +114,22 @@ export function applyMoveToGamestate(
 			break;
 		}
 		case MoveType.SELECT_BANK_RESERVE: {
+			const amountIndex =
+				BANK_RESERVE_AMOUNTS.findIndex(
+					(v) => v === move.reserveAmount
+				);
+			if (amountIndex === -1) {
+				return (
+					"Invalid reserve amount: " +
+					move.reserveAmount
+				);
+			}
+
+			newState = GameState.clone(state);
+			newState.players[
+				playerIndex
+			].bankReserveAmount =
+				BANK_RESERVE_AMOUNTS[amountIndex];
 			break;
 		}
 		default:

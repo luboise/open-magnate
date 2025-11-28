@@ -13,6 +13,7 @@ export type Player = {
 	tree: EmployeeNode;
 	previousTree: EmployeeNode;
 	restaurantIndex: number;
+	bankReserveAmount: number;
 };
 
 export const Player = {
@@ -23,7 +24,8 @@ export const Player = {
 			employees: [CEOEmployee.create(3)],
 			previousTree: { data: 0, children: [] },
 			tree: { data: 0, children: [] },
-			restaurantIndex
+			restaurantIndex,
+			bankReserveAmount: 0
 		} satisfies Player;
 	},
 

@@ -21,6 +21,7 @@ import TurnOrderPrompt from "./TurnOrderPrompt/TurnOrderPrompt";
 import TurnPlanner from "./TurnPlanner/TurnPlanner";
 import TurnProgressIndicator from "./TurnProgressIndicator/TurnProgressIndicator";
 import useGameStateView from "../../hooks/game/useGameStateView";
+import BankReserveSelector from "./BankReserveSelector/BankReserveSelector";
 
 interface GameInterfaceState {
 	showMap: boolean;
@@ -189,6 +190,14 @@ function PageGame() {
 				else mapZoomOut();
 			}}
 		>
+			<Resizable
+				minimiseIf={
+					gameStatus !== "SELECTING_BANK_RESERVE" || !isMyTurn
+				}
+			>
+				<BankReserveSelector choices={[100, 200, 300]} id="bank-reserve-selector" />
+			</Resizable>
+
 			{state.showMap ? (
 				<MagnateMap
 					id="magnate-map"
@@ -227,7 +236,7 @@ function PageGame() {
 
 			<Resizable
 				minimiseIf={
-					gameStatus !== "TURN_ORDER_SELECTION"
+					gameStatus !== "SELECTING_TURN_ORDER"
 				}
 			>
 				<TurnOrderPrompt id="turn-order-prompt" />

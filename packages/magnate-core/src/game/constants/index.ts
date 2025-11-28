@@ -18,3 +18,7 @@ export const RESTAURANT_NAMES: string[] = [
 
 export type RESTAURANT_NAME =
 	(typeof RESTAURANT_NAMES)[number];
+
+export const BANK_RESERVE_AMOUNTS: number[] = [
+	100, 200, 300
+] as const;

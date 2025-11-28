@@ -1,3 +1,4 @@
+import { GameStatus } from ".";
 import { Player } from "../Player";
 import {
 	GameState,
@@ -74,6 +75,46 @@ describe("Test GameState.clone()", () => {
 		expect(
 			GameState.clone(TEST_GAMESTATE)
 		).toStrictEqual(TEST_GAMESTATE);
+	});
+});
+
+describe("Test bank reserve card logic", () => {
+	test("Test player at index 1 selects first", () => {
+		let clone: GameState | string =
+			GameState.clone(TEST_GAMESTATE);
+
+		clone.status = "SELECTING_BANK_RESERVE";
+
+		clone = applyMoveToGamestate(clone, 1, {
+			moveType: MoveType.SELECT_BANK_RESERVE,
+			reserveAmount: 200
+		});
+
+		// Expect not error
+		expect(typeof clone).not.toStrictEqual("string");
+
+		expect(
+			(clone as GameState).readyStatuses
+		).toStrictEqual([false, true]);
+
+		clone = applyMoveToGamestate(
+			clone as GameState,
+			0,
+			{
+				moveType: MoveType.SELECT_BANK_RESERVE,
+				reserveAmount: 200
+			}
+		);
+
+		expect(typeof clone).not.toStrictEqual("string");
+		expect(
+			(clone as GameState).readyStatuses.every(
+				(v) => !v
+			)
+		).toBeTruthy();
+		expect(
+			(clone as GameState).status
+		).toStrictEqual<GameStatus>("WORKING_NINE_TO_FIVE");
 	});
 });
 

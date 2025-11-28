@@ -59,7 +59,7 @@ export const GameStateView = {
 
 export type PlayerPublicView = Omit<
 	Player,
-	"tree" | "employees"
+	"tree" | "employees" | "bankReserveAmount"
 >;
 
 export type PlayerPrivateView = Pick<

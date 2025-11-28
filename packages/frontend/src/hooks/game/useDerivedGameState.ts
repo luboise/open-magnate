@@ -11,7 +11,6 @@ import {
 	PlayerPublicView,
 	RestaurantView
 } from "magnate-core";
-
 import { GameStateAtom } from "./useGameStateView";
 
 const NullGamestateMsg =
@@ -68,7 +67,8 @@ const isMyTurnSelector = selector<boolean>({
 
 		if (
 			gameState.status === "RESTRUCTURING" ||
-			gameState.status === "SALARY_PAYOUTS"
+			gameState.status === "SALARY_PAYOUTS" ||
+			gameState.status === "SELECTING_BANK_RESERVE"
 		)
 			return !gameState.readyStatuses[
 				gameState.playerIndex
