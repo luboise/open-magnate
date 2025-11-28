@@ -1,10 +1,9 @@
-import { BASE_SALARY } from "magnate-core";
-import { MoveType } from "magnate-core/game";
 import { HTMLAttributes, useMemo, useReducer } from "react";
 import Button from "../../../global_components/Button";
 import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import "./SalaryHandler.css";
+import { BASE_SALARY, MoveType } from "magnate-core";
 
 interface State {
 	employeesToRemove: number[];
@@ -87,7 +86,7 @@ function SalaryHandler({ ...args }: Props) {
 				<Button
 					onClick={() => {
 						makeMove({
-							MoveType:
+							moveType:
 								MoveType.NEGOTIATE_SALARIES,
 							employeesToFire:
 								state.employeesToRemove

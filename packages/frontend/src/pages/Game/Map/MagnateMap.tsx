@@ -3,10 +3,12 @@ import "./MagnateMap.css";
 import { HTMLAttributes, PropsWithChildren } from "react";
 
 import House from "./House";
-import { GameMap, HouseTile, MAP_PIECE_HEIGHT, MAP_PIECE_WIDTH, MapTile } from "magnate-core/game";
-import GameDemandTile from "../GlobalUI/DemandPreview";
 import GameMapTile from "./Tiles/GameMapTile";
 import GameRoadTile from "./Tiles/GameRoadTile";
+import useMap from "../../../hooks/game/useMap";
+import useGameStateView from "../../../hooks/game/useGameStateView";
+import { GameMap, MapTile, Position, MAP_PIECE_WIDTH, MAP_PIECE_HEIGHT, HouseTile } from "magnate-core";
+import MapRestaurantTile from "./Tiles/MapRestaurantTile";
 
 interface MapProps extends HTMLAttributes<HTMLDivElement> {
 	gameMap: GameMap
@@ -20,11 +22,12 @@ function MagnateMap({
 }: PropsWithChildren<MapProps>) {
 	// console.debug("Rendering magnate map.");
 
-	// const {
-	// 	sendMapObjectClickEvent: mapObjectClicked,
-	// 	sendMapObjectHoverEvent: mapObjectHovered,
-	// 	getAllRenderables
-	// } = useMap();
+	const {
+		sendMapHoveredEvent
+	} = useMap();
+
+	const { gameState } = useGameStateView();
+
 
 	/*
 	const {
@@ -76,6 +79,17 @@ function MagnateMap({
 			}}
 			{...args}
 			onMouseLeave={() => { } /*nowHovering(null)*/}
+			onMouseMove={(e) => {
+				const rect = e.currentTarget.getBoundingClientRect();
+
+				const x = (e.clientX - rect.left) / rect.width;
+				const y = (e.clientY - rect.top) / rect.height;
+
+				// const pos = Position(Math.floor(x * gameState!.map.width), Math.floor(y * gameState!.map.height));
+				const pos = Position(Math.floor(-0.5 + x * gameState!.map.width), Math.floor(-0.5 + y * gameState!.map.height));
+
+				sendMapHoveredEvent(pos, true);
+			}}
 		>
 			{/* TODO: Optimise the table rendering?? It seems a bit sluggish */}
 			<table
@@ -114,6 +128,9 @@ function MagnateMap({
 						}
 						case "ROAD": {
 							return <GameRoadTile tile={tile} />
+						}
+						case "RESTAURANT": {
+							return <MapRestaurantTile tile={tile} />
 						}
 					}
 					return <></>;

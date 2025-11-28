@@ -6,10 +6,8 @@ export function ExecuteTurn(
 	state: GameState,
 	playerIndex: number,
 	turn: MoveTakeTurn
-): GameState | undefined {
-	const newState: GameState = JSON.parse(
-		JSON.stringify(state)
-	);
+): GameState | string {
+	const newState: GameState = GameState.clone(state);
 
 	// TODO: Add validation for valid recruiting
 	const newRecruits: EmployeeType[] = [];

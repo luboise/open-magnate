@@ -1,8 +1,9 @@
 import {
 	LeaveLobbyMessage,
+	MakeMoveMessage,
+	Move,
 	StartGameMessage
 } from "magnate-core";
-import { MoveData } from "magnate-core/game";
 import { useRecoilState } from "recoil";
 import { PageGameAtom } from "../../pages/Lobby/PageGameContext";
 
@@ -21,11 +22,11 @@ function usePageGame() {
 		} as StartGameMessage);
 	}
 
-	function makeMove(moveData: MoveData) {
+	function makeMove(moveData: Move) {
 		pageGame.sendMessage({
 			type: "MAKE_MOVE",
 			data: moveData
-		});
+		} satisfies MakeMoveMessage);
 	}
 
 	return {

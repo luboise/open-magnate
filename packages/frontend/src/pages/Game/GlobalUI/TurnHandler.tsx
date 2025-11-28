@@ -7,8 +7,7 @@ import usePageGame from "../../../hooks/game/usePageGame";
 import useTreePlanning from "../../../hooks/game/useTreePlanning";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import TurnOrderList from "./TurnOrderList";
-import { MoveType, RESTAURANT_NAMES, TurnProgressValues } from "magnate-core";
-import { GameStatuses } from "magnate-core";
+import { MoveType, RESTAURANT_NAMES, GameStatuses } from "magnate-core";
 
 const BLOBBY_CLASS_NAME = "game-turn-handler-blobby";
 
@@ -40,12 +39,12 @@ function TurnHandler() {
 
 		if (gameStatus === "WORKING_NINE_TO_FIVE") {
 			makeMove({
-				MoveType: MoveType.WORK_EMPLOYEES,
+				moveType: MoveType.WORK_EMPLOYEES,
 				actions: turnActions
 			});
 		} else if (gameStatus === "RESTRUCTURING") {
 			makeMove({
-				MoveType: MoveType.RESTRUCTURE,
+				moveType: MoveType.RESTRUCTURE,
 				tree: plannedTree
 			});
 		}

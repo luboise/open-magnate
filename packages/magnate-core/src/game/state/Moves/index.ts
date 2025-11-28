@@ -63,18 +63,17 @@ export function applyMoveToGamestate(
 	state: GameState,
 	playerIndex: number,
 	move: Move
-): GameState | undefined {
-	const currentMove = GameState.nextMove(state);
+): GameState | string {
+	const nextMove = GameState.nextMove(state);
 
-	if (
-		!currentMove ||
-		move.moveType != currentMove.moveType
-	) {
-		return;
+	if (!nextMove) {
+		return "No next move available.";
+	} else if (move.moveType != nextMove.moveType) {
+		return `Move type mismatch. Expected ${nextMove.moveType}, got ${move.moveType}`;
 	}
 
-	let newState: GameState | undefined = undefined;
-
+	let newState: GameState | string | undefined =
+		undefined;
 	switch (move.moveType) {
 		case MoveType.PLACE_RESTAURANT: {
 			newState = GameState.placeNewTile(
@@ -121,12 +120,22 @@ export function applyMoveToGamestate(
 			break;
 	}
 
-	if (newState) {
-		return GameState.advance(newState);
+	if (newState === undefined) {
+		return "Failed to apply move to state.";
+	} else if (typeof newState === "string") {
+		return "Failed to apply move to state: " + newState;
 	}
 
 	// TransactionFunctions.ReadyPlayer(bundle);
 	// TransactionFunctions.NewEvent(bundle);
+
+	newState = GameState.advance(newState, playerIndex);
+	if (typeof newState === "string") {
+		return (
+			"Failed to advance game state after applying move: " +
+			newState
+		);
+	}
 
 	return newState;
 }

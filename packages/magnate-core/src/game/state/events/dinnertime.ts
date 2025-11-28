@@ -3,9 +3,7 @@ import { GameState } from "../GameState";
 export function HandleDinnertime(
 	state: GameState
 ): GameState | undefined {
-	const newState: GameState = JSON.parse(
-		JSON.stringify(state)
-	);
+	const newState: GameState = GameState.clone(state);
 
 	for (const _house of GameState.getDinnertimeHouses(
 		newState

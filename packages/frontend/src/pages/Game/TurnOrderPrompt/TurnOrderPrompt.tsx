@@ -20,7 +20,7 @@ function TurnOrderPrompt({ ...args }: Props) {
 	const onSlotPicked = useCallback(
 		(slot: number) =>
 			makeMove({
-				MoveType: MoveType.PICK_TURN_ORDER,
+				moveType: MoveType.PICK_TURN_ORDER,
 				slot: slot
 			}),
 		[]

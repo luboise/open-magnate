@@ -86,7 +86,7 @@ function PlacementHandler({ placementTypes }: Props) {
 			tile
 		);
 		makeMove({
-			MoveType: MoveType.PLACE_RESTAURANT,
+			moveType: MoveType.PLACE_RESTAURANT,
 			x: tile.position.x,
 			y: tile.position.y,
 			// TODO: Fix this to support all corner directions

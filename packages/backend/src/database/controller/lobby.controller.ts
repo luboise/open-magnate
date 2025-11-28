@@ -300,6 +300,28 @@ const LobbyController = {
 		return false;
 	},
 
+	async setGameState(
+		lobbyId: number,
+		newState: GameState
+	): Promise<boolean> {
+		try {
+			await LobbyRepository.update({
+				where: {
+					id: lobbyId
+				},
+				data: {
+					gameState: newState
+				}
+			});
+			return true;
+		} catch (e) {
+			console.error(
+				"Error occurred setting lobby status: " + e
+			);
+		}
+		return false;
+	},
+
 	generateInviteCode(): string {
 		const characters =
 			"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

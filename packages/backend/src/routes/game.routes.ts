@@ -27,6 +27,7 @@ import {
 	StartGameMessage,
 	applyMoveToGamestate
 } from "magnate-core";
+
 import WebSocket from "ws";
 import { connectionsToWebsocket } from "./connections";
 
@@ -631,20 +632,37 @@ const handleMoveMade: BackendMessageHandler<
 	);
 
 	try {
+		console.debug("Applying move: ", moveData);
+
 		newState = applyMoveToGamestate(
 			newState!,
 			lobbyPlayer.playerIndex,
 			moveData
 		);
 
-		if (!newState) {
-			params.ws.send(
-				"Failed to apply move to gamestate."
-			);
+		if (typeof newState === "string") {
+			const errorMessage =
+				"Failed to apply move to gamestate: " +
+				newState;
+
+			params.ws.send(errorMessage);
+			console.error(errorMessage);
 			return;
 		}
 
-		// const moves = game.getMovesMade();
+		console.debug("Successfully applied move.");
+
+		const success = await LobbyController.setGameState(
+			lobby.id,
+			newState
+		);
+
+		if (!success) {
+			params.ws.send(
+				"Server error: Failed to save game state."
+			);
+			return;
+		}
 
 		updateAllPlayers(
 			await LobbyController.refresh(lobby),

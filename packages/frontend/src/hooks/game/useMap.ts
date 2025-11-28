@@ -1,4 +1,8 @@
-import { HouseView, MapBackgroundTile } from "magnate-core";
+import {
+	HouseView,
+	MapBackgroundTile,
+	Position
+} from "magnate-core";
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
 import useGameStateView from "./useGameStateView";
@@ -13,6 +17,7 @@ const MapRenderAtom = atom<MapRenderListType>({
 
 const RECOIL_MAP_CLICK_CALLBACK_LIST: MapClickCallback[] =
 	[];
+
 const RECOIL_MAP_HOVER_CALLBACK_LIST: MapClickCallback[] =
 	[];
 
@@ -46,6 +51,15 @@ type MapCursorEvent =
 
 // type MapObjectHoverEvent =
 // 	|
+
+type MapHoveredCallback = (
+	position: Position
+) => void | Promise<void>;
+
+const RECOIL_MAP_HOVERED_CALLBACK_LIST: MapHoveredCallback[] =
+	[];
+
+const lastHoveredPos: Position = Position(0, 0);
 
 export function useBoardInfo() {
 	// const { mapRowOrder } = useGameStateView();
@@ -123,6 +137,35 @@ function useMap() {
 		setMapRenderList(newRenderList);
 	}
 
+	async function sendMapHoveredEvent(
+		position: Position,
+		/// Sends the event even if the position matches the current one
+		force = false
+	) {
+		if (
+			position.x === lastHoveredPos.x &&
+			position.y === lastHoveredPos.y
+		) {
+			if (!force) {
+				return;
+			}
+		} else {
+			lastHoveredPos.x = position.x;
+			lastHoveredPos.y = position.y;
+		}
+
+		for (const callback of RECOIL_MAP_HOVERED_CALLBACK_LIST) {
+			try {
+				await callback(position);
+			} catch (error) {
+				console.error(
+					"Error occured during map click callback: ",
+					error
+				);
+			}
+		}
+	}
+
 	async function sendMapObjectClickEvent(
 		event: MapCursorEvent
 	) {
@@ -175,6 +218,17 @@ function useMap() {
 		[]
 	);
 
+	const onMapHovered = useCallback(
+		(
+			callback: (
+				position: Position
+			) => void | Promise<void>
+		) => {
+			RECOIL_MAP_HOVERED_CALLBACK_LIST.push(callback);
+		},
+		[]
+	);
+
 	const getAllRenderables = useCallback(() => {
 		return { ...mapRenderList };
 	}, []);
@@ -189,8 +243,10 @@ function useMap() {
 		// Mouse events
 		onMapObjectClicked,
 		onMapObjectHovered,
+		onMapHovered,
 		sendMapObjectClickEvent,
-		sendMapObjectHoverEvent
+		sendMapObjectHoverEvent,
+		sendMapHoveredEvent
 	};
 }
 

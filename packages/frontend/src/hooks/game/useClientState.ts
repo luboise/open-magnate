@@ -103,10 +103,10 @@ function useClientState(
 				rotation ?? clientState.placing.rotation
 		} as MapTile;
 
-		setClientState({
-			...clientState,
+		setClientState((oldState) => ({
+			...oldState,
 			placing: updatedPlacement
-		});
+		}));
 	}
 
 	function rotatePlacement(
@@ -153,13 +153,13 @@ function useClientState(
 				...clientState.placing,
 				position: Position(
 					Clamp(
-						hovering.pos.x,
+						hovering.position.x,
 						0,
 						boardInfo.width - 2,
 						true
 					),
 					Clamp(
-						hovering.pos.y,
+						hovering.position.y,
 						0,
 						boardInfo.height - 2,
 						true

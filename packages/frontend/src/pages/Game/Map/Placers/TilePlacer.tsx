@@ -4,8 +4,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import RestaurantImage from "../../../../global_components/RestaurantImage";
 import useClientState from "../../../../hooks/game/useClientState";
 import { useDerivedGameState } from "../../../../hooks/game/useDerivedGameState";
-import { useBoardInfo } from "../../../../hooks/game/useMap";
-import { GetMyRestaurantTile } from "../../Tiles/RestaurantTileData";
+import useMap, { useBoardInfo } from "../../../../hooks/game/useMap";
 import MapMarketingTile from "../Tiles/MapMarketingTile";
 import useGameStateView from "../../../../hooks/game/useGameStateView";
 import { GameState, Position, RestaurantTile } from "magnate-core";
@@ -13,19 +12,20 @@ import { GameState, Position, RestaurantTile } from "magnate-core";
 type Props = {};
 
 function TilePlacer({ }: Props) {
-	// const { hovering } = useMapTileInteraction();
-
 	const {
 		currentlyPlacingTile,
 		tileBeingPlaced,
 		rotatePlacement,
 		commitPlacement,
+		updatePlacement,
 		startPlacing
 	} = useClientState();
 
 	const { gameStatus, isMyTurn } = useDerivedGameState();
 	const { gameState } = useGameStateView();
 	if (!gameState) return <></>;
+
+	const { onMapHovered } = useMap();
 
 	const boardInfo = useBoardInfo();
 	// const { onMapObjectClicked, onMapObjectHovered } =
@@ -34,6 +34,12 @@ function TilePlacer({ }: Props) {
 	const tile = currentlyPlacingTile
 		? tileBeingPlaced
 		: null;
+
+	useEffect(() => {
+		onMapHovered((position) => {
+			updatePlacement({ position: { ...position } });
+		});
+	}, []);
 
 	const validPlacement = useMemo(() => {
 		if (!tile) return false;
@@ -95,7 +101,7 @@ function TilePlacer({ }: Props) {
 		>
 			{tile.tileType === "RESTAURANT" ? (
 				<RestaurantImage
-					restaurantNumber={tile.restaurant ?? 1}
+					restaurantNumber={gameState.players[tile.ownerIndex].restaurantIndex ?? 1}
 					style={{
 						// gridColumn: `${tile.position.x + 1} / span 2`,
 						// gridRow: `${tile.position.y + 1} / span 2`,

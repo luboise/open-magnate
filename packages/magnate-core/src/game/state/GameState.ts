@@ -98,10 +98,8 @@ export const GameState = {
 	advance(
 		state: GameState,
 		playerIndices?: number | number[]
-	): GameState | undefined {
-		const newState: GameState = JSON.parse(
-			JSON.stringify(state)
-		);
+	): GameState | string {
+		const newState: GameState = GameState.clone(state);
 
 		// Update ready statuses if they are provided, otherwise skip
 		if (playerIndices !== undefined) {
@@ -152,6 +150,8 @@ export const GameState = {
 		newState.readyStatuses = newState.readyStatuses.map(
 			(_) => false
 		);
+
+		return newState;
 	},
 
 	canPlaceTile(
@@ -167,16 +167,14 @@ export const GameState = {
 	placeNewTile(
 		state: GameState,
 		newTile: MapTile
-	): GameState | undefined {
+	): GameState | string {
 		// If any tile occupies the area which the new tile will be placed in
 		if (!GameState.canPlaceTile(state, newTile)) {
 			// Unable to add new tile if they are colliding
-			return undefined;
+			return "Tile can't be placed in this position on the grid.";
 		}
 
-		const newState: GameState = JSON.parse(
-			JSON.stringify(GameState)
-		);
+		const newState: GameState = GameState.clone(state);
 
 		newState.map.tiles.push(newTile);
 
