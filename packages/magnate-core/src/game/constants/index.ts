@@ -1,4 +1,4 @@
-export const BASE_SALARY = 5;
+export const BASE_SALARY: number = 5;
 
 export const MAP_PIECE_WIDTH: number = 5;
 

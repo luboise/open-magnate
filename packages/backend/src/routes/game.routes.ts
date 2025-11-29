@@ -10,6 +10,9 @@ import {
 	UserSessionController
 } from "../database";
 
+import WebSocket from "ws";
+import { connectionsToWebsocket } from "./connections";
+
 import {
 	AllUpdatedMessage,
 	BackendMessage,
@@ -27,9 +30,6 @@ import {
 	StartGameMessage,
 	applyMoveToGamestate
 } from "magnate-core";
-
-import WebSocket from "ws";
-import { connectionsToWebsocket } from "./connections";
 
 // Helpers
 
@@ -627,7 +627,7 @@ const handleMoveMade: BackendMessageHandler<
 
 	const moveData = params.message.data;
 
-	let newState: GameState | undefined = GameState.clone(
+	let newState: GameState | string = GameState.clone(
 		lobby.gameState
 	);
 

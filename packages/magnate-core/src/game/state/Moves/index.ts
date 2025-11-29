@@ -1,4 +1,8 @@
-import { BANK_RESERVE_AMOUNTS, EmployeeNode } from "../..";
+import {
+	BANK_RESERVE_AMOUNTS,
+	Employee,
+	EmployeeNode
+} from "../..";
 import { ENTRANCE_CORNER, Position } from "../../map/area";
 import { RestaurantTile } from "../../map/tiles/RestaurantTile";
 import { TurnAction } from "../actions";
@@ -32,7 +36,7 @@ export interface MovePlaceRestaurant extends BaseMove {
 
 export interface MoveTakeTurn extends BaseMove {
 	moveType: MoveType.WORK_EMPLOYEES;
-	actions: TurnAction[];
+	actions: Record<number, TurnAction[]>;
 }
 
 export interface MoveNegotiateSalaries extends BaseMove {
@@ -87,10 +91,48 @@ export function applyMoveToGamestate(
 			break;
 		}
 		case MoveType.WORK_EMPLOYEES: {
-			return ExecuteTurn(state, playerIndex, move);
+			newState = ExecuteTurn(
+				state,
+				playerIndex,
+				move
+			);
+			break;
 		}
 		case MoveType.NEGOTIATE_SALARIES: {
-			// NegotiateSalaries(bundle, move.employeesToFire);
+			newState = GameState.clone(state);
+
+			const player = newState.players[playerIndex];
+
+			if (move.employeesToFire.length >= 0) {
+				const badIndex = move.employeesToFire.find(
+					(v) =>
+						v < 0 ||
+						v >= player.employees.length
+				);
+
+				// If any of the indices are out of range
+				if (badIndex !== undefined) {
+					return `Unable to negotiate salaries: Employee with index ${badIndex} is out of range of employee list with size ${player.employees.length}.`;
+				}
+
+				// Sort in reverse order so we can safely remove elements
+				move.employeesToFire.sort((a, b) => b - a);
+
+				player.employees = player.employees.filter(
+					(_, i) =>
+						!move.employeesToFire.includes(i)
+				);
+			}
+
+			const salary = Employee.getSalaryCost(
+				player.employees
+			);
+
+			if (salary > player.money) {
+				return "Not enough money to pay employees for the next year.";
+			}
+
+			player.money -= salary;
 
 			break;
 		}
@@ -137,7 +179,7 @@ export function applyMoveToGamestate(
 	}
 
 	if (newState === undefined) {
-		return "Failed to apply move to state.";
+		return "Failed to apply move to state: Unknown error.";
 	} else if (typeof newState === "string") {
 		return "Failed to apply move to state: " + newState;
 	}

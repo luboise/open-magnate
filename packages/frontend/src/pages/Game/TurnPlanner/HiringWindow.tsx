@@ -1,9 +1,8 @@
-import { RecruitAction } from "magnate-core";
-import { EmployeeId } from "magnate-core/game/types";
 import { useEffect, useMemo, useState } from "react";
 import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import useTurnPlanning from "../../../hooks/game/useTurnPlanning";
 import ReserveDisplay from "../Reserve/ReserveDisplay";
+import { EmployeeType, RecruitAction } from "magnate-core";
 
 type Props = {
 	employeeHiringIndex: number;
@@ -45,10 +44,10 @@ function HiringWindow({
 			: 1
 	);
 
-	function onHire(employeeId: EmployeeId) {
+	function onHire(employeeType: EmployeeType) {
 		const newHire: Omit<RecruitAction, "player"> = {
 			employeeIndex: employeeHiringIndex,
-			recruiting: employeeId,
+			recruiting: employeeType,
 			type: "RECRUIT" as const
 		};
 

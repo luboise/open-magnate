@@ -1,4 +1,4 @@
-import { EmployeeType } from "../..";
+import { Employee } from "../..";
 import { GameState } from "../GameState";
 import { MoveTakeTurn } from "../Moves";
 
@@ -9,23 +9,89 @@ export function ExecuteTurn(
 ): GameState | string {
 	const newState: GameState = GameState.clone(state);
 
-	// TODO: Add validation for valid recruiting
-	const newRecruits: EmployeeType[] = [];
+	// TODO: Pre-sort employees by activation order for validation purposes
 
-	const player = newState.players[playerIndex];
+	for (const [
+		employeeIndexStr,
+		actions
+	] of Object.entries(turn.actions)) {
+		const employeeIndex = Number(employeeIndexStr);
 
-	for (const action of turn.actions) {
-		if (action.type === "RECRUIT") {
-			newRecruits.push(action.recruiting);
-		} else if (action.type === "MARKETING") {
-			// CreateMarketingCampaign(bundle, action);
-		} else if (action.type === "GET_DEMAND") {
-			player.demand[action.demandType] +=
-				action.amount;
+		const player = newState.players[playerIndex];
+		const employee = player.employees[employeeIndex];
+
+		if (
+			!Employee.canExecuteActions(
+				employee,
+				playerIndex,
+				actions
+			)
+		) {
+			return `Employee with index ${employeeIndex} unable to perform action list ${actions}.`;
+		}
+
+		for (const action of actions) {
+			switch (action.type) {
+				case "RECRUIT": {
+					if (
+						!(
+							action.type in
+							newState.cardReserve
+						)
+					) {
+						return `Unable to recruit new employee ${action.recruiting} (employee not in use this game).`;
+					} else if (
+						newState.cardReserve[
+							action.recruiting
+						] <= 0
+					) {
+						return `Unable to recruit new employee ${action.recruiting} (not enough in the reserve)`;
+					}
+
+					const newEmployee = Employee.fromType(
+						action.recruiting
+					);
+
+					newState.cardReserve[
+						action.recruiting
+					] -= 1;
+
+					if (
+						newEmployee.oneOf &&
+						player.employees.find(
+							(e) =>
+								e.employeeType ===
+								newEmployee.employeeType
+						)
+					) {
+						return `Unable to recruit 1x employee ${action.recruiting} (you already have one).`;
+					}
+
+					player.employees.push(newEmployee);
+
+					break;
+				}
+				case "MARKETING": {
+					// TODO: Implement this
+					break;
+				}
+				case "TRAIN": {
+					// TODO: Implement this
+					break;
+				}
+				case "GET_DRINKS": {
+					// TODO: Implement this
+					break;
+				}
+				case "CREATE_DEMAND": {
+					// TODO: Implement this
+					break;
+				}
+				default:
+					action satisfies never;
+			}
 		}
 	}
-
-	// TODO: Add the new recruits to the player
 
 	return newState;
 }

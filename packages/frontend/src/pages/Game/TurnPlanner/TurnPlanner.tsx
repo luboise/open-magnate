@@ -77,7 +77,7 @@ function TurnPlanner({ ...args }: TurnPlannerProps) {
 						onDemandClicked={(demandType) => {
 							addAction({
 								type: "GET_DEMAND",
-								employeeId: selectedEmployeeIndex,
+								employeeIndex: selectedEmployeeIndex,
 								demand: demandType,
 								amount: employee.supply
 									.amount
