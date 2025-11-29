@@ -7,6 +7,7 @@ import {
 } from "./Employee";
 
 export type Player = {
+	ready: boolean;
 	money: number;
 	demand: DemandRecord;
 	employees: Employee[];
@@ -19,6 +20,7 @@ export type Player = {
 export const Player = {
 	create(restaurantIndex) {
 		return {
+			ready: false,
 			money: 0,
 			demand: DemandRecord.create(),
 			employees: [CEOEmployee.create(3)],

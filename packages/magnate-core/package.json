@@ -13,6 +13,7 @@
 	"license": "ISC",
 	"scripts": {
 		"build": "tsdown",
+		"dev": "nodemon",
 		"test": "jest --watch"
 	},
 	"exports": {

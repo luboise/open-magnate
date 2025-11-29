@@ -48,7 +48,7 @@ function TurnOrderList({
 						}}
 					>
 						<RestaurantImage
-							restaurantNumber={
+							restaurantIndex={
 								player.restaurantIndex
 							}
 							style={{ width: "100%" }}

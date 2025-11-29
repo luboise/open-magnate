@@ -3,7 +3,7 @@ import Image from "./Image";
 
 interface RestaurantImageProps
 	extends React.ImgHTMLAttributes<HTMLImageElement> {
-	restaurantNumber: number;
+	restaurantIndex: number;
 }
 
 // "Xango Blues Bar",
@@ -14,7 +14,7 @@ interface RestaurantImageProps
 // 	"Siap Faji Bar"
 
 function RestaurantImage(props: RestaurantImageProps) {
-	const { restaurantNumber, ...args } = props;
+	const { restaurantIndex: restaurantNumber, ...args } = props;
 	const imageUrl = `/resources/restaurants/${restaurantNumber}.png`;
 
 	return <Image url={imageUrl} {...args} />;

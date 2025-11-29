@@ -23,7 +23,7 @@ function SellEvent({ event }: Props) {
 			<div className="event-dinnertime-sell-diagram">
 				<div className="event-sell-restaurant-img">
 					<RestaurantImage
-						restaurantNumber={event.player}
+						restaurantIndex={event.player}
 					/>
 				</div>
 				<div>arrow</div>

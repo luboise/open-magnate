@@ -72,9 +72,11 @@ export const PlayerPublicView = {
 		demand,
 		money,
 		previousTree,
-		restaurantIndex
+		restaurantIndex,
+		ready
 	}: Player): PlayerPublicView {
 		return {
+			ready,
 			demand,
 			money,
 			previousTree,
@@ -86,9 +88,10 @@ export const PlayerPublicView = {
 export const PlayerPrivateView = {
 	fromPlayer({
 		tree,
-		employees
+		employees,
+		bankReserveAmount
 	}: Player): PlayerPrivateView {
-		return { tree, employees };
+		return { tree, employees, bankReserveAmount };
 	}
 };
 

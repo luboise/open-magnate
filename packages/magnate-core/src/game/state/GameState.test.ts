@@ -31,9 +31,8 @@ describe("Test GameState", () => {
 			params.playerCount
 		);
 
-		/// A new game should have all players unready at the beginning
 		expect(
-			ng.readyStatuses.every((val) => !val)
+			GameState.allPlayersAreUnready(ng)
 		).toBeTruthy();
 
 		const nextMove = GameState.nextMove(ng);
@@ -65,7 +64,7 @@ describe("Test tile placement", () => {
 		expect(typeof clone).not.toStrictEqual("string");
 
 		expect(
-			(clone as GameState).readyStatuses
+			GameState.getReadyStatuses(clone as GameState)
 		).toStrictEqual([true, false]);
 	});
 });
@@ -94,7 +93,7 @@ describe("Test bank reserve card logic", () => {
 		expect(typeof clone).not.toStrictEqual("string");
 
 		expect(
-			(clone as GameState).readyStatuses
+			GameState.getReadyStatuses(clone as GameState)
 		).toStrictEqual([false, true]);
 
 		clone = applyMoveToGamestate(
@@ -108,13 +107,29 @@ describe("Test bank reserve card logic", () => {
 
 		expect(typeof clone).not.toStrictEqual("string");
 		expect(
-			(clone as GameState).readyStatuses.every(
-				(v) => !v
+			(clone as GameState).players.every(
+				(player) => !player.ready
 			)
 		).toBeTruthy();
 		expect(
 			(clone as GameState).status
 		).toStrictEqual<GameStatus>("WORKING_NINE_TO_FIVE");
+	});
+});
+
+describe("Test getting unready players", () => {
+	test("Unready player with players out of order", () => {
+		const gameState: GameState = newGame({
+			playerCount: 3
+		});
+
+		gameState.turnOrder = [2, 0, 1];
+
+		gameState.players[2].ready = true;
+
+		expect(
+			GameState.getFirstUnreadyPlayer(gameState)
+		).toStrictEqual(0);
 	});
 });
 
@@ -1821,6 +1836,6 @@ const TEST_GAMESTATE: GameState = {
 	],
 	bankReserve: 100,
 	status: "PLACING_FIRST_RESTAURANTS",
-	turnOrder: [0, 1],
-	readyStatuses: [false, false]
+	newTurnOrder: [0, 1],
+	turnOrder: [0, 1]
 } as const;

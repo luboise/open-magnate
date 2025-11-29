@@ -101,7 +101,7 @@ function TilePlacer({ }: Props) {
 		>
 			{tile.tileType === "RESTAURANT" ? (
 				<RestaurantImage
-					restaurantNumber={gameState.players[tile.ownerIndex].restaurantIndex ?? 1}
+					restaurantIndex={gameState.players[tile.ownerIndex].restaurantIndex ?? 1}
 					style={{
 						// gridColumn: `${tile.position.x + 1} / span 2`,
 						// gridRow: `${tile.position.y + 1} / span 2`,

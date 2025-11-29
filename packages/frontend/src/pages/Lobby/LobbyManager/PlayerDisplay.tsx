@@ -7,7 +7,7 @@ function PlayerDisplay(props: { player: LobbyPlayerData }) {
 	return (
 		<div className="player-display">
 			<RestaurantImage
-				restaurantNumber={props.player.restaurant}
+				restaurantIndex={props.player.restaurant}
 				alt={`Player ${props.player.name}'s restaurant logo`}
 			/>
 			<p>{props.player.name}</p>

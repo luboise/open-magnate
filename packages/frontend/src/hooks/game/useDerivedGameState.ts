@@ -11,6 +11,7 @@ import {
 	PlayerPublicView,
 	RestaurantView
 } from "magnate-core";
+
 import { GameStateAtom } from "./useGameStateView";
 
 const NullGamestateMsg =
@@ -65,19 +66,34 @@ const isMyTurnSelector = selector<boolean>({
 		const gameState = get(GameStateAtom);
 		if (!gameState) throw new Error(NullGamestateMsg);
 
-		if (
-			gameState.status === "RESTRUCTURING" ||
-			gameState.status === "SALARY_PAYOUTS" ||
-			gameState.status === "SELECTING_BANK_RESERVE"
-		)
-			return !gameState.readyStatuses[
-				gameState.playerIndex
-			];
+		switch (gameState.status) {
+			case "RESTRUCTURING":
+			case "SALARY_PAYOUTS":
+			case "SELECTING_BANK_RESERVE": {
+				return GameState.getAllUnreadyPlayers(
+					gameState as unknown as GameState
+				).includes(gameState.playerIndex);
+			}
+			case "SELECTING_TURN_ORDER":
+			case "WORKING_NINE_TO_FIVE":
+			case "PLACING_FIRST_RESTAURANTS":
+			case "PLACING_FIRST_RESTAURANTS_WAVE_TWO": {
+				const firstUnready =
+					GameState.getFirstUnreadyPlayer(
+						gameState as unknown as GameState
+					);
+				if (firstUnready === null) {
+					return false;
+				}
 
-		return (
-			gameState.playerIndex ===
-			gameState.currentPlayer
-		);
+				return (
+					firstUnready === gameState.playerIndex
+				);
+			}
+
+			default:
+				gameState.status satisfies never;
+		}
 	}
 });
 
@@ -270,6 +286,7 @@ export function useDerivedGameState() {
 	const players = useRecoilValue(playersSelector);
 	const restaurants = useRecoilValue(restaurantsSelector);
 	const isMyTurn = useRecoilValue(isMyTurnSelector);
+
 	const mapColOrder = useRecoilValue(
 		mapColumnOrderSelector
 	);

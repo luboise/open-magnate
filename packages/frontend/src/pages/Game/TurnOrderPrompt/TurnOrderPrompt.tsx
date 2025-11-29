@@ -1,26 +1,22 @@
-import { MoveType } from "magnate-core/game";
 import RestaurantImage from "../../../global_components/RestaurantImage";
-import { useDerivedGameState } from "../../../hooks/game/useDerivedGameState";
 import usePageGame from "../../../hooks/game/usePageGame";
 import "./TurnOrderPrompt.css";
 
 import { HTMLAttributes, useCallback } from "react";
+import useGameStateView from "../../../hooks/game/useGameStateView";
+import { MoveType } from "magnate-core";
 
 interface Props extends HTMLAttributes<HTMLDivElement> { }
 
 function TurnOrderPrompt({ ...args }: Props) {
-	const {
-		turnOrder,
-		realTurnOrder,
-		players,
-		playerCount
-	} = useDerivedGameState();
+	const { gameState } = useGameStateView();
+
 	const { makeMove } = usePageGame();
 
 	const onSlotPicked = useCallback(
 		(slot: number) =>
 			makeMove({
-				moveType: MoveType.PICK_TURN_ORDER,
+				moveType: MoveType.SELECT_TURN_ORDER,
 				slot: slot
 			}),
 		[]
@@ -31,31 +27,25 @@ function TurnOrderPrompt({ ...args }: Props) {
 			<h2>Choose Turn Order</h2>
 			<h3>Pick Order:</h3>
 			<div className="players">
-				{...turnOrder.map((playerNumber) => {
-					const player = players.find(
-						(p) =>
-							p.playerNumber === playerNumber
-					);
-					if (!player) return <></>;
+				{...gameState!.turnOrder.map((playerIndex) => {
+					const player = gameState!.players[playerIndex]
 
 					return (
 						<div className="player-piece">
 							<RestaurantImage
-								restaurantNumber={
-									player.restaurant
+								restaurantIndex={
+									player.restaurantIndex
 								}
 							/>
-							{/* TODO: Put the employee tree into the public visibility area */}
 							<span>{"?"} Empty Slots</span>
 						</div>
 					);
 				})}
 			</div>
 			<div className="picks">
-				{...new Array(playerCount)
-					.fill(null)
+				{...(gameState!.newTurnOrder
 					.map((_, index) => {
-						if (realTurnOrder[index] === "X")
+						if (gameState!.newTurnOrder[index] === null)
 							return (
 								<div
 									onClick={() =>
@@ -69,18 +59,12 @@ function TurnOrderPrompt({ ...args }: Props) {
 						else
 							return (
 								<RestaurantImage
-									restaurantNumber={
-										players.find(
-											(p) =>
-												p.playerNumber ===
-												turnOrder[
-												index
-												]
-										)?.restaurant ?? 0
+									restaurantIndex={
+										gameState!.players[index].restaurantIndex ?? 0
 									}
 								/>
 							);
-					})}
+					}) ?? [])}
 			</div>
 		</div>
 	);

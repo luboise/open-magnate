@@ -1,7 +1,9 @@
 {
-	"watch": ["../backend"],
+	"watch": ["./src", "../magnate-core/src"],
 	"ext": "ts,json",
-	"ignore": ["**/node_modules/**"],
-	"ignore": ["src/database/datasource/generated"],
-	"exec": "npm run build && npm start"
+	"ignore": [
+		"**/node_modules/**",
+		"src/database/datasource/generated"
+	],
+	"exec": "pnpm run build && pnpm start"
 }

@@ -5,6 +5,7 @@ import {
 	PlayerCount
 } from "../defaults";
 import { DemandRecord } from "../demand/DemandRecord";
+import { EmployeeNode } from "../Employee";
 import { GameMap, MapTile } from "../map";
 import { HouseTile } from "../map/tiles/HouseTile";
 
@@ -24,8 +25,8 @@ export interface GameState {
 	bankReserve: number;
 	marketingTiles: MarketingTile[];
 	status: GameStatus;
+	newTurnOrder: Array<number | null>;
 	turnOrder: number[];
-	readyStatuses: boolean[];
 }
 
 interface NextActionDetails {
@@ -38,8 +39,30 @@ export const GameState = {
 		return JSON.parse(JSON.stringify(state));
 	},
 
-	allPlayersReady(state: GameState): boolean {
-		return state.readyStatuses.every((v) => v);
+	allPlayersAreReady(state: GameState): boolean {
+		return state.players.every(
+			(player) => player.ready
+		);
+	},
+
+	allPlayersAreUnready(state: GameState): boolean {
+		return state.players.every(
+			(player) => !player.ready
+		);
+	},
+
+	getFirstUnreadyPlayer(state: GameState): number | null {
+		const index = state.turnOrder.find(
+			(to) => !state.players[to].ready
+		);
+
+		return index ?? null;
+	},
+
+	getAllUnreadyPlayers(state: GameState): number[] {
+		return state.turnOrder.filter(
+			(index) => !state.players[index].ready
+		);
 	},
 
 	getDinnertimeHouses(state: GameState): HouseTile[] {
@@ -52,6 +75,10 @@ export const GameState = {
 				DemandRecord.isEmpty(house.demand)
 			)
 			.sort((house) => house.houseNumber);
+	},
+
+	getReadyStatuses(state: GameState): boolean[] {
+		return state.players.map((player) => player.ready);
 	},
 
 	nextStatus(state: GameState): GameStatus {
@@ -103,22 +130,18 @@ export const GameState = {
 
 		// Update ready statuses if they are provided, otherwise skip
 		if (playerIndices !== undefined) {
-			if (typeof playerIndices === "number") {
-				newState.readyStatuses[playerIndices] =
-					true;
-			}
-			// Guaranteed to be an array
-			else {
-				playerIndices.forEach(
-					(index) =>
-						(newState.readyStatuses[index] =
-							true)
-				);
-			}
+			const indices =
+				typeof playerIndices === "number"
+					? [playerIndices]
+					: [...playerIndices];
+
+			newState.players
+				.filter((_, i) => indices.includes(i))
+				.forEach((player) => (player.ready = true));
 		}
 
 		// If there is a player not ready, return
-		if (!GameState.allPlayersReady(newState)) {
+		if (!GameState.allPlayersAreReady(newState)) {
 			return newState;
 		}
 
@@ -127,8 +150,38 @@ export const GameState = {
 		// If all players are ready, run as many events as possible
 		switch (newState.status) {
 			case "RESTRUCTURING": {
-				// If exiting restructuring, ensure turn order is backed up and pick order is settled
-				// await BackupTurnOrder(bundle);
+				newState.newTurnOrder =
+					newState.turnOrder.map((_) => null);
+
+				const backup = [...newState.turnOrder];
+
+				backup.sort((p1, p2) => {
+					const slots1 =
+						EmployeeNode.countEmptySlots(
+							newState.players[p1].tree
+						);
+
+					const slots2 =
+						EmployeeNode.countEmptySlots(
+							newState.players[p2].tree
+						);
+
+					if (slots1 !== slots2) {
+						return slots1 - slots2;
+					}
+
+					return (
+						newState.turnOrder.findIndex(
+							(v) => v === p1
+						) -
+						newState.turnOrder.findIndex(
+							(v) => v === p2
+						)
+					);
+				});
+
+				newState.turnOrder = backup;
+
 				break;
 			}
 			case "WORKING_NINE_TO_FIVE": {
@@ -138,6 +191,19 @@ export const GameState = {
 
 				break;
 			}
+			case "SELECTING_TURN_ORDER": {
+				if (
+					newState.newTurnOrder.some(
+						(v) => v === null
+					)
+				) {
+					return `Unable to exit turn order selection because of null value: ${newState.newTurnOrder}`;
+				}
+				newState.turnOrder = [
+					...(newState.newTurnOrder as number[])
+				];
+			}
+
 			case "SALARY_PAYOUTS": {
 				newState.currentTurn++;
 
@@ -147,8 +213,8 @@ export const GameState = {
 
 		// Update status and unready all players
 		newState.status = GameState.nextStatus(newState);
-		newState.readyStatuses = newState.readyStatuses.map(
-			(_) => false
+		newState.players.forEach(
+			(player) => (player.ready = false)
 		);
 
 		return newState;
@@ -184,16 +250,16 @@ export const GameState = {
 	nextMove(
 		state: GameState
 	): NextActionDetails | undefined {
-		// If all players are ready
-		if (state.readyStatuses.every((v) => v)) {
+		// All players ready implies that the state is invalid
+		if (GameState.allPlayersAreReady(state)) {
 			return undefined;
 		}
 
-		const firstUnready = state.readyStatuses.findIndex(
-			(status) => status === false
-		);
+		const firstUnready =
+			GameState.getFirstUnreadyPlayer(state);
+
 		// Assert that at least one player must be unready
-		if (firstUnready === -1) {
+		if (firstUnready === null) {
 			return undefined;
 		}
 
@@ -202,49 +268,46 @@ export const GameState = {
 			case "PLACING_FIRST_RESTAURANTS_WAVE_TWO": {
 				return {
 					moveType: MoveType.PLACE_RESTAURANT,
-					playerIndices: [
-						state.turnOrder[firstUnready]
-					]
+					playerIndices: [firstUnready]
 				};
 			}
 			case "SELECTING_BANK_RESERVE": {
 				return {
 					moveType: MoveType.SELECT_BANK_RESERVE,
-					playerIndices: state.turnOrder.filter(
-						(_, i) => !state.readyStatuses[i]
-					)
+					playerIndices:
+						GameState.getAllUnreadyPlayers(
+							state
+						)
 				};
 			}
 			case "RESTRUCTURING": {
 				return {
 					moveType: MoveType.RESTRUCTURE,
-					playerIndices: state.turnOrder.filter(
-						(_, i) => !state.readyStatuses[i]
-					)
+					playerIndices:
+						GameState.getAllUnreadyPlayers(
+							state
+						)
 				};
 			}
 			case "SELECTING_TURN_ORDER": {
 				return {
 					moveType: MoveType.SELECT_TURN_ORDER,
-					playerIndices: [
-						state.turnOrder[firstUnready]
-					]
+					playerIndices: [firstUnready]
 				};
 			}
 			case "WORKING_NINE_TO_FIVE": {
 				return {
 					moveType: MoveType.WORK_EMPLOYEES,
-					playerIndices: [
-						state.turnOrder[firstUnready]
-					]
+					playerIndices: [firstUnready]
 				};
 			}
 			case "SALARY_PAYOUTS": {
 				return {
 					moveType: MoveType.NEGOTIATE_SALARIES,
-					playerIndices: state.turnOrder.filter(
-						(_, i) => !state.readyStatuses[i]
-					)
+					playerIndices:
+						GameState.getAllUnreadyPlayers(
+							state
+						)
 				};
 			}
 			// Unreachable
@@ -296,10 +359,6 @@ export function newGame(params: NewGameParams): GameState {
 		return Math.random() - 0.5;
 	});
 
-	const readyStatuses = [
-		...Array(params.playerCount).keys()
-	].map((_) => false);
-
 	return {
 		currentTurn: 0,
 		cardReserve: reserve,
@@ -308,8 +367,8 @@ export function newGame(params: NewGameParams): GameState {
 		marketingTiles,
 		bankReserve: params.playerCount * 50,
 		status: "PLACING_FIRST_RESTAURANTS",
-		turnOrder,
-		readyStatuses
+		newTurnOrder: [...turnOrder],
+		turnOrder
 	};
 }
 

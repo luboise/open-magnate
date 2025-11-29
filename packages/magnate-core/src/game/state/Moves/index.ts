@@ -70,7 +70,7 @@ export function applyMoveToGamestate(
 ): GameState | string {
 	const nextMove = GameState.nextMove(state);
 
-	if (!nextMove) {
+	if (nextMove === undefined) {
 		return "No next move available.";
 	} else if (move.moveType != nextMove.moveType) {
 		return `Move type mismatch. Expected ${nextMove.moveType}, got ${move.moveType}`;
@@ -137,12 +137,19 @@ export function applyMoveToGamestate(
 			break;
 		}
 		case MoveType.RESTRUCTURE: {
-			/*
-			TransactionFunctions.Restructure(
-				bundle,
-				move.tree
-			);
-			*/
+			newState = GameState.clone(state);
+			const player = newState.players[playerIndex];
+
+			if (
+				!EmployeeNode.isValidTree(
+					move.tree,
+					player.employees
+				)
+			) {
+				return "Invalid tree for player.";
+			}
+
+			player.tree = move.tree;
 
 			break;
 		}

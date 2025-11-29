@@ -1,11 +1,12 @@
+import { GameState, newGame } from "magnate-core";
+
 import {
-	GameState,
 	LobbyPlayerData,
 	LobbySubmissionData,
 	LobbyView,
-	PlayerLobbyView,
-	newGame
-} from "magnate-core";
+	PlayerLobbyView
+} from "magnate-core/networking";
+
 import { Lobby, UserSession, prisma } from "../datasource";
 import { LOBBY_STATUS } from "../datasource/generated/enums";
 import {
@@ -310,7 +311,9 @@ const LobbyController = {
 					id: lobbyId
 				},
 				data: {
-					gameState: newState
+					gameState: JSON.parse(
+						JSON.stringify(newState)
+					)
 				}
 			});
 			return true;

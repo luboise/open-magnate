@@ -19,5 +19,5 @@ export const seedGameState1: GameState = {
 	players: [Player.create(0), Player.create(1)],
 	bankReserve: 100,
 	marketingTiles: [],
-	readyStatuses: [false, false]
+	newTurnOrder: []
 };

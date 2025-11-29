@@ -1,7 +1,5 @@
 import { Request } from "express";
 
-// Fixes issues from using base WebSocket without extended methods
-//
 import { FullLobby } from "src/database/controller/lobby.controller";
 import { UserSession } from "src/database/datasource";
 import { RouteHandler } from "src/types";
@@ -10,9 +8,7 @@ import {
 	UserSessionController
 } from "../database";
 
-import WebSocket from "ws";
-import { connectionsToWebsocket } from "./connections";
-
+// Fixes issues from using base WebSocket without extended methods
 import {
 	AllUpdatedMessage,
 	BackendMessage,
@@ -30,6 +26,9 @@ import {
 	StartGameMessage,
 	applyMoveToGamestate
 } from "magnate-core";
+
+import WebSocket from "ws";
+import { connectionsToWebsocket } from "./connections";
 
 // Helpers
 
@@ -53,7 +52,7 @@ type ParamBundle<MessageType extends BaseMessage> = {
 	userBrowserId: string | null;
 	userSession: UserSession | null;
 	lobbyId: number | null;
-	playerNumber: number | null;
+	lobbyPlayerIndex: number | null;
 };
 
 type BackendMessageHandler<T extends BaseMessage> = (
@@ -80,7 +79,7 @@ const routeHandler: RouteHandler = (express, app) => {
 					)
 				: null;
 
-			const playerNumber: number | null =
+			const lobbyPlayerIndex: number | null =
 				lobby?.playersInLobby.find(
 					(player) =>
 						player.userId ===
@@ -94,7 +93,7 @@ const routeHandler: RouteHandler = (express, app) => {
 				ws: ws,
 				userSession: userSession,
 				lobbyId: lobby?.id || null,
-				playerNumber: playerNumber
+				lobbyPlayerIndex
 			};
 
 			console.log(
@@ -633,6 +632,7 @@ const handleMoveMade: BackendMessageHandler<
 
 	try {
 		console.debug("Applying move: ", moveData);
+		console.debug("Gamestate: ", newState);
 
 		newState = applyMoveToGamestate(
 			newState!,
