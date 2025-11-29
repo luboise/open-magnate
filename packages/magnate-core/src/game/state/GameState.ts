@@ -53,10 +53,11 @@ export const GameState = {
 
 	getFirstUnreadyPlayer(state: GameState): number | null {
 		const index = state.turnOrder.find(
-			(to) => !state.players[to].ready
+			(playerIndex) =>
+				!state.players[playerIndex].ready
 		);
 
-		return index ?? null;
+		return index === undefined ? null : index;
 	},
 
 	getAllUnreadyPlayers(state: GameState): number[] {

@@ -44,6 +44,28 @@ describe("Test GameState", () => {
 	});
 });
 
+describe("Turn order tests", () => {
+	test("Turn order selection back to front", () => {
+		const gs: GameState = newGame({ playerCount: 2 });
+
+		gs.status = "SELECTING_TURN_ORDER";
+
+		gs.turnOrder = [1, 0];
+		gs.newTurnOrder = [null, 1];
+		gs.players[0].ready = false;
+		gs.players[1].ready = true;
+
+		expect(
+			GameState.getFirstUnreadyPlayer(gs)
+		).toStrictEqual(0);
+
+		const nextMove = GameState.nextMove(gs);
+
+		expect(nextMove).toBeTruthy();
+		expect(nextMove!.playerIndices).toStrictEqual([0]);
+	});
+});
+
 describe("Test tile placement", () => {
 	test("Test placing restaurant", () => {
 		let clone: GameState | string =

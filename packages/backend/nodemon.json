@@ -1,5 +1,5 @@
 {
-	"watch": ["./src", "../magnate-core/src"],
+	"watch": ["./src", "../magnate-core/dist"],
 	"ext": "ts,json",
 	"ignore": [
 		"**/node_modules/**",

@@ -632,7 +632,6 @@ const handleMoveMade: BackendMessageHandler<
 
 	try {
 		console.debug("Applying move: ", moveData);
-		console.debug("Gamestate: ", newState);
 
 		newState = applyMoveToGamestate(
 			newState!,

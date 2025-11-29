@@ -74,6 +74,10 @@ export function applyMoveToGamestate(
 		return "No next move available.";
 	} else if (move.moveType != nextMove.moveType) {
 		return `Move type mismatch. Expected ${nextMove.moveType}, got ${move.moveType}`;
+	} else if (
+		!nextMove.playerIndices.includes(playerIndex)
+	) {
+		return `It is not currently player ${playerIndex}'s turn. Expected ${nextMove.playerIndices}`;
 	}
 
 	let newState: GameState | string | undefined =
@@ -154,12 +158,17 @@ export function applyMoveToGamestate(
 			break;
 		}
 		case MoveType.SELECT_TURN_ORDER: {
-			/*
-			TransactionFunctions.PickTurnOrder(
-				bundle,
-				move.slot
-			);
-			*/
+			newState = GameState.clone(state);
+
+			if (
+				move.slot < 0 ||
+				move.slot > newState.players.length
+			) {
+				return `Invalid slot selected: ${move.slot}`;
+			}
+
+			newState.newTurnOrder[move.slot] = playerIndex;
+
 			break;
 		}
 		case MoveType.SELECT_BANK_RESERVE: {
