@@ -37,7 +37,7 @@ function TilePlacer({ }: Props) {
 
 	useEffect(() => {
 		onMapHovered((position) => {
-			updatePlacement({ position: { ...position } });
+			updatePlacement({ position });
 		});
 	}, []);
 
@@ -45,7 +45,7 @@ function TilePlacer({ }: Props) {
 		if (!tile) return false;
 
 		return GameState.canPlaceTile(gameState as unknown as GameState, tile);
-	}, [tile, boardInfo.width, boardInfo.height]);
+	}, [tile, tile?.position, tile?.rotation, boardInfo.width, boardInfo.height]);
 
 	const attemptPlacement = useCallback(() => {
 		if (!validPlacement) return;
@@ -79,6 +79,8 @@ function TilePlacer({ }: Props) {
 
 	const mapWidth = rotated ? tile.width : tile.height;
 	const mapHeight = rotated ? tile.height : tile.width;
+
+
 
 	return (
 		<div

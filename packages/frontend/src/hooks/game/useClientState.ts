@@ -1,14 +1,7 @@
-import {
-	Clamp,
-	MapTile,
-	Position,
-	Rotation
-} from "magnate-core";
+import { MapTile, Position, Rotation } from "magnate-core";
 
 import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
-import { useBoardInfo } from "./useMap";
-import useMapTileInteraction from "./useMapTileInteraction";
 
 interface BaseClientState {
 	placing: MapTile | null;
@@ -35,6 +28,7 @@ type ClientState =
 	| ClientStatePlacing
 	| ClientStateFailed;
 
+// For if the tile placer is using global state
 const clientStateAtom = atom<ClientState>({
 	key: "CLIENT_STATE",
 	default: {
@@ -53,32 +47,31 @@ function useClientState(
 	const [clientState, setClientState] =
 		useRecoilState(clientStateAtom);
 
-	const { hovering } = useMapTileInteraction();
-
-	const boardInfo = useBoardInfo();
+	// const { hovering } = useMapTileInteraction();
 
 	function startPlacing(tile: MapTile) {
-		console.log("Beginning placement of tile ", tile);
+		console.debug("Beginning placement of tile ", tile);
+
 		setClientState({
-			...clientState,
 			placing: tile,
 			placementStatus: "PLACING"
-		});
+		} satisfies ClientState);
 	}
 
 	function commitPlacement() {
-		// TODO: Put the placement logic here
-		if (
-			clientState.placing === null ||
-			clientState.placementStatus !== "PLACING"
-		) {
-			return;
-		}
+		setClientState((oldState) => {
+			// TODO: Put the placement logic here
+			if (
+				oldState.placing === null ||
+				oldState.placementStatus !== "PLACING"
+			) {
+				return oldState;
+			}
 
-		setClientState({
-			...clientState,
-			placementStatus: "SUCCESS",
-			placing: clientState.placing
+			return {
+				placementStatus: "SUCCESS",
+				placing: clientState.placing!
+			} satisfies ClientState;
 		});
 	}
 
@@ -91,48 +84,54 @@ function useClientState(
 		position,
 		rotation
 	}: UpdateProps) {
-		if (clientState.placementStatus !== "PLACING") {
-			return;
-		}
+		setClientState((oldState) => {
+			if (oldState.placementStatus !== "PLACING") {
+				return oldState;
+			}
 
-		const updatedPlacement: MapTile = {
-			...clientState.placing,
-			position:
-				position ?? clientState.placing.position,
-			rotation:
-				rotation ?? clientState.placing.rotation
-		} as MapTile;
+			const updatedPlacement: MapTile = {
+				...oldState.placing,
+				position: position ?? {
+					...oldState.placing.position
+				},
+				rotation:
+					rotation ?? oldState.placing.rotation
+			} as MapTile;
 
-		setClientState((oldState) => ({
-			...oldState,
-			placing: updatedPlacement
-		}));
+			return {
+				...oldState,
+				placing: updatedPlacement
+			};
+		});
 	}
 
 	function rotatePlacement(
 		direction: "FORWARDS" | "BACKWARDS" = "FORWARDS"
 	) {
-		if (
-			clientState.placing === null ||
-			clientState.placementStatus !== "PLACING"
-		) {
-			console.debug(
-				"Unable to rotate null placement tile. Skipping."
-			);
-			return;
-		}
+		setClientState((oldState) => {
+			if (
+				oldState.placing === null ||
+				oldState.placementStatus !== "PLACING"
+			) {
+				console.debug(
+					"Unable to rotate null placement tile. Skipping."
+				);
+				return oldState;
+			}
 
-		const tile = clientState.placing;
+			const tile = oldState.placing;
 
-		setClientState({
-			...clientState,
-			placing: {
-				...tile,
-				rotation: ((tile.rotation +
-					(direction === "FORWARDS" ? 90 : -90)) %
-					360) as Rotation
-			} as MapTile
-			// TODO: Remove this as and fix the typing
+			return {
+				...oldState,
+				placing: {
+					...tile,
+					rotation: ((tile.rotation +
+						(direction === "FORWARDS"
+							? 90
+							: -90)) %
+						360) as Rotation
+				} as MapTile
+			};
 		});
 	}
 
@@ -143,37 +142,12 @@ function useClientState(
 		}
 	}, [clientState.placementStatus]);
 
-	useEffect(() => {
-		if (!hovering || clientState.placing === null)
-			return;
-
-		setClientState({
-			...clientState,
-			placing: {
-				...clientState.placing,
-				position: Position(
-					Clamp(
-						hovering.position.x,
-						0,
-						boardInfo.width - 2,
-						true
-					),
-					Clamp(
-						hovering.position.y,
-						0,
-						boardInfo.height - 2,
-						true
-					)
-				)
-			}
-		});
-	}, [hovering]);
-
 	return {
 		currentlyPlacingTile: Boolean(
 			clientState.placementStatus === "PLACING"
 		),
 		tileBeingPlaced: clientState.placing,
+		clientState,
 		startPlacing,
 		commitPlacement,
 		updatePlacement,
