@@ -1,8 +1,4 @@
-import {
-	HouseView,
-	MapBackgroundTile,
-	Position
-} from "magnate-core";
+import { HouseView, Position } from "magnate-core";
 import { useCallback } from "react";
 import { atom, useRecoilState } from "recoil";
 import useGameStateView from "./useGameStateView";
@@ -59,7 +55,7 @@ type MapHoveredCallback = (
 const RECOIL_MAP_HOVERED_CALLBACK_LIST: MapHoveredCallback[] =
 	[];
 
-const lastHoveredPos: Position = Position(0, 0);
+const lastHoveredPos: Position = Position.create(0, 0);
 
 export function useBoardInfo() {
 	// const { mapRowOrder } = useGameStateView();

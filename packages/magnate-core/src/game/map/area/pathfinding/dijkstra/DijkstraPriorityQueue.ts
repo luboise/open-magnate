@@ -10,7 +10,7 @@ interface DijkstraNode {
 	cost: number;
 }
 
-export function serialisePosition(pos: Position): string {
+export function serialisePosition.create(pos: Position): string {
 	return `${pos.x},${pos.y}`;
 }
 

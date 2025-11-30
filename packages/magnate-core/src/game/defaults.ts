@@ -71,7 +71,7 @@ export interface PlayerNumDefault {
 export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		tiles: [
-			HouseTile.create(Position(0, 3), 2),
+			HouseTile.create(Position.create(0, 3), 2),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)
@@ -79,7 +79,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	},
 	{
 		tiles: [
-			HouseTile.create(Position(3, 0), 4),
+			HouseTile.create(Position.create(3, 0), 4),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)
@@ -87,7 +87,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	},
 	{
 		tiles: [
-			HouseTile.create(Position(2, 1), 5),
+			HouseTile.create(Position.create(2, 1), 5),
 			...RoadTile.fromGridText(
 				"RRRRR RXXXR RXXXR RXXXR RRRRR"
 			)
@@ -95,7 +95,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	},
 	{
 		tiles: [
-			HouseTile.create(Position(1, 1), 7),
+			HouseTile.create(Position.create(1, 1), 7),
 			...RoadTile.fromGridText(
 				"RRRRR RXXXR RXXXR XXXXX XXXXX"
 			)
@@ -103,8 +103,8 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	},
 	{
 		tiles: [
-			DrinkTile.create(Position(1, 1), "BEER"),
-			HouseTile.create(Position(2, 2), 8),
+			DrinkTile.create(Position.create(1, 1), "BEER"),
+			HouseTile.create(Position.create(2, 2), 8),
 			...RoadTile.fromGridText(
 				"RRRXX RXXXX RXXXR XXXXR XXRRR"
 			)
@@ -112,7 +112,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	},
 	{
 		tiles: [
-			HouseTile.create(Position(0, 0), 10),
+			HouseTile.create(Position.create(0, 0), 10),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXXXX XXXXX"
 			)
@@ -120,7 +120,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	},
 	{
 		tiles: [
-			HouseTile.create(Position(0, 0), 12),
+			HouseTile.create(Position.create(0, 0), 12),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)
@@ -128,7 +128,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	},
 	{
 		tiles: [
-			HouseTile.create(Position(1, 3), 13),
+			HouseTile.create(Position.create(1, 3), 13),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXXXX XXXXX"
 			)
@@ -137,7 +137,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// I
 		tiles: [
-			HouseTile.create(Position(3, 3), 15),
+			HouseTile.create(Position.create(3, 3), 15),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXXXX XXXXX"
 			)
@@ -146,7 +146,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// J
 		tiles: [
-			HouseTile.create(Position(1, 1), 16),
+			HouseTile.create(Position.create(1, 1), 16),
 			...RoadTile.fromGridText(
 				"XXRRR XXXXR RXXXR RXXXX RRRXX"
 			)
@@ -155,7 +155,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// K
 		tiles: [
-			HouseTile.create(Position(2, 1), 18),
+			HouseTile.create(Position.create(2, 1), 18),
 			...RoadTile.fromGridText(
 				"RRRRR RXXXR RXXXR XXXXX XXXXX"
 			)
@@ -164,7 +164,10 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// L
 		tiles: [
-			DrinkTile.create(Position(3, 3), "LEMONADE"),
+			DrinkTile.create(
+				Position.create(3, 3),
+				"LEMONADE"
+			),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXXXX XXXXX"
 			)
@@ -173,8 +176,11 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// M
 		tiles: [
-			DrinkTile.create(Position(3, 1), "LEMONADE"),
-			DrinkTile.create(Position(1, 3), "COLA"),
+			DrinkTile.create(
+				Position.create(3, 1),
+				"LEMONADE"
+			),
+			DrinkTile.create(Position.create(1, 3), "COLA"),
 			...RoadTile.fromGridText(
 				"XXRRR XXXXR RXXXR RXXXX RRRXX"
 			)
@@ -183,7 +189,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// N
 		tiles: [
-			DrinkTile.create(Position(1, 1), "BEER"),
+			DrinkTile.create(Position.create(1, 1), "BEER"),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXXXX XXXXX"
 			)
@@ -192,7 +198,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// O
 		tiles: [
-			DrinkTile.create(Position(1, 0), "BEER"),
+			DrinkTile.create(Position.create(1, 0), "BEER"),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)
@@ -201,8 +207,11 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// P
 		tiles: [
-			DrinkTile.create(Position(0, 1), "LEMONADE"),
-			DrinkTile.create(Position(3, 4), "BEER"),
+			DrinkTile.create(
+				Position.create(0, 1),
+				"LEMONADE"
+			),
+			DrinkTile.create(Position.create(3, 4), "BEER"),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)
@@ -211,7 +220,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// Q
 		tiles: [
-			DrinkTile.create(Position(1, 3), "COLA"),
+			DrinkTile.create(Position.create(1, 3), "COLA"),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXXXX XXXXX"
 			)
@@ -220,7 +229,7 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// R
 		tiles: [
-			DrinkTile.create(Position(1, 1), "COLA"),
+			DrinkTile.create(Position.create(1, 1), "COLA"),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)
@@ -229,8 +238,8 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// S
 		tiles: [
-			DrinkTile.create(Position(3, 0), "COLA"),
-			DrinkTile.create(Position(0, 0), "BEER"),
+			DrinkTile.create(Position.create(3, 0), "COLA"),
+			DrinkTile.create(Position.create(0, 0), "BEER"),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)
@@ -239,7 +248,10 @@ export const BASE_GAME_MAP_PIECES: MapPiece[] = [
 	{
 		// T
 		tiles: [
-			DrinkTile.create(Position(1, 1), "LEMONADE"),
+			DrinkTile.create(
+				Position.create(1, 1),
+				"LEMONADE"
+			),
 			...RoadTile.fromGridText(
 				"XXRXX XXRXX RRRRR XXRXX XXRXX"
 			)

@@ -1,9 +1,10 @@
-import { DirectionSet, RoadTile } from "magnate-core";
+import { RoadTile, DirectionSet } from "magnate-core";
 import RoadLines from "./RoadLines";
 import { useMemo } from "react";
 
 interface RoadTileProps {
 	tile: RoadTile;
+	directions: DirectionSet
 }
 
 function RoadTileElements(
@@ -41,10 +42,10 @@ function RoadTileElements(
 
 
 
-function GameRoadTile({ tile }: RoadTileProps) {
+function GameRoadTile({ tile, directions }: RoadTileProps) {
 	if (!tile) return <p>invalid map tile</p>;
 
-	const elements = RoadTileElements(tile.adjacentRoads);
+	const elements = RoadTileElements(directions);
 
 	return (<div
 		className={"map-tile map-tile-road"}

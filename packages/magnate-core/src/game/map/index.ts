@@ -43,6 +43,40 @@ export const MapTile = {
 		);
 	},
 
+	isAtBlockConnector(
+		tile: MapTile,
+		blockSize: number = 5
+	) {
+		const moddedX = tile.position.x % blockSize;
+		const moddedY = tile.position.y % blockSize;
+
+		return (
+			// Left middle
+			(moddedX === 0 &&
+				moddedY === Math.floor(blockSize / 2)) ||
+			// Right middle
+			(moddedX === blockSize - 1 &&
+				moddedY === Math.floor(blockSize / 2)) ||
+			// Top middle
+			(moddedX === Math.floor(blockSize / 2) &&
+				moddedY === 0) ||
+			(moddedX === Math.floor(blockSize / 2) &&
+				moddedY === blockSize - 1)
+		);
+	},
+
+	areOnSameBlock(
+		tile1: MapTile,
+		tile2: MapTile,
+		blockSize: number = 5
+	): boolean {
+		return Position.areOnSameBlock(
+			tile1.position,
+			tile2.position,
+			blockSize
+		);
+	},
+
 	collidesWithArea(
 		tile: MapTile,
 		topLeft: Position,
@@ -65,17 +99,17 @@ export const MapTile = {
 	topLeft(tile: MapTile): Position {
 		switch (tile.rotation) {
 			case 90:
-				return Position(
+				return Position.create(
 					tile.position.x - tile.height + 1,
 					tile.position.y
 				);
 			case 180:
-				return Position(
+				return Position.create(
 					tile.position.x - tile.width + 1,
 					tile.position.y - tile.height + 1
 				);
 			case 270:
-				return Position(
+				return Position.create(
 					tile.position.x,
 					tile.position.y - tile.width + 1
 				);
@@ -88,17 +122,17 @@ export const MapTile = {
 	bottomRight(tile: MapTile): Position {
 		switch (tile.rotation) {
 			case 0:
-				return Position(
+				return Position.create(
 					tile.position.x + tile.width - 1,
 					tile.position.y + tile.height - 1
 				);
 			case 90:
-				return Position(
+				return Position.create(
 					tile.position.x,
 					tile.position.y + tile.width - 1
 				);
 			case 270:
-				return Position(
+				return Position.create(
 					tile.position.x + tile.height - 1,
 					tile.position.y - tile.width + 1
 				);
@@ -136,7 +170,7 @@ export const MapPiece = {
 	rotate(piece: MapPiece, amount: Rotation) {
 		for (let tile of piece.tiles) {
 			for (let i = 0; i < amount / 90; i++) {
-				tile.position = Position(
+				tile.position = Position.create(
 					5 - tile.position.y - 1,
 					tile.position.x
 				);
@@ -191,7 +225,7 @@ export const GameMap = {
 				MapPiece.rotate(piece, rotation);
 
 				for (const tile of piece.tiles) {
-					tile.position = Position(
+					tile.position = Position.create(
 						tile.position.x + col * 5,
 						tile.position.y + row * 5
 					);
@@ -210,6 +244,7 @@ export const GameMap = {
 			tiles
 		};
 	},
+
 	posInBounds(map, pos) {
 		return (
 			pos.x >= 0 &&
@@ -218,12 +253,20 @@ export const GameMap = {
 			pos.y < map.height
 		);
 	},
+
 	moveCrossesTileBorder(m1, m2) {
+		return !Position.areOnSameBlock(m1, m2, 5);
+	},
+
+	getTileAt(gameMap, position) {
 		return (
-			m1.x % 5 === 0 ||
-			m2.x % 5 === 0 ||
-			m1.y % 5 === 0 ||
-			m2.y % 5 === 0
+			gameMap.tiles.find((tile) =>
+				MapTile.collidesWithArea(
+					tile,
+					position,
+					position
+				)
+			) ?? undefined
 		);
 	}
 } satisfies {
@@ -239,4 +282,9 @@ export const GameMap = {
 		m1: Position,
 		m2: Position
 	): boolean;
+
+	getTileAt(
+		gameMap: GameMap,
+		position: Position
+	): MapTile | undefined;
 };

@@ -1,17 +1,23 @@
 import "./TilePlacer.css";
 
+import {
+	GameState,
+	Position,
+	RestaurantTile
+} from "magnate-core";
 import { useCallback, useEffect, useMemo } from "react";
 import RestaurantImage from "../../../../global_components/RestaurantImage";
 import useClientState from "../../../../hooks/game/useClientState";
 import { useDerivedGameState } from "../../../../hooks/game/useDerivedGameState";
-import useMap, { useBoardInfo } from "../../../../hooks/game/useMap";
-import MapMarketingTile from "../Tiles/MapMarketingTile";
 import useGameStateView from "../../../../hooks/game/useGameStateView";
-import { GameState, Position, RestaurantTile } from "magnate-core";
+import useMap, {
+	useBoardInfo
+} from "../../../../hooks/game/useMap";
+import MapMarketingTile from "../Tiles/MapMarketingTile";
 
 type Props = {};
 
-function TilePlacer({ }: Props) {
+function TilePlacer({}: Props) {
 	const {
 		currentlyPlacingTile,
 		tileBeingPlaced,
@@ -44,8 +50,17 @@ function TilePlacer({ }: Props) {
 	const validPlacement = useMemo(() => {
 		if (!tile) return false;
 
-		return GameState.canPlaceTile(gameState as unknown as GameState, tile);
-	}, [tile, tile?.position, tile?.rotation, boardInfo.width, boardInfo.height]);
+		return GameState.canPlaceTile(
+			gameState as unknown as GameState,
+			tile
+		);
+	}, [
+		tile,
+		tile?.position,
+		tile?.rotation,
+		boardInfo.width,
+		boardInfo.height
+	]);
 
 	const attemptPlacement = useCallback(() => {
 		if (!validPlacement) return;
@@ -64,11 +79,19 @@ function TilePlacer({ }: Props) {
 
 	useEffect(() => {
 		if (
-			(gameStatus === "PLACING_FIRST_RESTAURANTS" || gameStatus === "PLACING_FIRST_RESTAURANTS_WAVE_TWO") &&
+			(gameStatus === "PLACING_FIRST_RESTAURANTS" ||
+				gameStatus ===
+					"PLACING_FIRST_RESTAURANTS_WAVE_TWO") &&
 			isMyTurn
 		) {
 			console.debug("Placing restaurant tile");
-			startPlacing(RestaurantTile.create(Position(0, 0), gameState.playerIndex, false));
+			startPlacing(
+				RestaurantTile.create(
+					Position.create(0, 0),
+					gameState.playerIndex,
+					false
+				)
+			);
 		}
 	}, [gameStatus, isMyTurn]);
 
@@ -79,8 +102,6 @@ function TilePlacer({ }: Props) {
 
 	const mapWidth = rotated ? tile.width : tile.height;
 	const mapHeight = rotated ? tile.height : tile.width;
-
-
 
 	return (
 		<div
@@ -103,7 +124,10 @@ function TilePlacer({ }: Props) {
 		>
 			{tile.tileType === "RESTAURANT" ? (
 				<RestaurantImage
-					restaurantIndex={gameState.players[tile.ownerIndex].restaurantIndex ?? 1}
+					restaurantIndex={
+						gameState.players[tile.ownerIndex]
+							.restaurantIndex ?? 1
+					}
 					style={{
 						// gridColumn: `${tile.position.x + 1} / span 2`,
 						// gridRow: `${tile.position.y + 1} / span 2`,

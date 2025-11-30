@@ -2,16 +2,25 @@ import "./MagnateMap.css";
 
 import { HTMLAttributes, PropsWithChildren } from "react";
 
+import {
+	GameMap,
+	HouseTile,
+	MAP_PIECE_HEIGHT,
+	MAP_PIECE_WIDTH,
+	MapTile,
+	Position,
+	RoadTile
+} from "magnate-core";
+
+import useGameStateView from "../../../hooks/game/useGameStateView";
+import useMap from "../../../hooks/game/useMap";
 import House from "./House";
 import GameMapTile from "./Tiles/GameMapTile";
 import GameRoadTile from "./Tiles/GameRoadTile";
-import useMap from "../../../hooks/game/useMap";
-import useGameStateView from "../../../hooks/game/useGameStateView";
-import { GameMap, MapTile, Position, MAP_PIECE_WIDTH, MAP_PIECE_HEIGHT, HouseTile } from "magnate-core";
 import MapRestaurantTile from "./Tiles/MapRestaurantTile";
 
 interface MapProps extends HTMLAttributes<HTMLDivElement> {
-	gameMap: GameMap
+	gameMap: GameMap;
 }
 
 function MagnateMap({
@@ -22,12 +31,9 @@ function MagnateMap({
 }: PropsWithChildren<MapProps>) {
 	// console.debug("Rendering magnate map.");
 
-	const {
-		sendMapHoveredEvent
-	} = useMap();
+	const { sendMapHoveredEvent } = useMap();
 
 	const { gameState } = useGameStateView();
-
 
 	/*
 	const {
@@ -49,9 +55,7 @@ function MagnateMap({
 	// players
 	// );
 
-	function FilterPreviewFiles(
-		_tile: MapTile
-	): boolean {
+	function FilterPreviewFiles(_tile: MapTile): boolean {
 		// if (mapType === "cropped") {
 		// 	return (
 		// 		tile.x >= props.xMin &&
@@ -68,7 +72,6 @@ function MagnateMap({
 	const mapWidth = gameMap.width;
 	const mapHeight = gameMap.height;
 
-
 	return (
 		<div
 			className="map-preview-container"
@@ -80,13 +83,23 @@ function MagnateMap({
 			{...args}
 			onMouseLeave={() => { } /*nowHovering(null)*/}
 			onMouseMove={(e) => {
-				const rect = e.currentTarget.getBoundingClientRect();
+				const rect =
+					e.currentTarget.getBoundingClientRect();
 
-				const x = (e.clientX - rect.left) / rect.width;
-				const y = (e.clientY - rect.top) / rect.height;
+				const x =
+					(e.clientX - rect.left) / rect.width;
+				const y =
+					(e.clientY - rect.top) / rect.height;
 
-				// const pos = Position(Math.floor(x * gameState!.map.width), Math.floor(y * gameState!.map.height));
-				const pos = Position(Math.floor(-0.5 + x * gameState!.map.width), Math.floor(-0.5 + y * gameState!.map.height));
+				// const pos = Position.create(Math.floor(x * gameState!.map.width), Math.floor(y * gameState!.map.height));
+				const pos = Position.create(
+					Math.floor(
+						-0.5 + x * gameState!.map.width
+					),
+					Math.floor(
+						-0.5 + y * gameState!.map.height
+					)
+				);
 
 				sendMapHoveredEvent(pos, true);
 			}}
@@ -105,15 +118,12 @@ function MagnateMap({
 					).fill(
 						<tr>
 							{...new Array(
-								mapHeight /
-								MAP_PIECE_HEIGHT
+								mapHeight / MAP_PIECE_HEIGHT
 							).fill(<td />)}
 						</tr>
 					)}
 				</tbody>
 			</table>
-
-
 
 			{/* Tiles */}
 			{...gameMap.tiles
@@ -121,23 +131,36 @@ function MagnateMap({
 				.map((tile) => {
 					switch (tile.tileType) {
 						case "HOUSE": {
-							return <House house={tile as HouseTile} />
+							return (
+								<House
+									house={
+										tile as HouseTile
+									}
+								/>
+							);
 						}
 						case "DRINK": {
-							return <GameMapTile tile={tile} />
+							return (
+								<GameMapTile tile={tile} />
+							);
 						}
 						case "ROAD": {
-							return <GameRoadTile tile={tile} />
+							return (
+								<GameRoadTile tile={tile} directions={RoadTile.getDirectionsWithReference(tile, gameState!.map)} />
+							);
 						}
 						case "RESTAURANT": {
-							return <MapRestaurantTile tile={tile} />
+							return (
+								<MapRestaurantTile
+									tile={tile}
+								/>
+							);
 						}
 					}
 					return <></>;
 				})}
 
-			{
-				/*
+			{/*
 				...restaurants.map((restaurant) => {
 				const player = players?.find(
 					(player) =>
@@ -159,8 +182,7 @@ function MagnateMap({
 					/>
 				);
 			})
-			*/
-			}
+			*/}
 
 			{/*
 				...marketingCampaigns.map((campaign) => {
@@ -173,8 +195,7 @@ function MagnateMap({
 					/>
 				);
 			})
-			*/
-			}
+			*/}
 
 			{children}
 		</div>

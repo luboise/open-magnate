@@ -216,13 +216,8 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 0
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
 				tileType: "ROAD",
+				roadType: "STANDARD",
 				width: 1,
 				height: 1,
 				rotation: 0
@@ -232,12 +227,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 1
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -248,12 +238,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 0,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -264,12 +249,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 1,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -280,12 +260,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -296,12 +271,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 3,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -312,12 +282,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 4,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -328,12 +293,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 3
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -344,12 +304,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 4
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -378,12 +333,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 9,
 					y: 4
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -394,12 +344,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 8,
 					y: 4
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -410,12 +355,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 4
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -426,12 +366,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 6,
 					y: 4
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -442,12 +377,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 5,
 					y: 4
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -458,12 +388,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 9,
 					y: 3
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -474,12 +399,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 5,
 					y: 3
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -490,12 +410,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 9,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -506,12 +421,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 5,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -540,12 +450,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 0
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -556,12 +461,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 1
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -572,12 +472,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 10,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -588,12 +483,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 11,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -604,12 +494,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -620,12 +505,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 13,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -636,12 +516,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 14,
 					y: 2
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -652,12 +527,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 3
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -668,12 +538,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 4
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -702,12 +567,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 5
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -718,12 +578,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 6
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -734,12 +589,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 0,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -750,12 +600,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 1,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -766,12 +611,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -782,12 +622,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 3,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -798,12 +633,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 4,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -814,12 +644,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 8
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -830,12 +655,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 9
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -868,12 +688,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 5
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -884,12 +699,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 6
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -900,12 +710,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 5,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -916,12 +721,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 6,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -932,12 +732,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -948,12 +743,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 8,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -964,12 +754,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 9,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -980,12 +765,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 8
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -996,12 +776,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 9
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1030,12 +805,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 10,
 					y: 5
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1046,12 +816,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 11,
 					y: 5
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1062,12 +827,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 5
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1078,12 +838,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 13,
 					y: 5
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1094,12 +849,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 14,
 					y: 5
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1110,12 +860,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 10,
 					y: 6
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1126,12 +871,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 14,
 					y: 6
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1142,12 +882,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 10,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1158,12 +893,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 14,
 					y: 7
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1174,12 +904,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 10,
 					y: 8
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1190,12 +915,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 14,
 					y: 8
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1206,12 +926,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 10,
 					y: 9
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1222,12 +937,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 11,
 					y: 9
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1238,12 +948,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 9
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1254,12 +959,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 13,
 					y: 9
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1270,12 +970,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 14,
 					y: 9
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1304,12 +999,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 14
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1320,12 +1010,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 13
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1336,12 +1021,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 4,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1352,12 +1032,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 3,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1368,12 +1043,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 2,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1384,12 +1054,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 1,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1400,12 +1065,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 0,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1427,12 +1087,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 10
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1443,12 +1098,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 11
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1459,12 +1109,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 5,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1475,12 +1120,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 6,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1491,12 +1131,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1507,12 +1142,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 8,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1523,12 +1153,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 9,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1539,12 +1164,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 13
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1555,12 +1175,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 7,
 					y: 14
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1589,12 +1204,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 14,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1605,12 +1215,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 13,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1621,12 +1226,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 10
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1637,12 +1237,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 11
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1653,12 +1248,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 12
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1669,12 +1259,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 13
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1685,12 +1270,7 @@ const TEST_GAMESTATE: GameState = {
 					x: 12,
 					y: 14
 				},
-				adjacentRoads: {
-					east: true,
-					north: true,
-					south: true,
-					west: true
-				},
+				roadType: "STANDARD",
 				tileType: "ROAD",
 				width: 1,
 				height: 1,
@@ -1861,3 +1441,4 @@ const TEST_GAMESTATE: GameState = {
 	newTurnOrder: [0, 1],
 	turnOrder: [0, 1]
 } as const;
+

@@ -87,7 +87,7 @@ export function applyMoveToGamestate(
 			newState = GameState.placeNewTile(
 				state,
 				RestaurantTile.create(
-					Position(move.x, move.y),
+					Position.create(move.x, move.y),
 					playerIndex,
 					false
 				)
@@ -213,3 +213,4 @@ export function applyMoveToGamestate(
 
 	return newState;
 }
+

@@ -3,9 +3,28 @@ export interface Position {
 	y: number;
 }
 
-export function Position(x: number, y: number): Position {
-	return { x, y };
-}
+export const Position = {
+	create(x: number, y: number): Position {
+		return { x, y };
+	},
+
+	add(p1: Position, p2: Position): Position {
+		return { x: p1.x + p2.x, y: p1.y + p2.y };
+	},
+
+	areOnSameBlock(
+		pos1: Position,
+		pos2: Position,
+		blockSize: number = 5
+	): boolean {
+		return (
+			Math.floor(pos1.x / blockSize) ===
+				Math.floor(pos2.x / blockSize) &&
+			Math.floor(pos1.y / blockSize) ===
+				Math.floor(pos2.y / blockSize)
+		);
+	}
+};
 
 export type Rotation = 0 | 90 | 180 | 270;
 
@@ -76,6 +95,17 @@ export interface DirectionSet {
 	east: boolean;
 	west: boolean;
 }
+
+export const DirectionSet = {
+	create(): DirectionSet {
+		return {
+			north: true,
+			south: true,
+			east: true,
+			west: true
+		};
+	}
+};
 
 export type ReachType = "ROAD" | "AIR";
 
