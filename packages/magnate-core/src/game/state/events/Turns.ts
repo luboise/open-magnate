@@ -35,7 +35,7 @@ export function ExecuteTurn(
 				case "RECRUIT": {
 					if (
 						!(
-							action.type in
+							action.recruiting in
 							newState.cardReserve
 						)
 					) {

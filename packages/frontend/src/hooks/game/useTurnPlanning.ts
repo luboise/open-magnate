@@ -1,91 +1,120 @@
-import { TurnAction } from "magnate-core";
+import {
+	applyMoveToGamestate,
+	EmployeeNode,
+	GameState,
+	MoveType,
+	TurnAction
+} from "magnate-core";
 import { atom, useRecoilState } from "recoil";
 import useGameStateView from "./useGameStateView";
 
-interface GamePlanningState {
-	plannedActions: TurnAction[];
-}
-
 const gamePlanningAtom = atom<GamePlanningState>({
 	key: "gamePlanningAtom",
-	default: {
-		plannedActions: []
-	}
+	default: { plannedActions: [] }
 });
 
-// const turnActionsSelector = selector<TurnAction[]>({
-// 	key: "turnActions",
-// 	get: ({ get }) => {
-// 		const state = get(gamePlanningAtom);
-// 		return state.plannedActions;
-// 	}
-// });
+interface GamePlanningState {
+	plannedActions: Record<number, TurnAction[]>;
+}
 
 function useTurnPlanning() {
+	const { gameState: gameStateView } = useGameStateView();
+
+	const gameState = gameStateView!;
+
 	const [turnPlanningState, setTurnPlanningState] =
 		useRecoilState(gamePlanningAtom);
 
 	// const turnActions = useRecoilValue(turnActionsSelector);
 
-	const { gameState } = useGameStateView();
 	if (!gameState)
 		throw new Error("No player data available");
 
-	function addAction(
-		action: Omit<TurnAction, "playerIndex">
-	) {
-		const newAction = ((): TurnAction | null => {
-			return {
-				...action
-			} as TurnAction;
-		})();
+	const player = gameState.players[gameState.playerIndex];
 
-		if (!newAction) {
-			console.debug("Unable to add action: ", action);
-			return;
-		}
+	const allEmployees: number[] =
+		EmployeeNode.getAllTreeData<number>(player.tree);
 
+	const unworkedEmployees: number[] = allEmployees.filter(
+		(e) => !(e in turnPlanningState.plannedActions)
+	);
+
+	function addAction(action: TurnAction) {
 		console.debug(
-			"NEW ACTION: ",
-			newAction,
-			"OLD LIST: ",
-			turnPlanningState.plannedActions
+			`Adding action to employee ${action.employeeIndex}:`,
+			action
 		);
 
-		setTurnPlanningState((oldState) => ({
-			...oldState,
-			plannedActions: [
-				...oldState.plannedActions,
-				newAction
-			]
-		}));
+		setTurnPlanningState((oldState) => {
+			const newActions = {
+				...oldState.plannedActions
+			};
 
-		// setNewAction({ action: newAction });
+			if (!(action.employeeIndex in newActions)) {
+				newActions[action.employeeIndex] = [];
+			}
+			newActions[action.employeeIndex].push(action);
+
+			return {
+				...oldState,
+				plannedActions: newActions
+			};
+		});
 	}
 
-	function removeAction(index: number) {
+	function removeActionsByEmployee(
+		employeeIndex: number
+	) {
 		if (
-			index < 0 ||
-			index >= turnPlanningState.plannedActions.length
+			employeeIndex < 0 ||
+			employeeIndex >=
+				gameState.privateData.employees.length
 		)
 			throw new Error(
-				"Invalid index to remove: " + index
+				"Invalid employee index to remove: " +
+					employeeIndex
 			);
 
-		setTurnPlanningState((oldState) => ({
-			...oldState,
-			plannedActions: [
-				...oldState.plannedActions
-			].filter((_, i) => i !== index)
-		}));
+		setTurnPlanningState((oldState) => {
+			const newActions = Object.fromEntries(
+				Object.entries(
+					oldState.plannedActions
+				).filter(
+					([k, _]) => Number(k) != employeeIndex
+				)
+			);
 
-		console.debug("Removed action at index " + index);
+			return {
+				...oldState,
+				plannedActions: newActions
+			};
+		});
+
+		console.debug(
+			"Removed action at index " + employeeIndex
+		);
+	}
+
+	function canApplyActions(): boolean {
+		const applied = applyMoveToGamestate(
+			gameState as unknown as GameState,
+			gameState.playerIndex,
+			{
+				moveType: MoveType.WORK_EMPLOYEES,
+				actions: turnPlanningState.plannedActions
+			}
+		);
+
+		return typeof applied !== "string";
 	}
 
 	return {
-		turnActions: turnPlanningState.plannedActions,
+		allEmployees,
+		unworkedEmployees,
+		actions: turnPlanningState.plannedActions,
 		addAction,
-		removeAction
+		removeActionsByEmployee,
+		canApplyActions
 	};
 }
 

@@ -41,6 +41,7 @@ function PlacementHandler({ placementTypes }: Props) {
 
 	const { gameStatus, employees: myEmployees } =
 		useDerivedGameState();
+
 	const { addAction } = useTurnPlanning();
 
 	const onTileDropped = useCallback<OnTilePlacedCallback>(

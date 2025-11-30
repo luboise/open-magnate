@@ -228,7 +228,7 @@ function PageGame() {
 
 			<Resizable
 				minimiseIf={
-					gameStatus !== "SALARY_PAYOUTS"
+					gameStatus !== "SALARY_PAYOUTS" || !isMyTurn
 				}
 			>
 				<SalaryHandler id="game-salary-handler" />

@@ -90,7 +90,6 @@ const isMyTurnSelector = selector<boolean>({
 					firstUnready === gameState.playerIndex
 				);
 			}
-
 			default:
 				gameState.status satisfies never;
 		}
@@ -193,7 +192,7 @@ const currentPlayerSelector =
 const currentTreeSelector = selector<EmployeeNode | null>({
 	key: "CURRENT_TREE",
 	get: ({ get }) => {
-		const currentPlayer = get(privateViewSelector);
+		const currentPlayer = get(publicViewSelector);
 		if (!currentPlayer) return null;
 
 		return currentPlayer.tree;

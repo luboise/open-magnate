@@ -17,7 +17,7 @@ function TurnHandler() {
 
 	const { makeMove } = usePageGame();
 
-	const { turnActions } = useTurnPlanning();
+	const { actions: turnActions } = useTurnPlanning();
 
 	const { plannedTree } = useTreePlanning();
 

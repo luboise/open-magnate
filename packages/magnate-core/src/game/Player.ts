@@ -12,7 +12,7 @@ export type Player = {
 	demand: DemandRecord;
 	employees: Employee[];
 	tree: EmployeeNode;
-	previousTree: EmployeeNode;
+	newTree: EmployeeNode;
 	restaurantIndex: number;
 	bankReserveAmount: number;
 };
@@ -24,7 +24,7 @@ export const Player = {
 			money: 0,
 			demand: DemandRecord.create(),
 			employees: [CEOEmployee.create(3)],
-			previousTree: { data: 0, children: [] },
+			newTree: { data: 0, children: [] },
 			tree: { data: 0, children: [] },
 			restaurantIndex,
 			bankReserveAmount: 0

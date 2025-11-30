@@ -26,21 +26,22 @@ function HiringWindow({
 
 		const employee = myEmployees[employeeHiringIndex];
 
-		if (!employee.type)
+		if (!employee.department)
 			throw new Error("Employee type not set");
 
 		if (
-			employee.type !== "MANAGEMENT" &&
-			employee.type !== "CEO"
+			employee.department !== "RECRUITMENT" &&
+			employee.department !== "CEO"
 		)
 			throw new Error("Invalid employee type");
 
 		return employee;
 	}, [employeeHiringIndex, myEmployees]);
 
+	// 1 because CEO's only have a single hire
 	const [hiresRemaining, setHiresRemaining] = useState(
-		employee.type === "MANAGEMENT"
-			? employee.capacity
+		employee.department === "RECRUITMENT"
+			? employee.hiringSlots
 			: 1
 	);
 

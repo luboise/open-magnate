@@ -59,7 +59,7 @@ export const GameStateView = {
 
 export type PlayerPublicView = Omit<
 	Player,
-	"tree" | "employees" | "bankReserveAmount"
+	"newTree" | "employees" | "bankReserveAmount"
 >;
 
 export type PlayerPrivateView = Pick<
@@ -71,7 +71,7 @@ export const PlayerPublicView = {
 	fromPlayer({
 		demand,
 		money,
-		previousTree,
+		tree,
 		restaurantIndex,
 		ready
 	}: Player): PlayerPublicView {
@@ -79,7 +79,7 @@ export const PlayerPublicView = {
 			ready,
 			demand,
 			money,
-			previousTree,
+			tree,
 			restaurantIndex
 		};
 	}
@@ -87,11 +87,11 @@ export const PlayerPublicView = {
 
 export const PlayerPrivateView = {
 	fromPlayer({
-		tree,
+		newTree,
 		employees,
 		bankReserveAmount
 	}: Player): PlayerPrivateView {
-		return { tree, employees, bankReserveAmount };
+		return { newTree, employees, bankReserveAmount };
 	}
 };
 
