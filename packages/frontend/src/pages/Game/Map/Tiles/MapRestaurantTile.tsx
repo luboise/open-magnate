@@ -5,10 +5,11 @@ import { useEffect } from "react";
 
 
 interface Props {
-	tile: RestaurantTile
+	tile: RestaurantTile,
+	drawEntrance: boolean
 }
 
-function MapRestaurantTile({ tile }: Props) {
+function MapRestaurantTile({ tile, drawEntrance = true }: Props) {
 	const { players } = useDerivedGameState();
 
 
@@ -19,10 +20,20 @@ function MapRestaurantTile({ tile }: Props) {
 	return (<div
 		className={"map-tile map-tile-restaurant"}
 		style={{
+			display: "grid",
+			gridTemplateColumns: "1fr 1fr",
+			gridTemplateRows: "1fr 1fr",
 			gridColumn: `${tile.position.x + 1} / span ${tile.width}`,
 			gridRow: `${tile.position.y + 1} / span ${tile.height}`
 		}}
 	>
+
+		{drawEntrance ? <div style={{
+			zIndex: 3,
+			// gridColumn: ((tile.rotation === 90 || tile.rotation === 270) ? 0 : 1),
+		}}>Entrance</div> : <></>
+		}
+
 		<RestaurantImage
 			restaurantIndex={players[tile.ownerIndex].restaurantIndex ?? 1}
 			style={{
@@ -32,8 +43,8 @@ function MapRestaurantTile({ tile }: Props) {
 
 				// backgroundBlendMode: "multiply",
 
-				width: "100%",
-				height: "100%",
+				// width: "100%",
+				// height: "100%",
 				// Span 2 rows and 2 columns
 
 				// mixBlendMode: "multiply",
@@ -42,7 +53,7 @@ function MapRestaurantTile({ tile }: Props) {
 				zIndex: 2
 			}}
 		/>
-	</div>);
+	</div >);
 
 }
 

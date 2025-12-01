@@ -22,8 +22,8 @@ export interface RecruitAction extends BaseGameAction {
 
 export interface TrainAction extends BaseGameAction {
 	type: "TRAIN";
-	trainingIndex: number;
-	training: EmployeeType;
+	traineeIndex: number;
+	newRole: EmployeeType;
 }
 
 export interface MarketingAction extends BaseGameAction {

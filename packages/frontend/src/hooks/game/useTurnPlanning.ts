@@ -5,20 +5,25 @@ import {
 	MoveType,
 	TurnAction
 } from "magnate-core";
+import { useEffect } from "react";
 import { atom, useRecoilState } from "recoil";
+import { useDerivedGameState } from "./useDerivedGameState";
 import useGameStateView from "./useGameStateView";
 
 const gamePlanningAtom = atom<GamePlanningState>({
 	key: "gamePlanningAtom",
-	default: { plannedActions: [] }
+	default: { submittedTurn: false, plannedActions: [] }
 });
 
 interface GamePlanningState {
+	submittedTurn: boolean;
 	plannedActions: Record<number, TurnAction[]>;
 }
 
 function useTurnPlanning() {
 	const { gameState: gameStateView } = useGameStateView();
+
+	const { isMyTurn } = useDerivedGameState();
 
 	const gameState = gameStateView!;
 
@@ -107,6 +112,18 @@ function useTurnPlanning() {
 
 		return typeof applied !== "string";
 	}
+
+	useEffect(() => {
+		setTurnPlanningState((tps) => {
+			if (!isMyTurn && tps.submittedTurn) {
+				return {
+					plannedActions: [],
+					submittedTurn: false
+				};
+			}
+			return { ...tps };
+		});
+	}, [isMyTurn]);
 
 	return {
 		allEmployees,

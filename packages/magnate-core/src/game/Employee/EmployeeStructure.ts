@@ -19,6 +19,21 @@ export const EmployeeNode = {
 		return checkNode(treeRoot, employeeList, set, 0);
 	},
 
+	treeContainsValue(
+		root: EmployeeNode,
+		value: number
+	): boolean {
+		if (root.data === value) {
+			return true;
+		}
+
+		return root.children
+			.filter((val) => val != null)
+			.some((child) =>
+				EmployeeNode.treeContainsValue(child, value)
+			);
+	},
+
 	countEmptySlots(treeRoot: EmployeeNode): number {
 		let count = 0;
 		function traverse(node: EmployeeNode) {

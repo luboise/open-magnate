@@ -64,11 +64,11 @@ function HiringWindow({
 
 	return (
 		<>
+			<p>Hires Remaining: {hiresRemaining}</p>
 			<ReserveDisplay
 				employeeFilter={(e) => Boolean(e.notPaid)}
 				onEmployeeClicked={onHire}
 			/>
-			Hires Remaining: {hiresRemaining}
 		</>
 	);
 }

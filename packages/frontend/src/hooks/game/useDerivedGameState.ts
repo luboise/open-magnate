@@ -298,6 +298,7 @@ export function useDerivedGameState() {
 	);
 
 	const employees = useRecoilValue(myEmployeesSelector);
+
 	const currentPlayer: PlayerPublicView | null =
 		useRecoilValue(currentPlayerSelector);
 

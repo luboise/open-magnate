@@ -80,13 +80,20 @@ function ReserveDisplay({
 		);
 	});
 
+	const reserveIsEmpty: boolean = 0 === categoryArrays.reduce((acc, cat) => {
+		return acc + cat.length
+	}, 0);
+
 	return (
 		<div className="game-reserve-display" {...args}>
-			{...categoryArrays.map((category) => (
-				<div className="game-reserve-display-row">
-					{...category}
-				</div>
-			))}
+			{reserveIsEmpty ? (<h3>No employees available to display.</h3>) : (
+				categoryArrays.map((category, i) => (
+					<div className="game-reserve-display-row" key={`row-${i}`}>
+						{...category}
+					</div>
+				))
+			)
+			}
 		</div>
 	);
 }
